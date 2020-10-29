@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class MetaData extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'value',
+        'type',
+        'type_id',
+        'date',
+        'date_update'
+    ];
 }

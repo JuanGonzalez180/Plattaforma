@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Interests extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'type',
+        'type_id',
+        'date',
+        'date_update'
+    ];
 }
