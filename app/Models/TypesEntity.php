@@ -9,8 +9,11 @@ class TypesEntity extends Model
 {
     use HasFactory;
 
-    const TYPEENTITY_ERASER = 'Borrador';
-    const TYPEENTITY_PUBLISH = 'Publicado';
+    const ENTITY_ERASER = 'Borrador';
+    const ENTITY_PUBLISH = 'Publicado';
+
+    const TYPE_DEMAND = 'Demanda';
+    const TYPE_OFFER = 'Oferta';
     
     protected $fillable = [
         'name',
@@ -19,6 +22,6 @@ class TypesEntity extends Model
     ];
 
     public function isPublish(){
-        return $this->status == TypesEntity::TYPEENTITY_PUBLISH;
+        return $this->status == TypesEntity::ENTITY_PUBLISH;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Tenders;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,4 +21,8 @@ class TendersVersions extends Model
         'date',
         'date_update'
     ];
+
+    public function tenders(){
+        return $this->belongsTo(Tenders::class);
+    }
 }

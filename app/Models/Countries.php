@@ -5,18 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Files extends Model
+class Countries extends Model
 {
     use HasFactory;
 
-    /**
-     * type: Tipo de Archivo
-     */
     protected $fillable = [
         'name',
-        'type',
-        'type_id',
-        'extension',
         'date',
         'date_update'
     ];

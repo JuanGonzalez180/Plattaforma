@@ -44,6 +44,11 @@ Route::resource('chat', 'chat\ChatController');
 Route::resource('companies', 'company\CompanyController', ['only' => ['index','create','show','edit','update']]);
 
 /**
+ * Countries
+ */
+Route::resource('countries', 'countries\CountriesController');
+
+/**
  * Files
  */
 Route::resource('files', 'files\FilesController');

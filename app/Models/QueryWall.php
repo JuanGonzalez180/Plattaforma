@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\User;
+use App\Tenders;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,5 +27,13 @@ class QueryWall extends Model
 
     public function isPublish(){
         return $this->status == QueryWall::QUERYWALL_PUBLISH;
+    }
+
+    public function tenders(){
+        return $this->belongsTo(Tenders::class);
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 }
