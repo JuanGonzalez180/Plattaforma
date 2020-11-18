@@ -2,10 +2,15 @@
 
 namespace App\Models;
 
+use App\Addresses;
 use App\Blog;
 use App\Countries;
+use App\Files;
+use App\Interests;
+use App\MetaData;
 use App\Products;
 use App\Projects;
+use App\SocialNetworks;
 use App\TypesEntity;
 use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -44,11 +49,31 @@ class Company extends Model
         return $this->hasMany(Blog::class);
     }
 
+    public function files(){
+        return $this->belongsToMany(Files::class);
+    }
+
     public function projects(){
         return $this->hasMany(Projects::class);
     }
 
     public function products(){
         return $this->hasMany(Products::class);
+    }
+
+    public function addresses(){
+        return $this->hasMany(Addresses::class);
+    }
+
+    public function interests(){
+        return $this->belongsToMany(Interests::class);
+    }
+
+    public function metaDatos(){
+        return $this->hasMany(MetaData::class);
+    }
+
+    public function socialNetworks(){
+        return $this->belongsToMany(SocialNetworks::class);
     }
 }

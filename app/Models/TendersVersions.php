@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Files;
 use App\Tenders;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,5 +25,9 @@ class TendersVersions extends Model
 
     public function tenders(){
         return $this->belongsTo(Tenders::class);
+    }
+
+    public function files(){
+        return $this->belongsToMany(Files::class);
     }
 }

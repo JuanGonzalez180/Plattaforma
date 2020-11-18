@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Category;
 use App\Company;
+use App\Files;
+use App\Interests;
 use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,12 +41,24 @@ class Products extends Model
     public function type(){
         return $this->type;
     }
+    
+    public function categories(){
+        return $this->belongsToMany(Category::class);
+    }
 
     public function company(){
         return $this->belongsTo(Company::class);
     }
 
+    public function files(){
+        return $this->belongsToMany(Files::class);
+    }
+
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function interests(){
+        return $this->belongsToMany(Interests::class);
     }
 }

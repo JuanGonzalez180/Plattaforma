@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Blog;
+use App\Company;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -61,5 +63,13 @@ class User extends Authenticatable
 
     public static function generateVerificationToken(){
         return str_random(40);
+    }
+
+    public function blogs(){
+        return $this->hasMany(Blog::class);
+    }
+
+    public function company(){
+        return $this->hasMany(Company::class);
     }
 }

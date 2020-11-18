@@ -24,4 +24,8 @@ class TypesEntity extends Model
     public function isPublish(){
         return $this->status == TypesEntity::ENTITY_PUBLISH;
     }
+
+    public function companies(){
+        return $this->hasMany(Company::class);
+    }
 }

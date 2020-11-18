@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Files;
+use App\Products;
+use App\Tenders;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,5 +28,17 @@ class Category extends Model
 
     public function isPublish(){
         return $this->status == Category::CATEGORY_PUBLISH;
+    }
+
+    public function files(){
+        return $this->belongsToMany(Files::class);
+    }
+
+    public function tenders(){
+        return $this->belongsToMany(Tenders::class);
+    }
+
+    public function products(){
+        return $this->belongsToMany(Products::class);
     }
 }

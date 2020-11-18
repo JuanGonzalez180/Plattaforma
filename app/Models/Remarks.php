@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\User;
+use App\Tenders;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -39,5 +40,9 @@ class Remarks extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function tender(){
+        return $this->belongsTo(Tenders::class);
     }
 }

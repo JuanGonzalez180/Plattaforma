@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Company;
+use App\Interests;
 use App\Projects;
 use App\User;
+use App\Remarks;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -42,6 +44,10 @@ class Tenders extends Model
     public function project(){
         return $this->belongsTo(Projects::class);
     }
+
+    public function categories(){
+        return $this->belongsToMany(Category::class);
+    }
     
     public function company(){
         return $this->belongsTo(Company::class);
@@ -49,5 +55,17 @@ class Tenders extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function interests(){
+        return $this->belongsToMany(Interests::class);
+    }
+
+    public function queryWalls(){
+        return $this->hasMany(QueryWall::class);
+    }
+
+    public function remarks(){
+        return $this->hasMany(Remarks::class);
     }
 }
