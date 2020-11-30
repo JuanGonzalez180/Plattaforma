@@ -20,6 +20,10 @@ class Company extends Model
 {
     use HasFactory;
 
+    const COMPANY_CREATED = 'Creado';
+    const COMPANY_APPROVED = 'Aprobado';
+    const COMPANY_REJECTED = 'Rechazado';
+
     protected $fillable = [
         'name',
         'type_entity_id',
