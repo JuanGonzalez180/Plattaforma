@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\countries;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class CountriesController extends Controller
+class CountriesController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -15,6 +15,7 @@ class CountriesController extends Controller
     public function index()
     {
         //
+        
     }
 
     /**

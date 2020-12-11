@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\interests;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class InterestsController extends Controller
+class InterestsController extends ApiController
 {
     /**
      * Display a listing of the resource.

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\querywall;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class QueryWallController extends Controller
+class QueryWallController extends ApiController
 {
     /**
      * Display a listing of the resource.

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\proponents;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class ProponentsController extends Controller
+class ProponentsController extends ApiController
 {
     /**
      * Display a listing of the resource.

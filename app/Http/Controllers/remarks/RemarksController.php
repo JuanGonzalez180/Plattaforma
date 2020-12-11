@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\remarks;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class RemarksController extends Controller
+class RemarksController extends ApiController
 {
     /**
      * Display a listing of the resource.

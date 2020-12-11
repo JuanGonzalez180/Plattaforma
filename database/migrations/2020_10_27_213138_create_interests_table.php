@@ -15,7 +15,14 @@ class CreateInterestsTable extends Migration
     {
         Schema::create('interests', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('user_id')->unsigned();
+            $table->string('type');
+            $table->bigInteger('type_id')->unsigned();
+            $table->string('date');
+            $table->string('date_update');
             $table->timestamps();
+            
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

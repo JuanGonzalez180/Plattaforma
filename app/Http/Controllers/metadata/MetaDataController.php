@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\metadata;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class MetaDataController extends Controller
+class MetaDataController extends ApiController
 {
     /**
      * Display a listing of the resource.

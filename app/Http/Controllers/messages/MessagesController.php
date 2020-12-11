@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\messages;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class MessagesController extends Controller
+class MessagesController extends ApiController
 {
     /**
      * Display a listing of the resource.

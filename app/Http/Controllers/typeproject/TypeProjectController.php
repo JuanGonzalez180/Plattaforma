@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\typeproject;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class TypeProjectController extends Controller
+class TypeProjectController extends ApiController
 {
     /**
      * Display a listing of the resource.

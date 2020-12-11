@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\chat;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class ChatController extends Controller
+class ChatController extends ApiController
 {
     /**
      * Display a listing of the resource.

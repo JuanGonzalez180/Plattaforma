@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\tags;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class TagsController extends Controller
+class TagsController extends ApiController
 {
     /**
      * Display a listing of the resource.

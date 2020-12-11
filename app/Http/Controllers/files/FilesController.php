@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\files;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class FilesController extends Controller
+class FilesController extends ApiController
 {
     /**
      * Display a listing of the resource.

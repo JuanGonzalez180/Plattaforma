@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\typesentity;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class TypesEntityController extends Controller
+class TypesEntityController extends ApiController
 {
     /**
      * Display a listing of the resource.

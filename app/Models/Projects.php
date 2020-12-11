@@ -17,8 +17,8 @@ class Projects extends Model
 {
     use HasFactory;
 
-    const PRODUCT_ERASER = 'Borrador';
-    const PRODUCT_PUBLISH = 'Publicado';
+    const PROJECTS_ERASER = 'Borrador';
+    const PROJECTS_PUBLISH = 'Publicado';
 
     protected $fillable = [
         'name',
@@ -28,14 +28,14 @@ class Projects extends Model
         'image',
         'images',
         'date_start',
-        'date_start',
+        'date_end',
         'status',
         'date',
         'date_update'
     ];
 
     public function isPublish(){
-        return $this->status == Products::PRODUCT_PUBLISH;
+        return $this->status == Projects::PROJECTS_PUBLISH;
     }
 
     public function company(){

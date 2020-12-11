@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\tenders;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
-class TendersController extends Controller
+class TendersController extends ApiController
 {
     /**
      * Display a listing of the resource.
