@@ -64,8 +64,6 @@ body {
   padding-top: .75rem;
   padding-bottom: .75rem;
   font-size: 1rem;
-  background-color: rgba(0, 0, 0, .25);
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
 }
 
 .navbar .form-control {
@@ -91,3 +89,175 @@ body {
 
 .border-top { border-top: 1px solid #e5e5e5; }
 .border-bottom { border-bottom: 1px solid #e5e5e5; }
+
+
+/* Estilo */
+.ft-normal{
+    font-size: .85em;
+    color: #9197A9;
+}
+
+.row-login{
+    margin: 0px;
+}
+
+.plt-center{
+    display: flex;
+    align-items: center;
+}
+
+.bg-login{
+    background-image: url('../img/fondo.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.bg-metodos{
+    background-color: #333333;
+    background-image: url('../img/fondo.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.row-login footer{
+    position: absolute;
+    color: #ffffff;
+    text-align: center;
+    bottom: 1em;
+    font-weight: 700;
+}
+
+.form-sign-up{
+    padding: 4em 6em;
+}
+
+.forms h1{ 
+    color: #2168F5; 
+    font-weight: 700;
+    font-size: 1.43em;
+    margin-bottom: 2em;
+}
+
+.suscribirse h1{
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.43em;
+}
+
+.forms h4{ 
+    color: #9197A9; 
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: .788em;
+    letter-spacing: 4px;
+}
+
+form label{
+    color: #02113B;
+    font-weight: 700;
+    font-size: .85em;
+}
+
+.form-control{
+    background-color: #FCFCFC;
+    border-color: #EAEAEA;
+    font-weight: 600;
+    font-size: .85em;
+    height: calc(2.5em + .75rem + 2px);
+}
+
+.input-group-text{
+    background-color: #f2f2f2;
+}
+
+.input-group-pegado .input-group-text{
+    background-color: #FCFCFC;
+    border-color: #EAEAEA;
+    border-left: 0px;
+}
+
+.input-group-sbr input{
+    border-right: 0px;
+}
+
+.forms .form-check{
+    padding-left: 2.5rem;
+}
+
+.forms .form-check input{
+    width: 16px;
+    height: 16px;
+    margin-left: 15px;
+    margin-right: 5px;
+    left: 0;
+}
+
+.forms .form-check label{
+    color: #9197A9;
+    font-weight: 400;
+}
+
+.form-button{
+    margin-top: 2em;
+}
+
+.form-button .btn{
+    font-size: 0.85em;
+    line-height: 2.5em;
+}
+
+.form-button .icon-btn{
+    margin-left: 10px;
+    height: 20px;
+}
+
+.form-group-recuperar input{
+    max-width: 45px;
+    height: 45px;
+    margin-right: 10px;
+    font-size: 1.7em;
+    text-align: center;
+}
+
+.text-short{
+    color: #cecece;
+}
+
+.row-planes{
+    margin-top: 50px;
+}
+
+.row-planes .card{
+    cursor: pointer;
+    border: 0px;
+}
+
+.row-planes .card .card-header{
+    background: #F0F1F4;
+    color: #02113B;
+}
+
+.row-planes .card .card-title {
+    margin-bottom: .75rem;
+    font-weight: 700;
+    font-size: 1.65em;
+    margin-top: .5em;
+}
+
+.row-planes .card.selected{
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.row-planes .card.selected .card-header{
+    background-color: transparent;
+    color: #ffffff;
+}
+
+.forms input[type=radio]{
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-top: -2px;
+    margin-right: 10px;
+}
