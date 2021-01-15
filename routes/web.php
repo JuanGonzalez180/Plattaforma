@@ -22,3 +22,7 @@ Route::get('/usuarios', 'user\UserController')->name('usuarios');
 Route::get('/categorias', function () {
     return view('categorias');
 })->name('categorias');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

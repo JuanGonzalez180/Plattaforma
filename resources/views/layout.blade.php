@@ -14,22 +14,16 @@
         <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
             <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Plattaforma</a>
             <!--input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"-->
+            @if (Route::has('login'))
+                <li class="nav-item text-nowrap">
+                    @auth
+                        <a href="{{ url('/home') }}" class="text-sm text-gray-700 underline">Home</a>
+                    @else
+                        <a href="{{ route('login') }}" class="text-sm text-gray-700 underline">Login</a>
+                    @endif
+                </li>
+            @endif
             <ul class="navbar-nav px-3">
-                @if (Route::has('login'))
-                    <li class="nav-item text-nowrap">
-                        @auth
-                            <a href="{{ url('/home') }}" class="text-sm text-gray-700 underline">Home</a>
-                        @else
-                            <a href="{{ route('login') }}" class="text-sm text-gray-700 underline">Login</a>
-
-                            @if (Route::has('register'))
-                                </li>
-                                <li class="nav-item text-nowrap">
-                                    <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 underline">Register</a>
-                            @endif
-                        @endif
-                    </li>
-                @endif
                 <li class="nav-item text-nowrap">
                     <a class="nav-link" href="#">Cerrar sesión</a>
                 </li>
@@ -54,7 +48,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ url('/categorias') }}">
                                 <span data-feather="file"></span>
                                 Categorías
                             </a>
