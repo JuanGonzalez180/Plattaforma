@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers\category;
 
-use App\Category;
+use App\Models\Category;
 use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
 class CategoryController extends ApiController
 {
+    public function __invoke(Request $request)
+    {
+        $categories = Category::all();
+        return view('category.index', compact('categories'));
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -28,6 +34,7 @@ class CategoryController extends ApiController
     public function create()
     {
         //
+        return view('category.create');
     }
 
     /**

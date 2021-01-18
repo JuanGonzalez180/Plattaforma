@@ -19,9 +19,11 @@ Route::get('/', function () {
 
 Route::get('/usuarios', 'user\UserController')->name('usuarios');
 
-Route::get('/categorias', function () {
-    return view('categorias');
-})->name('categorias');
+// Categorías
+Route::get('/categorias', 'category\CategoryController')->name('category');
+Route::resource('/categorias', 'category\CategoryController', 
+    ['only' => ['create','show','edit','update']]
+)->names('category');
 
 Auth::routes();
 
