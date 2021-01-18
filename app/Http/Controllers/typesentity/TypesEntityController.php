@@ -14,7 +14,7 @@ class TypesEntityController extends ApiController
      */
     public function index()
     {
-        //
+        return view('typesentity.index');
     }
 
     /**
