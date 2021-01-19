@@ -1,11 +1,10 @@
 <?php
 
-use App\Models\TypesEntity;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTypesEntitiesTable extends Migration
+class CreateTypeTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,14 +13,10 @@ class CreateTypesEntitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('types_entities', function (Blueprint $table) {
+        Schema::create('types', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('type_id')->unsigned();
             $table->string('name');
-            $table->string('status')->default(TypesEntity::ENTITY_ERASER);
             $table->timestamps();
-
-            $table->foreign('type_id')->references('id')->on('types');
         });
     }
 
@@ -32,6 +27,6 @@ class CreateTypesEntitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('types_entities');
+        Schema::dropIfExists('types');
     }
 }
