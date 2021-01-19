@@ -40,6 +40,11 @@ class TypesEntityController extends ApiController
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'inputName' => ['required'],
+            'inputType' => ['required'],
+        ]);
+        
         return TypesEntity::create([
             'name' => $request->get('inputName'),
             'type_id' => $request->get('inputType')

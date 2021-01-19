@@ -14,5 +14,7 @@ return [
     */
 
     'login' => 'Iniciar sesión',
-
+    'name' => 'Nombre',
+    'description' => 'Descripción',
+    'parentCategory' => 'Categoría Padre'
 ];

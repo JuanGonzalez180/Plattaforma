@@ -22,7 +22,6 @@ class Handler extends ExceptionHandler
      *
      * @var array
      */
-
     protected $dontReport = [
         //
     ];
@@ -32,20 +31,22 @@ class Handler extends ExceptionHandler
      *
      * @var array
      */
-
     protected $dontFlash = [
         'password',
         'password_confirmation',
     ];
 
     /**
-     * Register the exception handling callbacks for the application.
+     * Report or log an exception.
      *
+     * @param  \Exception  $exception
      * @return void
+     *
+     * @throws \Exception
      */
-    public function register()
+    public function report(Throwable $exception)
     {
-        //
+        parent::report($exception);
     }
 
     /**
@@ -58,49 +59,51 @@ class Handler extends ExceptionHandler
    
     public function render($request, Throwable $exception)
     {
-        // return parent::render($request, $exception);
-
-        if ($exception instanceof ValidationException) {
-            return $this->convertValidationExceptionToResponse($exception, $request);
-        }
-
-        if ($exception instanceof ModelNotFoundException) {
-            $model = Str::lower(class_basename($exception->getModel()));
-            return $this->errorResponse("No existe ninguna instancia de {$model} con el id especificado", 404);
-        }
-
-        if ($exception instanceof AuthenticationException) {
-            return $this->unauthenticated($request, $exception);
-        }
-
-        if ($exception instanceof AuthorizationException) {
-            return $this->errorResponse( 'No posee permisos para ejecutar esta acción', 403 );
-        }
-
-        if ($exception instanceof NotFoundHttpException) {
-            return $this->errorResponse( 'No se encontró la url especificada', 404 );
-        }
-
-        if ($exception instanceof MethodNotAllowedHttpException) {
-            return $this->errorResponse( 'El método especificado en la petición no es válido', 405 );
-        }
-
-        if ($exception instanceof HttpException) {
-            return $this->errorResponse( $exception->getMessage(), $exception->getStatusCode() );
-        }
-
-        if ($exception instanceof QueryException) {
-            $codigo = $exception->errorInfo[1];
-            if( $codigo == 1451 ){
-                return $this->errorResponse('No se puede eliminar de forma permanente el recurso porque está relacionado con algún otro.', 409);
+        if ($request->wantsJson()) {  
+            if ($exception instanceof ValidationException) {
+                return $this->convertValidationExceptionToResponseNew($exception, $request);
             }
-        }
 
-        if( config('app.debug') ){
+            if ($exception instanceof ModelNotFoundException) {
+                $model = Str::lower(class_basename($exception->getModel()));
+                return $this->errorResponse("No existe ninguna instancia de {$model} con el id especificado", 404);
+            }
+
+            if ($exception instanceof AuthenticationException) {
+                return $this->unauthenticated($request, $exception);
+            }
+
+            if ($exception instanceof AuthorizationException) {
+                return $this->errorResponse( 'No posee permisos para ejecutar esta acción', 403 );
+            }
+
+            if ($exception instanceof NotFoundHttpException) {
+                return $this->errorResponse( 'No se encontró la url especificada', 404 );
+            }
+
+            if ($exception instanceof MethodNotAllowedHttpException) {
+                return $this->errorResponse( 'El método especificado en la petición no es válido', 405 );
+            }
+
+            if ($exception instanceof HttpException) {
+                return $this->errorResponse( $exception->getMessage(), $exception->getStatusCode() );
+            }
+
+            if ($exception instanceof QueryException) {
+                $codigo = $exception->errorInfo[1];
+                if( $codigo == 1451 ){
+                    return $this->errorResponse('No se puede eliminar de forma permanente el recurso porque está relacionado con algún otro.', 409);
+                }
+            }
+
+            if( config('app.debug') ){
+                return parent::render($request, $exception);
+            }
+
+            return $this->errorResponse('Falla inesperada, intente luego.', 500);
+        }else{
             return parent::render($request, $exception);
         }
-
-        return $this->errorResponse('Falla inesperada, intente luego.', 500);
     }
 
     protected function unauthenticated( $request, AuthenticationException $exception ){
@@ -114,11 +117,10 @@ class Handler extends ExceptionHandler
      * @param  \Illuminate\Http\Request  $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function convertValidationExceptionToResponse(ValidationException $e, $request)
+
+    protected function convertValidationExceptionToResponseNew(ValidationException $e, $request)
     {
         $errors = $e->validator->errors()->getMessages();
-
         return $this->errorResponse($errors, 422);
     }
-
 }

@@ -11,8 +11,14 @@
             <div class="form-row">
                 @csrf
                 <div class="form-group col-md-6">
-                    <label for="inputName">@lang('Name')</label>
-                    <input type="text" class="form-control" name="inputName" id="inputName" placeholder="@lang('Name')">
+                    <label for="inputName">@lang('lang.name')</label>
+                    <input type="text" class="form-control" name="inputName" id="inputName" placeholder="@lang('lang.name')">
+
+                    @error('inputName')
+                        <span class="text-danger" role="alert">
+                            <small><b>{{ $errors->getBag('default')->first('inputName') }}</b></small>
+                        </span>
+                    @enderror
                 </div>
                 <div class="form-group col-md-6">
                     <label for="inputType">@lang('Type')</label>
@@ -22,6 +28,11 @@
                             <option value="{{ $option->id }}">{{ $option->name }}</option>
                         @endforeach
                     </select>
+                    @error('inputType')
+                        <span class="text-danger" role="alert">
+                            <small><b>{{ $errors->getBag('default')->first('inputType') }}</b></small>
+                        </span>
+                    @enderror
                 </div>
             </div>
             <button type="submit" class="btn btn-primary">@lang('Create')</button>

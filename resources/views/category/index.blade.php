@@ -25,20 +25,19 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($categories as $category)
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>
-                        <button type="button" class="btn btn-primary btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </button>
-                        <button type="button" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </button>
-                        <button type="button" class="btn btn-danger btn-sm"> <span class="oi oi-trash" title="Eliminar" aria-hidden="true"></span> </button>
-                    </td>
-                </tr>
+                @forelse ($categories as $category)
+                    <tr>
+                        <th scope="row">{{ $loop->iteration }}</th>
+                        <td>{{ $category->name }}</td>
+                        <td>{{ $category->parent['name'] }}</td>
+                        <td>
+                            <button type="button" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </button>
+                            <button type="button" class="btn btn-danger btn-sm"> <span class="oi oi-trash" title="Eliminar" aria-hidden="true"></span> </button>
+                        </td>
+                    </tr>
                 @empty
                     <tr>
-                        <td colspan="4" align="center">No hay elementos</td>
+                        <td colspan="4">No hay elementos</td>
                     </tr>
                 @endforelse
             </tbody>

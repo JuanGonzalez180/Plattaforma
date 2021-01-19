@@ -22,7 +22,7 @@ Route::get('/usuarios', 'user\UserController')->name('usuarios');
 // Categorías
 Route::get('/categorias', 'category\CategoryController')->name('category');
 Route::resource('/categorias', 'category\CategoryController', 
-    ['only' => ['create','show','edit','update']]
+    ['only' => ['create','store', 'show','edit','update']]
 )->names('category');
 
 Auth::routes();

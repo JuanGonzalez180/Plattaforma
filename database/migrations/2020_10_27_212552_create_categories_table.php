@@ -18,12 +18,12 @@ class CreateCategoriesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('description', 1000);
-            $table->string('icon');
-            $table->string('image');
-            $table->bigInteger('parent_id')->unsigned();
+            $table->string('icon')->nullable();
+            $table->string('image')->nullable();
+            $table->bigInteger('parent_id')->nullable()->unsigned();
             $table->string('status')->default(Category::CATEGORY_ERASER);
-            $table->string('date');
-            $table->string('date_update');
+            $table->string('date')->nullable();
+            $table->string('date_update')->nullable();
             $table->timestamps();
         });
     }

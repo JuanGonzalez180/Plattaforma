@@ -34,7 +34,8 @@ class CategoryController extends ApiController
     public function create()
     {
         //
-        return view('category.create');
+        $categoryOptions = Category::get();
+        return view('category.create', compact('categoryOptions'));
     }
 
     /**
@@ -46,6 +47,19 @@ class CategoryController extends ApiController
     public function store(Request $request)
     {
         //
+
+        $rules = [
+            'name' => 'required',
+            'description' => 'required'
+        ];
+
+        $this->validate( $request, $rules );
+
+        $fields = $request->all();
+        $category = Category::create( $fields );
+
+        // return $this->showOne($category,201);
+        return $category;
     }
 
     /**

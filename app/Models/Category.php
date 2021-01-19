@@ -30,6 +30,10 @@ class Category extends Model
         return $this->status == Category::CATEGORY_PUBLISH;
     }
 
+    public function parent(){
+        return $this->belongsTo(Category::class, 'parent_id' );
+    }
+
     public function files(){
         return $this->belongsToMany(Files::class);
     }

@@ -23,7 +23,8 @@ return [
     'reset_password' => 'Resetear Contraseña',
     'link_reset' => 'Enviar enlace',
     'logout' => 'Cerrar sesión',
-    'failed' => 'Estas credenciales no coinciden con nuestros registros.',
-    'throttle' => 'Demasiados intentos de inicio de sesión. Vuelva a intentarlo en :segundos segundos.',
+    'failed'   => 'Estas credenciales no coinciden con nuestros registros.',
+    'password' => 'La contraseña ingresada no es correcta.',
+    'throttle' => 'Demasiados intentos de acceso. Por favor intente nuevamente en :seconds segundos.',
 
 ];
