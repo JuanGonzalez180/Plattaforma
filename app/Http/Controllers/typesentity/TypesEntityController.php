@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\typesentity;
 
 use App\Http\Controllers\ApiController;
+
+use App\Models\Type;
+use App\Models\TypesEntity;
 use Illuminate\Http\Request;
 
 class TypesEntityController extends ApiController
@@ -14,7 +17,8 @@ class TypesEntityController extends ApiController
      */
     public function index()
     {
-        return view('typesentity.index');
+        $typesEntity = TypesEntity::get();
+        return view('typesentity.index', compact('typesEntity'));
     }
 
     /**
@@ -24,7 +28,8 @@ class TypesEntityController extends ApiController
      */
     public function create()
     {
-        //
+        $typeOptions = Type::get();
+        return view('typesentity.create', compact('typeOptions'));
     }
 
     /**
@@ -35,7 +40,10 @@ class TypesEntityController extends ApiController
      */
     public function store(Request $request)
     {
-        //
+        return TypesEntity::create([
+            'name' => $request->get('inputName'),
+            'type_id' => $request->get('inputType')
+        ]);
     }
 
     /**

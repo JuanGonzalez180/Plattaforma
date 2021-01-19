@@ -12,17 +12,18 @@ class TypesEntity extends Model
     const ENTITY_ERASER = 'Borrador';
     const ENTITY_PUBLISH = 'Publicado';
 
-    const TYPE_DEMAND = 'Demanda';
-    const TYPE_OFFER = 'Oferta';
-    
     protected $fillable = [
+        'type_id',
         'name',
-        'type',
         'status'
     ];
 
     public function isPublish(){
         return $this->status == TypesEntity::ENTITY_PUBLISH;
+    }
+
+    public function type(){
+        return $this->belongsTo(Type::class);
     }
 
     public function companies(){
