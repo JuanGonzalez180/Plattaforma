@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WebControllers\HomeController;
+use WebControllers\category\CategoryController;
+use WebControllers\typeproject\TypeProjectController;
+use WebControllers\typesentity\TypesEntityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,18 +21,24 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-Route::get('/usuarios', 'user\UserController')->name('usuarios');
+// Route::get('/usuarios', 'user\UserController')->name('usuarios');
 
-// Categorías
-Route::get('/categorias', 'category\CategoryController')->name('category');
-Route::resource('/categorias', 'category\CategoryController', 
-    ['only' => ['create','store', 'show','edit','update']]
-)->names('category');
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-Route::resource('tipos-entidad', 'typesentity\TypesEntityController')
+// Categorías
+Route::resource('categorias', CategoryController::class)
+        ->names('category')
+        ->parameters(['categorias' => 'category']);
+
+// Tipo de Proyectos
+Route::resource('tipos-proyectos', TypeProjectController::class)
+        ->names('typeproject')
+        ->parameters(['tipos-proyecto' => 'project']);
+
+// Tipo de Entidades
+Route::resource('tipos-entidad', TypesEntityController::class)
         ->names('typesentity')
         ->parameters(['tipos-entidad' => 'entity']);

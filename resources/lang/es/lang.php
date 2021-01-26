@@ -16,5 +16,10 @@ return [
     'login' => 'Iniciar sesión',
     'name' => 'Nombre',
     'description' => 'Descripción',
-    'parentCategory' => 'Categoría Padre'
+    'parentCategory' => 'Categoría Padre',
+    'parentTypeProject' => 'Tipo de proyecto Padre',
+    'save' => 'Guardar',
+    'create' => 'Crear',
+    'cancel' => 'Cancelar',
+    'edit' => 'Editar',
 ];

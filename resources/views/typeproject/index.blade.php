@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('title')
-    Categorías
+    Tipos de Proyectos
 @endsection
 
 
@@ -9,10 +9,10 @@
     @include('partials.structure.open-main')
         <div class="row align-items-center">
             <div class="col">
-                <h1>Categorías</h1>
+                <h1>Tipos de Proyectos</h1>
             </div>
             <div class="col text-right">
-                <a type="button" class="btn btn-primary" href="{{ route('category.create') }}"><span class="oi oi-plus" title="Nuevo" aria-hidden="true"></span> Crear Categoría</a>
+                <a type="button" class="btn btn-primary" href="{{ route('typeproject.create') }}"><span class="oi oi-plus" title="Nuevo" aria-hidden="true"></span> Crear Tipo de Proyecto</a>
             </div>
         </div>
         @if(session()->get('success'))
@@ -25,23 +25,23 @@
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Categoría</th>
+                    <th scope="col">Tipo de Proyecto</th>
                     <th scope="col">Padre</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($categories as $category)
+                @forelse ($typeprojects as $typeproject)
                     <tr>
                         <th scope="row">{{ $loop->iteration }}</th>
-                        <td>{{ $category->name }}</td>
-                        <td>{{ $category->parent['name'] }}</td>
+                        <td>{{ $typeproject->name }}</td>
+                        <td>{{ $typeproject->parent['name'] }}</td>
                         <td>
-                            <a type="button" href="{{ route('category.edit', $category ) }}" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
-                            <form method="POST" action="{{ route('category.destroy', $category->id) }}" class="d-inline">
+                            <a type="button" href="{{ route('typeproject.edit', $typeproject ) }}" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
+                            <form method="POST" action="{{ route('typeproject.destroy', $typeproject->id) }}" class="d-inline">
                                 @method('DELETE')
                                 @csrf
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Deseas Eliminar la Categoría?')" data-toggle="tooltip" title='Eliminar'> <i class="oi oi-trash"> </i></button>
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Deseas Eliminar la Tipo de Proyecto?')" data-toggle="tooltip" title='Eliminar'> <i class="oi oi-trash"> </i></button>
                             </form>
                         </td>
                     </tr>

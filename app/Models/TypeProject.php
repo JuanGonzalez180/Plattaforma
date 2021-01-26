@@ -29,6 +29,10 @@ class TypeProject extends Model
         return $this->status == TypeProject::TYPEPROJECT_PUBLISH;
     }
 
+    public function parent(){
+        return $this->belongsTo(TypeProject::class, 'parent_id' );
+    }
+
     public function files(){
         return $this->belongsToMany(Files::class);
     }

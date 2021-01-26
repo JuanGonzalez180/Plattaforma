@@ -78,13 +78,13 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ url('/categorias') }}">
+                                    <a class="nav-link" href="{{ route('category.index') }}">
                                         <span data-feather="file"></span>
                                         Categorías
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">
+                                    <a class="nav-link" href="{{ route('typeproject.index') }}">
                                         <span data-feather="file"></span>
                                         Tipos de proyectos
                                     </a>

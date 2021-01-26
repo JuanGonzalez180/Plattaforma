@@ -6,8 +6,14 @@
 
 @section('content')
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-        <h1>Tipos de Entidad</h1>
-        <a href="{{ route('typesentity.create') }}" class="btn btn-primary btn-sm">Crear</a><br><br>
+        <div class="row align-items-center">
+            <div class="col">
+                <h1>Tipos de Entidad</h1>
+            </div>
+            <div class="col text-right">
+                <a type="button" class="btn btn-primary" href="{{ route('typesentity.create') }}"><span class="oi oi-new" title="Nuevo" aria-hidden="true"></span> Crear Categoría</a>
+            </div>
+        </div>
         <table class="table table-striped">
             <thead class="thead-dark">
                 <tr>
