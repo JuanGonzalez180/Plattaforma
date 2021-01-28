@@ -28,9 +28,10 @@ class TypesEntityController extends Controller
     public function create()
     {
         $typeOptions = Type::get();
-        return view('typesentity.create', compact('typeOptions'));
+        $typeEntity = new TypesEntity();
+        return view('typesentity.create', compact('typeOptions', 'typeEntity'));
     }
-
+    
     /**
      * Store a newly created resource in storage.
      *
@@ -39,26 +40,13 @@ class TypesEntityController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'inputName' => ['required'],
-            'inputType' => ['required'],
+        $requestValidated = $request->validate([
+            'name' => ['required'],
+            'type_id' => ['required'],
         ]);
-        
-        return TypesEntity::create([
-            'name' => $request->get('inputName'),
-            'type_id' => $request->get('inputType')
-        ]);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+            
+        TypesEntity::create( $requestValidated );
+        return redirect()->route('typesentity.index')->with('status', 'create');
     }
 
     /**
@@ -67,9 +55,10 @@ class TypesEntityController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(TypesEntity $typeEntity)
     {
-        //
+        $typeOptions = Type::get();
+        return view('typesentity.edit', compact('typeOptions', 'typeEntity'));
     }
 
     /**
@@ -79,9 +68,15 @@ class TypesEntityController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, TypesEntity $typeEntity)
     {
-        //
+        $requestValidated = $request->validate([
+            'name' => ['required'],
+            'type_id' => ['required'],
+        ]);
+            
+        $typeEntity->update( $requestValidated );
+        return redirect()->route('typesentity.index')->with('status', 'edit');
     }
 
     /**
@@ -90,8 +85,9 @@ class TypesEntityController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(TypesEntity $typeEntity)
     {
-        //
+        $typeEntity->delete();
+        return redirect()->route('typesentity.index')->with('status', 'delete');
     }
 }

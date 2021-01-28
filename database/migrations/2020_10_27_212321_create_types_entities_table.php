@@ -18,6 +18,7 @@ class CreateTypesEntitiesTable extends Migration
             $table->id();
             $table->bigInteger('type_id')->unsigned();
             $table->string('name');
+            $table->string('slug')->unique();
             $table->string('status')->default(TypesEntity::ENTITY_ERASER);
             $table->timestamps();
 

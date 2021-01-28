@@ -41,4 +41,4 @@ Route::resource('tipos-proyectos', TypeProjectController::class)
 // Tipo de Entidades
 Route::resource('tipos-entidad', TypesEntityController::class)
         ->names('typesentity')
-        ->parameters(['tipos-entidad' => 'entity']);
+        ->parameters(['tipos-entidad' => 'typeEntity']);
