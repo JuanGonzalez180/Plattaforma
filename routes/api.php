@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use ApiControllers\typesentity\TypesEntityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -116,7 +117,7 @@ use Illuminate\Support\Facades\Route;
 /**
  * TypesEntity
  */
-// Route::resource('typesentity', 'typesentity\TypesEntityController');
+Route::get('/typesentity', TypesEntityController::class)->name('typesentity');
 
 /**
  * User
