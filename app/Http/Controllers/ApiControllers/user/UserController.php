@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\user;
 
 use App\Models\User;
-use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\ApiControllers\ApiController;
 
 class UserController extends ApiController
 {
