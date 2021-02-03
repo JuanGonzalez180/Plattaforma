@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use ApiControllers\typesentity\TypesEntityController;
+use ApiControllers\company\CompanyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,11 +39,6 @@ use ApiControllers\typesentity\TypesEntityController;
  * Chat
  */
 // Route::resource('chat', 'chat\ChatController');
-
-/**
- * Company
- */
-// Route::resource('companies', 'company\CompanyController', ['only' => ['index','create','show','edit','update']]);
 
 /**
  * Countries
@@ -118,6 +114,11 @@ use ApiControllers\typesentity\TypesEntityController;
  * TypesEntity
  */
 Route::get('/typesentity', TypesEntityController::class)->name('typesentity');
+
+/**
+ * Company
+ */
+Route::resource('company', CompanyController::class, ['only' => ['store']])->names('company');
 
 /**
  * User
