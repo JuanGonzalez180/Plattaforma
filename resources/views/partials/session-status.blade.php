@@ -2,15 +2,15 @@
 <div class="alert alert-success alert dismissible fade show" role="alert">
     @switch( session('status') )
         @case('create')
-            Tipo de entidad creado satisfactoriamente
+            {{ session('title') }} @lang('was created successfully')
             @break
 
         @case('edit')
-            Tipo de entidad editado satisfactoriamente
+            {{ session('title') }} @lang('was edited successfully')
             @break
 
         @case('delete')
-            Tipo de entidad eliminado satisfactoriamente
+            {{ session('title') }} @lang('was removed successfully')
             @break
         @default
             {{ session('status') }}

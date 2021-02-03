@@ -1,15 +1,15 @@
 @extends('layout')
 
 @section('title')
-    Editar Entidad
+    @lang('Edit') @lang('Content')
 @endsection
 
 @section('content')
     @include('partials.structure.open-main')
-        <h1>Editar Entidad</h1>
-        <form method="POST" action="{{ route('typesentity.update', $typeEntity) }}">
+        <h1>@lang('Edit') @lang('Content')</h1>
+        <form method="POST" action="{{ route('staticcontent.update', $staticContent) }}">
             @csrf @method('PATCH')
-            @include('typesentity._form',[
+            @include('staticcontent._form',[
                 'btnTextPrimary' => __('Edit'),
                 'btnTextCancel' => __('Cancel')
             ])

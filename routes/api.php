@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use ApiControllers\typesentity\TypesEntityController;
+use ApiControllers\staticcontent\StaticContentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -118,6 +119,11 @@ use ApiControllers\typesentity\TypesEntityController;
  * TypesEntity
  */
 Route::get('/typesentity', TypesEntityController::class)->name('typesentity');
+
+/**
+ * StaticContent
+ */
+Route::get('/staticcontent/{slug}', StaticContentController::class)->name('staticcontent');
 
 /**
  * User
