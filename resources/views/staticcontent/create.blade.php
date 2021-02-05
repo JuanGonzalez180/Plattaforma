@@ -1,15 +1,15 @@
 @extends('layout')
 
 @section('title')
-    Crear Entidad
+@lang('Create') @lang('Content')
 @endsection
 
 @section('content')
     @include('partials.structure.open-main')
-        <h1>Crear Entidad</h1>
-        <form method="POST" action="{{ route('typesentity.store') }}">
+        <h1>@lang('Create') @lang('Content')</h1>
+        <form method="POST" action="{{ route('staticcontent.store') }}">
             @csrf
-            @include('typesentity._form',[
+            @include('staticcontent._form',[
                 'btnTextPrimary' => __('Save'),
                 'btnTextCancel' => __('Cancel')
             ])

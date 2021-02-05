@@ -5,6 +5,7 @@ use App\Http\Controllers\WebControllers\HomeController;
 use WebControllers\category\CategoryController;
 use WebControllers\typeproject\TypeProjectController;
 use WebControllers\typesentity\TypesEntityController;
+use WebControllers\staticcontent\StaticContentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,3 +43,8 @@ Route::resource('tipos-proyectos', TypeProjectController::class)
 Route::resource('tipos-entidad', TypesEntityController::class)
         ->names('typesentity')
         ->parameters(['tipos-entidad' => 'typeEntity']);
+
+// Contenido estatico
+Route::resource('contenido-estatico', StaticContentController::class)
+->names('staticcontent')
+->parameters(['contenido-estatico' => 'staticContent']);

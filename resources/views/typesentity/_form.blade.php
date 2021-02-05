@@ -1,7 +1,7 @@
 <div class="form-row">
     <div class="form-group col-md-6">
-        <label for="name">@lang('lang.name')</label>
-        <input type="text" class="form-control" name="name" id="name" placeholder="@lang('lang.name')" value="{{ old('name', $typeEntity->name) }}">
+        <label for="name">@lang('Name')</label>
+        <input type="text" class="form-control" name="name" id="name" placeholder="@lang('Name')" value="{{ old('name', $typeEntity->name) }}">
 
         @error('name')
             <span class="text-danger" role="alert">
@@ -24,4 +24,5 @@
         @enderror
     </div>
 </div>
-<button type="submit" class="btn btn-primary">{{ $btnText }}</button>
+<a type="button" class="btn btn-danger" href="{{ route('typesentity.index') }}"><span class="oi oi-x" title="{{ $btnTextCancel }}" aria-hidden="true"></span> {{ $btnTextCancel }}</a>
+<button type="submit" class="btn btn-primary"><span class="oi oi-check" title="{{ $btnTextPrimary }}" aria-hidden="true"></span> {{ $btnTextPrimary }}</button>

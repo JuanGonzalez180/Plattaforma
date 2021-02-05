@@ -15,8 +15,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        User::create([
+        /*User::create([
             'name' => 'Juan Gonzalez', 
+            'username' => 'juangon', 
             'email' => 'juan.gonzalez@incdustry.com', 
             'password' => bcrypt('Cambiame123'), 
             'verified' => User::USER_VERIFIED, 
@@ -29,6 +30,6 @@ class DatabaseSeeder extends Seeder
 
         Type::create([
             'name' => 'Oferta'
-        ]);
+        ]);*/
     }
 }

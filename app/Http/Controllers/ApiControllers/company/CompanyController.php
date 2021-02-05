@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ApiControllers\company;
 use App\Models\User;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
 use TaylorNetwork\UsernameGenerator\Generator;
 
@@ -32,7 +33,7 @@ class CompanyController extends ApiController
             'country_id' => 'required',
             'email' => 'required|email|unique:users',
             'name' => 'required',
-            'nit' => 'required',
+            'nit' => 'required|numeric',
             'password' => 'required|min:6|confirmed',
             'terms' => 'required',
             'type_entity_id' => 'required',
@@ -41,29 +42,71 @@ class CompanyController extends ApiController
 
         $this->validate( $request, $rules );
 
+        // Generar Username y Validar que no exista en BD
+        // Armar username Parametro $userFields['username']
         $generator = new Generator();
-        $userFields['name'] = $generator->generate($request['name']);
+        $userFields['username'] = false;
+        $usernameCreated = $request['name'];
+        $i=0;
+        while( !$userFields['username'] ){
+            // 1ra vez
+            $username = $generator->generate( $usernameCreated );
+            $userExist = DB::table('users')->where('username', $username)->first();
+            if( !$userExist ){
+                $userFields['username'] = $username;
+            }elseif($i==0){
+                // 2ra vez
+                $usernameCreated = $generator->usingEmail()->generate($request['email']);
+            }else{
+                $usernameCreated = $generator->generate( $request['name'].uniqid() );
+            }
+            $i++;
+        }
+
         $userFields['email'] = strtolower($request['email']);
         $userFields['password'] = bcrypt( $request->password );
         $userFields['verified'] = User::USER_NO_VERIFIED;
         $userFields['verification_token'] = User::generateVerificationToken();
         $userFields['admin'] = User::USER_REGULAR;
 
-        $user = User::create( $userFields );
+        // Iniciar Transacción
+        DB::beginTransaction();
+        $errorUser = false;
+        try{
+            // Crear Usuario
+            $user = User::create( $userFields );
+        } catch (\Throwable $th) {
+            // Si existe algún error al momento de crear el usuario
+            $errorUser = true;
+            DB::rollBack();
+            $userError = [ 'user' => 'Error, no se ha podido crear el usuario' ];
+            return $this->errorResponse( $userError, 500 );
+        }
+        
+        if( !$errorUser ){
+            $companyFields = [
+                'name' => $request['name'],
+                'type_entity_id' => $request['type_entity_id'],
+                'nit' => $request['nit'],
+                'country_id' => $request['country_id'],
+                'web' => $request['web'],
+                'user_id' => $user['id']
+            ];
+            
+            try {
+                // Crear la compañia
+                $company = Company::create( $companyFields );
+                DB::commit();
+            } catch (\Throwable $th) {
+                // Si existe algún error al generar la compañía
+                DB::rollBack();
+                $companyError = [ 'company' => 'Error, no se ha podido crear la compañia' ];
+                return $this->errorResponse( $companyError, 500 );
+            }
+        }
 
-        $companyFields = [
-            'name' => $request['name'],
-            'type_entity_id' => $request['type_entity_id'],
-            'nit' => $request['nit'],
-            'country_id' => $request['country_id'],
-            'web' => $request['web'],
-            'user_id' => $user['id']
-        ];
-        $company = Company::create( $companyFields );
-        // Si da error.
-        // $user->delete($user->id);
-
-        // 
+        // Aquí debe devolver el usuario con el TOKEN.
+        // Generar el correo de Verificación.
         return $this->showOne($user,201);
     }
 

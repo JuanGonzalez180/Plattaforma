@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\WebControllers\typesentity;
+namespace App\Http\Controllers\WebControllers\staticcontent;
 
-use App\Http\Controllers\Controller;
-use App\Models\Type;
-use App\Models\TypesEntity;
+use App\Models\StaticContent;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
-class TypesEntityController extends Controller
+class StaticContentController extends Controller
 {
     /**
      * Title sent in notification
      */
-    private $sectionTitle = 'Entity type';
+    private $sectionTitle = 'Static content';
 
     /**
      * Display a listing of the resource.
@@ -21,8 +20,8 @@ class TypesEntityController extends Controller
      */
     public function index()
     {
-        $typesEntity = TypesEntity::get();
-        return view('typesentity.index', compact('typesEntity'));
+        $staticContents = StaticContent::get();
+        return view('staticcontent.index', compact('staticContents'));
     }
 
     /**
@@ -32,9 +31,8 @@ class TypesEntityController extends Controller
      */
     public function create()
     {
-        $typeOptions = Type::get();
-        $typeEntity = new TypesEntity();
-        return view('typesentity.create', compact('typeOptions', 'typeEntity'));
+        $staticContent = new StaticContent();
+        return view('staticcontent.create', compact('staticContent'));
     }
     
     /**
@@ -46,12 +44,12 @@ class TypesEntityController extends Controller
     public function store(Request $request)
     {
         $requestValidated = $request->validate([
-            'name' => ['required'],
-            'type_id' => ['required'],
+            'title' => ['required'],
+            'content' => ['required'],
         ]);
             
-        TypesEntity::create( $requestValidated );
-        return redirect()->route('typesentity.index')->with([
+        StaticContent::create( $requestValidated );
+        return redirect()->route('staticcontent.index')->with([
             'status' => 'create',
             'title' => __( $this->sectionTitle ),
         ]);
@@ -60,31 +58,30 @@ class TypesEntityController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  StaticContent  $staticContent
      * @return \Illuminate\Http\Response
      */
-    public function edit(TypesEntity $typeEntity)
+    public function edit(StaticContent $staticContent)
     {
-        $typeOptions = Type::get();
-        return view('typesentity.edit', compact('typeOptions', 'typeEntity'));
+        return view('staticcontent.edit', compact('staticContent'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  StaticContent  $staticContent
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TypesEntity $typeEntity)
+    public function update(Request $request, StaticContent $staticContent)
     {
         $requestValidated = $request->validate([
-            'name' => ['required'],
-            'type_id' => ['required'],
+            'title' => ['required'],
+            'content' => ['required'],
         ]);
             
-        $typeEntity->update( $requestValidated );
-        return redirect()->route('typesentity.index')->with([
+        $staticContent->update( $requestValidated );
+        return redirect()->route('staticcontent.index')->with([
             'status' => 'edit',
             'title' => __( $this->sectionTitle ),
         ]);
@@ -96,10 +93,10 @@ class TypesEntityController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TypesEntity $typeEntity)
+    public function destroy(StaticContent $staticContent)
     {
-        $typeEntity->delete();
-        return redirect()->route('typesentity.index')->with([
+        $staticContent->delete();
+        return redirect()->route('staticcontent.index')->with([
             'status' => 'delete',
             'title' => __( $this->sectionTitle ),
         ]);

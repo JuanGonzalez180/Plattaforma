@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use ApiControllers\typesentity\TypesEntityController;
 use ApiControllers\company\CompanyController;
+use ApiControllers\staticcontent\StaticContentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -119,6 +120,11 @@ Route::get('/typesentity', TypesEntityController::class)->name('typesentity');
  * Company
  */
 Route::resource('company', CompanyController::class, ['only' => ['store']])->names('company');
+
+/**
+ * StaticContent
+ */
+Route::get('/staticcontent/{slug}', StaticContentController::class)->name('staticcontent');
 
 /**
  * User
