@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Blog;
-use App\Company;
+use App\Models\Blog;
+use App\Models\Company;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;

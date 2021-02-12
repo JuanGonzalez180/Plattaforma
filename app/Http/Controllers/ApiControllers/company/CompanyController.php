@@ -5,7 +5,9 @@ namespace App\Http\Controllers\ApiControllers\company;
 use App\Models\User;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use App\Mail\CreatedAccount;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ApiControllers\ApiController;
 use TaylorNetwork\UsernameGenerator\Generator;
 
@@ -37,7 +39,7 @@ class CompanyController extends ApiController
             'password' => 'required|min:6|confirmed',
             'terms' => 'required',
             'type_entity_id' => 'required',
-            'web' => 'required'
+            'web' => 'nullable|url'
         ];
 
         $this->validate( $request, $rules );
@@ -104,9 +106,11 @@ class CompanyController extends ApiController
                 return $this->errorResponse( $companyError, 500 );
             }
         }
+        
+        // Generar el correo de Verificación.
+        Mail::to($user->email)->send(new CreatedAccount( $company, $user ));
 
         // Aquí debe devolver el usuario con el TOKEN.
-        // Generar el correo de Verificación.
         return $this->showOne($user,201);
     }
 

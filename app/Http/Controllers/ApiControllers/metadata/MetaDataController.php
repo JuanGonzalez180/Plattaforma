@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\metadata;
 
-use App\Http\Controllers\ApiController;
+use App\Http\Controllers\ApiControllers\ApiController;
 use Illuminate\Http\Request;
 
 class MetaDataController extends ApiController

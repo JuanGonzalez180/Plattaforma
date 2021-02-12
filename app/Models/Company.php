@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use App\Addresses;
-use App\Blog;
-use App\Countries;
-use App\Files;
-use App\Interests;
-use App\MetaData;
-use App\Products;
-use App\Projects;
-use App\SocialNetworks;
-use App\TypesEntity;
-use App\User;
+use App\Models\Addresses;
+use App\Models\Blog;
+use App\Models\Countries;
+use App\Models\Files;
+use App\Models\Interests;
+use App\Models\MetaData;
+use App\Models\Products;
+use App\Models\Projects;
+use App\Models\SocialNetworks;
+use App\Models\TypesEntity;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -37,7 +37,7 @@ class Company extends Model
         'date_update'
     ];
 
-    public function entity(){
+    public function type_entity(){
         return $this->belongsTo(TypesEntity::class);
     }
 

@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use ApiControllers\typesentity\TypesEntityController;
 use ApiControllers\company\CompanyController;
 use ApiControllers\staticcontent\StaticContentController;
+// Password
+use ApiControllers\password\SendCodeController;
+use ApiControllers\password\CodeValidationController;
+use ApiControllers\password\ChangePasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,6 +124,13 @@ Route::get('/typesentity', TypesEntityController::class)->name('typesentity');
  * Company
  */
 Route::resource('company', CompanyController::class, ['only' => ['store']])->names('company');
+
+/**
+ * Password
+ */
+Route::resource('/password/sendcode', SendCodeController::class, ['only' => ['store']])->names('sendcode');
+Route::resource('/password/codevalidation', CodeValidationController::class, ['only' => ['store']])->names('codevalidation');
+Route::resource('/password/changepassword', ChangePasswordController::class, ['only' => ['store']])->names('changepassword');
 
 /**
  * StaticContent

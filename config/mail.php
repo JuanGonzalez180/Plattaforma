@@ -70,6 +70,10 @@ return [
         'array' => [
             'transport' => 'array',
         ],
+
+        'sendgrid' => [
+            'transport' => 'sendgrid',
+        ],
     ],
 
     /*
@@ -84,8 +88,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'hola@incdustry.com'),
+        'name' => env('MAIL_FROM_NAME', 'Plattaforma'),
     ],
 
     /*
