@@ -9,13 +9,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
     const USER_VERIFIED = '1';
     const USER_NO_VERIFIED = '0';
+
+    const USER_VALIDATED = '1';
+    const USER_NO_VALIDATED = '0';
 
     const USER_ADMIN = 'true';
     const USER_REGULAR = 'false';
@@ -33,6 +37,7 @@ class User extends Authenticatable
         'password',
         'verified',
         'verification_token',
+        'validated',
         'admin'
     ];
 
@@ -59,6 +64,16 @@ class User extends Authenticatable
         $this->attributes['email'] = strtolower($value);
     }
 
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -70,6 +85,10 @@ class User extends Authenticatable
 
     public function isVerified(){
         return $this->verified == User::USER_VERIFIED;
+    }
+
+    public function isValidated(){
+        return $this->validated == User::USER_VALIDATED;
     }
 
     public function isAdmin(){

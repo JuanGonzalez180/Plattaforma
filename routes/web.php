@@ -6,6 +6,7 @@ use WebControllers\category\CategoryController;
 use WebControllers\typeproject\TypeProjectController;
 use WebControllers\typesentity\TypesEntityController;
 use WebControllers\staticcontent\StaticContentController;
+use WebControllers\user\UsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,4 +52,14 @@ Route::resource('tipos-entidad', TypesEntityController::class)
 Route::resource('contenido-estatico', StaticContentController::class)
         ->names('staticcontent')
         ->parameters(['contenido-estatico' => 'staticContent'])
+        ->middleware('auth');
+
+// Usuarios
+Route::resource('usuarios', UsersController::class, ['only' => ['index', 'edit']])
+        ->names('users')
+        ->parameters(['usuarios' => 'user'])
+        ->middleware('auth');
+
+Route::post('usuarios',[App\Http\Controllers\WebControllers\user\UsersController::class, 'approve'])
+        ->name('users.approve')
         ->middleware('auth');

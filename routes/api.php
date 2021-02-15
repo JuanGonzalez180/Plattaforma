@@ -9,6 +9,7 @@ use ApiControllers\staticcontent\StaticContentController;
 use ApiControllers\password\SendCodeController;
 use ApiControllers\password\CodeValidationController;
 use ApiControllers\password\ChangePasswordController;
+use App\Http\Controllers\ApiControllers\user\UsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -123,7 +124,7 @@ Route::get('/typesentity', TypesEntityController::class)->name('typesentity');
 /**
  * Company
  */
-Route::resource('company', CompanyController::class, ['only' => ['store']])->names('company');
+Route::resource('/company', CompanyController::class, ['only' => ['store']])->names('company');
 
 /**
  * Password
@@ -136,6 +137,15 @@ Route::resource('/password/changepassword', ChangePasswordController::class, ['o
  * StaticContent
  */
 Route::get('/staticcontent/{slug}', StaticContentController::class)->name('staticcontent');
+
+/**
+ * User Login
+ */
+// Route::resource('/login', [UsersController::class, 'authenticate'], ['only' => ['authenticate']])->names('signin');
+Route::post('/login', [UsersController::class, 'authenticate'])->name('signin');
+Route::group(['middleware' => ['jwt.verify']], function() {
+    Route::post('user',[UsersController::class, 'getAuthenticatedUser'])->name('user');
+});
 
 /**
  * User

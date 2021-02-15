@@ -17,7 +17,8 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^3.2",
         "s-ichikawa/laravel-sendgrid-driver": "^3.0",
-        "taylornetwork/laravel-username-generator": "^2.5"
+        "taylornetwork/laravel-username-generator": "^2.5",
+        "tymon/jwt-auth": "dev-develop"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",
