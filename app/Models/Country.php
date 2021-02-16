@@ -12,8 +12,7 @@ class Countries extends Model
 
     protected $fillable = [
         'name',
-        'date',
-        'date_update'
+        'alpha2Code'
     ];
 
     public function company(){
