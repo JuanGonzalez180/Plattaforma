@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Models\Addresses;
 use App\Models\Blog;
-use App\Models\Countries;
+use App\Models\Country;
 use App\Models\Files;
 use App\Models\Interests;
 use App\Models\MetaData;
@@ -28,7 +28,7 @@ class Company extends Model
         'name',
         'type_entity_id',
         'nit',
-        'country_id',
+        'country_code',
         'web',
         'image',
         'status',
@@ -39,10 +39,6 @@ class Company extends Model
 
     public function type_entity(){
         return $this->belongsTo(TypesEntity::class);
-    }
-
-    public function country(){
-        return $this->belongsTo(Countries::class);
     }
 
     public function user(){
@@ -79,5 +75,10 @@ class Company extends Model
 
     public function socialNetworks(){
         return $this->belongsToMany(SocialNetworks::class);
+    }
+
+    //Relacion Muchos a Muchos
+    public function countries(){
+        return $this->belongsToMany(Country::class);
     }
 }

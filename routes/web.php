@@ -6,6 +6,7 @@ use WebControllers\category\CategoryController;
 use WebControllers\typeproject\TypeProjectController;
 use WebControllers\typesentity\TypesEntityController;
 use WebControllers\staticcontent\StaticContentController;
+use WebControllers\country\CountryController;
 use WebControllers\user\UsersController;
 
 /*
@@ -52,6 +53,12 @@ Route::resource('tipos-entidad', TypesEntityController::class)
 Route::resource('contenido-estatico', StaticContentController::class)
         ->names('staticcontent')
         ->parameters(['contenido-estatico' => 'staticContent'])
+        ->middleware('auth');
+
+// Paises
+Route::resource('paises', CountryController::class)
+        ->names('countries')
+        ->parameters(['paises' => 'country'])
         ->middleware('auth');
 
 // Usuarios

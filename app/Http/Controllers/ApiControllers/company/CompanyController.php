@@ -32,7 +32,7 @@ class CompanyController extends ApiController
     {
         //
         $rules = [
-            'country_id' => 'required',
+            'country_code' => 'required',
             'email' => 'required|email|unique:users',
             'name' => 'required',
             'nit' => 'required|numeric',
@@ -91,7 +91,7 @@ class CompanyController extends ApiController
                 'name' => $request['name'],
                 'type_entity_id' => $request['type_entity_id'],
                 'nit' => $request['nit'],
-                'country_id' => $request['country_id'],
+                'country_code' => $request['country_code'],
                 'web' => $request['web'],
                 'user_id' => $user['id']
             ];

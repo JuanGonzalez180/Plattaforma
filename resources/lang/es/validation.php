@@ -183,5 +183,6 @@ return [
         'title'                 => 'título',
         'username'              => 'usuario',
         'year'                  => 'año',
+        'alpha2Code'            => 'código',
     ],
 ];
