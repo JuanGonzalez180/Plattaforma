@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use ApiControllers\typesentity\TypesEntityController;
 use ApiControllers\company\CompanyController;
 use ApiControllers\staticcontent\StaticContentController;
+use ApiControllers\country\CountryController;
 // Password
 use ApiControllers\password\SendCodeController;
 use ApiControllers\password\CodeValidationController;
@@ -120,6 +121,11 @@ use App\Http\Controllers\ApiControllers\user\UsersController;
  * TypesEntity
  */
 Route::get('/typesentity', TypesEntityController::class)->name('typesentity');
+
+/**
+ * Country
+ */
+Route::get('/country', CountryController::class)->name('country');
 
 /**
  * Company

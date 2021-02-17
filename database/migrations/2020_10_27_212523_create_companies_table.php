@@ -19,7 +19,7 @@ class CreateCompaniesTable extends Migration
 
             $table->string('name');
             $table->bigInteger('type_entity_id')->unsigned();
-            $table->integer('nit')->unsigned();
+            $table->integer('nit')->nullable()->unsigned();
             $table->string('country_code');
             $table->string('web')->nullable();
             $table->string('image')->nullable();
