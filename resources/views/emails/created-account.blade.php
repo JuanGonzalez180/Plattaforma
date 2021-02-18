@@ -4,7 +4,7 @@
         Gracias por registrarse! 
         <br>
     </div>
-    @if ($entity->id == 1 )
+    @if ($entity == 'demanda' )
         <div style="padding: 10px 0; font-size: 16px; text-align: center; line-height: 1.3;">
             Estamos validando la información suministrada, si todos los datos son correctos en menos de <b>48 horas</b> tendrás acceso a Plattaforma
         </div>

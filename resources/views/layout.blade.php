@@ -72,6 +72,12 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('countries.index') }}">
+                                        <span data-feather="file"></span>
+                                        Paises
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" href="{{ route('typesentity.index') }}">
                                         <span data-feather="file"></span>
                                         Tipos de Entidad

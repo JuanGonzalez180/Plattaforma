@@ -9,6 +9,7 @@ use App\Mail\CreatedAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ApiControllers\ApiController;
+use App\Models\TypesEntity;
 use TaylorNetwork\UsernameGenerator\Generator;
 
 class CompanyController extends ApiController
@@ -32,10 +33,10 @@ class CompanyController extends ApiController
     {
         //
         $rules = [
-            'country_id' => 'required',
+            'country_code' => 'required',
             'email' => 'required|email|unique:users',
-            'name' => 'required',
-            'nit' => 'required|numeric',
+            'name' => 'required|alpha_num',
+            'nit' => 'nullable|numeric',
             'password' => 'required|min:6|confirmed',
             'terms' => 'required',
             'type_entity_id' => 'required',
@@ -43,6 +44,25 @@ class CompanyController extends ApiController
         ];
 
         $this->validate( $request, $rules );
+
+        // Traer los tipos registrados
+        $type = TypesEntity::find( $request['type_entity_id'] );
+
+        //Verificar que este registrado y adicionar otras validaciones
+        $errors = [];
+        if ( $type['type']['slug'] == 'demanda' ) {
+
+            if ( !$request['nit'] )
+                $errors['nit'] = 'El campo nit es obligatorio';
+
+            if ( !$request['web'] )
+                $errors['web'] = 'El campo web es obligatorio';
+
+        }
+
+        //Verificar si existen errores
+        if ( !empty( $errors ) )
+            return $this->errorResponse( $errors, 500 );
 
         // Generar Username y Validar que no exista en BD
         // Armar username Parametro $userFields['username']
@@ -91,7 +111,7 @@ class CompanyController extends ApiController
                 'name' => $request['name'],
                 'type_entity_id' => $request['type_entity_id'],
                 'nit' => $request['nit'],
-                'country_id' => $request['country_id'],
+                'country_code' => $request['country_code'],
                 'web' => $request['web'],
                 'user_id' => $user['id']
             ];
@@ -109,7 +129,7 @@ class CompanyController extends ApiController
         }
         
         // Generar el correo de Verificación.
-        Mail::to($user->email)->send(new CreatedAccount( $company, $user ));
+        Mail::to($user->email)->send(new CreatedAccount( $company, $user, $type['type']['slug'] ));
 
         // Aquí debe devolver el usuario con el TOKEN.
         return $this->showOne($user,201);
