@@ -19,7 +19,7 @@ class UsersController extends ApiController
             // 7 días
             JWTAuth::factory()->setTTL( 60 * 24 * 7 );
             if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 400);
+                return response()->json(['error' => 'invalid_credentials'], 401);
             }
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token'], 500);

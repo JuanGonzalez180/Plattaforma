@@ -54,7 +54,7 @@ class CompanyController extends ApiController
             // 1ra vez
             $username = $generator->generate( $usernameCreated );
             $userExist = DB::table('users')->where('username', $username)->first();
-            if( !$userExist ){
+            if( $username && !$userExist ){
                 $userFields['username'] = $username;
             }elseif($i==0){
                 // 2ra vez
@@ -68,7 +68,7 @@ class CompanyController extends ApiController
         $userFields['email'] = strtolower($request['email']);
         $userFields['password'] = bcrypt( $request->password );
         $userFields['verified'] = User::USER_NO_VERIFIED;
-        $userFields['validated'] = User::USER_NO_VALIDATED;
+        // $userFields['validated'] = User::USER_NO_VALIDATED;
         $userFields['verification_token'] = User::generateVerificationToken();
         $userFields['admin'] = User::USER_REGULAR;
 
