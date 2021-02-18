@@ -33,7 +33,9 @@ class CompanyController extends ApiController
     {
         //
         $rules = [
+            // Country https://restcountries.eu/
             'country_code' => 'required',
+            'country_backend' => 'required',
             'email' => 'required|email|unique:users',
             'name' => 'required|alpha_num',
             'nit' => 'nullable|numeric',
@@ -119,6 +121,10 @@ class CompanyController extends ApiController
             try {
                 // Crear la compañia
                 $company = Company::create( $companyFields );
+
+                // Ingresar País en una Compañía
+                $company->countries()->attach($request['country_backend']);
+
                 DB::commit();
             } catch (\Throwable $th) {
                 // Si existe algún error al generar la compañía
