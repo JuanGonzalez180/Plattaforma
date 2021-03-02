@@ -21,10 +21,12 @@ class UsersController extends ApiController
             if (! $token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'invalid_credentials'], 401);
             }
+            $user = User::where('email', $request['email'])->first();
+            $user->image;
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
-        return response()->json(compact('token'));
+        return response()->json(compact('token','user'));
     }
 
     public function getAuthenticatedUser()

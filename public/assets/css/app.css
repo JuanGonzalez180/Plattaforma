@@ -261,3 +261,7 @@ form label{
     margin-top: -2px;
     margin-right: 10px;
 }
+
+.bg-login img{
+    max-width: 300px;
+}

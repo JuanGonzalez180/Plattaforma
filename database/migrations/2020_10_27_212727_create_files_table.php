@@ -22,6 +22,8 @@ class CreateFilesTable extends Migration
             $table->string('extension');
             $table->string('date');
             $table->string('date_update');
+
+
             $table->timestamps();
         });
     }

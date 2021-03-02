@@ -10,6 +10,10 @@ use ApiControllers\country\CountryController;
 use ApiControllers\password\SendCodeController;
 use ApiControllers\password\CodeValidationController;
 use ApiControllers\password\ChangePasswordController;
+
+use ApiControllers\myaccount\AccountEditController;
+use ApiControllers\myaccount\AccountChangePasswordController;
+
 use App\Http\Controllers\ApiControllers\user\UsersController;
 
 /*
@@ -151,6 +155,12 @@ Route::get('/staticcontent/{slug}', StaticContentController::class)->name('stati
 Route::post('/login', [UsersController::class, 'authenticate'])->name('signin');
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('user',[UsersController::class, 'getAuthenticatedUser'])->name('user');
+
+    /**
+     * My Account
+     */
+    Route::resource('/myaccount/changepassword', AccountChangePasswordController::class, ['only' => ['store']])->names('changepassword');
+    Route::resource('/myaccount/accountedit', AccountEditController::class, ['only' => ['store']])->names('accountedit');
 });
 
 /**

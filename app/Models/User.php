@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Blog;
+use App\Models\Image;
 use App\Models\Company;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -47,6 +48,8 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
+        'code',
+        'code_time',
         'password',
         'remember_token',
         'verification_token',
@@ -105,5 +108,10 @@ class User extends Authenticatable implements JWTSubject
 
     public function company(){
         return $this->hasMany(Company::class);
+    }
+
+    // Relacion uno a uno polimorfica
+    public function image(){
+        return $this->morphOne(Image::class, 'imageable');
     }
 }
