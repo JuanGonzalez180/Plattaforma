@@ -30,11 +30,18 @@ class Company extends Model
         'nit',
         'country_code',
         'web',
-        'image',
+        'status',
+        'user_id'
+    ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
         'status',
         'user_id',
-        'date',
-        'date_update'
     ];
 
     public function type_entity(){
@@ -80,5 +87,10 @@ class Company extends Model
     //Relacion Muchos a Muchos
     public function countries(){
         return $this->belongsToMany(Country::class);
+    }
+
+    // Relacion uno a uno polimorfica
+    public function image(){
+        return $this->morphOne(Image::class, 'imageable');
     }
 }

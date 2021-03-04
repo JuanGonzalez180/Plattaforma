@@ -22,11 +22,8 @@ class CreateCompaniesTable extends Migration
             $table->integer('nit')->nullable()->unsigned();
             $table->string('country_code');
             $table->string('web')->nullable();
-            $table->string('image')->nullable();
             $table->string('status')->default(Company::COMPANY_CREATED);
             $table->bigInteger('user_id')->unsigned();
-            $table->string('date')->nullable();
-            $table->string('date_update')->nullable();
             $table->timestamps();
 
         });

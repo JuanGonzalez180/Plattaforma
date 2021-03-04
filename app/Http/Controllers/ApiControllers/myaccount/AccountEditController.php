@@ -12,6 +12,8 @@ use App\Http\Controllers\ApiControllers\ApiController;
 class AccountEditController extends ApiController
 {
     //
+    public $routeFile = 'public/';
+
     public function store(Request $request)
     {
         try {
@@ -46,14 +48,14 @@ class AccountEditController extends ApiController
             $img = $request->image;
             $img = substr($img, strpos($img, ",")+1);
             $data = base64_decode($img);
-
+            
             $routeFile = 'images/users/'.$user->id.'/'.$png_url;
-            Storage::disk('local')->put($routeFile, $data);
+            Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
 
-            if( !$user->image )
+            if( !$user->image ){
                 $user->image()->create(['url' => $routeFile]);
-            else{
-                Storage::disk('local')->delete($user->image->url);
+            }else{
+                Storage::disk('local')->delete( $this->routeFile . $user->image->url );
                 $user->image()->update(['url' => $routeFile]);
             }
         }

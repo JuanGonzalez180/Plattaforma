@@ -13,6 +13,7 @@ use ApiControllers\password\ChangePasswordController;
 
 use ApiControllers\myaccount\AccountEditController;
 use ApiControllers\myaccount\AccountChangePasswordController;
+use ApiControllers\myaccount\AccountMyCompanyController;
 
 use App\Http\Controllers\ApiControllers\user\UsersController;
 
@@ -161,6 +162,8 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      */
     Route::resource('/myaccount/changepassword', AccountChangePasswordController::class, ['only' => ['store']])->names('changepassword');
     Route::resource('/myaccount/accountedit', AccountEditController::class, ['only' => ['store']])->names('accountedit');
+    Route::get('/myaccount/mycompany', AccountMyCompanyController::class)->name('mycompany');
+    Route::resource('/myaccount/mycompany', AccountMyCompanyController::class, ['only' => ['store']])->names('mycompany');
 });
 
 /**
