@@ -37,7 +37,7 @@ class CompanyController extends ApiController
             'country_code' => 'required',
             'country_backend' => 'required',
             'email' => 'required|email|unique:users',
-            'name' => 'required|alpha_num',
+            'name' => ['required', 'regex:/^[a-zA-Z\s]*$/'],
             'nit' => 'nullable|numeric',
             'password' => 'required|min:6|confirmed',
             'terms' => 'required',
@@ -55,10 +55,10 @@ class CompanyController extends ApiController
         if ( $type['type']['slug'] == 'demanda' ) {
 
             if ( !$request['nit'] )
-                $errors['nit'] = 'El campo nit es obligatorio';
+                $errors['nit'] = ['El campo nit es obligatorio'];
 
             if ( !$request['web'] )
-                $errors['web'] = 'El campo web es obligatorio';
+                $errors['web'] = ['El campo web es obligatorio'];
 
         }
 

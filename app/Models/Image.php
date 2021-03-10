@@ -10,6 +10,8 @@ class Image extends Model
     protected $guarded = [];
     
     protected $fillable = [
+        'imageable_id',
+        'imageable_type',
         'url'
     ];
 

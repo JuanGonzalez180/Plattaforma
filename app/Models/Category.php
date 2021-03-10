@@ -18,12 +18,8 @@ class Category extends Model
     protected $fillable = [
         'name',
         'description',
-        'icon',
-        'image',
         'parent_id',
-        'status',
-        'date',
-        'date_update'
+        'status'
     ];
 
     public function isPublish(){
@@ -44,5 +40,10 @@ class Category extends Model
 
     public function products(){
         return $this->belongsToMany(Products::class);
+    }
+    
+    // Relacion uno a uno polimorfica
+    public function image(){
+        return $this->morphOne(Image::class, 'imageable');
     }
 }

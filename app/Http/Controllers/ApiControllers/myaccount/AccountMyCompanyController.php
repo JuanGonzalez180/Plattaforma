@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ApiControllers\myaccount;
 
 use JWTAuth;
 use App\Models\User;
+use App\Models\Image;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -39,13 +40,20 @@ class AccountMyCompanyController extends ApiController
         $user = $this->validateUser();
         if( $user ){
             if( $user->company ){
-                $user->company[0]->image;
-                return $this->showOne($user->company[0],200);    
+                try{
+                    $company = $user->company[0];
+                    $company->image;
+                    $imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
+                    $company->imageCoverPage = $imageCoverPage;
+                    return $this->showOne($company,200);
+                } catch (\Throwable $th) {
+
+                }
             }
             return $this->showOne($user,200);
         }
 
-        $error =  [ 'user' => ['Ha ocurrido un error al obtener el usuario']];
+        $error =  [ 'company' => ['Ha ocurrido un error al obtener la compañia']];
         return $this->errorResponse( $error, 500 );
     }
 
@@ -55,7 +63,7 @@ class AccountMyCompanyController extends ApiController
         $user = $this->validateUser();
         if( $user ){
             $rules = [
-                'name' => 'required|alpha_num',
+                'name' => ['required', 'regex:/^[a-zA-Z\s]*$/'],
                 'nit' => 'nullable|numeric',
                 'country_code' => 'required',
                 'web' => 'nullable|url',
@@ -86,10 +94,30 @@ class AccountMyCompanyController extends ApiController
                 }
             }
 
+            if( $request->imageCoverPage ){
+                $png_url = "company-coverpage-".time().".jpg";
+                $img = $request->imageCoverPage;
+                $img = substr($img, strpos($img, ",")+1);
+                $data = base64_decode($img);
+                
+                $routeFile = 'images/company/'.$company->id.'/'.$png_url;
+                Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
+
+                // $imageCoverPage = Image::create(['url' => $routeFile, 'imageable_id' => $company->id, 'imageable_type' => 'App\Models\Company\CoverPage']);
+                $imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
+                if( !$imageCoverPage ){
+                    $imageCoverPage = Image::create(['url' => $routeFile, 'imageable_id' => $company->id, 'imageable_type' => 'App\Models\Company\CoverPage']);
+                }else{
+                    Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->update(['url' => $routeFile]);
+                    Storage::disk('local')->delete( $this->routeFile . $imageCoverPage->url );
+                }
+            }
+
             // Guardar
             $company->save();
             // ReSearch User
             $companyNew = Company::findOrFail($company->id);
+            $companyNew->imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
             $companyNew->image;
 
             return $this->showOne($companyNew,200);

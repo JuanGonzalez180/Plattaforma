@@ -40,4 +40,9 @@ class TypeProject extends Model
     public function projects(){
         return $this->belongsToMany(Projects::class);
     }
+
+    // Relacion uno a uno polimorfica
+    public function image(){
+        return $this->morphOne(Image::class, 'imageable');
+    }
 }

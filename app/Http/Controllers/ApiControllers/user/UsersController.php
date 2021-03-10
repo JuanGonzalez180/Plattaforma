@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\user;
 
 use App\Models\User;
+use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiControllers\ApiController;
 use Illuminate\Support\Facades\Hash;
@@ -19,12 +20,21 @@ class UsersController extends ApiController
             // 7 días
             JWTAuth::factory()->setTTL( 60 * 24 * 7 );
             if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 401);
+                return $this->errorResponse( [ 'error' => ['invalid_credentials']], 401 );
             }
             $user = User::where('email', $request['email'])->first();
+            // Validar Usuario.
+            if( $user->company && $user->company[0] ){
+                $company = $user->company[0];
+                if( $company->status !== Company::COMPANY_APPROVED && $company->type_entity->type->slug == 'demanda' ){
+                    return $this->errorResponse( [ 'not_approved_a' => ['not_approved']], 500 );
+                }elseif( $company->status !== Company::COMPANY_APPROVED){
+                    return $this->errorResponse( [ 'not_approved_b' => ['not_approved']], 500 );
+                }
+            }
             $user->image;
         } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token'], 500);
+            return $this->errorResponse( [ 'error' => ['could_not_create_token']], 500 );
         }
         return response()->json(compact('token','user'));
     }
