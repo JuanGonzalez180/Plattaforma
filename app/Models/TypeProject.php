@@ -17,12 +17,8 @@ class TypeProject extends Model
     protected $fillable = [
         'name',
         'description',
-        'icon',
-        'image',
         'parent_id',
-        'status',
-        'date',
-        'date_update'
+        'status'
     ];
 
     public function isPublish(){

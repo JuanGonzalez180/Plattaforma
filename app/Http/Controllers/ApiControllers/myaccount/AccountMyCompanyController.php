@@ -76,6 +76,8 @@ class AccountMyCompanyController extends ApiController
             $company->nit = $request->nit;
             $company->country_code = $request->country_code;
             $company->web = $request->web;
+            $company->map_lat = $request->latitud;
+            $company->map_lng = $request->longitud;
 
             if( $request->image ){
                 $png_url = "company-".time().".jpg";

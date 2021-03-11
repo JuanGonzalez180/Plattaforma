@@ -13,6 +13,7 @@ class CategoryController extends Controller
 {
     public $routeFile = 'public/';
     public $routeFileBD = 'images/categories/';
+    public $modelIcon = 'App\Models\Category\Icon';
 
     /**
      * Display a listing of the resource.
@@ -72,7 +73,7 @@ class CategoryController extends Controller
             $iconName = $iconName . '-icon-' . uniqid().'.'.$request->icon->extension();
             $request->icon->storeAs( $this->routeFile.$this->routeFileBD, $iconName);
 
-            Image::create(['url' => $this->routeFileBD.$iconName, 'imageable_id' => $category->id, 'imageable_type' => 'App\Models\Category\Icon']);
+            Image::create(['url' => $this->routeFileBD.$iconName, 'imageable_id' => $category->id, 'imageable_type' => $this->modelIcon]);
         }
 
         return redirect()->route('category.index')->with('success', 'Categoría creada satisfactoriamente');
@@ -99,6 +100,7 @@ class CategoryController extends Controller
     {
         //
         $category = Category::findOrFail($id);
+        $category->icon = Image::where('imageable_id', $category->id)->where('imageable_type', $this->modelIcon)->first();
         $categoryOptions = Category::get();
         return view('category.edit', compact('category', 'categoryOptions'));
     }
@@ -136,6 +138,20 @@ class CategoryController extends Controller
             $category->save();
         }
 
+        if( $request->icon ){
+            $iconName = $generator->generate( $request->name );
+            $iconName = $iconName . '-icon-' . uniqid().'.'.$request->icon->extension();
+
+            $imageIcon = Image::where('imageable_id', $category->id)->where('imageable_type', $this->modelIcon)->first();
+            if( !$imageIcon ){
+                Image::create(['url' => $this->routeFileBD.$iconName, 'imageable_id' => $category->id, 'imageable_type' => $this->modelIcon]);
+            }else{
+                Image::where('imageable_id', $category->id)->where('imageable_type', $this->modelIcon)->update(['url' => $this->routeFileBD.$iconName]);
+                Storage::disk('local')->delete( $this->routeFile . $imageIcon->url );
+            }
+            $request->icon->storeAs( $this->routeFile.$this->routeFileBD, $iconName);
+        }
+
         return redirect()->route('category.index');
     }
 
@@ -148,7 +164,23 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         //
-        Category::find($id)->delete();
+        $category = Category::find($id);
+        // Delete Icon
+        $imageIcon = Image::where('imageable_id', $category->id)->where('imageable_type', $this->modelIcon)->first();
+        if($imageIcon){
+            Storage::disk('local')->delete( $this->routeFile . $imageIcon->url );
+            Image::where('imageable_id', $category->id)->where('imageable_type', $this->modelIcon)->delete();
+        }
+
+        // Delete Image
+        if( $category->image ){
+            Storage::disk('local')->delete( $this->routeFile . $category->image->url );
+            Image::where('imageable_id', $category->id)->where('imageable_type', TypeProject::class)->delete();
+        }
+        
+        // Delete Type Project
+        $category->delete();
+
         return redirect()->route('category.index')->with('success', 'Categoría eliminada satisfactoriamente');
     }
 }

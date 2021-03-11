@@ -2,12 +2,20 @@
 
 namespace App\Http\Controllers\WebControllers\typeproject;
 
-use App\Http\Controllers\Controller;
+
+use App\Models\Image;
 use App\Models\TypeProject;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use TaylorNetwork\UsernameGenerator\Generator;
 
 class TypeProjectController extends Controller
 {
+    public $routeFile = 'public/';
+    public $routeFileBD = 'images/typeprojects/';
+    public $modelIcon = 'App\Models\TypeProject\Icon';
+
     /**
      * Display a listing of the resource.
      *
@@ -43,13 +51,30 @@ class TypeProjectController extends Controller
         //
         $rules = [
             'name' => 'required',
-            'description' => 'required'
+            'description' => 'required',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
 
         $this->validate( $request, $rules );
 
         $fields = $request->all();
-        TypeProject::create( $fields );
+        $typeproject = TypeProject::create( $fields );
+
+        $generator = new Generator();
+        if( $request->image ){
+            $imageName = $generator->generate( $request->name );
+            $imageName = $imageName . '-' . uniqid().'.'.$request->image->extension();
+            $request->image->storeAs( $this->routeFile.$this->routeFileBD, $imageName);
+            $typeproject->image()->create(['url' => $this->routeFileBD.$imageName ]);
+        }
+
+        if( $request->icon ){
+            $iconName = $generator->generate( $request->name );
+            $iconName = $iconName . '-icon-' . uniqid().'.'.$request->icon->extension();
+            $request->icon->storeAs( $this->routeFile.$this->routeFileBD, $iconName);
+
+            Image::create(['url' => $this->routeFileBD.$iconName, 'imageable_id' => $typeproject->id, 'imageable_type' => $this->modelIcon]);
+        }
 
         return redirect()->route('typeproject.index')->with('success', 'Tipo de proyecto creado satisfactoriamente');
     }
@@ -75,6 +100,7 @@ class TypeProjectController extends Controller
     {
         //
         $typeproject = TypeProject::findOrFail($id);
+        $typeproject->icon = Image::where('imageable_id', $typeproject->id)->where('imageable_type', $this->modelIcon)->first();
         $typeProjectOptions = TypeProject::get();
         return view('typeproject.edit', compact('typeproject', 'typeProjectOptions'));
     }
@@ -100,6 +126,31 @@ class TypeProjectController extends Controller
         $typeproject = TypeProject::findOrFail($id);
         $typeproject->update( $fields );
 
+        $generator = new Generator();
+        if( $request->image ){
+            $imageName = $generator->generate( $request->name );
+            $imageName = $imageName . '-' . uniqid().'.'.$request->image->extension();
+            
+            Storage::disk('local')->delete( $this->routeFile . $typeproject->image->url );
+            $request->image->storeAs( $this->routeFile.$this->routeFileBD, $imageName);
+            $typeproject->image()->update(['url' => $this->routeFileBD.$imageName ]);
+            $typeproject->save();
+        }
+
+        if( $request->icon ){
+            $iconName = $generator->generate( $request->name );
+            $iconName = $iconName . '-icon-' . uniqid().'.'.$request->icon->extension();
+
+            $imageIcon = Image::where('imageable_id', $typeproject->id)->where('imageable_type', $this->modelIcon)->first();
+            if( !$imageIcon ){
+                Image::create(['url' => $this->routeFileBD.$iconName, 'imageable_id' => $typeproject->id, 'imageable_type' => $this->modelIcon]);
+            }else{
+                Image::where('imageable_id', $typeproject->id)->where('imageable_type', $this->modelIcon)->update(['url' => $this->routeFileBD.$iconName]);
+                Storage::disk('local')->delete( $this->routeFile . $imageIcon->url );
+            }
+            $request->icon->storeAs( $this->routeFile.$this->routeFileBD, $iconName);
+        }
+
         return redirect()->route('typeproject.index');
     }
 
@@ -112,7 +163,24 @@ class TypeProjectController extends Controller
     public function destroy($id)
     {
         //
-        TypeProject::find($id)->delete();
+        $typeproject = TypeProject::find($id);
+        
+        // Delete Icon
+        $imageIcon = Image::where('imageable_id', $typeproject->id)->where('imageable_type', $this->modelIcon)->first();
+        if( $imageIcon ){
+            Storage::disk('local')->delete( $this->routeFile . $imageIcon->url );
+            Image::where('imageable_id', $typeproject->id)->where('imageable_type', $this->modelIcon)->delete();
+        }
+
+        // Delete Image
+        if( $typeproject->image ){
+            Storage::disk('local')->delete( $this->routeFile . $typeproject->image->url );
+            Image::where('imageable_id', $typeproject->id)->where('imageable_type', TypeProject::class)->delete();
+        }
+        
+        // Delete Type Project
+        $typeproject->delete();
+
         return redirect()->route('typeproject.index')->with('success', 'Tipo de proyecto eliminada satisfactoriamente');
     }
 }

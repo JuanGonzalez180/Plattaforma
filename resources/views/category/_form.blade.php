@@ -96,9 +96,3 @@ $(document).ready(function (e) {
    });
 }); 
 </script>
-
-
-<!--div class="form-group col-md-12 col-form-label">
-    <label for="profile_image" class="text-md-right">Imagen de la categoría</label>
-    <input id="profile_image" type="file" class="form-control" name="profile_image">
-</div-->

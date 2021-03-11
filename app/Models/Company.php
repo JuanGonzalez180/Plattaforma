@@ -31,6 +31,9 @@ class Company extends Model
         'country_code',
         'web',
         'status',
+        'map_lat',
+        'map_lng',
+        'map_zoom',
         'user_id'
     ];
 

@@ -19,12 +19,8 @@ class CreateTypeProjectsTable extends Migration
             
             $table->string('name');
             $table->string('description', 1000);
-            $table->string('icon')->nullable();
-            $table->string('image')->nullable();
             $table->bigInteger('parent_id')->nullable()->unsigned();
             $table->string('status')->default(TypeProject::TYPEPROJECT_ERASER);
-            $table->string('date')->nullable();
-            $table->string('date_update')->nullable();
             $table->timestamps();
         });
     }
