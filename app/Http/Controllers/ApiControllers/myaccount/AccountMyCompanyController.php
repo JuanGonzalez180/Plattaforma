@@ -38,6 +38,7 @@ class AccountMyCompanyController extends ApiController
     {
         //
         $user = $this->validateUser();
+
         if( $user ){
             if( $user->company ){
                 try{

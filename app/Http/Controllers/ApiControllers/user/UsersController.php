@@ -32,6 +32,7 @@ class UsersController extends ApiController
                     return $this->errorResponse( [ 'not_approved_b' => ['not_approved']], 500 );
                 }
             }
+
             $user->image;
         } catch (JWTException $e) {
             return $this->errorResponse( [ 'error' => ['could_not_create_token']], 500 );

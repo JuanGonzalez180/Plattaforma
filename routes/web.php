@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\WebControllers\HomeController;
+use WebControllers\user\UsersController;
+use WebControllers\country\CountryController;
 use WebControllers\category\CategoryController;
 use WebControllers\typeproject\TypeProjectController;
 use WebControllers\typesentity\TypesEntityController;
+use App\Http\Controllers\WebControllers\HomeController;
 use WebControllers\staticcontent\StaticContentController;
-use WebControllers\country\CountryController;
-use WebControllers\user\UsersController;
+use WebControllers\socialNetworks\SocialNetworksController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +60,12 @@ Route::resource('contenido-estatico', StaticContentController::class)
 Route::resource('paises', CountryController::class)
         ->names('countries')
         ->parameters(['paises' => 'country'])
+        ->middleware('auth');
+
+// Categorías
+Route::resource('redessociales', SocialNetworksController::class)
+        ->names('socialnetwork')
+        ->parameters(['redessociales' => 'socialnetwork'])
         ->middleware('auth');
 
 // Usuarios

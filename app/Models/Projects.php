@@ -66,7 +66,7 @@ class Projects extends Model
         return $this->belongsToMany(TypeProject::class);
     }
 
-    public function socialNetworks(){
+    /*public function socialNetworks(){
         return $this->belongsToMany(SocialNetworks::class);
-    }
+    }*/
 }

@@ -131,9 +131,13 @@ class TypeProjectController extends Controller
             $imageName = $generator->generate( $request->name );
             $imageName = $imageName . '-' . uniqid().'.'.$request->image->extension();
             
-            Storage::disk('local')->delete( $this->routeFile . $typeproject->image->url );
+            if( $typeproject->image ){
+                Storage::disk('local')->delete( $this->routeFile . $typeproject->image->url );
+                $typeproject->image()->update(['url' => $this->routeFileBD.$imageName ]);
+            }else{
+                $typeproject->image()->create(['url' => $this->routeFileBD.$imageName ]);
+            }
             $request->image->storeAs( $this->routeFile.$this->routeFileBD, $imageName);
-            $typeproject->image()->update(['url' => $this->routeFileBD.$imageName ]);
             $typeproject->save();
         }
 

@@ -96,6 +96,12 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('socialnetwork.index') }}">
+                                        <span data-feather="file"></span>
+                                        Redes Sociales
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" href="{{ route('staticcontent.index') }}">
                                         <span data-feather="file"></span>
                                         Contenido estático

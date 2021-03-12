@@ -83,9 +83,9 @@ class Company extends Model
         return $this->hasMany(MetaData::class);
     }
 
-    public function socialNetworks(){
+    /*public function socialNetworks(){
         return $this->belongsToMany(SocialNetworks::class);
-    }
+    }*/
 
     //Relacion Muchos a Muchos
     public function countries(){

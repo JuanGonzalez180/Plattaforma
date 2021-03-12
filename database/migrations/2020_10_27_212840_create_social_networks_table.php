@@ -17,7 +17,6 @@ class CreateSocialNetworksTable extends Migration
         Schema::create('social_networks', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('icono');
             $table->string('status')->default(SocialNetworks::SOCIAL_ERASER);
             $table->timestamps();
         });
