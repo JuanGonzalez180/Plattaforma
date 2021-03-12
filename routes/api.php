@@ -6,6 +6,7 @@ use ApiControllers\typesentity\TypesEntityController;
 use ApiControllers\company\CompanyController;
 use ApiControllers\staticcontent\StaticContentController;
 use ApiControllers\country\CountryController;
+use ApiControllers\socialnetworks\SocialNetworksController;
 // Password
 use ApiControllers\password\SendCodeController;
 use ApiControllers\password\CodeValidationController;
@@ -131,6 +132,11 @@ Route::get('/typesentity', TypesEntityController::class)->name('typesentity');
  * Country
  */
 Route::get('/country', CountryController::class)->name('country');
+
+/**
+ * SocialNetworks
+ */
+Route::get('/socialnetworks', SocialNetworksController::class)->name('socialnetworks');
 
 /**
  * Company

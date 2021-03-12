@@ -132,9 +132,13 @@ class CategoryController extends Controller
             $imageName = $generator->generate( $request->name );
             $imageName = $imageName . '-' . uniqid().'.'.$request->image->extension();
             
-            Storage::disk('local')->delete( $this->routeFile . $category->image->url );
+            if( $category->image ){
+                Storage::disk('local')->delete( $this->routeFile . $category->image->url );
+                $category->image()->update(['url' => $this->routeFileBD.$imageName ]);
+            }else{
+                $category->image()->create(['url' => $this->routeFileBD.$imageName ]);
+            }
             $request->image->storeAs( $this->routeFile.$this->routeFileBD, $imageName);
-            $category->image()->update(['url' => $this->routeFileBD.$imageName ]);
             $category->save();
         }
 
