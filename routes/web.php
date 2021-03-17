@@ -6,9 +6,12 @@ use WebControllers\country\CountryController;
 use WebControllers\category\CategoryController;
 use WebControllers\typeproject\TypeProjectController;
 use WebControllers\typesentity\TypesEntityController;
-use App\Http\Controllers\WebControllers\HomeController;
 use WebControllers\staticcontent\StaticContentController;
 use WebControllers\socialNetworks\SocialNetworksController;
+use App\Http\Controllers\WebControllers\HomeController;
+use WebControllers\stripe\PlanController;
+use WebControllers\stripe\ProductsStripeController;
+use WebControllers\stripe\SubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,48 +35,56 @@ Auth::routes(['register' => false]);
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-// Categorías
-Route::resource('categorias', CategoryController::class)
-        ->names('category')
-        ->parameters(['categorias' => 'category'])
-        ->middleware('auth');
 
-// Tipo de Proyectos
-Route::resource('tipos-proyectos', TypeProjectController::class)
-        ->names('typeproject')
-        ->parameters(['tipos-proyecto' => 'project'])
-        ->middleware('auth');
+Route::group(['middleware' => 'auth'], function() {
+        // Categorías
+        Route::resource('categorias', CategoryController::class)
+                ->names('category')
+                ->parameters(['categorias' => 'category']);
 
-// Tipo de Entidades
-Route::resource('tipos-entidad', TypesEntityController::class)
-        ->names('typesentity')
-        ->parameters(['tipos-entidad' => 'typeEntity'])
-        ->middleware('auth');
+        // Tipo de Proyectos
+        Route::resource('tipos-proyectos', TypeProjectController::class)
+                ->names('typeproject')
+                ->parameters(['tipos-proyecto' => 'project']);
 
-// Contenido estatico
-Route::resource('contenido-estatico', StaticContentController::class)
-        ->names('staticcontent')
-        ->parameters(['contenido-estatico' => 'staticContent'])
-        ->middleware('auth');
+        // Tipo de Entidades
+        Route::resource('tipos-entidad', TypesEntityController::class)
+                ->names('typesentity')
+                ->parameters(['tipos-entidad' => 'typeEntity']);
 
-// Paises
-Route::resource('paises', CountryController::class)
-        ->names('countries')
-        ->parameters(['paises' => 'country'])
-        ->middleware('auth');
+        // Contenido estatico
+        Route::resource('contenido-estatico', StaticContentController::class)
+                ->names('staticcontent')
+                ->parameters(['contenido-estatico' => 'staticContent']);
 
-// Categorías
-Route::resource('redessociales', SocialNetworksController::class)
-        ->names('socialnetwork')
-        ->parameters(['redessociales' => 'socialnetwork'])
-        ->middleware('auth');
+        // Paises
+        Route::resource('paises', CountryController::class)
+                ->names('countries')
+                ->parameters(['paises' => 'country']);
 
-// Usuarios
-Route::resource('usuarios', UsersController::class, ['only' => ['index', 'edit']])
-        ->names('users')
-        ->parameters(['usuarios' => 'user'])
-        ->middleware('auth');
+        // Categorías
+        Route::resource('redessociales', SocialNetworksController::class)
+                ->names('socialnetwork')
+                ->parameters(['redessociales' => 'socialnetwork']);
 
-Route::post('usuarios',[App\Http\Controllers\WebControllers\user\UsersController::class, 'approve'])
-        ->name('users.approve')
-        ->middleware('auth');
+        // Usuarios
+        Route::resource('usuarios', UsersController::class, ['only' => ['index', 'edit']])
+                ->names('users')
+                ->parameters(['usuarios' => 'user']);
+
+        Route::post('usuarios',[App\Http\Controllers\WebControllers\user\UsersController::class, 'approve'])
+                ->name('users.approve');
+
+        // Stripe
+        Route::resource('productos-stripe', ProductsStripeController::class)
+                ->names('products_stripe')
+                ->parameters(['productos-stripe' => 'products_stripe']);
+
+        Route::resource('planes-stripe', PlanController::class)
+                ->names('plans')
+                ->parameters(['planes' => 'plans']);
+
+        /*Route::resource('subscriptions', SubscriptionController::class)
+                ->names('subscription')
+                ->parameters(['subscription' => 'subscription']);*/
+});

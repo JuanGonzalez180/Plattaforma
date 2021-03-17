@@ -15,6 +15,7 @@ return [
 
     'login' => 'Iniciar sesión',
     'name' => 'Nombre',
+    'cost' => 'Costo',
     'description' => 'Descripción',
     'parentCategory' => 'Categoría Padre',
     'parentTypeProject' => 'Tipo de proyecto Padre',

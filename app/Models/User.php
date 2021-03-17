@@ -11,10 +11,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Laravel\Cashier\Billable;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Billable;
 
     const USER_VERIFIED = '1';
     const USER_NO_VERIFIED = '0';

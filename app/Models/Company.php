@@ -13,6 +13,8 @@ use App\Models\Projects;
 use App\Models\SocialNetworks;
 use App\Models\TypesEntity;
 use App\Models\User;
+use App\Models\Image;
+use App\Models\SocialNetworksRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -31,9 +33,6 @@ class Company extends Model
         'country_code',
         'web',
         'status',
-        'map_lat',
-        'map_lng',
-        'map_zoom',
         'user_id'
     ];
 
@@ -71,10 +70,6 @@ class Company extends Model
         return $this->hasMany(Products::class);
     }
 
-    public function addresses(){
-        return $this->hasMany(Addresses::class);
-    }
-
     public function interests(){
         return $this->belongsToMany(Interests::class);
     }
@@ -95,5 +90,15 @@ class Company extends Model
     // Relacion uno a uno polimorfica
     public function image(){
         return $this->morphOne(Image::class, 'imageable');
+    }
+
+    // Relacion uno a uno polimorfica
+    public function address(){
+        return $this->morphOne(Addresses::class, 'addressable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function socialnetworks(){
+        return $this->morphMany(SocialNetworksRelation::class, 'socialable');
     }
 }

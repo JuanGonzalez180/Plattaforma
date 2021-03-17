@@ -11,10 +11,12 @@ use ApiControllers\socialnetworks\SocialNetworksController;
 use ApiControllers\password\SendCodeController;
 use ApiControllers\password\CodeValidationController;
 use ApiControllers\password\ChangePasswordController;
-
+// Account
 use ApiControllers\myaccount\AccountEditController;
 use ApiControllers\myaccount\AccountChangePasswordController;
 use ApiControllers\myaccount\AccountMyCompanyController;
+// Subscriptions
+use ApiControllers\stripe\SubscriptionsStripeController;
 
 use App\Http\Controllers\ApiControllers\user\UsersController;
 
@@ -160,13 +162,21 @@ Route::get('/staticcontent/{slug}', StaticContentController::class)->name('stati
  */
 // Route::resource('/login', [UsersController::class, 'authenticate'], ['only' => ['authenticate']])->names('signin');
 Route::post('/login', [UsersController::class, 'authenticate'])->name('signin');
+
+/**
+ * Plans Stripe
+ */
+Route::get('/stripe/plans', SubscriptionsStripeController::class)->name('plans');
+Route::resource('/stripe/plans', SubscriptionsStripeController::class, ['only' => ['store']])->names('plans_subscription');
+
+
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('user',[UsersController::class, 'getAuthenticatedUser'])->name('user');
 
     /**
      * My Account
      */
-    Route::resource('/myaccount/changepassword', AccountChangePasswordController::class, ['only' => ['store']])->names('changepassword');
+    Route::resource('/myaccount/changepassword', AccountChangePasswordController::class, ['only' => ['store']])->names('changepasswordaccount');
     Route::resource('/myaccount/accountedit', AccountEditController::class, ['only' => ['store']])->names('accountedit');
     Route::get('/myaccount/mycompany', AccountMyCompanyController::class)->name('mycompany');
     Route::resource('/myaccount/mycompany', AccountMyCompanyController::class, ['only' => ['store']])->names('mycompany');

@@ -14,15 +14,17 @@ class CreateAddressesTable extends Migration
     public function up()
     {
         Schema::create('addresses', function (Blueprint $table) {
-            $table->id();
-            $table->string('address');
-            $table->string('type');
-            $table->bigInteger('type_id')->unsigned();
-            $table->string('latitud');
-            $table->string('longitud');
-            $table->string('zoom');
-            $table->string('date');
-            $table->string('date_update');
+
+            $table->bigInteger('addressable_id')->unsigned();
+            $table->string('addressable_type');
+
+            $table->string('address')->nullable();
+            $table->string('latitud')->nullable();
+            $table->string('longitud')->nullable();
+            $table->string('zoom')->nullable();
+
+            $table->primary(['addressable_id', 'addressable_type']);
+
             $table->timestamps();
         });
     }

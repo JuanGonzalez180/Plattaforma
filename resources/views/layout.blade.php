@@ -107,6 +107,18 @@
                                         Contenido estático
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('products_stripe.index') }}">
+                                        <span data-feather="file"></span>
+                                        Productos Stripe
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('plans.index') }}">
+                                        <span data-feather="file"></span>
+                                        Planes Stripe
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </nav>
