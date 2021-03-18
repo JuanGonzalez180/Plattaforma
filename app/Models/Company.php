@@ -12,6 +12,7 @@ use App\Models\Products;
 use App\Models\Projects;
 use App\Models\SocialNetworks;
 use App\Models\TypesEntity;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -90,6 +91,11 @@ class Company extends Model
     //Relacion Muchos a Muchos
     public function countries(){
         return $this->belongsToMany(Country::class);
+    }
+
+    //Relacion uno a mucho
+    public function teams(){
+        return $this->hasMany(Team::class);
     }
 
     // Relacion uno a uno polimorfica

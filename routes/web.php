@@ -8,7 +8,7 @@ use WebControllers\typeproject\TypeProjectController;
 use WebControllers\typesentity\TypesEntityController;
 use App\Http\Controllers\WebControllers\HomeController;
 use WebControllers\staticcontent\StaticContentController;
-use WebControllers\socialNetworks\SocialNetworksController;
+use WebControllers\socialnetworks\SocialNetworksController;
 
 /*
 |--------------------------------------------------------------------------

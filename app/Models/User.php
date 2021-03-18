@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Blog;
 use App\Models\Image;
 use App\Models\Company;
+use App\Models\Team;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -108,6 +109,11 @@ class User extends Authenticatable implements JWTSubject
 
     public function company(){
         return $this->hasMany(Company::class);
+    }
+
+    //Relacion uno a uno
+    public function team(){
+        return $this->hasOne(Team::class);
     }
 
     // Relacion uno a uno polimorfica
