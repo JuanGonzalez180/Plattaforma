@@ -9,24 +9,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Addresses extends Model
 {
+    protected $guarded = [];
+
     use HasFactory;
 
     protected $fillable = [
+        'addressable_id',
+        'addressable_type',
         'address',
-        'type',
-        'type_id',
         'latitud',
         'longitud',
-        'zoom',
-        'date',
-        'date_update'
+        'zoom'
     ];
 
-    public function projects(){
-        return $this->belongsTo(Projects::class);
-    }
+    protected $hidden = [
+        'addressable_id',
+        'addressable_type',
+    ];
 
-    public function company(){
-        return $this->belongsTo(Company::class);
+    public function addressable(){
+        return $this->morphTo();
     }
 }

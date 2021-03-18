@@ -6,6 +6,7 @@ use JWTAuth;
 use App\Models\User;
 use App\Models\Image;
 use App\Models\Company;
+use App\Models\SocialNetworksRelation;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
@@ -44,6 +45,9 @@ class AccountMyCompanyController extends ApiController
                 try{
                     $company = $user->company[0];
                     $company->image;
+                    $company->address;
+                    $company->socialnetworks;
+                    // var_dump($company->socialnetworks);
                     $imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
                     $company->imageCoverPage = $imageCoverPage;
                     return $this->showOne($company,200);
@@ -77,8 +81,6 @@ class AccountMyCompanyController extends ApiController
             $company->nit = $request->nit;
             $company->country_code = $request->country_code;
             $company->web = $request->web;
-            $company->map_lat = $request->latitud;
-            $company->map_lng = $request->longitud;
 
             if( $request->image ){
                 $png_url = "company-".time().".jpg";
@@ -106,7 +108,6 @@ class AccountMyCompanyController extends ApiController
                 $routeFile = 'images/company/'.$company->id.'/'.$png_url;
                 Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
 
-                // $imageCoverPage = Image::create(['url' => $routeFile, 'imageable_id' => $company->id, 'imageable_type' => 'App\Models\Company\CoverPage']);
                 $imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
                 if( !$imageCoverPage ){
                     $imageCoverPage = Image::create(['url' => $routeFile, 'imageable_id' => $company->id, 'imageable_type' => 'App\Models\Company\CoverPage']);
@@ -116,12 +117,50 @@ class AccountMyCompanyController extends ApiController
                 }
             }
 
+            if( $request->socialnetworks ){
+                foreach ($request->socialnetworks as $key => $social) {
+                    // var_dump( $social );
+                    $socialNetwork = SocialNetworksRelation::where('socialable_id', $company->id)
+                                    ->where('socialable_type', Company::class)
+                                    ->where('social_networks_id', $social['id'])
+                                    ->first();
+
+                    if( $social['link'] ){
+                        if( !$socialNetwork ){
+                            $company->socialnetworks()->create(['link' => $social['link'], 'social_networks_id' => $social['id'] ]);
+                        }else{
+                            $socialNetwork->update(['link' =>  $social['link'] ]);
+                        }
+                    }elseif($socialNetwork){
+                        $socialNetwork->delete();
+                    }
+                }
+            }
+
+            if( $request->address || $request->latitud || $request->longitud ){
+                if( !$company->address ){
+                    $company->address()->create([
+                        'address' => $request->address,
+                        'latitud' => $request->latitud,
+                        'longitud' => $request->longitud
+                    ]);
+                }else{
+                    $company->address()->update([
+                        'address' => $request->address,
+                        'latitud' => $request->latitud,
+                        'longitud' => $request->longitud
+                    ]);
+                }
+            }
+
             // Guardar
             $company->save();
             // ReSearch User
             $companyNew = Company::findOrFail($company->id);
             $companyNew->imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
             $companyNew->image;
+            $companyNew->address;
+            $companyNew->socialnetworks;
 
             return $this->showOne($companyNew,200);
         }

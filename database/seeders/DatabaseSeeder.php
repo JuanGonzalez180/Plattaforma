@@ -6,6 +6,8 @@ use App\Models\Country;
 use App\Models\Type;
 use App\Models\TypesEntity;
 use App\Models\User;
+use App\Models\PaymentPlatform;
+use App\Models\Currency;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -68,5 +70,15 @@ class DatabaseSeeder extends Seeder
             ]);
         }
         
+
+        //Payment
+        PaymentPlatform::create([
+            'name' => 'Stripe'
+        ]);
+
+        // Currency
+        Currency::create([
+            'iso' => 'usd'
+        ]);
     }
 }

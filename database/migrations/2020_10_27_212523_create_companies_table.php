@@ -24,12 +24,6 @@ class CreateCompaniesTable extends Migration
             $table->string('web')->nullable();
             $table->string('status')->default(Company::COMPANY_CREATED);
             $table->bigInteger('user_id')->unsigned();
-
-            // Mapa Principal
-            $table->string('map_lat')->nullable();
-            $table->string('map_lng')->nullable();
-            $table->string('map_zoom')->nullable();
-
             $table->timestamps();
 
         });

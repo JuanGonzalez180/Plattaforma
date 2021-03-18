@@ -8,8 +8,8 @@ use App\Files;
 use App\Interests;
 use App\MetaData;
 use App\User;
-use App\SocialNetworks;
 use App\TypeProject;
+use App\SocialNetworksRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -66,7 +66,8 @@ class Projects extends Model
         return $this->belongsToMany(TypeProject::class);
     }
 
-    /*public function socialNetworks(){
-        return $this->belongsToMany(SocialNetworks::class);
-    }*/
+    // Relacion uno a muchos polimorfica
+    public function socialnetworks(){
+        return $this->morphMany(SocialNetworksRelation::class, 'socialable');
+    }
 }

@@ -34,4 +34,10 @@ return [
         'api_key' => env('SENDGRID_API_KEY'),
     ],
 
+    'stripe' => [
+        'model'  => App\Models\User::class,
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+    ],
+
 ];

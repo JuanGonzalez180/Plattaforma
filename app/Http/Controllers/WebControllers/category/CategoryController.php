@@ -179,7 +179,7 @@ class CategoryController extends Controller
         // Delete Image
         if( $category->image ){
             Storage::disk('local')->delete( $this->routeFile . $category->image->url );
-            Image::where('imageable_id', $category->id)->where('imageable_type', TypeProject::class)->delete();
+            Image::where('imageable_id', $category->id)->where('imageable_type', Category::class)->delete();
         }
         
         // Delete Type Project
