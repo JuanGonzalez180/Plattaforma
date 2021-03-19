@@ -15,6 +15,8 @@ use ApiControllers\password\ChangePasswordController;
 use ApiControllers\myaccount\AccountEditController;
 use ApiControllers\myaccount\AccountChangePasswordController;
 use ApiControllers\myaccount\AccountMyCompanyController;
+use ApiControllers\myaccount\SendInvitationController;
+use ApiControllers\myaccount\RegisterMemberController;
 // Subscriptions
 use ApiControllers\stripe\SubscriptionsStripeController;
 
@@ -180,7 +182,10 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/myaccount/accountedit', AccountEditController::class, ['only' => ['store']])->names('accountedit');
     Route::get('/myaccount/mycompany', AccountMyCompanyController::class)->name('mycompany');
     Route::resource('/myaccount/mycompany', AccountMyCompanyController::class, ['only' => ['store']])->names('mycompany');
+    Route::resource('/myaccount/sendinvitation', SendInvitationController::class, ['only' => ['store']])->names('sendinvitation');
 });
+
+Route::resource('/myaccount/registermember', RegisterMemberController::class, ['only' => ['store']])->names('registermember');
 
 /**
  * User

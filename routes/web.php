@@ -7,7 +7,7 @@ use WebControllers\category\CategoryController;
 use WebControllers\typeproject\TypeProjectController;
 use WebControllers\typesentity\TypesEntityController;
 use WebControllers\staticcontent\StaticContentController;
-use WebControllers\socialNetworks\SocialNetworksController;
+use WebControllers\socialnetworks\SocialNetworksController;
 use App\Http\Controllers\WebControllers\HomeController;
 use WebControllers\stripe\PlanController;
 use WebControllers\stripe\ProductsStripeController;
