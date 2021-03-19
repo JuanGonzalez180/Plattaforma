@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ApiControllers\user;
 
 use App\Models\User;
 use App\Models\Company;
+use App\Models\Image;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiControllers\ApiController;
 use Illuminate\Support\Facades\Hash;
@@ -23,12 +24,24 @@ class UsersController extends ApiController
                 return $this->errorResponse( [ 'error' => ['invalid_credentials']], 401 );
             }
             $user = User::where('email', $request['email'])->first();
+            
+            // Si es el administrador de la compañía
+            $user['admin'] = false;
+            $user['type'] = '';
+
             // Validar Usuario.
-            if( $user->company && $user->company[0] ){
+            if( count($user->company) && $user->company[0] ){
+                $user['admin'] = true;
+
                 $company = $user->company[0];
+                $company->imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
+                $company->image;
+
                 if( $company->status !== Company::COMPANY_APPROVED && $company->type_entity->type->slug == 'demanda' ){
+                    $user['type'] = 'demanda';
                     return $this->errorResponse( [ 'not_approved_a' => ['not_approved']], 500 );
                 }elseif( $company->status !== Company::COMPANY_APPROVED){
+                    $user['type'] = 'oferta';
                     return $this->errorResponse( [ 'not_approved_b' => ['not_approved']], 500 );
                 }
             }

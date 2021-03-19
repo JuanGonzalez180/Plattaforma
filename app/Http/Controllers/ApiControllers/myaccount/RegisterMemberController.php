@@ -46,7 +46,7 @@ class RegisterMemberController extends ApiController
                 $newMember["already_registered"] = true;
             }
 
-            return $this->showOne($newMember, 200);
+            return $this->showOne($newMember, 201);
         }
 
         $teamError = [ 'user' => 'Error, no eres un integrante del equipo' ];
