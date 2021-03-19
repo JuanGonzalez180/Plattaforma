@@ -30,7 +30,7 @@ class UsersController extends ApiController
             $user['type'] = '';
 
             // Validar Usuario.
-            if( $user->company && $user->company[0] ){
+            if( count($user->company) && $user->company[0] ){
                 $user['admin'] = true;
 
                 $company = $user->company[0];
