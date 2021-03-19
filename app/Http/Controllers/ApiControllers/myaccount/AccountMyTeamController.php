@@ -24,6 +24,10 @@ class AccountMyTeamController extends ApiController
         }
         
         $teamCompany = Team::where('company_id', $companyID)->get();
+        foreach( $teamCompany as $key => $team ){
+            $team->user;
+            // $team->user->image;
+        }
 
         // Aquí debe devolver todos los integrantes del equipo
         return $this->showAll($teamCompany, 200);
