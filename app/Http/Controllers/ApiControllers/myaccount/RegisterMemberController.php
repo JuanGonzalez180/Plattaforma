@@ -6,12 +6,7 @@ use App\Models\User;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use TaylorNetwork\UsernameGenerator\Generator;
 use App\Http\Controllers\ApiControllers\ApiController;
-use App\Mail\SendInvitation;
 
 class RegisterMemberController extends ApiController
 {
