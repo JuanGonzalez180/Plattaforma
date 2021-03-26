@@ -7,6 +7,9 @@ use ApiControllers\company\CompanyController;
 use ApiControllers\staticcontent\StaticContentController;
 use ApiControllers\country\CountryController;
 use ApiControllers\socialnetworks\SocialNetworksController;
+use ApiControllers\typeproject\TypeProjectController;
+use ApiControllers\category\CategoryController;
+use ApiControllers\projects\ProjectsController;
 // Password
 use ApiControllers\password\SendCodeController;
 use ApiControllers\password\CodeValidationController;
@@ -172,6 +175,14 @@ Route::post('/login', [UsersController::class, 'authenticate'])->name('signin');
 Route::get('/stripe/plans', SubscriptionsStripeController::class)->name('plans');
 Route::resource('/stripe/plans', SubscriptionsStripeController::class, ['only' => ['store']])->names('plans_subscription');
 
+/**
+ * TypeProjects
+ */
+Route::get('/typesprojects', TypeProjectController::class)->name('typesprojects');
+/**
+ * Categories
+ */
+Route::get('/categories', CategoryController::class)->name('categories');
 
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('user',[UsersController::class, 'getAuthenticatedUser'])->name('user');
@@ -185,6 +196,8 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/myaccount/mycompany', AccountMyCompanyController::class, ['only' => ['store']])->names('mycompany');
     Route::resource('/myaccount/sendinvitation', SendInvitationController::class, ['only' => ['store']])->names('sendinvitation');
     Route::get('/myaccount/myteam', AccountMyTeamController::class)->name('myteam');
+
+    Route::resource('/projects', ProjectsController::class, ['only' => ['store']])->names('projects');
 });
 
 Route::resource('/myaccount/registermember', RegisterMemberController::class, ['only' => ['store']])->names('registermember');

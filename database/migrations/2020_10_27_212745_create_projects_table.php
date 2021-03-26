@@ -17,18 +17,18 @@ class CreateProjectsTable extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('company_id')->unsigned();
-            $table->string('description');
-            $table->string('image');
-            $table->string('images');
-            $table->string('date_start');
-            $table->string('date_end');
+            $table->bigInteger('type_projects_id')->unsigned();
+
+            $table->string('description')->nullable();
+            $table->string('date_start')->nullable();
+            $table->string('date_end')->nullable();
             $table->string('status')->default(Projects::PROJECTS_ERASER);
-            $table->string('date');
-            $table->string('date_update');
             $table->timestamps();
 
+            $table->foreign('type_projects_id')->references('id')->on('type_projects');
             $table->foreign('company_id')->references('id')->on('companies');
             $table->foreign('user_id')->references('id')->on('users');
         });

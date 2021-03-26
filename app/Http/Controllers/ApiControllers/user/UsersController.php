@@ -32,13 +32,13 @@ class UsersController extends ApiController
             // Validar Usuario.
             if( count($user->company) && $user->company[0] ){
                 $user['admin'] = true;
-
+                
                 $company = $user->company[0];
                 $company->imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
                 $company->image;
+                $user['type'] = $company->type_entity->type->slug;
 
                 if( $company->status !== Company::COMPANY_APPROVED && $company->type_entity->type->slug == 'demanda' ){
-                    $user['type'] = 'demanda';
                     return $this->errorResponse( [ 'not_approved_a' => ['not_approved']], 500 );
                 }elseif( $company->status !== Company::COMPANY_APPROVED){
                     $user['type'] = 'oferta';

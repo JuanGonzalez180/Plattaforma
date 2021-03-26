@@ -1,64 +1,21 @@
 <?php
 
-namespace App\Http\Controllers\typeproject;
+namespace App\Http\Controllers\ApiControllers\typeproject;
 
-use App\Http\Controllers\ApiController;
+use App\Models\TypeProject;
 use Illuminate\Http\Request;
+use App\Http\Controllers\ApiControllers\ApiController;
 
 class TypeProjectController extends ApiController
 {
     /**
-     * Display a listing of the resource.
+     * Handle the incoming request
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function __invoke()
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $typeProjects = TypeProject::all();
+        return $this->showAll($typeProjects);
     }
 }

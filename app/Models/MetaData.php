@@ -2,29 +2,27 @@
 
 namespace App\Models;
 
-use App\Company;
-use App\Projects;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MetaData extends Model
-{
+{   
+    protected $guarded = [];
     use HasFactory;
 
     protected $fillable = [
         'name',
         'value',
-        'type',
-        'type_id',
-        'date',
-        'date_update'
+        'metadatable_id',
+        'metadatable_type',
     ];
 
-    public function projects(){
-        return $this->belongsTo(Projects::class);
-    }
+    protected $hidden = [
+        'metadatable_id',
+        'metadatable_type',
+    ];
 
-    public function company(){
-        return $this->belongsTo(Company::class);
+    public function metadatable(){
+        return $this->morphTo();
     }
 }

@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-use App\Addresses;
-use App\Company;
-use App\Files;
-use App\Interests;
-use App\MetaData;
-use App\User;
-use App\TypeProject;
-use App\SocialNetworksRelation;
+use App\Models\Addresses;
+use App\Models\Company;
+use App\Models\Files;
+use App\Models\Interests;
+use App\Models\MetaData;
+use App\Models\User;
+use App\Models\TypeProject;
+use App\Models\Image;
+use App\Models\SocialNetworksRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,14 +25,11 @@ class Projects extends Model
         'name',
         'company_id',
         'user_id',
+        'type_projects_id',
         'description',
-        'image',
-        'images',
         'date_start',
         'date_end',
-        'status',
-        'date',
-        'date_update'
+        'status'
     ];
 
     public function isPublish(){
@@ -45,9 +43,9 @@ class Projects extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
-
-    public function addresses(){
-        return $this->hasMany(Addresses::class);
+    
+    public function types_projects(){
+        return $this->belongsTo(TypeProject::class);
     }
 
     public function files(){
@@ -58,16 +56,23 @@ class Projects extends Model
         return $this->belongsToMany(Interests::class);
     }
 
-    public function metaDatos(){
-        return $this->hasMany(MetaData::class);
+    // Relacion uno a uno polimorfica
+    public function image(){
+        return $this->morphOne(Image::class, 'imageable');
     }
 
-    public function typesProjects(){
-        return $this->belongsToMany(TypeProject::class);
+    // Relacion uno a uno polimorfica
+    public function address(){
+        return $this->morphOne(Addresses::class, 'addressable');
     }
 
     // Relacion uno a muchos polimorfica
     public function socialnetworks(){
         return $this->morphMany(SocialNetworksRelation::class, 'socialable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function metadata(){
+        return $this->morphMany(MetaData::class, 'metadatable');
     }
 }
