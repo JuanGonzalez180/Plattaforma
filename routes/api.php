@@ -193,8 +193,11 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/myaccount/accountedit', AccountEditController::class, ['only' => ['store']])->names('accountedit');
     Route::get('/myaccount/mycompany', AccountMyCompanyController::class)->name('mycompany');
     Route::resource('/myaccount/mycompany', AccountMyCompanyController::class, ['only' => ['store']])->names('mycompany');
-    Route::resource('/myaccount/sendinvitation', SendInvitationController::class, ['only' => ['store']])->names('sendinvitation');
     Route::resource('/myaccount/myteam', AccountMyTeamController::class, ['only' => ['index', 'store', 'update', 'destroy']])->names('myteam');
+    
+    /**
+     * Projects
+     */
     Route::resource('/projects', ProjectsController::class, ['only' => ['store']])->names('projects');
 });
 

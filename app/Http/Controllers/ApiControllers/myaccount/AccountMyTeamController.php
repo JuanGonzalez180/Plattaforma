@@ -12,7 +12,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use TaylorNetwork\UsernameGenerator\Generator;
 use App\Mail\SendInvitation;
+
+//use App\Http\Resources\TeamCollection;
+
 use App\Http\Controllers\ApiControllers\ApiController;
+
 
 class AccountMyTeamController extends ApiController
 {
@@ -61,7 +65,10 @@ class AccountMyTeamController extends ApiController
             $companyID = $user->team->company_id;
         }
         
-        $teamCompany = Team::where('company_id', $companyID)->orderBy('id', 'desc')->paginate();
+        $teamCompany = Team::where('company_id', $companyID)->orderBy('id', 'desc')->get();
+        // $teamCompany = Team::where('company_id', $companyID)->orderBy('id', 'desc')->paginate();
+        
+
         foreach( $teamCompany as $key => $team ){
             // Registrar el usuario asociado en la respuesta
             $team->user;
@@ -72,8 +79,7 @@ class AccountMyTeamController extends ApiController
             }
         }
 
-        // Aquí debe devolver todos los integrantes del equipo
-        return $this->showOneData($teamCompany, 200);
+        return $this->showAllPaginate($teamCompany);
     }
 
     /**
