@@ -13,6 +13,7 @@ use App\Models\Image;
 use App\Models\SocialNetworksRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Transformers\ProjectsTransformer;
 
 class Projects extends Model
 {
@@ -21,14 +22,17 @@ class Projects extends Model
     const PROJECTS_ERASER = 'Borrador';
     const PROJECTS_PUBLISH = 'Publicado';
 
+    public $transformer = ProjectsTransformer::class;
+
     protected $fillable = [
         'name',
         'company_id',
         'user_id',
-        'type_projects_id',
+        'type_project_id',
         'description',
         'date_start',
         'date_end',
+        'meters',
         'status'
     ];
 
@@ -42,10 +46,6 @@ class Projects extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
-    }
-    
-    public function types_projects(){
-        return $this->belongsTo(TypeProject::class);
     }
 
     public function files(){
@@ -74,5 +74,9 @@ class Projects extends Model
     // Relacion uno a muchos polimorfica
     public function metadata(){
         return $this->morphMany(MetaData::class, 'metadatable');
+    }
+    
+    public function projectTypeProject(){
+        return $this->belongsToMany(TypeProject::class);
     }
 }

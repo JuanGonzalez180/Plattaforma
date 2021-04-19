@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use WebControllers\user\UsersController;
 use WebControllers\country\CountryController;
 use WebControllers\category\CategoryController;
+use WebControllers\categoryservices\CategoryServicesController;
 use WebControllers\typeproject\TypeProjectController;
 use WebControllers\typesentity\TypesEntityController;
 use WebControllers\staticcontent\StaticContentController;
@@ -41,6 +42,11 @@ Route::group(['middleware' => 'auth'], function() {
         Route::resource('categorias', CategoryController::class)
                 ->names('category')
                 ->parameters(['categorias' => 'category']);
+
+        // Categorías
+        Route::resource('categorias_servicios', CategoryServicesController::class)
+                ->names('categoryservices')
+                ->parameters(['categorias_servicios' => 'categoryservices']);
 
         // Tipo de Proyectos
         Route::resource('tipos-proyectos', TypeProjectController::class)

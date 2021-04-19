@@ -9,7 +9,9 @@ use ApiControllers\country\CountryController;
 use ApiControllers\socialnetworks\SocialNetworksController;
 use ApiControllers\typeproject\TypeProjectController;
 use ApiControllers\category\CategoryController;
+use ApiControllers\categoryservices\CategoryServicesController;
 use ApiControllers\projects\ProjectsController;
+use ApiControllers\products\ProductsController;
 // Password
 use ApiControllers\password\SendCodeController;
 use ApiControllers\password\CodeValidationController;
@@ -182,6 +184,7 @@ Route::get('/typesprojects', TypeProjectController::class)->name('typesprojects'
  * Categories
  */
 Route::get('/categories', CategoryController::class)->name('categories');
+Route::get('/categoriesservices', CategoryServicesController::class)->name('categoriesservices');
 
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('user',[UsersController::class, 'getAuthenticatedUser'])->name('user');
@@ -198,7 +201,11 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     /**
      * Projects
      */
-    Route::resource('/projects', ProjectsController::class, ['only' => ['store']])->names('projects');
+    Route::resource('/projects', ProjectsController::class, ['only' => ['index','store']])->names('projects');
+    /**
+     * Products
+     */
+    Route::resource('/products', ProductsController::class, ['only' => ['index','store']])->names('products');
 });
 
 Route::resource('/myaccount/registermember', RegisterMemberController::class, ['only' => ['store']])->names('registermember');

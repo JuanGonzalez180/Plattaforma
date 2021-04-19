@@ -90,6 +90,12 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('categoryservices.index') }}">
+                                        <span data-feather="file"></span>
+                                        Categorías Servicios
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" href="{{ route('typeproject.index') }}">
                                         <span data-feather="file"></span>
                                         Tipos de proyectos

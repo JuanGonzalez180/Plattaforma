@@ -3,13 +3,11 @@
 namespace App\Models;
 
 use App\Models\Image;
-use App\Models\Files;
-use App\Models\Tenders;
 use App\Models\Products;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Category extends Model
+class CategoryService extends Model
 {
     use HasFactory;
 
@@ -24,27 +22,19 @@ class Category extends Model
     ];
 
     public function isPublish(){
-        return $this->status == Category::CATEGORY_PUBLISH;
+        return $this->status == CategoryService::CATEGORY_PUBLISH;
     }
 
     public function parent(){
-        return $this->belongsTo(Category::class, 'parent_id' );
+        return $this->belongsTo(CategoryService::class, 'parent_id' );
     }
 
-    public function files(){
-        return $this->belongsToMany(Files::class);
-    }
-
-    public function tenders(){
-        return $this->belongsToMany(Tenders::class);
-    }
-    
     // Relacion uno a uno polimorfica
     public function image(){
         return $this->morphOne(Image::class, 'imageable');
     }
 
-    public function categoriesProducts(){
+    public function categoryServicesProducts(){
         return $this->belongsToMany(Products::class);
     }
 }

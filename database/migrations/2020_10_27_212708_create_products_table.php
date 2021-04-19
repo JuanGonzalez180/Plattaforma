@@ -20,13 +20,9 @@ class CreateProductsTable extends Migration
             $table->string('name');
             $table->bigInteger('company_id')->unsigned();
             $table->bigInteger('user_id')->unsigned();
-            $table->string('description', 1000);
+            $table->string('description', 1000)->nullable();
             $table->string('type')->default(Products::TYPE_PRODUCT);
-            $table->string('image');
-            $table->string('images');
             $table->string('status')->default(Products::PRODUCT_ERASER);
-            $table->string('date');
-            $table->string('date_update');
 
             $table->foreign('company_id')->references('id')->on('companies');
             $table->foreign('user_id')->references('id')->on('users');

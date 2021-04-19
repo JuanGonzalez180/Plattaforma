@@ -33,7 +33,7 @@ class TypeProject extends Model
         return $this->belongsToMany(Files::class);
     }
 
-    public function projects(){
+    public function types_projectsProjects(){
         return $this->belongsToMany(Projects::class);
     }
 
