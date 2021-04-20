@@ -50,6 +50,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
+        'stripe_id',
         'code',
         'code_time',
         'password',
@@ -98,6 +99,30 @@ class User extends Authenticatable implements JWTSubject
 
     public function isAdmin(){
         return $this->admin == User::USER_ADMIN;
+    }
+
+    public function isAdminFrontEnd(){
+        return count($this->company) && $this->company[0];
+    }
+
+    public function userType(){
+        if( count($this->company) && $this->company[0] ){
+            return $this->company[0]->type_entity->type->slug;
+        }elseif( $this->team ){
+            return $this->team->company->type_entity->type->slug;
+        }
+        return '';
+    }
+
+    public function companyId(){
+        if( count($this->company) && $this->company[0] ){
+            $company = $this->company[0];
+            return $company->id;
+        }elseif( $this->team ){
+            return $this->team->company->id;
+        }
+
+        return 0;
     }
 
     public static function generateVerificationToken(){

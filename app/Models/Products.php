@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
-use App\Category;
-use App\Company;
-use App\Files;
-use App\Interests;
-use App\User;
+use App\Models\User;
+use App\Models\Image;
+use App\Models\Files;
+use App\Models\Company;
+use App\Models\Category;
+use App\Models\Interests;
+use App\Models\CategoryService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Transformers\ProductsTransformer;
 
 class Products extends Model
 {
@@ -21,17 +24,15 @@ class Products extends Model
     const TYPE_SERVICE = 'Servicio';
     const TYPE_BRAND = 'Marca';
 
+    public $transformer = ProductsTransformer::class;
+
     protected $fillable = [
         'name',
         'company_id',
         'user_id',
         'description',
         'type',
-        'image',
-        'images',
-        'status',
-        'date',
-        'date_update'
+        'status'
     ];
 
     public function isPublish(){
@@ -42,10 +43,6 @@ class Products extends Model
         return $this->type;
     }
     
-    public function categories(){
-        return $this->belongsToMany(Category::class);
-    }
-
     public function company(){
         return $this->belongsTo(Company::class);
     }
@@ -60,5 +57,18 @@ class Products extends Model
 
     public function interests(){
         return $this->belongsToMany(Interests::class);
+    }
+
+    // Relacion uno a uno polimorfica
+    public function image(){
+        return $this->morphOne(Image::class, 'imageable');
+    }
+
+    public function productCategories(){
+        return $this->belongsToMany(Category::class);
+    }
+
+    public function productCategoryServices(){
+        return $this->belongsToMany(CategoryService::class);
     }
 }

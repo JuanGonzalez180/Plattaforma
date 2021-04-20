@@ -25,6 +25,25 @@ class ProjectsController extends ApiController
         return $this->user;
     }
 
+    public function index()
+    {
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+
+        // IS ADMIN
+        $companyID = $user->companyId();
+        if( $companyID && $user->userType() == 'demanda' ){
+            $projectsAdmin = Projects::where('company_id', $companyID)->get();
+            foreach( $projectsAdmin as $key => $project ){
+                $project->user;
+                $project->user['url'] = $project->user->image ? url( 'storage/' . $project->user->image->url ) : null;
+            }
+
+            return $this->showAllPaginate($projectsAdmin);
+        }
+        return [];
+    }
+
     public function store(Request $request){
         $user = $this->validateUser();
 
@@ -41,12 +60,13 @@ class ProjectsController extends ApiController
 
         // Datos
         $projectFields['name'] = $request['name'];
-        $projectFields['type_projects_id'] = $request['type'];
+        // $projectFields['type_projects_id'] = $request['type'];
         $projectFields['user_id'] = $user->id;
-        $projectFields['company_id'] = ($user->company && count($user->company)) ? $user->company[0]->id : 0;
+        $projectFields['company_id'] = $user->companyId();
         $projectFields['description'] = $request['description'];
         $projectFields['date_start'] = $request['dateStarting'];
         $projectFields['date_end'] = $request['dateEnding'];
+        $projectFields['meters'] = $request['meters'];
         $projectFields['status'] = $request['status'];
 
         try{
@@ -61,6 +81,12 @@ class ProjectsController extends ApiController
         }
 
         if( $project ){
+            if( $request->type ){
+                foreach ($request->type as $key => $typeId) {
+                    $project->projectTypeProject()->attach($typeId);
+                }
+            }
+
             if( $request->image ){
                 $png_url = "project-".time().".jpg";
                 $img = $request->image;

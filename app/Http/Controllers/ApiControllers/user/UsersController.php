@@ -44,6 +44,9 @@ class UsersController extends ApiController
                     $user['type'] = 'oferta';
                     return $this->errorResponse( [ 'not_approved_b' => ['not_approved']], 500 );
                 }
+            }elseif( $user->team ){
+                $company = $user->team->company;
+                $user['type'] = $company->type_entity->type->slug;
             }
 
             $user->image;
