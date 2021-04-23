@@ -16,6 +16,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Models\Image;
 use App\Models\SocialNetworksRelation;
+use App\Models\CategoryService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -106,5 +107,9 @@ class Company extends Model
     // Relacion uno a muchos polimorfica
     public function socialnetworks(){
         return $this->morphMany(SocialNetworksRelation::class, 'socialable');
+    }
+
+    public function companyCategoryServices(){
+        return $this->belongsToMany(CategoryService::class);
     }
 }

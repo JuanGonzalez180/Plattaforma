@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Image;
+use App\Models\Company;
 use App\Models\Products;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,5 +37,9 @@ class CategoryService extends Model
 
     public function categoryServicesProducts(){
         return $this->belongsToMany(Products::class);
+    }
+
+    public function categoryServicesCompanies(){
+        return $this->belongsToMany(Company::class);
     }
 }
