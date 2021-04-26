@@ -12,6 +12,7 @@ use ApiControllers\category\CategoryController;
 use ApiControllers\categoryservices\CategoryServicesController;
 use ApiControllers\projects\ProjectsController;
 use ApiControllers\products\ProductsController;
+use ApiControllers\tenders\TendersController;
 // Password
 use ApiControllers\password\SendCodeController;
 use ApiControllers\password\CodeValidationController;
@@ -201,11 +202,15 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     /**
      * Projects
      */
-    Route::resource('/projects', ProjectsController::class, ['only' => ['index','store']])->names('projects');
+    Route::resource('/projects', ProjectsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('projects');
     /**
      * Products
      */
-    Route::resource('/products', ProductsController::class, ['only' => ['index','store']])->names('products');
+    Route::resource('/products', ProductsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('products');
+    /**
+     * Tenders
+     */
+    Route::resource('/tenders', TendersController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('tenders');
 });
 
 Route::resource('/myaccount/registermember', RegisterMemberController::class, ['only' => ['store']])->names('registermember');

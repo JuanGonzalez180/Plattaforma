@@ -35,13 +35,18 @@ class ProductsController extends ApiController
 
         $companyID = $user->companyId();
         if( $companyID && $user->userType() == 'oferta' ){
-            $productsAdmin = Products::where('company_id', $companyID)->get();
-            foreach( $productsAdmin as $key => $product ){
+            if( $user->isAdminFrontEnd() ){
+                // Si es admin
+                $products = Products::where('company_id', $companyID)->get();
+            }else{
+                $products = Products::where('company_id', $companyID)->where('user_id', $user->id)->get();
+            }
+            foreach( $products as $key => $product ){
                 $product->user;
                 $product->user['url'] = $product->user->image ? url( 'storage/' . $product->user->image->url ) : null;
             }
 
-            return $this->showAllPaginate($productsAdmin);
+            return $this->showAllPaginate($products);
         }
         
         return [];
@@ -70,6 +75,7 @@ class ProductsController extends ApiController
 
         // Datos
         $productFields['name'] = $request['name'];
+        $productFields['status'] = $request['status'];
         $productFields['user_id'] = $request['user'] ? $request['user'] : $user->id;
         $productFields['company_id'] = $user->companyId();
         $productFields['description'] = $request['description'];
@@ -117,36 +123,127 @@ class ProductsController extends ApiController
     }
 
     /**
-     * Display the specified resource.
+     * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function edit($id)
     {
         //
+        $user = $this->validateUser();
+
+        $product = Products::findOrFail($id);
+        $product->image;
+        $product->productCategories;
+        $product->productCategoryServices;
+        $product->user;
+        $product->user->image;
+        return $this->showOne($product,200);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int  $idProduct
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
-        //
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+
+        $rules = [
+            'name' => 'required',
+            'type' => 'required'
+        ];
+
+        $this->validate( $request, $rules );
+        
+        // Datos
+        $product = Products::findOrFail($id);
+        
+        // Datos
+        $productFields['name'] = $request['name'];
+        $productFields['status'] = $request['status'];
+        $productFields['user_id'] = $request['user'] ? $request['user'] : $user->id;
+        $productFields['description'] = $request['description'];
+        $productFields['type'] = $request['type'];
+
+        $product->update( $productFields );
+
+        // Categorías
+        // Eliminar los anteriores
+        foreach( $product->productCategories as $key => $category ){
+            $product->productCategories()->detach($category->id);
+        }
+        
+        if( $request->categories && $request->type == 'producto' ){
+            foreach ($request->categories as $key => $categoryId) {
+                $product->productCategories()->attach($categoryId);
+            }
+        }
+
+        // Categorías Servicios
+        // Eliminar los anteriores
+        foreach( $product->productCategoryServices as $key => $category ){
+            $product->productCategoryServices()->detach($category->id);
+        }
+        
+        if( $request->categoriesServices && $request->type == 'servicio' ){
+            foreach ($request->categoriesServices as $key => $categoryId) {
+                $product->productCategoryServices()->attach($categoryId);
+            }
+        }
+
+        // Imágenes
+        if( $request->image ){
+            $png_url = "product-".time().".jpg";
+            $img = $request->image;
+            $img = substr($img, strpos($img, ",")+1);
+            $data = base64_decode($img);
+            $routeFile = $this->routeProducts.$product->id.'/'.$png_url;
+            
+            Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
+
+            if( $product->image ){
+                Storage::disk('local')->delete( $this->routeFile . $product->image->url );
+                $product->image()->update(['url' => $routeFile ]);
+            }else{
+                $product->image()->create(['url' => $routeFile]);
+            }
+        }
+
+        return $this->showOne($product,200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, int $id)
     {
-        //
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+
+        $product = Products::findOrFail($id);
+
+        if( $product->image ){
+            Storage::disk('local')->delete( $this->routeFile . $product->image->url );
+        }
+
+        foreach( $product->productCategories as $key => $category ){
+            $product->productCategories()->detach($category->id);
+        }
+        foreach( $product->productCategoryServices as $key => $category ){
+            $product->productCategoryServices()->detach($category->id);
+        }
+        $product->delete();
+
+        return $this->showOneData( ['success' => 'Se ha eliminado correctamente el proyecto', 'code' => 200 ], 200);
     }
 }

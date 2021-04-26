@@ -47,6 +47,7 @@ class AccountMyCompanyController extends ApiController
                     $company->image;
                     $company->address;
                     $company->socialnetworks;
+                    $company->companyCategoryServices;
                     // var_dump($company->socialnetworks);
                     $imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
                     $company->imageCoverPage = $imageCoverPage;
@@ -150,6 +151,18 @@ class AccountMyCompanyController extends ApiController
                         'latitud' => $request->latitud,
                         'longitud' => $request->longitud
                     ]);
+                }
+            }
+
+            // Categorías Servicios
+            // Eliminar los anteriores
+            foreach( $company->companyCategoryServices as $key => $category ){
+                $company->companyCategoryServices()->detach($category->id);
+            }
+            
+            if( $request->categoriesServices ){
+                foreach ($request->categoriesServices as $key => $categoryId) {
+                    $company->companyCategoryServices()->attach($categoryId);
                 }
             }
 

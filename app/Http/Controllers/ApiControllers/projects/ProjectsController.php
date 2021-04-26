@@ -30,16 +30,20 @@ class ProjectsController extends ApiController
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
 
-        // IS ADMIN
         $companyID = $user->companyId();
         if( $companyID && $user->userType() == 'demanda' ){
-            $projectsAdmin = Projects::where('company_id', $companyID)->get();
-            foreach( $projectsAdmin as $key => $project ){
+            if( $user->isAdminFrontEnd() ){
+                // IS ADMIN
+                $projects = Projects::where('company_id', $companyID)->get();
+            }else{
+                $projects = Projects::where('company_id', $companyID)->where('user_id', $user->id)->get();
+            }
+            foreach( $projects as $key => $project ){
                 $project->user;
                 $project->user['url'] = $project->user->image ? url( 'storage/' . $project->user->image->url ) : null;
             }
 
-            return $this->showAllPaginate($projectsAdmin);
+            return $this->showAllPaginate($projects);
         }
         return [];
     }
@@ -61,7 +65,7 @@ class ProjectsController extends ApiController
         // Datos
         $projectFields['name'] = $request['name'];
         // $projectFields['type_projects_id'] = $request['type'];
-        $projectFields['user_id'] = $user->id;
+        $projectFields['user_id'] = $request['user'] ? $request['user'] : $user->id;
         $projectFields['company_id'] = $user->companyId();
         $projectFields['description'] = $request['description'];
         $projectFields['date_start'] = $request['dateStarting'];
@@ -118,5 +122,136 @@ class ProjectsController extends ApiController
         DB::commit();
 
         return $this->showOne($project,201);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+        $user = $this->validateUser();
+
+        $project = Projects::findOrFail($id);
+        $project->image;
+        $project->projectTypeProject;
+        $project->address;
+        $project->user;
+        $project->user->image;
+        return $this->showOne($project,200);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $idProject
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, int $id)
+    {
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+
+        $rules = [
+            'name' => 'required',
+            'type' => 'required',
+            'status' => 'required',
+        ];
+
+        $this->validate( $request, $rules );
+        
+        // Datos
+        $project = Projects::findOrFail($id);
+
+        $projectFields['name'] = $request['name'];
+        $projectFields['user_id'] = $request['user'] ? $request['user'] : $user->id;
+        $projectFields['description'] = $request['description'];
+        $projectFields['date_start'] = $request['dateStarting'];
+        $projectFields['date_end'] = $request['dateEnding'];
+        $projectFields['meters'] = $request['meters'];
+        $projectFields['status'] = $request['status'];
+
+        $project->update( $projectFields );
+
+        // Tipos de proyectos
+        // Eliminar los anteriores
+        foreach( $project->projectTypeProject as $key => $typeProject ){
+            $project->projectTypeProject()->detach($typeProject->id);
+        }
+        
+        // Editar los nuevos
+        if( $request->type ){
+            foreach ($request->type as $key => $typeId) {
+                $project->projectTypeProject()->attach($typeId);
+            }
+        }
+
+        // Imágenes
+        if( $request->image ){
+            $png_url = "project-".time().".jpg";
+            $img = $request->image;
+            $img = substr($img, strpos($img, ",")+1);
+            $data = base64_decode($img);
+            $routeFile = $this->routeProjects.$project->id.'/'.$png_url;
+            
+            Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
+
+            if( $project->image ){
+                Storage::disk('local')->delete( $this->routeFile . $project->image->url );
+                $project->image()->update(['url' => $routeFile ]);
+            }else{
+                $project->image()->create(['url' => $routeFile]);
+            }
+        }
+
+        // Dirección, Latitud y Longitud
+        if( $request->address || $request->latitud || $request->longitud ){
+            if( !$project->address ){
+                $project->address()->create([
+                    'address' => $request->address,
+                    'latitud' => $request->latitud,
+                    'longitud' => $request->longitud
+                ]);
+            }else{
+                $project->address()->update([
+                    'address' => $request->address,
+                    'latitud' => $request->latitud,
+                    'longitud' => $request->longitud
+                ]);
+            }
+        }
+
+        return $this->showOne($project,200);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Request $request, int $id)
+    {
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+
+        $project = Projects::findOrFail($id);
+
+        if( $project->image ){
+            Storage::disk('local')->delete( $this->routeFile . $project->image->url );
+        }
+
+        $project->address()->delete();
+        foreach( $project->projectTypeProject as $key => $typeProject ){
+            $project->projectTypeProject()->detach($typeProject->id);
+        }
+        $project->delete();
+
+        return $this->showOneData( ['success' => 'Se ha eliminado correctamente el proyecto', 'code' => 200 ], 200);
     }
 }
