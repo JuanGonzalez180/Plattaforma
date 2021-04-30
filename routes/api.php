@@ -13,6 +13,8 @@ use ApiControllers\categoryservices\CategoryServicesController;
 use ApiControllers\projects\ProjectsController;
 use ApiControllers\products\ProductsController;
 use ApiControllers\tenders\TendersController;
+// Search
+use ApiControllers\search\SearchProjectsController;
 // Password
 use ApiControllers\password\SendCodeController;
 use ApiControllers\password\CodeValidationController;
@@ -42,97 +44,6 @@ use App\Http\Controllers\ApiControllers\user\UsersController;
 /*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });*/
-
-/**
- * Addresses
- */
-// Route::resource('addresses', 'addresses\AddressesController');
-
-/**
- * Blog
- */
-// Route::resource('blog', 'blog\BlogController');
-
-/**
- * Category
- */
-// Route::resource('categories', 'category\CategoryController');
-
-/**
- * Chat
- */
-// Route::resource('chat', 'chat\ChatController');
-
-/**
- * Countries
- */
-// Route::resource('countries', 'countries\CountriesController');
-
-/**
- * Files
- */
-// Route::resource('files', 'files\FilesController');
-
-/**
- * Interests
- */
-// Route::resource('interests', 'interests\InterestsController');
-
-/**
- * Messages
- */
-// Route::resource('messages', 'messages\MessagesController');
-
-/**
- * MetaData
- */
-// Route::resource('metadata', 'metadata\MetaDataController');
-
-/**
- * Products
- */
-// Route::resource('products', 'products\ProductsController');
-
-/**
- * Proponents
- */
-// Route::resource('proponents', 'proponents\ProponentsController');
-
-/**
- * QueryWall
- */
-// Route::resource('querywall', 'querywall\QueryWallController');
-
-/**
- * Remarks
- */
-// Route::resource('remarks', 'remarks\RemarksController');
-
-/**
- * SocialNetworks
- */
-// Route::resource('socialnetworks', 'socialnetworks\SocialNetworksController');
-
-/**
- * Tags
- */
-// Route::resource('tags', 'tags\TagsController');
-
-/**
- * Tenders
- */
-// Route::resource('tenders', 'tenders\TendersController');
-
-/**
- * TendersVersions
- */
-// Route::resource('tendersversions', 'tendersversions\TendersVersionsController');
-
-/**
- * TypeProject
- */
-// Route::resource('typeproject', 'typeproject\TypeProjectController');
-
 /**
  * TypesEntity
  */
@@ -211,6 +122,12 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      * Tenders
      */
     Route::resource('/tenders', TendersController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('tenders');
+
+    /**
+     * Search
+     */
+    Route::get('/search/projects', SearchProjectsController::class)->name('search-projects');
+    // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 });
 
 Route::resource('/myaccount/registermember', RegisterMemberController::class, ['only' => ['store']])->names('registermember');

@@ -3,6 +3,7 @@
 namespace App\Transformers;
 
 use App\Models\Projects;
+use App\Transformers\UserTransformer;
 use League\Fractal\TransformerAbstract;
 
 class ProjectsTransformer extends TransformerAbstract
@@ -31,7 +32,8 @@ class ProjectsTransformer extends TransformerAbstract
      * @return array
      */
     public function transform(Projects $project)
-    {
+    {   
+        $userTransform = new UserTransformer();
         return [
             //
             'id' => (int)$project->id,
@@ -45,7 +47,7 @@ class ProjectsTransformer extends TransformerAbstract
             'updated_at'=> (string)$project->updated_at,
             'date_start'=> (string)$project->date_start,
             'date_end'=> (string)$project->date_end,
-            'user'=> $project->user,
+            'user'=> $userTransform->transform($project->user),
         ];
     }
 }
