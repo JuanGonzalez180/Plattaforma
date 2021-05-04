@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\user;
 
 use App\Models\User;
+use App\Models\Team;
 use App\Models\Company;
 use App\Models\Image;
 use Illuminate\Http\Request;
@@ -25,12 +26,16 @@ class UsersController extends ApiController
             }
             $user = User::where('email', $request['email'])->first();
             
+            if( $user->admin == User::USER_ADMIN ) {
+                return $this->errorResponse( [ 'error' => ['invalid_credentials']], 500 );
+            }
+            
             // Si es el administrador de la compañía
             $user['admin'] = false;
             $user['type'] = '';
 
             // Validar Usuario.
-            if( count($user->company) && $user->company[0] ){
+            if( $user->isAdminFrontEnd() ){
                 $user['admin'] = true;
                 
                 $company = $user->company[0];
@@ -45,6 +50,10 @@ class UsersController extends ApiController
                     return $this->errorResponse( [ 'not_approved_b' => ['not_approved']], 500 );
                 }
             }elseif( $user->team ){
+                if( $user->team->status == Team::TEAM_PENDING ) {
+                    return $this->errorResponse( [ 'team_pending' => ['not_approved']], 500 );
+                }
+
                 $company = $user->team->company;
                 $user['type'] = $company->type_entity->type->slug;
             }
