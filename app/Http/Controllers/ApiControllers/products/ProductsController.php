@@ -37,9 +37,14 @@ class ProductsController extends ApiController
         if( $companyID && $user->userType() == 'oferta' ){
             if( $user->isAdminFrontEnd() ){
                 // Si es admin
-                $products = Products::where('company_id', $companyID)->get();
+                $products = Products::where('company_id', $companyID)
+                                            ->orderBy('id', 'desc')
+                                            ->get();
             }else{
-                $products = Products::where('company_id', $companyID)->where('user_id', $user->id)->get();
+                $products = Products::where('company_id', $companyID)
+                                        ->where('user_id', $user->id)
+                                        ->orderBy('id', 'desc')
+                                        ->get();
             }
             foreach( $products as $key => $product ){
                 $product->user;
@@ -97,6 +102,10 @@ class ProductsController extends ApiController
                 foreach ($request->categories as $key => $categoryId) {
                     $product->productCategories()->attach($categoryId);
                 }
+
+                foreach ($request->tags as $key => $tag) {
+                    $product->tags()->create(['name' => $tag['displayValue']]);
+                }
             }
 
             if( $request->categoriesServices && $request->type == 'servicio' ){
@@ -139,6 +148,7 @@ class ProductsController extends ApiController
         $product->productCategoryServices;
         $product->user;
         $product->user->image;
+        $product->tags;
         return $this->showOne($product,200);
     }
 
@@ -178,10 +188,18 @@ class ProductsController extends ApiController
         foreach( $product->productCategories as $key => $category ){
             $product->productCategories()->detach($category->id);
         }
+
+        foreach( $product->tags as $key => $tag ){
+            $tag->delete();
+        }
         
         if( $request->categories && $request->type == 'producto' ){
             foreach ($request->categories as $key => $categoryId) {
                 $product->productCategories()->attach($categoryId);
+            }
+
+            foreach ($request->tags as $key => $tag) {
+                $product->tags()->create(['name' => $tag['displayValue']]);
             }
         }
 

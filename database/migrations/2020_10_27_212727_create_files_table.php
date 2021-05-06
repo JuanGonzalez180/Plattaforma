@@ -16,13 +16,12 @@ class CreateFilesTable extends Migration
         Schema::create('files', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name');
-            $table->string('type');
-            $table->bigInteger('type_id')->unsigned();
-            $table->string('extension');
-            $table->string('date');
-            $table->string('date_update');
+            $table->bigInteger('filesable_id')->unsigned();
+            $table->string('filesable_type');
 
+            $table->string('name')->nullable();
+            $table->string('type')->nullable();
+            $table->string('url');
 
             $table->timestamps();
         });

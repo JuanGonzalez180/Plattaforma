@@ -22,6 +22,9 @@ class Projects extends Model
     const PROJECTS_ERASER = 'Borrador';
     const PROJECTS_PUBLISH = 'Publicado';
 
+    const PROJECTS_VISIBLE = 'Visible';
+    const PROJECTS_VISIBLE_NO = 'No-Visible';
+
     public $transformer = ProjectsTransformer::class;
 
     protected $fillable = [
@@ -33,11 +36,16 @@ class Projects extends Model
         'date_start',
         'date_end',
         'meters',
-        'status'
+        'status',
+        'visible'
     ];
 
     public function isPublish(){
         return $this->status == Projects::PROJECTS_PUBLISH;
+    }
+    
+    public function isVisible(){
+        return $this->visible == Projects::PROJECTS_VISIBLE;
     }
 
     public function company(){
@@ -46,10 +54,6 @@ class Projects extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
-    }
-
-    public function files(){
-        return $this->belongsToMany(Files::class);
     }
 
     public function interests(){
@@ -78,5 +82,10 @@ class Projects extends Model
     
     public function projectTypeProject(){
         return $this->belongsToMany(TypeProject::class);
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function files(){
+        return $this->morphMany(Files::class, 'filesable');
     }
 }

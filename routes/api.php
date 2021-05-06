@@ -11,8 +11,12 @@ use ApiControllers\typeproject\TypeProjectController;
 use ApiControllers\category\CategoryController;
 use ApiControllers\categoryservices\CategoryServicesController;
 use ApiControllers\projects\ProjectsController;
+use ApiControllers\projects\ProjectsFilesController;
 use ApiControllers\products\ProductsController;
+use ApiControllers\products\ProductsFilesController;
+use ApiControllers\products\ProductsDocumentsController;
 use ApiControllers\tenders\TendersController;
+use ApiControllers\files\FilesController;
 // Search
 use ApiControllers\search\SearchProjectsController;
 // Password
@@ -29,6 +33,7 @@ use ApiControllers\myaccount\RegisterMemberController;
 use ApiControllers\stripe\SubscriptionsStripeController;
 
 use App\Http\Controllers\ApiControllers\user\UsersController;
+use App\Http\Controllers\ApiControllers\projects\ProjectsController as ProjectsControllerVisible;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,10 +119,14 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      * Projects
      */
     Route::resource('/projects', ProjectsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('projects');
+    Route::put('/projects/{project}/visible', [ProjectsControllerVisible::class, 'changevisible'])->name('projectsvisible');
+    Route::resource('/projects/files', ProjectsFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('projectsimages');
     /**
      * Products
      */
     Route::resource('/products', ProductsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('products');
+    Route::resource('/products/files', ProductsFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('productsimages');
+    Route::resource('/products/documents', ProductsDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('productsdocuments');
     /**
      * Tenders
      */
@@ -127,8 +136,10 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      * Search
      */
     Route::get('/search/projects', SearchProjectsController::class)->name('search-projects');
+    
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 });
+Route::post('/files', FilesController::class)->name('files');
 
 Route::resource('/myaccount/registermember', RegisterMemberController::class, ['only' => ['store']])->names('registermember');
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\Image;
+use App\Models\Tags;
 use App\Models\Files;
 use App\Models\Company;
 use App\Models\Category;
@@ -47,10 +48,6 @@ class Products extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function files(){
-        return $this->belongsToMany(Files::class);
-    }
-
     public function user(){
         return $this->belongsTo(User::class);
     }
@@ -70,5 +67,15 @@ class Products extends Model
 
     public function productCategoryServices(){
         return $this->belongsToMany(CategoryService::class);
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function files(){
+        return $this->morphMany(Files::class, 'filesable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function tags(){
+        return $this->morphMany(Tags::class, 'tagsable');
     }
 }

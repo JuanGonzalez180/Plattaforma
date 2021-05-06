@@ -17,43 +17,23 @@ class Files extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     /**
      * type: Tipo de Archivo
      */
     protected $fillable = [
         'name',
         'type',
-        'type_id',
-        'extension',
-        'date',
-        'date_update'
+        'url'
+    ];
+
+    protected $hidden = [
+        'filesable_id',
+        'filesable_type',
     ];
     
-    public function blog(){
-        return $this->belongsToMany(Blog::class);
-    }
-
-    public function categories(){
-        return $this->belongsToMany(Category::class);
-    }
-
-    public function company(){
-        return $this->belongsToMany(Company::class);
-    }
-
-    public function products(){
-        return $this->belongsToMany(Products::class);
-    }
-
-    public function projects(){
-        return $this->belongsToMany(Projects::class);
-    }
-
-    public function tendersVersions(){
-        return $this->belongsToMany(TendersVersions::class);
-    }
-
-    public function typeProjects(){
-        return $this->belongsToMany(TypeProject::class);
+    public function filesable(){
+        return $this->morphTo();
     }
 }

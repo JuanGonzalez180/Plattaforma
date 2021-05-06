@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class ProjectsController extends ApiController
-{   
+{
     public $routeFile = 'public/';
     public $routeProjects = 'images/projects/';
 
@@ -34,11 +34,17 @@ class ProjectsController extends ApiController
         if( $companyID && $user->userType() == 'demanda' ){
             if( $user->isAdminFrontEnd() ){
                 // IS ADMIN
-                $projects = Projects::where('company_id', $companyID)->get();
+                $projects = Projects::where('company_id', $companyID)
+                                ->orderBy('id', 'desc')
+                                ->get();
             }else{
-                $projects = Projects::where('company_id', $companyID)->where('user_id', $user->id)->get();
+                $projects = Projects::where('company_id', $companyID)
+                                        ->where('user_id', $user->id)
+                                        ->orderBy('id', 'desc')
+                                        ->get();
             }
             foreach( $projects as $key => $project ){
+                $project->image;
                 $project->user;
                 $project->user['url'] = $project->user->image ? url( 'storage/' . $project->user->image->url ) : null;
             }
@@ -224,6 +230,30 @@ class ProjectsController extends ApiController
                 ]);
             }
         }
+
+        return $this->showOne($project,200);
+    }
+
+    public function changevisible(Request $request, int $id)
+    {
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+
+        $rules = [
+            'visible' => 'required'
+        ];
+
+        $this->validate( $request, $rules );
+
+        // Datos
+        $project = Projects::findOrFail($id);
+        if( $request->visible == Projects::PROJECTS_VISIBLE ){
+            $request->visible = Projects::PROJECTS_VISIBLE_NO;
+        }else{
+            $request->visible = Projects::PROJECTS_VISIBLE;
+        }
+        $projectFields['visible'] = $request->visible;
+        $project->update( $projectFields );
 
         return $this->showOne($project,200);
     }

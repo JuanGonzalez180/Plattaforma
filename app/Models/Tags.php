@@ -9,9 +9,18 @@ class Tags extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     protected $fillable = [
         'name',
-        'date',
-        'date_update'
     ];
+
+    protected $hidden = [
+        'tagsable_id',
+        'tagsable_type',
+    ];
+    
+    public function tagsable(){
+        return $this->morphTo();
+    }
 }

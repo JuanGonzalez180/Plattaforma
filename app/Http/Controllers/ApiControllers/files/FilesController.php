@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\files;
+namespace App\Http\Controllers\ApiControllers\files;
 
-use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\ApiControllers\ApiController;
 
 class FilesController extends ApiController
 {
@@ -12,9 +12,25 @@ class FilesController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function __invoke(Request $request)
     {
         //
+        // if( $request->hasFile('image') ) {
+            // $completeFileName = $request->file('image')->getClientOriginalName();
+            // $fileNameOnly = pathinfo($completeFileName, PATHINFO_FILENAME);
+            // $extension = $request->file('image')->getClientOriginalExtension();
+            // $fileInServer = str_replace(' ', '_', $fileNameOnly) . '-' . rand() . '-' . time() . '.' . $extension;
+
+            // Subir el archivo
+            // $request->file('image')->storeAs('public/posts', $fileInServer);
+            // $post->image = $fileInServer;
+        // }
+
+        // if( $post->save() ) {
+        return [
+            'status' => true,
+            'message' => 'Publicación guardada!'
+        ];
     }
 
     /**

@@ -37,7 +37,7 @@ class CompanyController extends ApiController
             'country_code' => 'required',
             'country_backend' => 'required',
             'email' => 'required|email|unique:users',
-            'name' => ['required', 'regex:/^[a-zA-Z\s]*$/'],
+            'name' => ['required', 'regex:/^[a-zA-Z0-9\s]*$/'],
             'nit' => 'nullable|numeric',
             'password' => 'required|min:6|confirmed',
             'terms' => 'required',
