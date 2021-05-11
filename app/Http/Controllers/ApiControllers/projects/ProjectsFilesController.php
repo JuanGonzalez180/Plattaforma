@@ -83,14 +83,14 @@ class ProjectsFilesController extends ApiController
         $rules = [
             'id' => 'required',
             'name' => 'required',
-            'project' => 'required',
+            // 'project' => 'required',
         ];
 
         $this->validate( $request, $rules );
         
         // Datos
-        $project = Projects::findOrFail($request->project);
         $fileProject = Files::where('id', $fileId)->where('filesable_type', Projects::class)->first();
+        $project = Projects::findOrFail($fileProject->filesable_id);
 
         $tmp = explode('.', $fileProject->name);
         $extension = end($tmp);

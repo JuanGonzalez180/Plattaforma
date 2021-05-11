@@ -3,6 +3,8 @@
 namespace App\Transformers;
 
 use App\Models\Products;
+use App\Transformers\UserTransformer;
+use App\Transformers\CompanyTransformer;
 use League\Fractal\TransformerAbstract;
 
 class ProductsTransformer extends TransformerAbstract
@@ -32,6 +34,8 @@ class ProductsTransformer extends TransformerAbstract
      */
     public function transform(Products $product)
     {
+        $userTransform = new UserTransformer();
+        $companyTransform = new CompanyTransformer();
         return [
             //
             'id' => (int)$product->id,
@@ -44,6 +48,9 @@ class ProductsTransformer extends TransformerAbstract
             'created_at'=> (string)$product->created_at,
             'updated_at'=> (string)$product->updated_at,
             'user'=> $product->user,
+            'user'=> $userTransform->transform($product->user),
+            'company'=> $companyTransform->transform($product->company),
+            'image'=> $product->image,
         ];
     }
 }

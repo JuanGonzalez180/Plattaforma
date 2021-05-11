@@ -1,22 +1,21 @@
 <?php
 
-namespace App\Http\Controllers\ApiControllers\products;
+namespace App\Http\Controllers\ApiControllers\company;
 
 use JWTAuth;
 use App\Models\User;
 use App\Models\Files;
 use App\Models\Company;
-use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
-class ProductsDocumentsController extends ApiController
+class CompanyFilesController extends ApiController
 {
     //
     public $routeFile = 'public/';
-    public $routeProducts = 'images/products/';
+    public $routeCompanies = 'images/company/';
     public $allowed = ['pdf'];
 
     public function validateUser(){
@@ -27,33 +26,33 @@ class ProductsDocumentsController extends ApiController
         return $this->user;
     }
 
-    public function filesType( $product ){
-        $files = Files::where('filesable_id', $product->id)->where('type', 'documents')->where('filesable_type', Products::class)->get();
-        return $files;
+    public function company( User $user ){
+        try{
+            $company = $user->companyClass();
+        } catch (\Throwable $th) {
+            return false;
+        }
+
+        return $company;
     }
 
     public function index(Request $request)
     {
         $user = $this->validateUser();
-
-        $rules = [
-            'id' => 'required'
-        ];
-        $this->validate( $request, $rules );
         
-        $product = Products::findOrFail($request->id);
-        return $this->showAll($this->filesType( $product ),200);
+        $company = $this->company( $user );
+        if( !$company )
+            return $this->errorResponse( [ 'company' => ['Ha ocurrido un error al obtener la compañia']], 500 );
+        
+        return $this->showAll($company->files,200);
     }
 
     public function store(Request $request){
         $user = $this->validateUser();
 
-        $rules = [
-            'id' => 'required'
-        ];
-        $this->validate( $request, $rules );
-
-        $product = Products::findOrFail($request->id);
+        $company = $this->company( $user );
+        if( !$company )
+            return $this->errorResponse( [ 'company' => ['Ha ocurrido un error al obtener la compañia']], 500 );
 
         if( $request->hasFile('files') ) {
             $completeFileName = $request->file('files')->getClientOriginalName();
@@ -62,15 +61,15 @@ class ProductsDocumentsController extends ApiController
 
             if( in_array( $extension, $this->allowed ) ){
                 $fileInServer = 'document' . '-' . rand() . '-' . time() . '.' . $extension;
-                $routeFile = $this->routeProducts.$product->id.'/documents/';
+                $routeFile = $this->routeCompanies.$company->id.'/documents/';
                 $request->file('files')->storeAs( $this->routeFile . $routeFile, $fileInServer);
-                $product->files()->create([ 'name' => $fileInServer, 'type'=> 'documents', 'url' => $routeFile.$fileInServer]);
+                $company->files()->create([ 'name' => $fileInServer, 'type'=> 'documents', 'url' => $routeFile.$fileInServer]);
             }else{
                 return $this->errorResponse( [ 'error' => ['El tipo de archivo no es válido']], 500 );
             }
         }
 
-        return $this->showAll($this->filesType( $product ),200);
+        return $this->showAll($company->files,200);
     }
 
     /**
@@ -85,22 +84,18 @@ class ProductsDocumentsController extends ApiController
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
 
-        $rules = [
-            'id' => 'required',
-            'name' => 'required',
-            // 'product' => 'required',
-        ];
-
-        $this->validate( $request, $rules );
+        $company = $this->company( $user );
+        if( !$company )
+            return $this->errorResponse( [ 'company' => ['Ha ocurrido un error al obtener la compañia']], 500 );
         
         // Datos
-        $fileProduct = Files::where('id', $fileId)->where('filesable_type', Products::class)->first();
-        $product = Products::findOrFail($fileProduct->filesable_id);
+        $fileCompany = Files::where('id', $fileId)->where('filesable_type', Company::class)->first();
+        // $company = Company::findOrFail($fileCompany->filesable_id);
 
-        $tmp = explode('.', $fileProduct->name);
+        $tmp = explode('.', $fileCompany->name);
         $extension = end($tmp);
 
-        $routeFile = $this->routeProducts.$product->id.'/documents/';
+        $routeFile = $this->routeCompanies.$company->id.'/documents/';
         $file['name'] = preg_replace("/[^A-Za-z0-9]/", '', $request['name']) . "." . $extension;
         $file['url'] = $routeFile . $file['name'];
         
@@ -109,35 +104,32 @@ class ProductsDocumentsController extends ApiController
             return $this->errorResponse( $userError, 500 );
         }
 
-        if( Storage::disk('local')->exists( $this->routeFile . $routeFile . $fileProduct->name ) ){
+        if( Storage::disk('local')->exists( $this->routeFile . $routeFile . $fileCompany->name ) ){
             if(Storage::move(
-                $this->routeFile . $routeFile . $fileProduct->name, 
+                $this->routeFile . $routeFile . $fileCompany->name, 
                 $this->routeFile . $routeFile . $file['name'])
             ){
-                $fileProduct->update( $file );
+                $fileCompany->update( $file );
             }
         }
 
-        return $this->showAll($this->filesType( $product ),200);
+        return $this->showAll($company->files,200);
     }
 
     public function destroy(Request $request, int $fileId){
         $user = $this->validateUser();
         
-        $rules = [
-            'id' => 'required'
-        ];
-        $this->validate( $request, $rules );
+        $company = $this->company( $user );
+        if( !$company )
+            return $this->errorResponse( [ 'company' => ['Ha ocurrido un error al obtener la compañia']], 500 );
 
-        $product = Products::findOrFail($request->id);
-        
-        $fileProduct = Files::where('id', $fileId)->where('filesable_type', Products::class)->first();
+        $fileCompany = Files::where('id', $fileId)->where('filesable_type', Company::class)->first();
         // Eliminar archivo de los datos
-        Storage::disk('local')->delete( $this->routeFile . $fileProduct->url );
+        Storage::disk('local')->delete( $this->routeFile . $fileCompany->url );
         // Eliminar archivo de la BD
-        $fileProduct->delete();
+        $fileCompany->delete();
 
         // return $this->showOneData( ['success' => 'Se ha eliminado el archivo correctamente', 'code' => 200 ], 200);
-        return $this->showAll($this->filesType( $product ),200);
+        return $this->showAll($company->files,200);
     }
 }

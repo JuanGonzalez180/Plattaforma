@@ -47,6 +47,7 @@ class ProductsController extends ApiController
                                         ->get();
             }
             foreach( $products as $key => $product ){
+                $product->image;
                 $product->user;
                 $product->user['url'] = $product->user->image ? url( 'storage/' . $product->user->image->url ) : null;
             }

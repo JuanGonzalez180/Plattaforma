@@ -88,16 +88,16 @@ class ProductsFilesController extends ApiController
         $rules = [
             'id' => 'required',
             'name' => 'required',
-            'product' => 'required',
+            // 'product' => 'required',
         ];
 
         $this->validate( $request, $rules );
         
         // Datos
-        $product = Products::findOrFail($request->product);
-        $fileProject = Files::where('id', $fileId)->where('filesable_type', Products::class)->first();
+        $fileProduct = Files::where('id', $fileId)->where('filesable_type', Products::class)->first();
+        $product = Products::findOrFail($fileProduct->filesable_id);
 
-        $tmp = explode('.', $fileProject->name);
+        $tmp = explode('.', $fileProduct->name);
         $extension = end($tmp);
 
         $routeFile = $this->routeProducts.$product->id.'/images/';
@@ -109,12 +109,12 @@ class ProductsFilesController extends ApiController
             return $this->errorResponse( $userError, 500 );
         }
 
-        if( Storage::disk('local')->exists( $this->routeFile . $routeFile . $fileProject->name ) ){
+        if( Storage::disk('local')->exists( $this->routeFile . $routeFile . $fileProduct->name ) ){
             if(Storage::move(
-                $this->routeFile . $routeFile . $fileProject->name, 
+                $this->routeFile . $routeFile . $fileProduct->name, 
                 $this->routeFile . $routeFile . $file['name'])
             ){
-                $fileProject->update( $file );
+                $fileProduct->update( $file );
             }
         }
 
@@ -131,11 +131,11 @@ class ProductsFilesController extends ApiController
 
         $product = Products::findOrFail($request->id);
         
-        $fileProject = Files::where('id', $fileId)->where('filesable_type', Products::class)->first();
+        $fileProduct = Files::where('id', $fileId)->where('filesable_type', Products::class)->first();
         // Eliminar archivo de los datos
-        Storage::disk('local')->delete( $this->routeFile . $fileProject->url );
+        Storage::disk('local')->delete( $this->routeFile . $fileProduct->url );
         // Eliminar archivo de la BD
-        $fileProject->delete();
+        $fileProduct->delete();
 
         // return $this->showOneData( ['success' => 'Se ha eliminado el archivo correctamente', 'code' => 200 ], 200);
         return $this->showAll($this->filesType( $product ),200);

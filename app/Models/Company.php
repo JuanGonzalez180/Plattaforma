@@ -60,10 +60,6 @@ class Company extends Model
         return $this->hasMany(Blog::class);
     }
 
-    public function files(){
-        return $this->belongsToMany(Files::class);
-    }
-
     public function projects(){
         return $this->hasMany(Projects::class);
     }
@@ -111,5 +107,10 @@ class Company extends Model
 
     public function companyCategoryServices(){
         return $this->belongsToMany(CategoryService::class);
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function files(){
+        return $this->morphMany(Files::class, 'filesable');
     }
 }

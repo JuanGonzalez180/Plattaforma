@@ -15,10 +15,12 @@ use ApiControllers\projects\ProjectsFilesController;
 use ApiControllers\products\ProductsController;
 use ApiControllers\products\ProductsFilesController;
 use ApiControllers\products\ProductsDocumentsController;
+use ApiControllers\company\CompanyFilesController;
 use ApiControllers\tenders\TendersController;
 use ApiControllers\files\FilesController;
 // Search
 use ApiControllers\search\SearchProjectsController;
+use ApiControllers\search\SearchProductsController;
 // Password
 use ApiControllers\password\SendCodeController;
 use ApiControllers\password\CodeValidationController;
@@ -114,6 +116,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/myaccount/mycompany', AccountMyCompanyController::class)->name('mycompany');
     Route::resource('/myaccount/mycompany', AccountMyCompanyController::class, ['only' => ['store']])->names('mycompany');
     Route::resource('/myaccount/myteam', AccountMyTeamController::class, ['only' => ['index', 'store', 'update', 'destroy']])->names('myteam');
+    Route::resource('/company/files', CompanyFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('companyimages');
     
     /**
      * Projects
@@ -127,6 +130,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/products', ProductsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('products');
     Route::resource('/products/files', ProductsFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('productsimages');
     Route::resource('/products/documents', ProductsDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('productsdocuments');
+
     /**
      * Tenders
      */
@@ -136,6 +140,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      * Search
      */
     Route::get('/search/projects', SearchProjectsController::class)->name('search-projects');
+    Route::get('/search/products', SearchProductsController::class)->name('search-products');
     
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 });
