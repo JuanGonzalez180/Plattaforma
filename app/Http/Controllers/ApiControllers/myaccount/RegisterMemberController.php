@@ -21,8 +21,8 @@ class RegisterMemberController extends ApiController
             if ( $dataTeam->status == Team::TEAM_PENDING ) {
                 $rules = [
                     'username' => ['alpha_dash','max:255', Rule::unique('users')->ignore($newMember->id)],
-                    //Con regex no me deja la ñ
                     'name' => ['required', 'max:255'],
+                    'lastname' => ['required', 'max:255'],
                     'position' => ['required', 'max:255'],
                     'phone' => ['required'],
                     'password' => ['required', 'min:6', 'confirmed'],

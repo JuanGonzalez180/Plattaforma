@@ -93,6 +93,11 @@ class AccountMyTeamController extends ApiController
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
 
+        if( !$user->isAdminFrontEnd() ){
+            $userError = [ 'error' => ['Error, no tiene permisos para crear un integrante'] ];
+            return $this->errorResponse( $userError, 500 );
+        }
+
         $rules = [
             'email' => ['email', Rule::unique('users') ]
         ];
@@ -116,17 +121,17 @@ class AccountMyTeamController extends ApiController
             // Si existe algún error al momento de crear el usuario
             $errorUser = true;
             DB::rollBack();
-            $userError = [ 'user' => 'Error, no se ha podido crear el usuario' ];
+            $userError = [ 'error' => ['Error, no se ha podido crear el usuario'] ];
             return $this->errorResponse( $userError, 500 );
         }
         
         if( !$errorUser ){
-            $teamFields = [
-                'user_id' => $newUser->id,
-                'company_id' => $user->company[0]->id
-            ];
-            
             try {
+                $teamFields = [
+                    'user_id' => $newUser->id,
+                    'company_id' => $user->companyId()
+                ];
+
                 // Crear un miembro del equipo
                 $team = Team::create( $teamFields );
 
@@ -134,7 +139,7 @@ class AccountMyTeamController extends ApiController
             } catch (\Throwable $th) {
                 // Si existe algún error al generar la compañía
                 DB::rollBack();
-                $teamError = [ 'team' => 'Error, no se ha podido crear el miembro del equipo' ];
+                $teamError = [ 'error' => ['Error, no se ha podido crear el miembro del equipo'] ];
                 return $this->errorResponse( $teamError, 500 );
             }
         }
@@ -199,7 +204,7 @@ class AccountMyTeamController extends ApiController
         $userMemberTeam = $memberTeam->user;
         
         if( $userMemberTeam->email !== $request['email'] ) {
-            $userError = [ 'user' => 'Error, no se ha podido eliminar el integrante' ];
+            $userError = [ 'user' => ['Error, no se ha podido eliminar el integrante'] ];
             return $this->errorResponse( $userError, 500 );
         }
 
