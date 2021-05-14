@@ -8,6 +8,7 @@ return [
 
         'authentication' => [
             'registerMember' => 'autenticacion/registrar-integrante',
+            'login' => 'autenticacion/iniciar-sesion',
         ],
 
     ],

@@ -4,13 +4,14 @@ namespace App\Http\Controllers\ApiControllers\company;
 
 use App\Models\User;
 use App\Models\Company;
-use Illuminate\Http\Request;
+use App\Models\TypesEntity;
 use App\Mail\CreatedAccount;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ApiControllers\ApiController;
-use App\Models\TypesEntity;
 use TaylorNetwork\UsernameGenerator\Generator;
+use Illuminate\Support\Str as Str;
 
 class CompanyController extends ApiController
 {
@@ -93,6 +94,7 @@ class CompanyController extends ApiController
         // $userFields['validated'] = User::USER_NO_VALIDATED;
         $userFields['verification_token'] = User::generateVerificationToken();
         $userFields['admin'] = User::USER_REGULAR;
+        $userFields['slug'] = Str::slug($request->name);
 
         // Iniciar Transacción
         DB::beginTransaction();
@@ -104,7 +106,7 @@ class CompanyController extends ApiController
             // Si existe algún error al momento de crear el usuario
             $errorUser = true;
             DB::rollBack();
-            $userError = [ 'user' => 'Error, no se ha podido crear el usuario' ];
+            $userError = [ 'user' => 'Error, no se ha podido crear el usuario o ya existe el nombre de la empresa' ];
             return $this->errorResponse( $userError, 500 );
         }
         

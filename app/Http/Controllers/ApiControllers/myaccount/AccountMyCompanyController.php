@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\SocialNetworksRelation;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str as Str;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -167,7 +168,15 @@ class AccountMyCompanyController extends ApiController
             }
 
             // Guardar
-            $company->save();
+            $company->slug = Str::slug($request->name);
+            try{
+                // Editar la compañía
+                $company->save();
+            } catch (\Throwable $th) {
+                $error =  [ 'user' => ['El nombre de la compañía ya existe']];
+                return $this->errorResponse( $error, 500 );
+            }
+
             // ReSearch User
             $companyNew = Company::findOrFail($company->id);
             $companyNew->imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
