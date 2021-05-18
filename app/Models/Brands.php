@@ -3,12 +3,17 @@
 namespace App\Models;
 
 use App\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Image;
+use App\Models\Products;
 use Illuminate\Database\Eloquent\Model;
+use App\Transformers\BrandsTransformer;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Brands extends Model
 {
     use HasFactory;
+
+    public $transformer = BrandsTransformer::class;
 
     protected $fillable = [
         'user_id',
@@ -22,4 +27,10 @@ class Brands extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
+
+    // Relacion uno a uno polimorfica
+    public function image(){
+        return $this->morphOne(Image::class, 'imageable');
+    }
 }
+
