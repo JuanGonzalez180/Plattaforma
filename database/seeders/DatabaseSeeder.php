@@ -28,6 +28,24 @@ class DatabaseSeeder extends Seeder
             'admin' => User::USER_ADMIN
         ]);
 
+        User::create([
+            'name' => 'Cristian Fajardo', 
+            'username' => 'cris10x', 
+            'email' => 'cris10x@incdustry.com', 
+            'password' => bcrypt('12345678'), 
+            'verified' => User::USER_VERIFIED, 
+            'admin' => User::USER_ADMIN
+        ]);
+
+        User::create([
+            'name' => 'User no admin', 
+            'username' => 'No admin', 
+            'email' => 'noadmin@incdustry.com', 
+            'password' => bcrypt('12345678'), 
+            'verified' => User::USER_VERIFIED, 
+            'admin' => User::USER_REGULAR
+        ]);
+
         Type::create([
             'name' => 'Demanda'
         ]);
@@ -80,5 +98,7 @@ class DatabaseSeeder extends Seeder
         Currency::create([
             'iso' => 'usd'
         ]);
+
+        $this->call(BrandSeeder::class);
     }
 }
