@@ -19,6 +19,7 @@ class UsersController extends ApiController
     {
         $credentials = $request->only('email', 'password');
         try {
+            // var_dump(User::USER_ADMIN);
             // 7 días
             JWTAuth::factory()->setTTL( 60 * 24 * 7 );
             if (! $token = JWTAuth::attempt($credentials)) {

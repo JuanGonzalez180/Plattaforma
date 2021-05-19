@@ -33,8 +33,8 @@ class BrandsTransformer extends TransformerAbstract
     public function transform(Brands $brands)
     {
         return [
-            'user_id', => (int)$brands->id,
-            'name', => (string)$brands->name,
+            'user_id' => (int)$brands->id,
+            'name' => (string)$brands->name,
             'status' => (string)$brands->status,
         ];
     }

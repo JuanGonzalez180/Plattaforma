@@ -18,6 +18,7 @@ use ApiControllers\products\ProductsDocumentsController;
 use ApiControllers\company\CompanyFilesController;
 use ApiControllers\tenders\TendersController;
 use ApiControllers\files\FilesController;
+use ApiControllers\brands\BrandsController;
 // Search
 use ApiControllers\search\SearchProjectsController;
 use ApiControllers\search\SearchProductsController;
@@ -130,18 +131,19 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/products', ProductsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('products');
     Route::resource('/products/files', ProductsFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('productsimages');
     Route::resource('/products/documents', ProductsDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('productsdocuments');
-
+    /**
+     * brands
+     */
+    Route::resource('/brands', BrandsController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('brands');
     /**
      * Tenders
      */
     Route::resource('/tenders', TendersController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('tenders');
-
     /**
      * Search
      */
     Route::get('/search/projects', SearchProjectsController::class)->name('search-projects');
     Route::get('/search/products', SearchProductsController::class)->name('search-products');
-    
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 });
 Route::post('/files', FilesController::class)->name('files');
