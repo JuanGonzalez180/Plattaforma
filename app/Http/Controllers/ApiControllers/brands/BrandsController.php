@@ -23,8 +23,7 @@ class BrandsController extends ApiController
 
     public function index()
     {
-        $brands = Brands::select('id','name')
-            ->where('status',Brands::BRAND_ENABLED)
+        $brands = Brands::where('status',Brands::BRAND_ENABLED)
             ->orderBy('name', 'ASC')
             ->get();
 
@@ -120,5 +119,13 @@ class BrandsController extends ApiController
         return $this->showAllPaginate($brands);
     }
 
-    
+    public function showBrandToProducts($id)
+    {
+        $products = Products::where('brand_id',$id)
+            ->orderBy('name','ASC')
+            ->get();   
+
+        return $this->showAllPaginate($products);
+    }
+
 }

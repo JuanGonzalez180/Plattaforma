@@ -22,6 +22,7 @@ use ApiControllers\brands\BrandsController;
 // Search
 use ApiControllers\search\SearchProjectsController;
 use ApiControllers\search\SearchProductsController;
+use ApiControllers\search\SearchBrandsController;
 // Password
 use ApiControllers\password\SendCodeController;
 use ApiControllers\password\CodeValidationController;
@@ -118,7 +119,6 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/myaccount/mycompany', AccountMyCompanyController::class, ['only' => ['store']])->names('mycompany');
     Route::resource('/myaccount/myteam', AccountMyTeamController::class, ['only' => ['index', 'store', 'update', 'destroy']])->names('myteam');
     Route::resource('/company/files', CompanyFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('companyimages');
-    
     /**
      * Projects
      */
@@ -144,6 +144,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      */
     Route::get('/search/projects', SearchProjectsController::class)->name('search-projects');
     Route::get('/search/products', SearchProductsController::class)->name('search-products');
+    Route::post('/search/brands', SearchBrandsController::class)->name('search-brands');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 });
 Route::post('/files', FilesController::class)->name('files');
