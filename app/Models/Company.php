@@ -2,27 +2,31 @@
 
 namespace App\Models;
 
-use App\Models\Addresses;
 use App\Models\Blog;
-use App\Models\Country;
+use App\Models\Team;
+use App\Models\User;
 use App\Models\Files;
-use App\Models\Interests;
+use App\Models\Image;
+use App\Models\Country;
+use App\Models\Tenders;
 use App\Models\MetaData;
 use App\Models\Products;
 use App\Models\Projects;
-use App\Models\SocialNetworks;
+use App\Models\Addresses;
+use App\Models\Interests;
 use App\Models\TypesEntity;
-use App\Models\Team;
-use App\Models\User;
-use App\Models\Image;
+use App\Models\SocialNetworks;
 use App\Models\SocialNetworksRelation;
 use App\Models\CategoryService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Transformers\CompanyDetailTransformer;
 
 class Company extends Model
 {
     use HasFactory;
+
+    public $transformer = CompanyDetailTransformer::class;
 
     const COMPANY_CREATED = 'Creado';
     const COMPANY_APPROVED = 'Aprobado';
@@ -64,8 +68,37 @@ class Company extends Model
         return $this->hasMany(Projects::class);
     }
 
+    public function tenders(){
+        return $this->hasMany(Tenders::class);
+    }
+
     public function products(){
         return $this->hasMany(Products::class);
+    }
+
+    public function total( $company ){
+        $total = [];
+        
+        $total['team'] = Team::where('company_id', $company->id)
+                                ->where('status', Team::TEAM_APPROVED)
+                                ->get()
+                                ->count();
+
+        $total['projects'] = $company->projects
+                                ->where('visible', Projects::PROJECTS_VISIBLE)
+                                ->count();    
+
+        $total['tenders'] = $company->tenders
+                                // ->where('visible', Tenders::PROJECTS_VISIBLE)
+                                ->count();
+        
+        $total['products'] = $company->products
+                                ->where('status', Products::PRODUCT_PUBLISH)
+                                ->count();
+
+        $total['portfolio'] = count($company->files);
+
+        return $total;
     }
 
     public function interests(){

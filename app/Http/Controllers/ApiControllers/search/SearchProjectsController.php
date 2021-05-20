@@ -34,7 +34,9 @@ class SearchProjectsController extends ApiController
         if( $companyID && $user->userType() == 'oferta' ){
             // 
             // Filtros Búsquedas y demás
-            $projects = Projects::all();
+            $projects = Projects::where('visible', Projects::PROJECTS_VISIBLE)
+                                        ->orderBy('id', 'desc')
+                                        ->get();
 
             foreach( $projects as $key => $project ){
                 $project->user['url'] = $project->user->image ? url( 'storage/' . $project->user->image->url ) : null;

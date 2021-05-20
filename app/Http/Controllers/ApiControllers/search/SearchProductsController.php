@@ -34,7 +34,9 @@ class SearchProductsController extends ApiController
         if( $companyID && $user->userType() == 'demanda' ){
             // 
             // Filtros Búsquedas y demás
-            $products = Products::all();
+            $products = Products::where('status', Products::PRODUCT_PUBLISH)
+                                        ->orderBy('id', 'desc')
+                                        ->get();
 
             foreach( $products as $key => $product ){
                 $product->user['url'] = $product->user->image ? url( 'storage/' . $product->user->image->url ) : null;

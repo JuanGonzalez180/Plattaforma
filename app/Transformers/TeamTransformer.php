@@ -46,4 +46,21 @@ class TeamTransformer extends TransformerAbstract
             'user'=> $team->user,
         ];
     }
+
+    public function transformNoDetail($teams){
+        $newTeam = [];
+        foreach ($teams as $key => $team) {
+            $team['url'] = $team->user->image ? url( 'storage/' . $team->user->image->url ) : null;
+            $newTeam[] = [
+                //
+                'id' => (int)$team->id,
+                'user_id'=> (int)$team->user_id,
+                'position'=> (string)$team->position,
+                'url'=> $team->url,
+                'name'=> $team->user->name,
+                'lastname'=> $team->user->lastname
+            ];
+        }
+        return $newTeam;
+    }
 }

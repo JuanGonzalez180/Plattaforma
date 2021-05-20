@@ -1,18 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use WebControllers\user\UsersController;
-use WebControllers\country\CountryController;
-use WebControllers\category\CategoryController;
-use WebControllers\categoryservices\CategoryServicesController;
-use WebControllers\typeproject\TypeProjectController;
-use WebControllers\typesentity\TypesEntityController;
-use WebControllers\staticcontent\StaticContentController;
-use WebControllers\socialnetworks\SocialNetworksController;
+use App\Http\Controllers\WebControllers\user\UsersController;
+use App\Http\Controllers\WebControllers\country\CountryController;
+use App\Http\Controllers\WebControllers\category\CategoryController;
+use App\Http\Controllers\WebControllers\categoryservices\CategoryServicesController;
+use App\Http\Controllers\WebControllers\typeproject\TypeProjectController;
+use App\Http\Controllers\WebControllers\typesentity\TypesEntityController;
+use App\Http\Controllers\WebControllers\staticcontent\StaticContentController;
+use App\Http\Controllers\WebControllers\socialnetworks\SocialNetworksController;
 use App\Http\Controllers\WebControllers\HomeController;
-use WebControllers\stripe\PlanController;
-use WebControllers\stripe\ProductsStripeController;
-use WebControllers\stripe\SubscriptionController;
+use App\Http\Controllers\WebControllers\stripe\PlanController;
+use App\Http\Controllers\WebControllers\stripe\ProductsStripeController;
+use App\Http\Controllers\WebControllers\stripe\SubscriptionController;
 
 /*
 |--------------------------------------------------------------------------

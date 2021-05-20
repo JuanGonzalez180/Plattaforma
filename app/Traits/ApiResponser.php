@@ -28,6 +28,12 @@ trait ApiResponser{
         return $this->successResponse(['data'=>$data], $code);
     }
 
+    protected function showOneTransform(Model $instance, $code = 200){
+        $transformer = $instance->transformer;
+        $instance = $this->transformData($instance, $transformer);
+        return $this->successResponse($instance, $code);
+    }
+
     protected function showAllPaginate(Collection $collection, $code = 200){
         if( $collection->isEmpty() ){
             return $this->successResponse(['data'=>$collection], $code);    

@@ -3,9 +3,15 @@
 namespace App\Http\Controllers\ApiControllers\company;
 
 use App\Models\User;
+use App\Models\Team;
+use App\Models\Image;
 use App\Models\Company;
+use App\Models\Tenders;
+use App\Models\Projects;
+use App\Models\Products;
 use App\Models\TypesEntity;
 use App\Mail\CreatedAccount;
+use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -149,9 +155,68 @@ class CompanyController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($slug)
     {
         //
+        $company = Company::where('slug', $slug)->first();
+        if( !$company ){
+            $companyError = [ 'company' => 'Error, no se ha encontrado ninguna compañia' ];
+            return $this->errorResponse( $companyError, 500 );
+        }
+
+        // Banner
+        $company->coverpage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
+        // Dirección
+        $company->address;
+        // Portafolio
+        $company->files;
+        // 8 Integrantes del equipo
+        $company->team = Team::where('company_id', $company->id)
+                                ->where('status', Team::TEAM_APPROVED)
+                                ->skip(0)->take(8)
+                                ->orderBy('id', 'desc')
+                                ->get();
+        
+        // Traer Proyectos últimos 6
+        $company->projects = $company->projects
+                        ->where('visible', Projects::PROJECTS_VISIBLE)
+                        ->skip(0)->take(6)
+                        ->sortBy([ ['updated_at', 'desc'] ]);
+
+        $userTransform = new UserTransformer();
+        foreach ( $company->projects as $key => $project) {
+            $user = $userTransform->transform($project->user);
+            unset( $project->user );
+            $project->user = $user;
+        }
+
+        // Traer Licitaciones últimas 6
+        $company->tenders = $company->tenders
+                        // ->where('visible', Tenders::PROJECTS_VISIBLE)
+                        ->skip(0)->take(6)
+                        ->sortBy([ ['updated_at', 'desc'] ]);
+
+        $userTransform = new UserTransformer();
+        foreach ( $company->tenders as $key => $tender) {
+            $user = $userTransform->transform($tender->user);
+            unset( $tender->user );
+            $tender->user = $user;
+        }
+
+        // Traer Productos últimos 6
+        $company->products = $company->products
+                                ->where('status', Products::PRODUCT_PUBLISH)
+                                ->skip(0)->take(6)
+                                ->sortBy([ ['updated_at', 'desc'] ]);
+
+        $userTransform = new UserTransformer();
+        foreach ( $company->products as $key => $product) {
+            $user = $userTransform->transform($product->user);
+            unset( $product->user );
+            $product->user = $user;
+        }
+
+        return $this->showOneTransform($company, 200);
     }
 
     /**

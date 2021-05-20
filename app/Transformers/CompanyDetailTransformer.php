@@ -4,8 +4,9 @@ namespace App\Transformers;
 
 use App\Models\Company;
 use League\Fractal\TransformerAbstract;
+use App\Transformers\TeamTransformer;
 
-class CompanyTransformer extends TransformerAbstract
+class CompanyDetailTransformer extends TransformerAbstract
 {
     /**
      * List of resources to automatically include
@@ -32,12 +33,20 @@ class CompanyTransformer extends TransformerAbstract
      */
     public function transform(Company $company)
     {
+        $teamTransform = new TeamTransformer();
         return [
             //
             'id' => (int)$company->id,
             'name'=> (string)$company->name,
-            'slug'=> (string)$company->slug,
-            'image'=> $company->image
+            'image'=> $company->image,
+            'coverpage'=> $company->coverpage,
+            'address'=> $company->address,
+            'portfolio'=> $company->files,
+            'team'=> $teamTransform->transformNoDetail($company->team),
+            'projects'=> $company->projects,
+            'tenders'=> $company->tenders,
+            'products'=> $company->products,
+            'total'=> $company->total($company),
         ];
     }
 }

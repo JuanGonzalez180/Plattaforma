@@ -34,11 +34,12 @@ class UserTransformer extends TransformerAbstract
     {
         return [
             //
+            'id' => (int)$user->id,
             'name' => (string)$user->name,
             'lastname'=> (string)$user->lastname,
             'created_at'=> (string)$user->created_at,
             'updated_at'=> (string)$user->updated_at,
-            'url'=> (string)$user->url
+            'url'=> (string)$user->image ? url( 'storage/' . $user->image->url ) : null
         ];
     }
 }
