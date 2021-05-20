@@ -20,7 +20,7 @@ class SearchBrandsController extends ApiController
     public function __invoke(Request $request)
     {
         $brands = Brands::where('status',Brands::BRAND_ENABLED)
-            ->where(strtolower('name'),'LIKE',strtolower($request->name).'%')
+            ->where(strtolower('name'),'LIKE','%'.strtolower($request->name).'%')
             ->get(); 
             
         return $this->showAllPaginate($brands);

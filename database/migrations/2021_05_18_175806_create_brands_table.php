@@ -23,6 +23,12 @@ class CreateBrandsTable extends Migration
 
             $table->foreign('user_id')->references('id')->on('users');
         });
+
+        Brands::create([
+            'user_id' => 1,
+            'name' => 'Sin Marca', 
+            'status' => 'true'
+        ]);
     }
 
     /**

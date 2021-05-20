@@ -13,6 +13,7 @@ use App\Http\Controllers\WebControllers\HomeController;
 use App\Http\Controllers\WebControllers\stripe\PlanController;
 use App\Http\Controllers\WebControllers\stripe\ProductsStripeController;
 use App\Http\Controllers\WebControllers\stripe\SubscriptionController;
+use App\Http\Controllers\WebControllers\brands\BrandsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,11 @@ Route::group(['middleware' => 'auth'], function() {
         Route::resource('categorias_servicios', CategoryServicesController::class)
                 ->names('categoryservices')
                 ->parameters(['categorias_servicios' => 'categoryservices']);
+
+        // Marcas
+        Route::resource('brands', BrandsController::class)
+                ->names('brand')
+                ->parameters(['brands' => 'brand']);
 
         // Tipo de Proyectos
         Route::resource('tipos-proyectos', TypeProjectController::class)

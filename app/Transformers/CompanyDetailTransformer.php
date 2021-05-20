@@ -38,6 +38,7 @@ class CompanyDetailTransformer extends TransformerAbstract
             //
             'id' => (int)$company->id,
             'name'=> (string)$company->name,
+            'slug'=> (string)$company->slug,
             'image'=> $company->image,
             'coverpage'=> $company->coverpage,
             'address'=> $company->address,

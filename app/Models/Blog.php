@@ -22,8 +22,6 @@ class Blog extends Model
         'description',
         'status',
         'user_id',
-        'date',
-        'date_update',
         'company_id'
     ];
 

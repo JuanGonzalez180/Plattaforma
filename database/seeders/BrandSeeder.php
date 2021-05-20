@@ -13,6 +13,7 @@ class BrandSeeder extends Seeder
      */
     public function run()
     {
+        /*
         Brands::create([
             'user_id' => 1,
             'name' => 'Sin Marca', 
@@ -20,5 +21,6 @@ class BrandSeeder extends Seeder
         ]);
 
         Brands::factory(30)->create();
+        */
     }
 }
