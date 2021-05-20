@@ -18,9 +18,11 @@ use App\Http\Controllers\ApiControllers\products\ProductsDocumentsController;
 use App\Http\Controllers\ApiControllers\company\CompanyFilesController;
 use App\Http\Controllers\ApiControllers\tenders\TendersController;
 use App\Http\Controllers\ApiControllers\files\FilesController;
+use App\Http\Controllers\ApiControllers\brands\BrandsController;
 // Search
 use App\Http\Controllers\ApiControllers\search\SearchProjectsController;
 use App\Http\Controllers\ApiControllers\search\SearchProductsController;
+use App\Http\Controllers\ApiControllers\search\SearchBrandsController;
 // Password
 use App\Http\Controllers\ApiControllers\password\SendCodeController;
 use App\Http\Controllers\ApiControllers\password\CodeValidationController;
@@ -33,7 +35,6 @@ use App\Http\Controllers\ApiControllers\myaccount\AccountMyTeamController;
 use App\Http\Controllers\ApiControllers\myaccount\RegisterMemberController;
 // Subscriptions
 use App\Http\Controllers\ApiControllers\stripe\SubscriptionsStripeController;
-
 use App\Http\Controllers\ApiControllers\user\UsersController;
 
 /*
@@ -116,7 +117,6 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/myaccount/mycompany', AccountMyCompanyController::class, ['only' => ['store']])->names('mycompany');
     Route::resource('/myaccount/myteam', AccountMyTeamController::class, ['only' => ['index', 'store', 'update', 'destroy']])->names('myteam');
     Route::resource('/company/files', CompanyFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('companyimages');
-    
     /**
      * Projects
      */
@@ -129,25 +129,27 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/products', ProductsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('products');
     Route::resource('/products/files', ProductsFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('productsimages');
     Route::resource('/products/documents', ProductsDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('productsdocuments');
-
+    /**
+     * brands
+     */
+    Route::resource('/brands', BrandsController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('brands');
     /**
      * Tenders
      */
     Route::resource('/tenders', TendersController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('tenders');
-    
     /**
      * Company
     */
+    Route::get('/company/{slug}', [CompanyController::class, 'show'])->name('company-detail');
 
     /**
      * Search
      */
     Route::get('/search/projects', SearchProjectsController::class)->name('search-projects');
     Route::get('/search/products', SearchProductsController::class)->name('search-products');
-    
+    Route::post('/search/brands', SearchBrandsController::class)->name('search-brands');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 });
-Route::get('/company/{slug}', [CompanyController::class, 'show'])->name('company-detail');
 // Route::post('/files', FilesController::class)->name('files');
 
 Route::resource('/myaccount/registermember', RegisterMemberController::class, ['only' => ['store']])->names('registermember');

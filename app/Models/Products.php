@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\Image;
+use App\Models\brands;
 use App\Models\Tags;
 use App\Models\Files;
 use App\Models\Company;
@@ -20,6 +21,7 @@ class Products extends Model
 
     const PRODUCT_ERASER = 'Borrador';
     const PRODUCT_PUBLISH = 'Publicado';
+    const USER_DEFAULT = 1;
 
     const TYPE_PRODUCT = 'Producto';
     const TYPE_SERVICE = 'Servicio';
@@ -31,6 +33,7 @@ class Products extends Model
         'name',
         'company_id',
         'user_id',
+        'brand_id',
         'description',
         'type',
         'status'
@@ -50,6 +53,10 @@ class Products extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function brands(){
+        return $this->belongsTo(brands::class);
     }
 
     public function interests(){
