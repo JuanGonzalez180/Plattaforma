@@ -5,13 +5,17 @@ namespace App\Http\Controllers\ApiControllers\brands;
 use JWTAuth;
 use App\Models\User;
 use App\Models\Brands;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\ApiControllers\ApiController;
+use App\Models\Products;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\ApiControllers\ApiController;
 
 
 class BrandsController extends ApiController
 {
+    public $routeFile = 'public/';
+    public $routeBrands = 'images/brands/';
 
     public function validateUser(){
         try {
@@ -23,7 +27,10 @@ class BrandsController extends ApiController
 
     public function index()
     {
-        $brands = Brands::where('status',Brands::BRAND_ENABLED)
+        $user = $this->validateUser();
+        $companyId = $user->companyId();
+
+        $brands = Brands::where('company_id', $companyId)
             ->orderBy('name', 'ASC')
             ->get();
 
@@ -33,8 +40,9 @@ class BrandsController extends ApiController
     public function store(Request $request)
     {
         $user = $this->validateUser();
-        $statusValue = ($user->admin == 'true') ? Brands::BRAND_ENABLED : Brands::BRAND_DISABLED;
+        $companyId = $user->companyId();
 
+        $statusValue = Brands::BRAND_DISABLED;
         $rules = [
             'name' => 'required|unique:brands'
         ];
@@ -47,6 +55,7 @@ class BrandsController extends ApiController
         //Datos
         $brandFields = $request->all();
         $brandFields['user_id'] = $user->id;
+        $brandFields['company_id'] = $companyId;
         $brandFields['name'] = ucwords($request->name);
         $brandFields['status'] = $statusValue ;
 
@@ -56,8 +65,21 @@ class BrandsController extends ApiController
         }catch(\Throwable $th){
             $errorBrand = true;
             DB::rollBack();
-            $productError = [ 'product' => 'Error, no se ha podido crear la marca' ];
-            return $this->errorResponse( $errorBrand, 500 );
+            $brandError = [ 'brand' => 'Error, no se ha podido crear la marca' ];
+            return $this->errorResponse( $brandError, 500 );
+        }
+
+        if( $brand ){
+            if( $request->image ){
+                $png_url = "brand-".time().".jpg";
+                $img = $request->image;
+                $img = substr($img, strpos($img, ",")+1);
+                $data = base64_decode($img);
+                
+                $routeFile = $this->routeBrands.$brand->id.'/'.$png_url;
+                Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
+                $brand->image()->create(['url' => $routeFile]);
+            }
         }
 
         DB::commit();
@@ -68,17 +90,19 @@ class BrandsController extends ApiController
 
     public function edit($id)
     {
-        $brands = Brands::findOrFail($id);
-        $brands->name;
-        $brands->status;
-        return $this->showOne($brands,200);
+        $brand = Brands::findOrFail($id);
+        $brand->image;
+        return $this->showOne($brand,200);
     }
 
     public function update(Request $request, $id)
     {
-        $brands = Brands::findOrFail($id);
+        $user = $this->validateUser();
+        $companyId = $user->companyId();
 
-        if(ucwords($brands['name']) != ucwords($request->name)){
+        $brand = Brands::findOrFail($id);
+
+        if(ucwords($brand['name']) != ucwords($request->name)){
             $rules = [
                 'name' => 'required|unique:brands'
             ];
@@ -86,11 +110,11 @@ class BrandsController extends ApiController
             $this->validate( $request, $rules );
         }
 
-        $brands['name'] = ucwords($request->name);
-        $brands['status'] = $request->status;
-        $brands->save();
+        $brand['name'] = ucwords($request->name);
+        if( $brand->company_id == $companyId )
+            $brand->save();
 
-        return $this->showOne($brands,200);
+        return $this->showOne($brand,200);
     }
 
     public function show($id)
@@ -101,31 +125,25 @@ class BrandsController extends ApiController
 
     public function destroy($id)
     {
-        $brand = Brands::find($id);
-        $status = ($brand->status == Brands::BRAND_ENABLED) ? Brands::BRAND_DISABLED : Brands::BRAND_ENABLED;
-        $brand->status = $status;
-        $brand->save();
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+        $companyId = $user->companyId();
 
-        return $this->showOne($brand,200);
-    }
+        $brand = Brands::findOrFail($id);
+        $countProducts = Products::where( 'brand_id', $id )
+            ->get()
+            ->count();
+        
+        if( $brand->company_id == $companyId && !$countProducts ){
+            if( $brand->image )
+                Storage::disk('local')->delete( $this->routeFile . $brand->image->url );
+            $brand->delete();
+        }else{
+            $brandError = [ 'brand' => 'Error, no se ha podido eliminar la marca, ya existen productos asociados' ];
+            return $this->errorResponse( $brandError, 500 );
+        }
 
-    public function showsearch($name)
-    {
-        $brands = Brands::where('status',Brands::BRAND_ENABLED)
-            ->where(strtolower('name'),'LIKE',strtolower($name).'%')
-            ->orderBy('name', 'ASC')
-            ->get();
-
-        return $this->showAllPaginate($brands);
-    }
-
-    public function showBrandToProducts($id)
-    {
-        $products = Products::where('brand_id',$id)
-            ->orderBy('name','ASC')
-            ->get();   
-
-        return $this->showAllPaginate($products);
+        return $this->showOneData( ['success' => 'Se ha eliminado correctamente el proyecto', 'code' => 200 ], 200);
     }
 
 }

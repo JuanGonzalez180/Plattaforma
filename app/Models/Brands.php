@@ -17,8 +17,9 @@ class Brands extends Model
 
     protected $fillable = [
         'user_id',
+        'company_id',
         'name',
-        'status'
+        'status',
     ];
 
     const BRAND_ENABLED     = 'true';

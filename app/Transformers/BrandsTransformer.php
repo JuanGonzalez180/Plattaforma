@@ -30,12 +30,16 @@ class BrandsTransformer extends TransformerAbstract
      *
      * @return array
      */
-    public function transform(Brands $brands)
+    public function transform(Brands $brand)
     {
         return [
-            'user_id' => (int)$brands->user_id,
-            'name' => (string)$brands->name,
-            'status' => (string)$brands->status,
+            'id' => (int)$brand->id,
+            'user_id' => (int)$brand->user_id,
+            'name' => (string)$brand->name,
+            'status' => (string)$brand->status,
+            'created_at'=> (string)$brand->created_at,
+            'updated_at'=> (string)$brand->updated_at,
+            'image'=> $brand->image,
         ];
     }
 }
