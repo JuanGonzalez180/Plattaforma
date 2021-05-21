@@ -19,10 +19,29 @@ class SearchBrandsController extends ApiController
  
     public function __invoke(Request $request)
     {
-        $brands = Brands::where('status',Brands::BRAND_ENABLED)
-            ->where(strtolower('name'),'LIKE','%'.strtolower($request->name).'%')
+        $user = $this->validateUser();
+        $companyID = $user->companyId();
+        $name = $request->name;
+
+        $brandsCompany = Brands::where('status',Brands::BRAND_ENABLED)
+            ->where('company_id','=',$companyID)
+            ->where( function($query) use ($name){
+                $query->where(strtolower('name'),'LIKE',strtolower($name).'%')->OrWhere(strtolower('name'),'LIKE','% '.strtolower($name).'%');
+            })
+            ->orderBy('name', 'ASC')
             ->get(); 
-            
-        return $this->showAllPaginate($brands);
+
+        $brandsNotCompany = Brands::where('status',Brands::BRAND_ENABLED)
+            ->where('company_id','<>',$companyID)
+            ->where( function($query) use ($name){
+                $query->where(strtolower('name'),'LIKE',strtolower($name).'%')->OrWhere(strtolower('name'),'LIKE','% '.strtolower($name).'%');
+            })
+            ->orderBy('name', 'ASC')
+            ->get(); 
+
+        $merged = $brandsCompany->merge($brandsNotCompany);
+        
+
+        return $this->showAllPaginate($merged);
     }
 }
