@@ -19,8 +19,8 @@ class BrandSeeder extends Seeder
             'name' => 'Sin Marca', 
             'status' => 'true'
         ]);
-
-        Brands::factory(30)->create();
         */
+        Brands::factory(30)->create();
+        
     }
 }

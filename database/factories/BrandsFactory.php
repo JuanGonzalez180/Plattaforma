@@ -23,6 +23,7 @@ class BrandsFactory extends Factory
     {
         return [
             'user_id' => $this->faker->randomElement([1,2,3]),
+            'company_id' => $this->faker->randomElement([1,2,3]),
             'name' => ucwords($this->faker->unique()->name),
             'status' => $this->faker->randomElement([ Brands::BRAND_ENABLED , Brands::BRAND_DISABLED]),
         ];
