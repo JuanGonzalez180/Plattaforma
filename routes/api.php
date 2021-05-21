@@ -23,6 +23,7 @@ use App\Http\Controllers\ApiControllers\brands\BrandsController;
 use App\Http\Controllers\ApiControllers\search\SearchProjectsController;
 use App\Http\Controllers\ApiControllers\search\SearchProductsController;
 use App\Http\Controllers\ApiControllers\search\SearchBrandsController;
+use App\Http\Controllers\ApiControllers\search\SearchCompanyController;
 // Password
 use App\Http\Controllers\ApiControllers\password\SendCodeController;
 use App\Http\Controllers\ApiControllers\password\CodeValidationController;
@@ -148,6 +149,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/search/projects', SearchProjectsController::class)->name('search-projects');
     Route::get('/search/products', SearchProductsController::class)->name('search-products');
     Route::post('/search/brands', SearchBrandsController::class)->name('search-brands');
+    Route::post('/search/companies', SearchCompanyController::class)->name('search-companies');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 });
 // Route::post('/files', FilesController::class)->name('files');
