@@ -110,8 +110,26 @@ class BrandsController extends ApiController
         }
 
         $brand['name'] = ucwords($request->name);
-        if( $brand->company_id == $companyId )
+        if( $brand->company_id == $companyId ){
             $brand->save();
+            // Imágenes
+            if( $request->image ){
+                $png_url = "brand-".time().".jpg";
+                $img = $request->image;
+                $img = substr($img, strpos($img, ",")+1);
+                $data = base64_decode($img);
+                $routeFile = $this->routeBrands.$brand->id.'/'.$png_url;
+                
+                Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
+
+                if( $brand->image ){
+                    Storage::disk('local')->delete( $this->routeFile . $brand->image->url );
+                    $brand->image()->update(['url' => $routeFile ]);
+                }else{
+                    $brand->image()->create(['url' => $routeFile]);
+                }
+            }
+        }
 
         return $this->showOne($brand,200);
     }
