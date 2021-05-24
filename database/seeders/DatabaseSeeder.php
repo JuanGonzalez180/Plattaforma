@@ -99,6 +99,7 @@ class DatabaseSeeder extends Seeder
         //     'iso' => 'usd'
         // ]);
 
-        $this->call(BrandSeeder::class);
+        // $this->call(BrandSeeder::class);
+        $this->call(BlogSeeder::class);
     }
 }

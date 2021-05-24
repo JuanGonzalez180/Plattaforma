@@ -20,6 +20,8 @@ class BrandSeeder extends Seeder
             'status' => 'true'
         ]);
         */
+
+        /*----Factories----*/
         Brands::factory(30)->create();
         
     }
