@@ -21,6 +21,5 @@ class BrandSeeder extends Seeder
         ]);
         */
         Brands::factory(20)->create();
-        
     }
 }

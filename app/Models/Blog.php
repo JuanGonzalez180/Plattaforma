@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use App\Company;
 use App\Files;
-use App\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Company;
+use App\Models\Image;
+use App\Transformers\BlogTransformer;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Blog extends Model
 {
@@ -15,9 +16,10 @@ class Blog extends Model
     const BLOG_ERASER = 'Borrador';
     const BLOG_PUBLISH = 'Publicado';
 
+    public $transformer = BlogTransformer::class;
+
     protected $fillable = [
         'name',
-        'image',
         'description_short',
         'description',
         'status',
@@ -39,5 +41,9 @@ class Blog extends Model
 
     public function files(){
         return $this->belongsToMany(Files::class);
+    }
+
+    public function image(){
+        return $this->morphOne(Image::class, 'imageable');
     }
 }
