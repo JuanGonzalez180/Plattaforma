@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Blog;
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BlogFactory extends Factory
@@ -21,13 +22,14 @@ class BlogFactory extends Factory
      */
     public function definition()
     {
+        $company = Company::all()->random();
         return [
             'name' => ucwords($this->faker->unique()->name),
             'description_short' => ucwords($this->faker->unique()->name),
             'description' => ucwords($this->faker->unique()->text),
             'status' => $this->faker->randomElement([ Blog::BLOG_ERASER , Blog::BLOG_PUBLISH]),
-            'user_id' => $this->faker->randomElement([1,2,3]),
-            'company_id' => $this->faker->randomElement([1,2,3])
+            'user_id' => $company->user->id,
+            'company_id' => $company->id
         ];
     }
 }
