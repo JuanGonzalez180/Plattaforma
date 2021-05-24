@@ -16,10 +16,6 @@ trait ApiResponser{
         return response()->json(['error' => $message, 'code' => $code], $code);
     }
 
-    protected function showAll(Collection $collection, $code = 200){
-        return $this->successResponse(['data'=>$collection], $code);
-    }
-
     protected function showOne(Model $instance, $code = 200){
         return $this->successResponse(['data'=>$instance], $code);
     }
@@ -32,6 +28,19 @@ trait ApiResponser{
         $transformer = $instance->transformer;
         $instance = $this->transformData($instance, $transformer);
         return $this->successResponse($instance, $code);
+    }
+
+    protected function showAll(Collection $collection, $code = 200){
+        return $this->successResponse(['data'=>$collection], $code);
+    }
+
+    protected function showAllTransformer(Collection $collection, $code = 200){
+        if( $collection->isEmpty() )
+            return $this->successResponse(['data'=>$collection], $code);    
+
+        $transformer = $collection->first()->transformer;
+        $collection = $this->transformData($collection, $transformer);
+        return $this->successResponse($collection, $code);
     }
 
     protected function showAllPaginate(Collection $collection, $code = 200){

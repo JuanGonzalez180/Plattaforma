@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\Image;
-use App\Models\brands;
+use App\Models\Brands;
 use App\Models\Tags;
 use App\Models\Files;
 use App\Models\Company;
@@ -55,8 +55,8 @@ class Products extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function brands(){
-        return $this->belongsTo(brands::class);
+    public function brand(){
+        return $this->belongsTo(Brands::class);
     }
 
     public function interests(){

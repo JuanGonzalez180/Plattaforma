@@ -20,7 +20,7 @@ class BrandSeeder extends Seeder
             'status' => 'true'
         ]);
         */
-        Brands::factory(30)->create();
+        Brands::factory(20)->create();
         
     }
 }

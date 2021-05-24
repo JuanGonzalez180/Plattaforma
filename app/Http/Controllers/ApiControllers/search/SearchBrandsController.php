@@ -26,7 +26,7 @@ class SearchBrandsController extends ApiController
         $brandsCompany = Brands::where('status',Brands::BRAND_ENABLED)
             ->where('company_id','=',$companyID)
             ->where( function($query) use ($name){
-                $query->where(strtolower('name'),'LIKE',strtolower($name).'%')->OrWhere(strtolower('name'),'LIKE','% '.strtolower($name).'%');
+                $query->where(strtolower('name'),'LIKE','%'.strtolower($name).'%');
             })
             ->orderBy('name', 'ASC')
             ->get(); 
@@ -34,7 +34,7 @@ class SearchBrandsController extends ApiController
         $brandsNotCompany = Brands::where('status',Brands::BRAND_ENABLED)
             ->where('company_id','<>',$companyID)
             ->where( function($query) use ($name){
-                $query->where(strtolower('name'),'LIKE',strtolower($name).'%')->OrWhere(strtolower('name'),'LIKE','% '.strtolower($name).'%');
+                $query->where(strtolower('name'),'LIKE','%'.strtolower($name).'%');
             })
             ->orderBy('name', 'ASC')
             ->get(); 
@@ -42,6 +42,7 @@ class SearchBrandsController extends ApiController
         $merged = $brandsCompany->merge($brandsNotCompany);
         
 
+        // return $this->showAllTransformer($merged);
         return $this->showAllPaginate($merged);
     }
 }

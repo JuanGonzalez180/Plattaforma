@@ -84,6 +84,7 @@ class ProductsController extends ApiController
         $productFields['status'] = $request['status'];
         $productFields['user_id'] = $request['user'] ? $request['user'] : $user->id;
         $productFields['company_id'] = $user->companyId();
+        $productFields['brand_id'] = $request['brand'] ?? 1;
         $productFields['description'] = $request['description'];
         $productFields['type'] = $request['type'];
 
@@ -149,6 +150,8 @@ class ProductsController extends ApiController
         $product->productCategoryServices;
         $product->user;
         $product->user->image;
+        $product->brand;
+        $product->brand->image;
         $product->tags;
         return $this->showOne($product,200);
     }
@@ -179,6 +182,7 @@ class ProductsController extends ApiController
         $productFields['name'] = $request['name'];
         $productFields['status'] = $request['status'];
         $productFields['user_id'] = $request['user'] ? $request['user'] : $user->id;
+        $productFields['brand_id'] = $request['brand'] ?? 1;
         $productFields['description'] = $request['description'];
         $productFields['type'] = $request['type'];
 
