@@ -2,16 +2,8 @@
 
 namespace App\Models;
 
-use App\Blog;
-use App\Category;
-use App\Company;
-use App\Products;
-use App\Projects;
-use App\TypeProject;
-use App\TendersVersions;
-use App\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Files extends Model
 {

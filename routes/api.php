@@ -19,7 +19,8 @@ use App\Http\Controllers\ApiControllers\company\CompanyFilesController;
 use App\Http\Controllers\ApiControllers\tenders\TendersController;
 use App\Http\Controllers\ApiControllers\files\FilesController;
 use App\Http\Controllers\ApiControllers\brands\BrandsController;
-use App\Http\Controllers\ApiControllers\blog\blogController;
+use App\Http\Controllers\ApiControllers\blog\BlogController;
+use App\Http\Controllers\ApiControllers\blog\BlogFilesController;
 // Search
 use App\Http\Controllers\ApiControllers\search\SearchProjectsController;
 use App\Http\Controllers\ApiControllers\search\SearchProductsController;
@@ -138,7 +139,9 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     /**
      * blogs
      */
+    Route::resource('/blogs/files', BlogFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('blogsimages');
     Route::resource('/blogs', BlogController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('blogs');
+
     /**
      * Tenders
      */

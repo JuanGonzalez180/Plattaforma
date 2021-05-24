@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
-class blogController extends ApiController
+class BlogController extends ApiController
 {
     public $routeFile = 'public/';
     public $routeBlogs = 'images/blogs/';
@@ -33,8 +33,7 @@ class blogController extends ApiController
         $user = $this->validateUser();
         $companyID = $user->companyId();
 
-        $blogs = Blog::where('status','=',Blog::BLOG_PUBLISH)
-            ->where('company_id','=',$companyID)
+        $blogs = Blog::where('company_id','=',$companyID)
             ->orderBy('created_at', 'desc')
             ->get();
         
@@ -54,7 +53,8 @@ class blogController extends ApiController
 
         $rules = [
             'name' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'description' => 'required',
+            'description_short' => 'required'
         ];
 
         $this->validate( $request, $rules );
@@ -63,8 +63,8 @@ class blogController extends ApiController
         $blogFields['name'] = $request->name;
         $blogFields['description_short'] = $request->description_short;
         $blogFields['description'] = $request->description;
-        $blogFields['status'] = Blog::BLOG_ERASER ;
-        $blogFields['user_id'] = $user->id;
+        $blogFields['status'] = $request->status ?? Blog::BLOG_ERASER;
+        $blogFields['user_id'] = $request['user'] ?? $user->id;
         $blogFields['company_id'] = $companyID;
         
         try{
@@ -85,7 +85,7 @@ class blogController extends ApiController
                 
                 $routeFile = $this->routeBlogs.$blog->id.'/'.$png_url;
                 Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
-                $brand->image()->create(['url' => $routeFile]);
+                $blog->image()->create(['url' => $routeFile]);
             }
         }
 
@@ -97,10 +97,8 @@ class blogController extends ApiController
     public function edit($id)
     {
         $blog = Blog::findOrFail($id);
-        $blog->name;
-        $blog->description_short;
-        $blog->description;
-        $blog->status;
+        $blog->image;
+        $blog->user;
         $blog->user->image;
 
         return $this->showOne($blog,200);
@@ -112,7 +110,8 @@ class blogController extends ApiController
 
         $rules = [
             'name' => ['required', Rule::unique('blogs')->ignore($id) ],
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'description' => 'required',
+            'description_short' => 'required'
         ];
 
         // var_dump($request);
@@ -125,7 +124,8 @@ class blogController extends ApiController
         $blogFields['name'] = $request['name'];
         $blogFields['description_short'] = $request['description_short'];
         $blogFields['description'] = $request['description']; 
-        $blogFields['status'] = $request['status'] ;
+        $blogFields['user_id'] = $request['user'] ?? $user->id;
+        $blogFields['status'] = $request['status'] ?? Blog::BLOG_ERASER;
 
         if( $request->image ){
             $png_url = "blog-".time().".jpg";

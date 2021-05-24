@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Files;
-use App\Company;
+use App\Models\Files;
+use App\Models\Company;
 use App\Models\Image;
 use App\Transformers\BlogTransformer;
 use Illuminate\Database\Eloquent\Model;
@@ -39,11 +39,14 @@ class Blog extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function files(){
-        return $this->belongsToMany(Files::class);
-    }
-
+    // Relacion uno a uno polimorfica
     public function image(){
         return $this->morphOne(Image::class, 'imageable');
     }
+
+    // Relacion uno a muchos polimorfica
+    public function files(){
+        return $this->morphMany(Files::class, 'filesable');
+    }
+
 }
