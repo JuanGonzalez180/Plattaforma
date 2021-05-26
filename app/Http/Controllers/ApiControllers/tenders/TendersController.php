@@ -80,7 +80,7 @@ class TendersController extends ApiController
         // Datos
         $tendersFields['name'] = $request['name'];
         $tendersFields['description'] = $request['description'];
-        $tendersFields['user_id'] = $request['user'] ? $request['user'] : $user->id;
+        $tendersFields['user_id'] = $request['user'] ?? $user->id;
         $tendersFields['company_id'] = $user->companyId();
         $tendersFields['project_id'] = $request['project'];
         
@@ -96,7 +96,7 @@ class TendersController extends ApiController
         try{
             $tender = Tenders::create( $tendersFields );
             
-            $tendersVersionFields['tender_id'] = $tender->id;
+            $tendersVersionFields['tenders_id'] = $tender->id;
             $tendersVersions = TendersVersions::create( $tendersVersionFields );
 
             // Crear Tenders
@@ -104,7 +104,7 @@ class TendersController extends ApiController
             // Si existe algún error al momento de crear el usuario
             $errorTender = true;
             DB::rollBack();
-            $tenderError = [ 'tender' => 'Error, no se ha podido crear el tenders' ];
+            $tenderError = [ 'tender' => 'Error, no se ha podido crear el tenders'];
             return $this->errorResponse( $tenderError, 500 );
         }
 
@@ -113,6 +113,10 @@ class TendersController extends ApiController
                 foreach ($request->categories as $key => $categoryId) {
                     $tender->tenderCategories()->attach($categoryId);
                 }
+            }
+
+            foreach ($request->tags as $key => $tag) {
+                $tendersVersions->tags()->create(['name' => $tag['displayValue']]);
             }
 
             $tender->tendersVersions = $tendersVersions;
@@ -131,6 +135,19 @@ class TendersController extends ApiController
     public function show($id)
     {
         //
+        $user = $this->validateUser();
+
+        $tender = Tenders::findOrFail($id);
+        $tender->categories;
+        $tender->tendersVersion;
+        if( $tender->tendersVersion ){
+            foreach ($tender->tendersVersion as $key => $tenderVersion) {
+                $tenderVersion->tags;
+                $tenderVersion->files;
+            }
+        }
+
+        return $this->showOne($tender,201);
     }
 
     /**
