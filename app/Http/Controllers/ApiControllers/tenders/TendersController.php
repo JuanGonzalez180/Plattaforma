@@ -35,6 +35,7 @@ class TendersController extends ApiController
         $rules = [
             'project' => 'required|numeric',
         ];
+        
         $this->validate( $request, $rules );
 
         // IS ADMIN
