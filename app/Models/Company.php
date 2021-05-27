@@ -20,13 +20,15 @@ use App\Models\SocialNetworksRelation;
 use App\Models\CategoryService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Transformers\CompanyTransformer;
 use App\Transformers\CompanyDetailTransformer;
 
 class Company extends Model
 {
     use HasFactory;
 
-    public $transformer = CompanyDetailTransformer::class;
+    public $transformer = CompanyTransformer::class;
+    public $transformerDetail = CompanyDetailTransformer::class;
 
     const COMPANY_CREATED = 'Creado';
     const COMPANY_APPROVED = 'Aprobado';

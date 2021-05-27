@@ -25,7 +25,7 @@ trait ApiResponser{
     }
 
     protected function showOneTransform(Model $instance, $code = 200){
-        $transformer = $instance->transformer;
+        $transformer = $instance->transformerDetail;
         $instance = $this->transformData($instance, $transformer);
         return $this->successResponse($instance, $code);
     }
