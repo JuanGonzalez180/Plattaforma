@@ -5,6 +5,8 @@ namespace App\Http\Controllers\ApiControllers\tenderscompanies;
 use JWTAuth;
 use Illuminate\Http\Request;
 use App\Models\TendersCompanies;
+use App\Models\TendersVersions;
+use App\Models\Tenders;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -45,6 +47,10 @@ class TendersCompaniesController extends ApiController
                 $tenderCompanyError = [ 'tenderVersion' => 'Error, no se ha podido crear la compania del tenders'];
                 return $this->errorResponse( $tenderCompanyError, 500 );
             }
+
+            $tenderVersion = Tenders::find($tender_id)->tendersVersionLast();
+            $tenderVersion->status = TendersVersions::LICITACION_PUBLISH;
+            $tenderVersion->save();
 
             DB::commit();            
         }
