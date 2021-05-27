@@ -46,7 +46,7 @@ class TendersController extends ApiController
 
             foreach( $tenders as $key => $tender ){
                 $tender->user;
-                $tender->tendersVersion = $tender->tendersVersionLast();
+                $tender->tendersVersionLast = $tender->tendersVersionLast();
             }
 
             return $this->showAllPaginate($tenders);
@@ -148,6 +148,20 @@ class TendersController extends ApiController
                 $tenderVersion->files;
             }
         }
+
+        return $this->showOne($tender,201);
+    }
+
+    public function edit($id)
+    {
+        //
+        $user = $this->validateUser();
+
+        $tender = Tenders::findOrFail($id);
+        $tender->categories;
+        $tender->version_last = $tender->tendersVersionLast();
+        $tender->version_last->tags;
+        $tender->version_last->files;
 
         return $this->showOne($tender,201);
     }
