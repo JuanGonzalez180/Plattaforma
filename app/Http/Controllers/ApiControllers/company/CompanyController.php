@@ -100,7 +100,6 @@ class CompanyController extends ApiController
         // $userFields['validated'] = User::USER_NO_VALIDATED;
         $userFields['verification_token'] = User::generateVerificationToken();
         $userFields['admin'] = User::USER_REGULAR;
-        $userFields['slug'] = Str::slug($request->name);
 
         // Iniciar Transacción
         DB::beginTransaction();
@@ -123,7 +122,8 @@ class CompanyController extends ApiController
                 'nit' => $request['nit'],
                 'country_code' => $request['country_code'],
                 'web' => $request['web'],
-                'user_id' => $user['id']
+                'user_id' => $user['id'],
+                'slug' => Str::slug($request->name), 
             ];
             
             try {

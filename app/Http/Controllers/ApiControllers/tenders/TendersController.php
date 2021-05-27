@@ -182,7 +182,6 @@ class TendersController extends ApiController
             ->count();
 
         if($count == 1){
-                
             $user = $this->validateUser();
 
             $rules = [
@@ -225,6 +224,18 @@ class TendersController extends ApiController
             try{
                 $tender->update( $tenderFields );
 
+                // Categorías
+                // Eliminar los anteriores
+                foreach( $tender->tenderCategories as $key => $category ){
+                    $tender->tenderCategories()->detach($category->id);
+                }
+
+                if( $request->categories ){
+                    foreach ($request->categories as $key => $categoryId) {
+                        $tender->tenderCategories()->attach($categoryId);
+                    }
+                }
+
                 $tenderVersion = TendersVersions::where('tenders_id',$id)
                     ->where('status','=',TendersVersions::LICITACION_CREATED)
                     ->get()
@@ -232,17 +243,31 @@ class TendersController extends ApiController
                 
                 $tenderVersion->update( $tenderVersionFields );
 
+                // Tags
+                // Eliminar los anteriores
+                foreach( $tenderVersion->tags as $key => $tag ){
+                    $tag->delete();
+                }
+
+                foreach ($request->tags as $key => $tag) {
+                    $tenderVersion->tags()->create(['name' => $tag['displayValue']]);
+                }
+
+                $tender->tendersVersions = $tenderVersion;
             } catch (\Throwable $th) {
                 // Si existe algún error al momento de editar el tender
                 $errorTender = true;
                 DB::rollBack();
-                $tenderError = [ 'tender' => 'Error, no se ha podido editar el tenders'];
+                $tenderError = [ 'tender' => 'Error, no se ha podido editar la licitación'];
                 return $this->errorResponse( $tenderError, 500 );
             }
 
             DB::commit();
 
             return $this->showOne($tender,200);
+        }else{
+            $tenderError = [ 'tender' => 'Error, no se ha podido editar la licitación, tiene más versiones.'];
+            return $this->errorResponse( $tenderError, 500 );
         }
 
         return [];

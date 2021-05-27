@@ -8,6 +8,7 @@ use App\Models\Files;
 use App\Models\Company;
 use App\Models\TendersVersions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str as Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
@@ -61,7 +62,7 @@ class TendersDocumentsController extends ApiController
             $extension = strtolower($request->file('files')->getClientOriginalExtension());
 
             if( in_array( $extension, $this->allowed ) ){
-                $fileInServer = 'document' . '-' . rand() . '-' . time() . '.' . $extension;
+                $fileInServer = Str::slug( Str::substr($completeFileName, 0, 70 ) ) . '-' . time() . '.' . $extension;
                 $routeFile = $this->routeTenders.$tender->id.'/documents/';
                 $request->file('files')->storeAs( $this->routeFile . $routeFile, $fileInServer);
                 $tender->files()->create([ 'name' => $fileInServer, 'type'=> 'documents', 'url' => $routeFile.$fileInServer]);
