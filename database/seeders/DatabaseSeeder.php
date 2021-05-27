@@ -100,6 +100,7 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         // $this->call(BrandSeeder::class);
-        $this->call(BlogSeeder::class);
+        // $this->call(BlogSeeder::class);
+        $this->call(CompanySeeder::class);
     }
 }
