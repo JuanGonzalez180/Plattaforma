@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Company;
+use App\Models\Tenders;
+use App\Transformers\TendersCompaniesTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TendersCompanies extends Model
 {
     use HasFactory;
+
+    public $transformer = TendersCompaniesTransformer::class;
 
     const TYPE_INTERESTED       = 'Interesado';
     const TYPE_INVITED          = 'Invitado';
@@ -29,4 +34,13 @@ class TendersCompanies extends Model
         'status',
         'winner'
     ];
+
+    public function company(){
+        return $this->belongsTo(Company::class);
+    }
+
+    public function tender(){
+        return $this->belongsTo(Tenders::class);
+    }
+
 }

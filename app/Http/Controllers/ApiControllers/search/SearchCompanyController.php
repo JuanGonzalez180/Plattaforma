@@ -29,8 +29,16 @@ class SearchCompanyController extends ApiController
             ->where( function($query) use ($name){
                 $query->where(strtolower('companies.name'),'LIKE',strtolower($name).'%')
                 ->orWhere(strtolower('companies.name'),'LIKE','% '.strtolower($name).'%');
-            })->get();   
-            
+            })->get(); 
+
+        // $companies = Company::select('companies.id','companies.name','companies.slug')
+        //     ->whereNotIn('companies.id',[1])
+        //     ->where('companies.status','=',Company::COMPANY_APPROVED)
+        //     ->join('types_entities','types_entities.id','=','companies.type_entity_id')
+        //     ->join('types','types.id','=','types_entities.type_id')
+        //     ->where('types.name','=','oferta')
+        //     ->where(strtolower('companies.name'),'LIKE','%'.strtolower($name).'%')->get();   
+
         return $this->showAllPaginate($companies);
     }
 }

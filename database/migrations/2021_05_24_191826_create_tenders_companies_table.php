@@ -15,12 +15,11 @@ class CreateTendersCompaniesTable extends Migration
     public function up()
     {
         Schema::create('tenders_companies', function (Blueprint $table) {
-
             $table->id();
             $table->bigInteger('tender_id')->unsigned();
             $table->bigInteger('company_id')->unsigned();
-            $table->string('type')->default(TendersCompanies::TYPE_INTERESTED);
-            $table->string('status')->default(TendersCompanies::STATUS_EARRING);
+            $table->string('type')->default(TendersCompanies::TYPE_INVITED);
+            $table->string('status')->default(TendersCompanies::STATUS_PARTICIPATING);
             $table->integer('price')->default(0);
             $table->string('winner')->default(TendersCompanies::WINNER_FALSE);
 
@@ -28,7 +27,6 @@ class CreateTendersCompaniesTable extends Migration
 
             $table->foreign('tender_id')->references('id')->on('tenders');
             $table->foreign('company_id')->references('id')->on('companies');
-            
         });
     }
     /**
