@@ -17,6 +17,8 @@ use App\Http\Controllers\ApiControllers\products\ProductsFilesController;
 use App\Http\Controllers\ApiControllers\products\ProductsDocumentsController;
 use App\Http\Controllers\ApiControllers\company\CompanyFilesController;
 use App\Http\Controllers\ApiControllers\tenders\TendersController;
+use App\Http\Controllers\ApiControllers\tendersversions\TendersVersionsController;
+use App\Http\Controllers\ApiControllers\tenderscompanies\TendersCompaniesController;
 use App\Http\Controllers\ApiControllers\tenders\TendersDocumentsController;
 use App\Http\Controllers\ApiControllers\files\FilesController;
 use App\Http\Controllers\ApiControllers\brands\BrandsController;
@@ -148,6 +150,15 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      */
     Route::resource('/tenders', TendersController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tenders');
     Route::resource('/tenders/documents', TendersDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('tendersdocuments');
+    
+    /**
+     * Tenders_vesion
+     */
+    Route::resource('/tenders/version', TendersVersionsController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tendersVersions');
+    /**
+     * Tenders_companies
+     */
+    Route::resource('/tenders/companies', TendersCompaniesController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tendersCompanies');
     /**
      * Company
     */

@@ -35,10 +35,12 @@ class TendersController extends ApiController
         $rules = [
             'project' => 'required|numeric',
         ];
+        
         $this->validate( $request, $rules );
 
-        // IS ADMIN
+        //IS ADMIN
         $companyID = $user->companyId();
+
         if( $companyID && $user->userType() == 'demanda' ){
             $tenders = Tenders::where('company_id', $companyID)->where('project_id', $request->project)->get();
 
@@ -159,9 +161,79 @@ class TendersController extends ApiController
      */
     public function update(Request $request, $id)
     {
-        //
-    }
 
+        $count = TendersVersions::where('tenders_id',$id)
+            ->where('status','=',TendersVersions::LICITACION_CREATED)
+            ->get()
+            ->count();
+
+        if($count == 1){
+                
+            $user = $this->validateUser();
+
+            $rules = [
+                //tender
+                'name' => 'required',
+                'description' => 'required',
+                'project' => 'required|numeric',
+                //tender_version
+                'price' => 'required|numeric',
+                'project' => 'required|numeric',
+                'date' => 'required',
+                'hour' => 'required'
+            ];
+
+            $this->validate( $request, $rules );
+
+
+            DB::beginTransaction();
+
+            $tender = Tenders::findOrFail($id);
+
+            //tender
+            $tenderFields['name']           = $request['name'];
+            $tenderFields['description']    = $request['description'];
+            $tenderFields['project_id']     = $request['project'];
+            $tenderFields['company_id']     = $user->companyId();
+            $tenderFields['user_id']        = $request['user'] ?? $user->id;
+            
+            //tender_version
+            $tenderVersionFields['adenda']  = $request['adenda'];
+            $tenderVersionFields['price']   = $request['price'];
+
+            if( $request['date'] ){
+                $tenderVersionFields['date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
+            }
+            if( $request['hour'] ){
+                $tenderVersionFields['hour'] = $request['hour']['hour'] . ':' . $request['hour']['minute'];
+            }
+
+            try{
+                $tender->update( $tenderFields );
+
+                $tenderVersion = TendersVersions::where('tenders_id',$id)
+                    ->where('status','=',TendersVersions::LICITACION_CREATED)
+                    ->get()
+                    ->first();
+                
+                $tenderVersion->update( $tenderVersionFields );
+
+            } catch (\Throwable $th) {
+                // Si existe algún error al momento de editar el tender
+                $errorTender = true;
+                DB::rollBack();
+                $tenderError = [ 'tender' => 'Error, no se ha podido editar el tenders'];
+                return $this->errorResponse( $tenderError, 500 );
+            }
+
+            DB::commit();
+
+            return $this->showOne($tender,200);
+        }
+
+        return [];
+
+    }
     /**
      * Remove the specified resource from storage.
      *

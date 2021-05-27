@@ -5,12 +5,15 @@ namespace App\Models;
 use App\Models\Tags;
 use App\Models\Files;
 use App\Models\Tenders;
+use App\Transformers\TendersVersionsTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TendersVersions extends Model
 {
     use HasFactory;
+
+    public $transformer = TendersVersionsTransformer::class;
 
     const LICITACION_CREATED = 'Borrador';
     const LICITACION_PUBLISH = 'Publicada';

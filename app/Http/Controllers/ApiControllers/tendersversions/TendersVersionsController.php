@@ -1,12 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\tendersversions;
+namespace App\Http\Controllers\ApiControllers\tendersversions;
 
-use App\Http\Controllers\ApiController;
+use JWTAuth;
 use Illuminate\Http\Request;
+use App\Models\TendersVersions;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersVersionsController extends ApiController
 {
+
+    public function validateUser(){
+        try {
+            $this->user = JWTAuth::parseToken()->authenticate();
+        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+        }
+        return $this->user;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -25,7 +37,7 @@ class TendersVersionsController extends ApiController
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -48,9 +60,63 @@ class TendersVersionsController extends ApiController
      */
     public function update(Request $request, $id)
     {
-        //
-    }
+        $tender_id = $id;
+        // $lastVersion = TendersVersions::where('tenders_id','=',2)
+        //     ->where('status','=',TendersVersions::LICITACION_PUBLISH)
+        //     ->orderBy('created_at','DESC')
+        //     ->exists();
 
+        $lastVersion = TendersVersions::where('tenders_id','=', $tender_id)
+            ->orderBy('created_at','DESC')
+            ->get()
+            ->first();
+
+        if($lastVersion->status == TendersVersions::LICITACION_PUBLISH) {
+
+            $rules = [
+                'adenda'    => 'required',
+                'price'     => 'required|numeric',
+                'project'   => 'required|numeric',
+                'date'      => 'required',
+                'hour'      => 'required'
+            ];
+
+            // Iniciar Transacción
+            DB::beginTransaction();
+
+            $tenderVersionFields['adenda']  = $request['adenda'];
+            $tenderVersionFields['price']   = $request['price'];
+
+            if( $request['date'] ){
+                $tenderVersionFields['date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
+            }
+            
+            if( $request['hour'] ){
+                $tenderVersionFields['hour'] = $request['hour']['hour'] . ':' . $request['hour']['minute'];
+            }
+
+            $tenderVersionFields['tenders_id']  = $tender_id;
+            $tenderVersionFields['status']      = TendersVersions::LICITACION_PUBLISH;
+
+            try{
+                $tendersVersions                = TendersVersions::create( $tenderVersionFields );
+                // Crear TenderVersion
+            } catch (\Throwable $th) {
+                // Si existe algún error al momento de crear el usuario
+                $errorTender = true;
+                DB::rollBack();
+                $tenderError = [ 'tenderVersion' => 'Error, no se ha podido crear la versión del tenders'];
+                return $this->errorResponse( $tenderError, 500 );
+            }
+
+            DB::commit();
+
+            return $this->showOne($tendersVersions,201);
+
+        }
+
+        return [];
+    }
     /**
      * Remove the specified resource from storage.
      *
