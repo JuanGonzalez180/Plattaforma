@@ -4,10 +4,12 @@ namespace App\Http\Controllers\ApiControllers\tenders;
 
 use JWTAuth;
 use App\Models\User;
+use App\Models\Images;
 use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Projects;
 use App\Models\TendersVersions;
+use App\Models\TendersCompanies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
@@ -134,6 +136,19 @@ class TendersController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+    public function companies($id){
+        return TendersCompanies::select('companies.id', 'companies.name', 'images.url')
+            ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
+            ->leftJoin('images', function($join)
+                         {
+                             $join->on('images.imageable_id', '=', 'companies.id');
+                             $join->where('images.imageable_type', '=', Company::class);
+                         })
+            ->where('tenders_companies.tender_id', $id)
+            ->get();
+    }
+
     public function show($id)
     {
         //
@@ -142,6 +157,10 @@ class TendersController extends ApiController
         $tender = Tenders::findOrFail($id);
         $tender->categories;
         $tender->tendersVersion;
+        $tender->tenderCompanies;
+        
+        $tender->companies = $this->companies($tender->id);
+
         if( $tender->tendersVersion ){
             foreach ($tender->tendersVersion as $key => $tenderVersion) {
                 $tenderVersion->tags;

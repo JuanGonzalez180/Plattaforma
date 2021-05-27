@@ -8,6 +8,7 @@ use App\Models\Remarks;
 use App\Models\Projects;
 use App\Models\Interests;
 use App\Models\TendersVersions;
+use App\Models\TendersCompanies;
 use Illuminate\Database\Eloquent\Model;
 use App\Transformers\TendersTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -69,5 +70,9 @@ class Tenders extends Model
         }
 
         return [];
+    }
+    
+    public function tenderCompanies(){
+        return $this->hasMany(TendersCompanies::class, 'tender_id');
     }
 }

@@ -39,7 +39,7 @@ class TendersCompanies extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function tender(){
+    public function tenders(){
         return $this->belongsTo(Tenders::class);
     }
 
