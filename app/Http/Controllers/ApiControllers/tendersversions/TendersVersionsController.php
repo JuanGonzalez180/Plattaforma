@@ -37,34 +37,9 @@ class TendersVersionsController extends ApiController
      */
     public function store(Request $request)
     {
-        
-    }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        $tender_id = $id;
-        // $lastVersion = TendersVersions::where('tenders_id','=',2)
-        //     ->where('status','=',TendersVersions::LICITACION_PUBLISH)
-        //     ->orderBy('created_at','DESC')
-        //     ->exists();
+        $tender_id = $request->tender_id;
+ 
 
         $lastVersion = TendersVersions::where('tenders_id','=', $tender_id)
             ->orderBy('created_at','DESC')
@@ -113,9 +88,36 @@ class TendersVersionsController extends ApiController
 
             return $this->showOne($tendersVersions,201);
 
+        }else{
+            $tenderError = [ 'tenderVersion' => 'Error, la ultima versión de la licitacion no esta publicada'];
+            return $this->errorResponse( $tenderError, 500 );
         }
 
         return [];
+        
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        
     }
     /**
      * Remove the specified resource from storage.
@@ -126,5 +128,23 @@ class TendersVersionsController extends ApiController
     public function destroy($id)
     {
         //
+    }
+
+
+    public function edit($id)
+    {
+        $lastVersion = TendersVersions::where('tenders_id','=', $id)
+            ->orderBy('created_at','DESC')
+            ->get()
+            ->first();
+
+        $lastVersion->id;
+        $lastVersion->adenda;
+        $lastVersion->price;
+        $lastVersion->status;
+        $lastVersion->date;
+        $lastVersion->hour;
+
+        return $this->showOne($lastVersion,201);
     }
 }
