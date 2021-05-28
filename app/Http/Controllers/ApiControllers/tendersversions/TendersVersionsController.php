@@ -45,9 +45,8 @@ class TendersVersionsController extends ApiController
             ->orderBy('created_at','DESC')
             ->get()
             ->first();
-
+        
         if($lastVersion->status == TendersVersions::LICITACION_PUBLISH) {
-
             $rules = [
                 'adenda'    => 'required',
                 'price'     => 'required|numeric',
@@ -71,30 +70,32 @@ class TendersVersionsController extends ApiController
             }
 
             $tenderVersionFields['tenders_id']  = $tender_id;
-            $tenderVersionFields['status']      = TendersVersions::LICITACION_PUBLISH;
+            $tenderVersionFields['status']      = TendersVersions::LICITACION_CREATED;
 
             try{
                 $tendersVersions                = TendersVersions::create( $tenderVersionFields );
+
+                foreach ($request->tags as $key => $tag) {
+                    $tendersVersions->tags()->create(['name' => $tag['displayValue']]);
+                }
                 // Crear TenderVersion
             } catch (\Throwable $th) {
                 // Si existe algún error al momento de crear el usuario
                 $errorTender = true;
                 DB::rollBack();
-                $tenderError = [ 'tenderVersion' => 'Error, no se ha podido crear la versión del tenders'];
+                $tenderError = [ 'tenderVersion' => 'Error, no se ha podido crear la versión de la licitación'];
                 return $this->errorResponse( $tenderError, 500 );
             }
 
-            if($tendersVersions) {
+            if($tendersVersions && $files ) {
                 foreach($files as $file) {
-
-
+                    // $lastVersion->files()
+                    // $file['file_id']
                 }
             }
 
             DB::commit();
-
             return $this->showOne($tendersVersions,201);
-
         }else{
             $tenderError = [ 'tenderVersion' => 'Error, la ultima versión de la licitacion no esta publicada'];
             return $this->errorResponse( $tenderError, 500 );
@@ -113,6 +114,23 @@ class TendersVersionsController extends ApiController
     public function show($id)
     {
         //
+    }
+
+    public function edit($id)
+    {
+        $lastVersion = TendersVersions::where('tenders_id','=', $id)
+            ->orderBy('created_at','DESC')
+            ->get()
+            ->first();
+
+        $lastVersion->id;
+        $lastVersion->adenda;
+        $lastVersion->price;
+        $lastVersion->status;
+        $lastVersion->date;
+        $lastVersion->hour;
+
+        return $this->showOne($lastVersion,201);
     }
 
     /**
@@ -136,6 +154,7 @@ class TendersVersionsController extends ApiController
     {
         //
     }
+<<<<<<< HEAD
 
     public function edit($id)
     {
@@ -153,4 +172,6 @@ class TendersVersionsController extends ApiController
 
         return $this->showOne($lastVersion,201);
     }
+=======
+>>>>>>> 7d5cda5a4c096cf86c7892aa6d7849978de75609
 }

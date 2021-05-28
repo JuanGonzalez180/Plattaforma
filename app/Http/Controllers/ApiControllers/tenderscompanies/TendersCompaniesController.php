@@ -39,10 +39,11 @@ class TendersCompaniesController extends ApiController
             return $this->errorResponse( $tenderCompanyError, 500 );
         }
 
+        // Iniciar Transacción
+        DB::beginTransaction();
+
         if( $companies ){
             foreach($companies as $company){
-                // Iniciar Transacción
-                DB::beginTransaction();
 
                 $tenderCompanyFields['tender_id']  = $tender_id;
                 $tenderCompanyFields['company_id'] = $company["id"];
@@ -56,13 +57,15 @@ class TendersCompaniesController extends ApiController
                     return $this->errorResponse( $tenderCompanyError, 500 );
                 }
 
-                $tenderVersion = $tender->tendersVersionLast();
-                $tenderVersion->status = TendersVersions::LICITACION_PUBLISH;
-                $tenderVersion->save();
-
-                DB::commit();
             }
         }
+
+        $tender = Tenders::findOrFail($tender_id);
+        $tenderVersion = $tender->tendersVersionLast();
+        $tenderVersion->status = TendersVersions::LICITACION_PUBLISH;
+        $tenderVersion->save();
+
+        DB::commit();
 
         // return $this->showOne($tendersCompanies,201);
         return $this->showOne($tender,201);
