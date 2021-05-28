@@ -137,7 +137,6 @@ class TendersVersionsController extends ApiController
         //
     }
 
-
     public function edit($id)
     {
         $lastVersion = TendersVersions::where('tenders_id','=', $id)
