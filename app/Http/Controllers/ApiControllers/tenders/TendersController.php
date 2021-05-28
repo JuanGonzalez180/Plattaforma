@@ -177,6 +177,7 @@ class TendersController extends ApiController
         $user = $this->validateUser();
 
         $tender = Tenders::findOrFail($id);
+        $tender->user;
         $tender->categories;
         $tender->version_last = $tender->tendersVersionLast();
         $tender->version_last->tags;
