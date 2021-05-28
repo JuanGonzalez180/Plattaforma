@@ -37,10 +37,10 @@ class TendersVersionsController extends ApiController
      */
     public function store(Request $request)
     {
-
-        $tender_id = $request->tender_id;
+        // var_dump($request->all());
+        $tender_id  = $request->tender_id;
+        $files      = $request['files'];
  
-
         $lastVersion = TendersVersions::where('tenders_id','=', $tender_id)
             ->orderBy('created_at','DESC')
             ->get()
@@ -82,6 +82,13 @@ class TendersVersionsController extends ApiController
                 DB::rollBack();
                 $tenderError = [ 'tenderVersion' => 'Error, no se ha podido crear la versión del tenders'];
                 return $this->errorResponse( $tenderError, 500 );
+            }
+
+            if($tendersVersions) {
+                foreach($files as $file) {
+
+
+                }
             }
 
             DB::commit();
