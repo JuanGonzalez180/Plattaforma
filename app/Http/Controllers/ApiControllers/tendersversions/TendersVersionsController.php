@@ -72,7 +72,7 @@ class TendersVersionsController extends ApiController
             }
 
             $tenderVersionFields['tenders_id']  = $tender_id;
-            $tenderVersionFields['status']      = TendersVersions::LICITACION_PUBLISH;
+            $tenderVersionFields['status']      = TendersVersions::LICITACION_CREATED;
 
             try{
                 $tendersVersions                = TendersVersions::create( $tenderVersionFields );
@@ -90,37 +90,33 @@ class TendersVersionsController extends ApiController
             }
 
             if( $tendersVersions ) {
-
+                
                 $id_old     = $lastVersion->id;
                 $id_last    = $tendersVersions->id;
+                
+                if( $files ){
+                    foreach ($files as $key => $file) {
+                        // Files::select('filesable_type','name','type','url')->where('id',14)->get()->first()
+                        $oldVersion = Files::select('filesable_type','name','type','url')
+                                            ->where('id',$file['files_id'])
+                                            ->get()
+                                            ->first();
 
-                $oldTenderVersion = Files::select('filesable_type','name','type','url')
-                    ->where('filesable_id',$id_old)
-                    ->where('filesable_type','App\Models\TendersVersions')
-                    ->get();
-
-                foreach($oldTenderVersion as $oldVersion) {
-
-                    $file_name = $oldVersion->name;
-                    $carpeta = "images/tenders/".$id_last."/documents";
-
-                    $file_url       = storage_path('app/public/'.$oldVersion->url); 
-                    $file_url_last  = storage_path('app/public/'.$carpeta.'/'.$file_name); 
-
-                    if (!File::exists(storage_path('app/public/'.$carpeta))){
-                        File::makeDirectory(storage_path('app/public/'.$carpeta), 777, true);
+                        $file_name = $oldVersion->name;
+                        $carpeta = "images/tenders/".$id_last."/documents";
+        
+                        $file_url       = storage_path('app/public/'.$oldVersion->url); 
+                        $file_url_last  = storage_path('app/public/'.$carpeta.'/'.$file_name); 
+        
+                        if (!File::exists(storage_path('app/public/'.$carpeta))){
+                            File::makeDirectory(storage_path('app/public/'.$carpeta), 777, true);
+                        }
+        
+                        File::copy($file_url, $file_url_last);
+                        $tendersVersions->files()->create([ 'name' => $oldVersion->name, 'type'=> $oldVersion->type, 'url' => $carpeta.'/'.$file_name]);
                     }
-
-                    File::copy($file_url, $file_url_last);
-
-                    $FileVersion['filesable_id']    = $id_last;
-                    $FileVersion['filesable_type']  = $oldVersion->filesable_type;
-                    $FileVersion['name']            = $oldVersion->name;
-                    $FileVersion['type']            = $oldVersion->type;
-                    $FileVersion['url']             = $carpeta.'/'.$file_name;
-
-                    Files::create( $FileVersion );
                 }
+
             }
 
             DB::commit();
@@ -174,13 +170,11 @@ class TendersVersionsController extends ApiController
             ->orderBy('created_at','DESC')
             ->get()
             ->first();
-        
-        if($lastVersion->status == TendersVersions::LICITACION_CREATED) {
 
+        if($lastVersion->status == TendersVersions::LICITACION_CREATED) {
             $rules = [
                 'adenda'    => 'required',
                 'price'     => 'required|numeric',
-                'project'   => 'required|numeric',
                 'date'      => 'required',
                 'hour'      => 'required'
             ];
@@ -203,8 +197,17 @@ class TendersVersionsController extends ApiController
             $lastVersion->status      = TendersVersions::LICITACION_CREATED;
             
             try{
-                
                 $lastVersion->save();
+
+                // Tags
+                // Eliminar los anteriores
+                foreach( $lastVersion->tags as $key => $tag ){
+                    $tag->delete();
+                }
+
+                foreach ($request->tags as $key => $tag) {
+                    $lastVersion->tags()->create(['name' => $tag['displayValue']]);
+                }
 
                 // Axtualiza TenderVersion
             } catch (\Throwable $th) {
@@ -214,7 +217,9 @@ class TendersVersionsController extends ApiController
                 $tenderError = [ 'tenderVersion' => 'Error, no se ha podido actulizar la versión de la licitación'];
                 return $this->errorResponse( $tenderError, 500 );
             }
-
+            
+            DB::commit();
+            $lastVersion->tags;
             return $this->showOne($lastVersion,201);
 
         }else{
