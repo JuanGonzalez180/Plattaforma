@@ -74,9 +74,9 @@ class TendersVersionsController extends ApiController
             try{
                 $tendersVersions                = TendersVersions::create( $tenderVersionFields );
 
-                // foreach ($request->tags as $key => $tag) {
-                //     $tendersVersions->tags()->create(['name' => $tag['displayValue']]);
-                // }
+                foreach ($request->tags as $key => $tag) {
+                    $tendersVersions->tags()->create(['name' => $tag['displayValue']]);
+                }
                 // Crear TenderVersion
             } catch (\Throwable $th) {
                 // Si existe algún error al momento de crear el usuario
