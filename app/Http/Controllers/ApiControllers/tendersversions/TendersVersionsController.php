@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\ApiControllers\tendersversions;
 
 use JWTAuth;
+use App\Models\Files;
 use Illuminate\Http\Request;
 use App\Models\TendersVersions;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersVersionsController extends ApiController
@@ -53,7 +56,7 @@ class TendersVersionsController extends ApiController
                 'date'      => 'required',
                 'hour'      => 'required'
             ];
-
+            
             // Iniciar Transacción
             DB::beginTransaction();
 
@@ -86,17 +89,38 @@ class TendersVersionsController extends ApiController
                 return $this->errorResponse( $tenderError, 500 );
             }
 
-            if($tendersVersions) {
-                $lastVersion->files();
-                
-                // var_dump('pasa por aca');
-                // var_dump($lastVersion);
-                // var_dump('cantidad:');
-                // var_dump($lastVersion->files()->count());
-                // foreach($lastVersion->files()  as $file){
-                //     var_dump('paso por aca');
-                // }
+            if( $tendersVersions ) {
 
+                $id_old     = $lastVersion->id;
+                $id_last    = $tendersVersions->id;
+
+                $oldTenderVersion = Files::select('filesable_type','name','type','url')
+                    ->where('filesable_id',$id_old)
+                    ->where('filesable_type','App\Models\TendersVersions')
+                    ->get();
+
+                foreach($oldTenderVersion as $oldVersion) {
+
+                    $file_name = $oldVersion->name;
+                    $carpeta = "images/tenders/".$id_last."/documents";
+
+                    $file_url       = storage_path('app/public/'.$oldVersion->url); 
+                    $file_url_last  = storage_path('app/public/'.$carpeta.'/'.$file_name); 
+
+                    if (!File::exists(storage_path('app/public/'.$carpeta))){
+                        File::makeDirectory(storage_path('app/public/'.$carpeta), 777, true);
+                    }
+
+                    File::copy($file_url, $file_url_last);
+
+                    $FileVersion['filesable_id']    = $id_last;
+                    $FileVersion['filesable_type']  = $oldVersion->filesable_type;
+                    $FileVersion['name']            = $oldVersion->name;
+                    $FileVersion['type']            = $oldVersion->type;
+                    $FileVersion['url']             = $carpeta.'/'.$file_name;
+
+                    Files::create( $FileVersion );
+                }
             }
 
             DB::commit();
@@ -107,7 +131,6 @@ class TendersVersionsController extends ApiController
         }
 
         return [];
-        
     }
 
     /**
