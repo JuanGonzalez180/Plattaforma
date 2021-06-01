@@ -37,7 +37,6 @@ class TendersVersionsController extends ApiController
      */
     public function store(Request $request)
     {
-        // var_dump($request->all());
         $tender_id  = $request->tender_id;
         $files      = $request['files'];
  
@@ -70,7 +69,7 @@ class TendersVersionsController extends ApiController
             }
 
             $tenderVersionFields['tenders_id']  = $tender_id;
-            $tenderVersionFields['status']      = TendersVersions::LICITACION_CREATED;
+            $tenderVersionFields['status']      = TendersVersions::LICITACION_PUBLISH;
 
             try{
                 $tendersVersions                = TendersVersions::create( $tenderVersionFields );
@@ -87,11 +86,17 @@ class TendersVersionsController extends ApiController
                 return $this->errorResponse( $tenderError, 500 );
             }
 
-            if($tendersVersions && $files ) {
-                foreach($files as $file) {
-                    // $lastVersion->files()
-                    // $file['file_id']
-                }
+            if($tendersVersions) {
+                $lastVersion->files();
+                
+                // var_dump('pasa por aca');
+                // var_dump($lastVersion);
+                // var_dump('cantidad:');
+                // var_dump($lastVersion->files()->count());
+                // foreach($lastVersion->files()  as $file){
+                //     var_dump('paso por aca');
+                // }
+
             }
 
             DB::commit();
@@ -142,6 +147,59 @@ class TendersVersionsController extends ApiController
      */
     public function update(Request $request, $id)
     {
+        $lastVersion = TendersVersions::where('tenders_id','=', $id)
+            ->orderBy('created_at','DESC')
+            ->get()
+            ->first();
+        
+        if($lastVersion->status == TendersVersions::LICITACION_CREATED) {
+
+            $rules = [
+                'adenda'    => 'required',
+                'price'     => 'required|numeric',
+                'project'   => 'required|numeric',
+                'date'      => 'required',
+                'hour'      => 'required'
+            ];
+
+            // Iniciar Transacción
+            DB::beginTransaction();
+
+            $lastVersion->adenda  = $request['adenda'];
+            $lastVersion->price   = $request['price'];
+
+            
+            if( $request['date'] ){
+                $lastVersion->date = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
+            }
+            
+            if( $request['hour'] ){
+                $lastVersion->hour = $request['hour']['hour'] . ':' . $request['hour']['minute'];
+            }
+            
+            $lastVersion->status      = TendersVersions::LICITACION_CREATED;
+            
+            try{
+                
+                $lastVersion->save();
+
+                // Axtualiza TenderVersion
+            } catch (\Throwable $th) {
+                // Si existe algún error al momento de crear el usuario
+                $errorTender = true;
+                DB::rollBack();
+                $tenderError = [ 'tenderVersion' => 'Error, no se ha podido actulizar la versión de la licitación'];
+                return $this->errorResponse( $tenderError, 500 );
+            }
+
+            return $this->showOne($lastVersion,201);
+
+        }else{
+            $tenderError = [ 'tenderVersion' => 'Error, la ultima versión de la licitacion no esta Borrador'];
+            return $this->errorResponse( $tenderError, 500 );
+        }
+
+        return [];
         
     }
     /**

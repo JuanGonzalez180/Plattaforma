@@ -29,28 +29,32 @@ class ProjectsController extends ApiController
     {
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
-
+        
         $companyID = $user->companyId();
+
+        // var_dump($user->userType());
         if( $companyID && $user->userType() == 'demanda' ){
             if( $user->isAdminFrontEnd() ){
                 // IS ADMIN
                 $projects = Projects::where('company_id', $companyID)
-                                ->orderBy('id', 'desc')
-                                ->get();
+                ->orderBy('id', 'desc')
+                ->get();
             }else{
                 $projects = Projects::where('company_id', $companyID)
                                         ->where('user_id', $user->id)
                                         ->orderBy('id', 'desc')
                                         ->get();
+                                        var_dump('paso por aca');
             }
+
             foreach( $projects as $key => $project ){
                 $project->image;
                 $project->user;
                 $project->user['url'] = $project->user->image ? url( 'storage/' . $project->user->image->url ) : null;
             }
-
             return $this->showAllPaginate($projects);
         }
+        
         return [];
     }
 
