@@ -36,6 +36,7 @@ class Company extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'type_entity_id',
         'nit',
         'country_code',
