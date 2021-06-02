@@ -15,16 +15,14 @@ class Files extends Model
      * type: Tipo de Archivo
      */
     protected $fillable = [
-        'filesable_id',
-        'filesable_type',
         'name',
         'type',
         'url'
     ];
 
     protected $hidden = [
-        // 'filesable_id',
-        // 'filesable_type',
+        'filesable_id',
+        'filesable_type',
     ];
     
     public function filesable(){

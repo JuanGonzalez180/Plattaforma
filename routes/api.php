@@ -159,6 +159,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      * Tenders_companies
      */
     Route::resource('/tenders/companies', TendersCompaniesController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tendersCompanies');
+    
     /**
      * Company
     */
