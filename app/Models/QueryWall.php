@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\User;
-use App\Tenders;
+use App\Models\User;
+use App\Models\Tenders;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,14 +15,12 @@ class QueryWall extends Model
     const QUERYWALL_PUBLISH = 'Publicado';
 
     protected $fillable = [
-        'licitacion_id',
+        'tender_id',
         'subject',
         'question',
         'answer',
         'user_id',
-        'status',
-        'date',
-        'date_update'
+        'status'
     ];
 
     public function isPublish(){
