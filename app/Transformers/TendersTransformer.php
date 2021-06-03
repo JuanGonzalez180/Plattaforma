@@ -37,6 +37,8 @@ class TendersTransformer extends TransformerAbstract
             'id' => (int)$tender->id,
             'user_id'=> (int)$tender->user_id,
             'company_id'=> (int)$tender->company_id,
+            'project'=> $tender->project,
+            'categories'=> $tender->categories,
             'project_id'=> (int)$tender->project_id,
             'name'=> (string)$tender->name,
             'status'=> (string)$tender->status,

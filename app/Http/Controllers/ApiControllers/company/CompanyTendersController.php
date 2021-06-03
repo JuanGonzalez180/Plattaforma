@@ -56,6 +56,7 @@ class CompanyTendersController extends ApiController
             if( $version ){
                 $tender->tags = $version->tags;
             }
+            $tender->project;
         }
         
         return $this->showAllPaginate($company->tenders);
