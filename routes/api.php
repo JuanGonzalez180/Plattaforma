@@ -10,6 +10,8 @@ use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesControl
 use App\Http\Controllers\ApiControllers\company\CompanyController;
 use App\Http\Controllers\ApiControllers\company\CompanyProjectsController;
 use App\Http\Controllers\ApiControllers\company\CompanyTendersController;
+use App\Http\Controllers\ApiControllers\company\CompanyBlogsController;
+use App\Http\Controllers\ApiControllers\company\CompanyProductsController;
 use App\Http\Controllers\ApiControllers\company\CompanyFilesController;
 use App\Http\Controllers\ApiControllers\country\CountryController;
 use App\Http\Controllers\ApiControllers\files\FilesController;
@@ -128,12 +130,14 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     /**
      * Projects
      */
+    Route::get('/projects/{id}/detail', [ProjectsController::class, 'detail'])->name('project-detail');
     Route::resource('/projects', ProjectsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('projects');
     Route::put('/projects/{project}/visible', [ProjectsController::class, 'changevisible'])->name('projectsvisible');
     Route::resource('/projects/files', ProjectsFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('projectsimages');
     /**
      * Products
      */
+    Route::get('/products/{id}/detail', [ProductsController::class, 'detail'])->name('products-detail');
     Route::resource('/products', ProductsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('products');
     Route::resource('/products/files', ProductsFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('productsimages');
     Route::resource('/products/documents', ProductsDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('productsdocuments');
@@ -169,6 +173,8 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/company/{slug}/detail', [CompanyController::class, 'detail'])->name('company-detail');
     Route::get('/company/{slug}/projects', [CompanyProjectsController::class, 'index'])->name('company-projects');
     Route::get('/company/{slug}/tenders', [CompanyTendersController::class, 'index'])->name('company-tenders');
+    Route::get('/company/{slug}/blogs', [CompanyBlogsController::class, 'index'])->name('company-blogs');
+    Route::get('/company/{slug}/products', [CompanyProductsController::class, 'index'])->name('company-products');
 
     /**
      * Search
