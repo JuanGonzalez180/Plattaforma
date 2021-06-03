@@ -9,6 +9,7 @@ use App\Http\Controllers\ApiControllers\category\CategoryController;
 use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesController;
 use App\Http\Controllers\ApiControllers\company\CompanyController;
 use App\Http\Controllers\ApiControllers\company\CompanyProjectsController;
+use App\Http\Controllers\ApiControllers\company\CompanyTendersController;
 use App\Http\Controllers\ApiControllers\company\CompanyFilesController;
 use App\Http\Controllers\ApiControllers\country\CountryController;
 use App\Http\Controllers\ApiControllers\files\FilesController;
@@ -164,8 +165,10 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     /**
      * Company
     */
-    Route::get('/company/{slug}', [CompanyController::class, 'show'])->name('company-detail');
-    Route::get('/company/{slug}/projects', [CompanyProjectsController::class, 'index', 'show'])->name('company-projects');
+    Route::get('/company/{slug}', [CompanyController::class, 'show'])->name('company-show');
+    Route::get('/company/{slug}/detail', [CompanyController::class, 'detail'])->name('company-detail');
+    Route::get('/company/{slug}/projects', [CompanyProjectsController::class, 'index'])->name('company-projects');
+    Route::get('/company/{slug}/tenders', [CompanyTendersController::class, 'index'])->name('company-tenders');
 
     /**
      * Search

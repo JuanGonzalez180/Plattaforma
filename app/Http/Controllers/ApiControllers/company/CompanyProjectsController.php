@@ -35,7 +35,7 @@ class CompanyProjectsController extends ApiController
             return $this->errorResponse( $companyError, 500 );
         }
 
-        // Traer Proyectos últimos 6
+        // Traer Proyectos de la compañía
         $company->projects = $company->projects
                         ->where('visible', Projects::PROJECTS_VISIBLE)
                         ->sortBy([ ['updated_at', 'desc'] ]);

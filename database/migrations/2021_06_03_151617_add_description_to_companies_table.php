@@ -15,7 +15,6 @@ class AddDescriptionToCompaniesTable extends Migration
     {
         Schema::table('companies', function (Blueprint $table) {
             $table->string('description',1000)
-                ->unique()
                 ->nullable()
                 ->after('slug');
         });

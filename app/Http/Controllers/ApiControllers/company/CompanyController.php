@@ -205,12 +205,14 @@ class CompanyController extends ApiController
         }
 
         // Traer Licitaciones últimas 6
-        $company->tenders = $company->tenders
-                        // ->where('visible', Tenders::PROJECTS_VISIBLE)
+        $company->tenders = Tenders::select('tenders.*')
+                        ->where('tenders.company_id', $company->id)
+                        ->join( 'projects', 'projects.id', '=', 'tenders.project_id' )
+                        ->where('projects.visible', Projects::PROJECTS_VISIBLE)
                         ->skip(0)->take(6)
-                        ->sortBy([ ['updated_at', 'desc'] ]);
+                        ->orderBy('tenders.updated_at', 'desc')
+                        ->get();
 
-        $userTransform = new UserTransformer();
         foreach ( $company->tenders as $key => $tender) {
             $user = $userTransform->transform($tender->user);
             unset( $tender->user );
@@ -218,6 +220,7 @@ class CompanyController extends ApiController
             if( $version ){
                 $tender->tags = $version->tags;
             }
+            $tender->project;
             $tender->user = $user;
         }
 
@@ -249,6 +252,20 @@ class CompanyController extends ApiController
         }
 
         return $this->showOneTransform($company, 200);
+    }
+
+    public function detail($slug)
+    {
+        //
+        $user = $this->validateUser();
+        
+        $company = Company::where('slug', $slug)->first();
+        if( !$company ){
+            $companyError = [ 'company' => 'Error, no se ha encontrado ninguna compañia' ];
+            return $this->errorResponse( $companyError, 500 );
+        }
+
+        return $this->showOneTransformNormal($company, 200);
     }
 
     /**
