@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\ApiControllers\tenderscompanies;
 
 use JWTAuth;
+use App\Models\Tenders;
+use App\Models\Company;
+use App\Mail\SendInvitationTenderCompany;
 use Illuminate\Http\Request;
 use App\Models\TendersCompanies;
 use App\Models\TendersVersions;
-use App\Models\Tenders;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersCompaniesController extends ApiController
@@ -29,6 +32,7 @@ class TendersCompaniesController extends ApiController
     {
         $tender_id = $request->tender_id;
         $companies = $request->companies_id;
+        
 
         $tendersCompanies = [];
 
@@ -43,6 +47,7 @@ class TendersCompaniesController extends ApiController
         DB::beginTransaction();
 
         if( $companies ){
+
             foreach($companies as $company){
 
                 $tenderCompanyFields['tender_id']  = $tender_id;
@@ -58,12 +63,25 @@ class TendersCompaniesController extends ApiController
                 }
 
             }
+
         }
 
-        $tender = Tenders::findOrFail($tender_id);
-        $tenderVersion = $tender->tendersVersionLast();
-        $tenderVersion->status = TendersVersions::LICITACION_PUBLISH;
+        $tender                 = Tenders::findOrFail($tender_id);
+        $tenderVersion          = $tender->tendersVersionLast();
+        $tenderVersion->status  = TendersVersions::LICITACION_PUBLISH;
         $tenderVersion->save();
+
+        //envia invitacion a correos
+        foreach($companies as $company){
+
+            $companyInfo = Company::findOrFail($company["id"]);
+
+            Mail::to($companyInfo->user->email)->send(new SendInvitationTenderCompany(
+                $tender->name, 
+                $tenderVersion->adenda, 
+                $companyInfo->name
+            ));
+        }
 
         DB::commit();
 

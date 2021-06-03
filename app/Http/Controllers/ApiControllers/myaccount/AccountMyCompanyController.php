@@ -83,6 +83,7 @@ class AccountMyCompanyController extends ApiController
             $company->nit = $request->nit;
             $company->country_code = $request->country_code;
             $company->web = $request->web;
+            $company->description = $request->description;
 
             if( $request->image ){
                 $png_url = "company-".time().".jpg";

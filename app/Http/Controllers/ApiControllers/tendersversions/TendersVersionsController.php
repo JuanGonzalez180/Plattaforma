@@ -3,12 +3,9 @@
 namespace App\Http\Controllers\ApiControllers\tendersversions;
 
 use JWTAuth;
-use App\Models\Files;
 use Illuminate\Http\Request;
 use App\Models\TendersVersions;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersVersionsController extends ApiController
@@ -56,7 +53,7 @@ class TendersVersionsController extends ApiController
                 'date'      => 'required',
                 'hour'      => 'required'
             ];
-            
+
             // Iniciar Transacción
             DB::beginTransaction();
 
@@ -127,6 +124,7 @@ class TendersVersionsController extends ApiController
         }
 
         return [];
+        
     }
 
     /**

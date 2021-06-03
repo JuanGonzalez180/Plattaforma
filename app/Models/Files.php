@@ -15,8 +15,6 @@ class Files extends Model
      * type: Tipo de Archivo
      */
     protected $fillable = [
-        // 'filesable_id',
-        // 'filesable_type',
         'name',
         'type',
         'url'
