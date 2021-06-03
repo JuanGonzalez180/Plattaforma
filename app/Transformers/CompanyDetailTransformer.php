@@ -47,6 +47,7 @@ class CompanyDetailTransformer extends TransformerAbstract
             'projects'=> $company->projects,
             'tenders'=> $company->tenders,
             'products'=> $company->products,
+            'blogs'=> $company->blogs,
             'total'=> $company->total($company),
         ];
     }

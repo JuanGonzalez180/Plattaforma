@@ -97,6 +97,10 @@ class Company extends Model
         $total['products'] = $company->products
                                 ->where('status', Products::PRODUCT_PUBLISH)
                                 ->count();
+        
+        $total['blogs'] = $company->blogs
+                                ->where('status', Blog::BLOG_PUBLISH)
+                                ->count();
 
         $total['portfolio'] = count($company->files);
 

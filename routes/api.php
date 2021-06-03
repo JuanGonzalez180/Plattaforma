@@ -2,40 +2,41 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
-use App\Http\Controllers\ApiControllers\company\CompanyController;
-use App\Http\Controllers\ApiControllers\staticcontent\StaticContentController;
-use App\Http\Controllers\ApiControllers\country\CountryController;
-use App\Http\Controllers\ApiControllers\socialnetworks\SocialNetworksController;
-use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
-use App\Http\Controllers\ApiControllers\category\CategoryController;
-use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesController;
-use App\Http\Controllers\ApiControllers\projects\ProjectsController;
-use App\Http\Controllers\ApiControllers\projects\ProjectsFilesController;
-use App\Http\Controllers\ApiControllers\products\ProductsController;
-use App\Http\Controllers\ApiControllers\products\ProductsFilesController;
-use App\Http\Controllers\ApiControllers\products\ProductsDocumentsController;
-use App\Http\Controllers\ApiControllers\company\CompanyFilesController;
-use App\Http\Controllers\ApiControllers\tenders\TendersController;
-use App\Http\Controllers\ApiControllers\tendersversions\TendersVersionsController;
-use App\Http\Controllers\ApiControllers\tenderscompanies\TendersCompaniesController;
-use App\Http\Controllers\ApiControllers\tenders\TendersDocumentsController;
-use App\Http\Controllers\ApiControllers\files\FilesController;
-use App\Http\Controllers\ApiControllers\brands\BrandsController;
 use App\Http\Controllers\ApiControllers\blog\BlogController;
 use App\Http\Controllers\ApiControllers\blog\BlogFilesController;
+use App\Http\Controllers\ApiControllers\brands\BrandsController;
+use App\Http\Controllers\ApiControllers\category\CategoryController;
+use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesController;
+use App\Http\Controllers\ApiControllers\company\CompanyController;
+use App\Http\Controllers\ApiControllers\company\CompanyProjectsController;
+use App\Http\Controllers\ApiControllers\company\CompanyFilesController;
+use App\Http\Controllers\ApiControllers\country\CountryController;
+use App\Http\Controllers\ApiControllers\files\FilesController;
+use App\Http\Controllers\ApiControllers\products\ProductsController;
+use App\Http\Controllers\ApiControllers\products\ProductsDocumentsController;
+use App\Http\Controllers\ApiControllers\products\ProductsFilesController;
+use App\Http\Controllers\ApiControllers\projects\ProjectsController;
+use App\Http\Controllers\ApiControllers\projects\ProjectsFilesController;
+use App\Http\Controllers\ApiControllers\socialnetworks\SocialNetworksController;
+use App\Http\Controllers\ApiControllers\staticcontent\StaticContentController;
+use App\Http\Controllers\ApiControllers\tenders\TendersController;
+use App\Http\Controllers\ApiControllers\tenders\TendersDocumentsController;
+use App\Http\Controllers\ApiControllers\tenderscompanies\TendersCompaniesController;
+use App\Http\Controllers\ApiControllers\tendersversions\TendersVersionsController;
+use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
+use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
 // Search
-use App\Http\Controllers\ApiControllers\search\SearchProjectsController;
-use App\Http\Controllers\ApiControllers\search\SearchProductsController;
 use App\Http\Controllers\ApiControllers\search\SearchBrandsController;
 use App\Http\Controllers\ApiControllers\search\SearchCompanyController;
+use App\Http\Controllers\ApiControllers\search\SearchProductsController;
+use App\Http\Controllers\ApiControllers\search\SearchProjectsController;
 // Password
-use App\Http\Controllers\ApiControllers\password\SendCodeController;
-use App\Http\Controllers\ApiControllers\password\CodeValidationController;
 use App\Http\Controllers\ApiControllers\password\ChangePasswordController;
+use App\Http\Controllers\ApiControllers\password\CodeValidationController;
+use App\Http\Controllers\ApiControllers\password\SendCodeController;
 // Account
-use App\Http\Controllers\ApiControllers\myaccount\AccountEditController;
 use App\Http\Controllers\ApiControllers\myaccount\AccountChangePasswordController;
+use App\Http\Controllers\ApiControllers\myaccount\AccountEditController;
 use App\Http\Controllers\ApiControllers\myaccount\AccountMyCompanyController;
 use App\Http\Controllers\ApiControllers\myaccount\AccountMyTeamController;
 use App\Http\Controllers\ApiControllers\myaccount\RegisterMemberController;
@@ -164,6 +165,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      * Company
     */
     Route::get('/company/{slug}', [CompanyController::class, 'show'])->name('company-detail');
+    Route::get('/company/{slug}/projects', [CompanyProjectsController::class, 'index', 'show'])->name('company-projects');
 
     /**
      * Search

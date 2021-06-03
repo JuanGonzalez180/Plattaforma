@@ -2,25 +2,36 @@
 
 namespace App\Http\Controllers\ApiControllers\company;
 
-use App\Models\User;
-use App\Models\Team;
-use App\Models\Image;
+use JWTAuth;
+use App\Models\Blog;
 use App\Models\Company;
-use App\Models\Tenders;
-use App\Models\Projects;
+use App\Models\Image;
 use App\Models\Products;
+use App\Models\Projects;
+use App\Models\Team;
+use App\Models\Tenders;
 use App\Models\TypesEntity;
+use App\Models\User;
 use App\Mail\CreatedAccount;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use App\Http\Controllers\ApiControllers\ApiController;
-use TaylorNetwork\UsernameGenerator\Generator;
 use Illuminate\Support\Str as Str;
+use TaylorNetwork\UsernameGenerator\Generator;
+use App\Http\Controllers\ApiControllers\ApiController;
 
 class CompanyController extends ApiController
 {
+    
+    public function validateUser(){
+        try {
+            $this->user = JWTAuth::parseToken()->authenticate();
+        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+        }
+        return $this->user;
+    }
+    
     /**
      * Handle the incoming request
      *
@@ -158,6 +169,8 @@ class CompanyController extends ApiController
     public function show($slug)
     {
         //
+        $user = $this->validateUser();
+        
         $company = Company::where('slug', $slug)->first();
         if( !$company ){
             $companyError = [ 'company' => 'Error, no se ha encontrado ninguna compañia' ];
@@ -188,6 +201,7 @@ class CompanyController extends ApiController
             $user = $userTransform->transform($project->user);
             unset( $project->user );
             $project->user = $user;
+            $project->image;
         }
 
         // Traer Licitaciones últimas 6
@@ -200,6 +214,10 @@ class CompanyController extends ApiController
         foreach ( $company->tenders as $key => $tender) {
             $user = $userTransform->transform($tender->user);
             unset( $tender->user );
+            $version = $tender->tendersVersionLast();
+            if( $version ){
+                $tender->tags = $version->tags;
+            }
             $tender->user = $user;
         }
 
@@ -209,11 +227,25 @@ class CompanyController extends ApiController
                                 ->skip(0)->take(6)
                                 ->sortBy([ ['updated_at', 'desc'] ]);
 
-        $userTransform = new UserTransformer();
         foreach ( $company->products as $key => $product) {
             $user = $userTransform->transform($product->user);
             unset( $product->user );
             $product->user = $user;
+            $product->tags;
+            $product->image;
+        }
+
+        // Traer Publicaciones últimas 6
+        $company->blogs = $company->blogs
+                                ->where('status', Blog::BLOG_PUBLISH)
+                                ->skip(0)->take(6)
+                                ->sortBy([ ['updated_at', 'desc'] ]);
+
+        foreach ( $company->blogs as $key => $blog) {
+            $user = $userTransform->transform($blog->user);
+            unset( $blog->user );
+            $blog->user = $user;
+            $blog->image;
         }
 
         return $this->showOneTransform($company, 200);

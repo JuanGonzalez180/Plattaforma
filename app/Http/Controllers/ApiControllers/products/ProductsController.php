@@ -100,11 +100,13 @@ class ProductsController extends ApiController
         }
 
         if( $product ){
-            if( $request->categories && $request->type == 'producto' ){
+            if( $request->categories ){
                 foreach ($request->categories as $key => $categoryId) {
                     $product->productCategories()->attach($categoryId);
                 }
-
+            }
+            
+            if( $request->tags ){
                 foreach ($request->tags as $key => $tag) {
                     $product->tags()->create(['name' => $tag['displayValue']]);
                 }
@@ -198,11 +200,13 @@ class ProductsController extends ApiController
             $tag->delete();
         }
         
-        if( $request->categories && $request->type == 'producto' ){
+        if( $request->categories ){
             foreach ($request->categories as $key => $categoryId) {
                 $product->productCategories()->attach($categoryId);
             }
-
+        }
+        
+        if( $request->tags ){
             foreach ($request->tags as $key => $tag) {
                 $product->tags()->create(['name' => $tag['displayValue']]);
             }
