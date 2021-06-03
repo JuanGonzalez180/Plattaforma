@@ -36,7 +36,7 @@ class Company extends Model
 
     protected $fillable = [
         'name',
-        // 'slug',
+        'description',
         'type_entity_id',
         'nit',
         'country_code',
@@ -97,6 +97,10 @@ class Company extends Model
         
         $total['products'] = $company->products
                                 ->where('status', Products::PRODUCT_PUBLISH)
+                                ->count();
+        
+        $total['blogs'] = $company->blogs
+                                ->where('status', Blog::BLOG_PUBLISH)
                                 ->count();
 
         $total['portfolio'] = count($company->files);

@@ -38,6 +38,7 @@ class CompanyDetailTransformer extends TransformerAbstract
             //
             'id' => (int)$company->id,
             'name'=> (string)$company->name,
+            'description'=> (string)$company->description,
             'slug'=> (string)$company->slug,
             'image'=> $company->image,
             'coverpage'=> $company->coverpage,
@@ -47,6 +48,7 @@ class CompanyDetailTransformer extends TransformerAbstract
             'projects'=> $company->projects,
             'tenders'=> $company->tenders,
             'products'=> $company->products,
+            'blogs'=> $company->blogs,
             'total'=> $company->total($company),
         ];
     }

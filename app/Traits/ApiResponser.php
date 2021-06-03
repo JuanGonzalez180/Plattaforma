@@ -30,6 +30,12 @@ trait ApiResponser{
         return $this->successResponse($instance, $code);
     }
 
+    protected function showOneTransformNormal(Model $instance, $code = 200){
+        $transformer = $instance->transformer;
+        $instance = $this->transformData($instance, $transformer);
+        return $this->successResponse($instance, $code);
+    }
+
     protected function showAll(Collection $collection, $code = 200){
         return $this->successResponse(['data'=>$collection], $code);
     }

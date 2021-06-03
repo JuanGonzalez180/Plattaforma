@@ -48,7 +48,7 @@ class TendersController extends ApiController
 
             foreach( $tenders as $key => $tender ){
                 $tender->user;
-                $tender->tendersVersionLast = $tender->tendersVersionLast();
+                // $tender->tendersVersionLast = $tender->tendersVersionLast();
             }
 
             return $this->showAllPaginate($tenders);

@@ -39,7 +39,7 @@ class UserTransformer extends TransformerAbstract
             'lastname'=> (string)$user->lastname,
             'created_at'=> (string)$user->created_at,
             'updated_at'=> (string)$user->updated_at,
-            'url'=> (string)$user->image ? url( 'storage/' . $user->image->url ) : null
+            'url'=> (string)$user->image ? url( 'storage/' . $user->image->url ) : ''
         ];
     }
 }
