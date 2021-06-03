@@ -179,10 +179,7 @@ class CompanyController extends ApiController
 
         // Banner
         $company->coverpage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
-        // Dirección
-        $company->address;
-        // Portafolio
-        $company->files;
+        
         // 8 Integrantes del equipo
         $company->team = Team::where('company_id', $company->id)
                                 ->where('status', Team::TEAM_APPROVED)
