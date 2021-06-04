@@ -58,20 +58,6 @@ class ProjectsController extends ApiController
         return [];
     }
 
-    public function detail($id)
-    {
-        //
-        $user = $this->validateUser();
-        
-        $project = Projects::where('id', $id)->first();
-        if( !$project ){
-            $projectError = [ 'project' => 'Error, no se ha encontrado ningun proyecto' ];
-            return $this->errorResponse( $projectError, 500 );
-        }
-
-        return $this->showOneTransformNormal($project, 200);
-    }
-
     public function store(Request $request){
         $user = $this->validateUser();
 

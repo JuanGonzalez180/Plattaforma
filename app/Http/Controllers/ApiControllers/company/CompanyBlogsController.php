@@ -37,4 +37,26 @@ class CompanyBlogsController extends ApiController
         
         return $this->showAllPaginate($company->blogs);
     }
+
+    public function detail(Request $request, $slug)
+    {
+        $user = $this->validateUser();
+
+        $name = $request->name;
+
+        $blogs = Blog::select('blogs.*')
+            ->where('blogs.status','=',Blog::BLOG_PUBLISH)
+            ->join('companies','companies.id','=','blogs.company_id')
+            ->where('companies.slug','=',$slug)
+            ->where(strtolower('blogs.name'),'LIKE','%'.strtolower($name).'%')
+            ->orderBy('blogs.updated_at', 'desc')
+            ->get(); 
+
+        if( !$blogs ){
+            $blogsError = [ 'blogs' => 'Error, no se ha encontrado ningun blog' ];
+            return $this->errorResponse( $blogsError, 500 );
+        }
+
+        return $this->showOneTransformNormal($blogs, 200);
+    }
 }

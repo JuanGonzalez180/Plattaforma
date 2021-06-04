@@ -42,4 +42,27 @@ class CompanyProjectsController extends ApiController
         
         return $this->showAllPaginate($company->projects);
     }
+
+    public function detail(Request $request, $slug)
+    {
+        $user = $this->validateUser();
+
+        $name = $request->name;
+
+        $projects = Projects::select('projects.*')
+            ->where('projects.visible','=',Projects::PROJECTS_VISIBLE)
+            ->join('companies','companies.id','=','projects.company_id')
+            ->where('companies.slug','=',$slug)
+            ->where(strtolower('projects.name'),'LIKE','%'.strtolower($name ).'%')
+            ->orderBy('projects.updated_at', 'desc')
+            ->get(); 
+
+        if( !$projects ){
+            $projectsError = [ 'projects' => 'Error, no se ha encontrado ningun proyecto' ];
+            return $this->errorResponse( $projectsError, 500 );
+        }
+
+        return $this->showOneTransformNormal($projects, 200);
+    }
+
 }

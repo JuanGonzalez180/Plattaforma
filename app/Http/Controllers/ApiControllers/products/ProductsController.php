@@ -58,20 +58,6 @@ class ProductsController extends ApiController
         return [];
     }
 
-    public function detail($id)
-    {
-        //
-        $user = $this->validateUser();
-        
-        $product = Products::where('id', $id)->first();
-        if( !$product ){
-            $productError = [ 'product' => 'Error, no se ha encontrado ningun producto' ];
-            return $this->errorResponse( $productError, 500 );
-        }
-
-        return $this->showOneTransformNormal($product, 200);
-    }
-
     /**
      * Store a newly created resource in storage.
      *
