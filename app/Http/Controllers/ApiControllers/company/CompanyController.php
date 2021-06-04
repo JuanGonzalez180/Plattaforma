@@ -14,6 +14,7 @@ use App\Models\TypesEntity;
 use App\Models\User;
 use App\Mail\CreatedAccount;
 use App\Transformers\UserTransformer;
+use App\Transformers\TendersTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -176,6 +177,9 @@ class CompanyController extends ApiController
             $companyError = [ 'company' => 'Error, no se ha encontrado ninguna compañia' ];
             return $this->errorResponse( $companyError, 500 );
         }
+        
+        $userTransform = new UserTransformer();
+        $tendersTransform = new TendersTransformer();
 
         // Banner
         $company->coverpage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
@@ -193,7 +197,6 @@ class CompanyController extends ApiController
                         ->skip(0)->take(6)
                         ->sortBy([ ['updated_at', 'desc'] ]);
 
-        $userTransform = new UserTransformer();
         foreach ( $company->projects as $key => $project) {
             $user = $userTransform->transform($project->user);
             unset( $project->user );
@@ -209,17 +212,24 @@ class CompanyController extends ApiController
                         ->skip(0)->take(6)
                         ->orderBy('tenders.updated_at', 'desc')
                         ->get();
-
+        
+        $tenders = [];
         foreach ( $company->tenders as $key => $tender) {
             $user = $userTransform->transform($tender->user);
             unset( $tender->user );
+            $tender->user = $user;
+
             $version = $tender->tendersVersionLast();
             if( $version ){
                 $tender->tags = $version->tags;
             }
             $tender->project;
-            $tender->user = $user;
+            
+            $tenders[] = $tendersTransform->transform($tender);
         }
+        unset( $company->tenders );
+        $company->tenders = $tenders;
+        
 
         // Traer Productos últimos 6
         $company->products = $company->products

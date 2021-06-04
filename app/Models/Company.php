@@ -79,31 +79,33 @@ class Company extends Model
         return $this->hasMany(Products::class);
     }
 
-    public function total( $company ){
+    public function total(){
         $total = [];
         
-        $total['team'] = Team::where('company_id', $company->id)
+        $companySinTransform = Company::findOrFail($this->id);
+
+        $total['team'] = Team::where('company_id', $companySinTransform->id)
                                 ->where('status', Team::TEAM_APPROVED)
                                 ->get()
                                 ->count();
 
-        $total['projects'] = $company->projects
+        $total['projects'] = $companySinTransform->projects
                                 ->where('visible', Projects::PROJECTS_VISIBLE)
                                 ->count();    
 
-        $total['tenders'] = $company->tenders
-                                // ->where('visible', Tenders::PROJECTS_VISIBLE)
+        $total['tenders'] = $companySinTransform->tenders
                                 ->count();
         
-        $total['products'] = $company->products
+        
+        $total['products'] = $companySinTransform->products
                                 ->where('status', Products::PRODUCT_PUBLISH)
                                 ->count();
         
-        $total['blogs'] = $company->blogs
+        $total['blogs'] = $companySinTransform->blogs
                                 ->where('status', Blog::BLOG_PUBLISH)
                                 ->count();
 
-        $total['portfolio'] = count($company->files);
+        $total['portfolio'] = count($companySinTransform->files);
 
         return $total;
     }
