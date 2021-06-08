@@ -174,13 +174,13 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/company/{slug}/project/{id}', [CompanyProjectsController::class, 'show'])->name('company-detail-project');
 
     Route::get('/company/{slug}/tenders', [CompanyTendersController::class, 'index'])->name('company-tenders');
-    Route::put('/company/{slug}/tenders', [CompanyTendersController::class, 'detail'])->name('company-detail-tenders');
+    Route::get('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'show'])->name('company-detail-tenders');
 
     Route::get('/company/{slug}/blogs', [CompanyBlogsController::class, 'index'])->name('company-blogs');
-    Route::put('/company/{slug}/blogs', [CompanyBlogsController::class, 'detail'])->name('company-detail-blogs');
+    Route::get('/company/{slug}/blogs/{id}', [CompanyBlogsController::class, 'show'])->name('company-detail-blogs');
 
     Route::get('/company/{slug}/products', [CompanyProductsController::class, 'index'])->name('company-products');
-    Route::put('/company/{slug}/products', [CompanyProductsController::class, 'detail'])->name('company-detail-products');
+    Route::get('/company/{slug}/products/{id}', [CompanyProductsController::class, 'show'])->name('company-detail-products');
 
     /**
      * Search

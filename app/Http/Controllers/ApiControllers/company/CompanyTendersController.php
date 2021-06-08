@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Projects;
 use App\Transformers\UserTransformer;
+use App\Transformers\TendersTransformer;
 use App\Http\Controllers\ApiControllers\ApiController;
 use Illuminate\Http\Request;
 
@@ -62,40 +63,56 @@ class CompanyTendersController extends ApiController
         return $this->showAllPaginate($company->tenders);
     }
 
+    public function show( $slug, $id ) {
 
-    public function detail(Request $request, $slug)
-    {
-        $user       = $this->validateUser();
+        $user = $this->validateUser();
 
-        $name       = $request->name;
-        $proyect_id = $request->proyect_id;
+        $tender = Tenders::where('id', $id)->first();
 
-        if($proyect_id) {
-
-            $tenders = Tenders::select('tenders.*')
-                ->where('tenders.project_id','=',$proyect_id)
-                ->join('companies','companies.id','=','tenders.company_id')
-                ->where('companies.slug','=',$slug)
-                ->where(strtolower('tenders.name'),'LIKE','%'.strtolower($name ).'%')
-                ->orderBy('tenders.updated_at', 'desc')
-                ->get(); 
-        } else {
-
-            $tenders = Tenders::select('tenders.*')
-                ->join('companies','companies.id','=','tenders.company_id')
-                ->where('companies.slug','=',$slug)
-                ->where(strtolower('tenders.name'),'LIKE','%'.strtolower($name ).'%')
-                ->orderBy('tenders.updated_at', 'desc')
-                ->get(); 
+        if( !$id || !$tender ){
+            $TenderError = [ 'blog' => 'Error, no se ha encontrado ninguna licitación' ];
+            return $this->errorResponse( $TenderError, 500 );
         }
 
+        $tendersTransformer = new TendersTransformer();
 
-        if( !$tenders ){
-            $tendersError = [ 'tenders' => 'Error, no se ha encontrado ninguna licitación' ];
-            return $this->errorResponse( $tendersError, 500 );
-        }
-
-        return $this->showOneTransformNormal($tenders, 200);
+        return $this->showOneData( $tendersTransformer->transformDetail($tender), 200 );
     }
+
+
+    // public function detail(Request $request, $slug)
+    // {
+    //     $user       = $this->validateUser();
+
+    //     $name       = $request->name;
+    //     $proyect_id = $request->proyect_id;
+
+    //     if($proyect_id) {
+
+    //         $tenders = Tenders::select('tenders.*')
+    //             ->where('tenders.project_id','=',$proyect_id)
+    //             ->join('companies','companies.id','=','tenders.company_id')
+    //             ->where('companies.slug','=',$slug)
+    //             ->where(strtolower('tenders.name'),'LIKE','%'.strtolower($name ).'%')
+    //             ->orderBy('tenders.updated_at', 'desc')
+    //             ->get(); 
+    //     } else {
+
+    //         $tenders = Tenders::select('tenders.*')
+    //             ->join('companies','companies.id','=','tenders.company_id')
+    //             ->where('companies.slug','=',$slug)
+    //             ->where(strtolower('tenders.name'),'LIKE','%'.strtolower($name ).'%')
+    //             ->orderBy('tenders.updated_at', 'desc')
+    //             ->get(); 
+    //     }
+
+
+    //     if( !$tenders ){
+    //         $tendersError = [ 'tenders' => 'Error, no se ha encontrado ninguna licitación' ];
+    //         return $this->errorResponse( $tendersError, 500 );
+    //     }
+
+    //     return $this->showOneTransformNormal($tenders, 200);
+    // }
 
 }

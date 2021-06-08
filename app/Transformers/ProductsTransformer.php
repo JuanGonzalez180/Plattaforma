@@ -5,6 +5,7 @@ namespace App\Transformers;
 use App\Models\Products;
 use App\Transformers\UserTransformer;
 use App\Transformers\CompanyTransformer;
+use App\Transformers\BrandsTransformer;
 use League\Fractal\TransformerAbstract;
 
 class ProductsTransformer extends TransformerAbstract
@@ -53,6 +54,32 @@ class ProductsTransformer extends TransformerAbstract
             'user'=> $userTransform->transform($product->user),
             'company'=> $companyTransform->transform($product->company),
             'image'=> $product->image,
+        ];
+    }
+
+    public function transformDetail(Products $product)
+    {
+        $userTransform = new UserTransformer();
+        $companyTransform = new CompanyTransformer();
+        $brandsTransform = new BrandsTransformer();
+
+        return [
+            //
+            'id' => (int)$product->id,
+            'user_id'=> (int)$product->user_id,
+            'company_id'=> (int)$product->company_id,
+            'name'=> (string)$product->name,
+            'type'=> (string)$product->type,
+            'status'=> ((string)$product->status == Products::PRODUCT_ERASER) ? 'inactivo' : 'activo',
+            'description'=> (string)$product->description,
+            'created_at'=> (string)$product->created_at,
+            'updated_at'=> (string)$product->updated_at,
+            'user'=> $product->user,
+            'tags'=> $product->tags,
+            'user'=> $userTransform->transform($product->user),
+            'company'=> $companyTransform->transform($product->company),
+            'image'=> $product->image,
+            'brand'=> $brandsTransform->transform($product->brand),
         ];
     }
 }
