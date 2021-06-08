@@ -27,12 +27,13 @@ class CompanyTendersController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index( $slug )
+    public function index( $slug, Request $request )
     {
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
+        $project_id = $request->project_id;
         
-        $company = Company::where('slug', $slug)->first();
+        $company = Company::where('slug', $slug )->first();
         if( !$company ){
             $companyError = [ 'company' => 'Error, no se ha encontrado ninguna compañia' ];
             return $this->errorResponse( $companyError, 500 );
@@ -41,12 +42,17 @@ class CompanyTendersController extends ApiController
         // Traer Licitaciones
         $userTransform = new UserTransformer();
 
-        $company->tenders = Tenders::select('tenders.*')
-                            ->where('tenders.company_id', $company->id)
-                            ->join( 'projects', 'projects.id', '=', 'tenders.project_id' )
-                            ->where('projects.visible', Projects::PROJECTS_VISIBLE)
-                            ->orderBy('tenders.updated_at', 'desc')
-                            ->get();
+        $tenders = Tenders::select('tenders.*')
+                    ->where('tenders.company_id', $company->id )
+                    ->join( 'projects', 'projects.id', '=', 'tenders.project_id' );
+
+        if($project_id) { $tenders = $tenders->where('projects.id', $project_id); };
+
+        $tenders = $tenders->where('projects.visible', Projects::PROJECTS_VISIBLE)
+                    ->orderBy('tenders.updated_at', 'desc')
+                    ->get();
+
+        $company->tenders = $tenders;
         
         foreach ( $company->tenders as $key => $tender) {
             $user = $userTransform->transform($tender->user);
@@ -70,7 +76,7 @@ class CompanyTendersController extends ApiController
         $tender = Tenders::where('id', $id)->first();
 
         if( !$id || !$tender ){
-            $TenderError = [ 'blog' => 'Error, no se ha encontrado ninguna licitación' ];
+            $TenderError = [ 'company' => 'Error, no se ha encontrado ninguna licitación' ];
             return $this->errorResponse( $TenderError, 500 );
         }
 
