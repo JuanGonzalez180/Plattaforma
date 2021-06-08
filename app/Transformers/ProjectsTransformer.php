@@ -55,4 +55,32 @@ class ProjectsTransformer extends TransformerAbstract
             'image'=> $project->image,
         ];
     }
+
+    
+    public function transformDetail(Projects $project)
+    {   
+        $userTransform = new UserTransformer();
+        $companyTransform = new CompanyTransformer();
+        return [
+            //
+            'id' => (int)$project->id,
+            'user_id'=> (int)$project->user_id,
+            'company_id'=> (int)$project->company_id,
+            'name'=> (string)$project->name,
+            'status'=> (string)$project->status,
+            'visible'=> (string)$project->visible,
+            'meters'=> (string)$project->meters,
+            'description'=> (string)$project->description,
+            'created_at'=> (string)$project->created_at,
+            'updated_at'=> (string)$project->updated_at,
+            'date_start'=> (string)$project->date_start,
+            'date_end'=> (string)$project->date_end,
+            'user'=> $userTransform->transform($project->user),
+            'company'=> $companyTransform->transform($project->company),
+            'image'=> $project->image,
+            'address'=> $project->address,
+            'types_projects'=> $project->projectTypeProject,
+            'files'=> $project->files,
+        ];
+    }
 }
