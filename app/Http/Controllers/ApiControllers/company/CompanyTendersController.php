@@ -63,14 +63,20 @@ class CompanyTendersController extends ApiController
         return $this->showAllPaginate($company->tenders);
     }
 
-    public function show( $slug, $id ) {
+    public function show( $slug, $id, $id_pro ) {
 
         $user = $this->validateUser();
 
-        $tender = Tenders::where('id', $id)->first();
+        if($id_pro) {
+            $tender = Tenders::where('project_id', $id_pro)
+                ->orderBy('updated_at', 'desc')
+                ->get();
+        } else {
+            $tender = Tenders::where('id', $id)->first();
+        }
 
         if( !$id || !$tender ){
-            $TenderError = [ 'blog' => 'Error, no se ha encontrado ninguna licitación' ];
+            $TenderError = [ 'company' => 'Error, no se ha encontrado ninguna licitación' ];
             return $this->errorResponse( $TenderError, 500 );
         }
 

@@ -179,7 +179,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/company/{slug}/project/{id}', [CompanyProjectsController::class, 'show'])->name('company-detail-project');
 
     Route::get('/company/{slug}/tenders', [CompanyTendersController::class, 'index'])->name('company-tenders');
-    Route::get('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'show'])->name('company-detail-tenders');
+    Route::get('/company/{slug}/tenders/{id}/project/{id_pro}', [CompanyTendersController::class, 'show'])->name('company-detail-tenders');
 
     Route::get('/company/{slug}/blogs', [CompanyBlogsController::class, 'index'])->name('company-blogs');
     Route::get('/company/{slug}/blogs/{id}', [CompanyBlogsController::class, 'show'])->name('company-detail-blogs');
