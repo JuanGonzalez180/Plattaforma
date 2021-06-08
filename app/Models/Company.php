@@ -160,4 +160,13 @@ class Company extends Model
     public function files(){
         return $this->morphMany(Files::class, 'filesable');
     }
+
+    public function countPortfolio() {
+        
+        return Portfolio::where('portfolios.status',Portfolio::PORTFOLIO_PUBLISH)
+            ->join('companies','companies.id','=','portfolios.company_id')
+            ->where('portfolios.company_id', $this->id)
+            ->get()
+            ->count();
+    }
 }
