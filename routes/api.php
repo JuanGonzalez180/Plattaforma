@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiControllers\blog\BlogController;
 use App\Http\Controllers\ApiControllers\blog\BlogFilesController;
+use App\Http\Controllers\ApiControllers\portfolios\PortfoliosController;
 use App\Http\Controllers\ApiControllers\brands\BrandsController;
 use App\Http\Controllers\ApiControllers\category\CategoryController;
 use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesController;
@@ -148,7 +149,11 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      */
     Route::resource('/blogs/files', BlogFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('blogsimages');
     Route::resource('/blogs', BlogController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('blogs');
-
+    /**
+     * portfolios
+     */
+    Route::resource('/portfolios/files', PortfoliosController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('portfoliosimages');
+    Route::resource('/portfolios', PortfoliosController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('portfolios');
     /**
      * Tenders
      */

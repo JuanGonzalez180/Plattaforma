@@ -12,6 +12,7 @@ use App\Models\Tenders;
 use App\Models\MetaData;
 use App\Models\Products;
 use App\Models\Projects;
+use App\Models\Portfolio;
 use App\Models\Addresses;
 use App\Models\Interests;
 use App\Models\TypesEntity;
@@ -64,6 +65,10 @@ class Company extends Model
     }
 
     public function blogs(){
+        return $this->hasMany(Blog::class);
+    }
+
+    public function portfolios(){
         return $this->hasMany(Blog::class);
     }
 
