@@ -46,7 +46,7 @@ class CompanyTendersController extends ApiController
                     ->where('tenders.company_id', $company->id )
                     ->join( 'projects', 'projects.id', '=', 'tenders.project_id' );
 
-        if($project_id) { $tenders = $tenders->where('projects.id', $project_id); };
+        if($project_id > 0) { $tenders = $tenders->where('projects.id', $project_id); };
 
         $tenders = $tenders->where('projects.visible', Projects::PROJECTS_VISIBLE)
                     ->orderBy('tenders.updated_at', 'desc')
