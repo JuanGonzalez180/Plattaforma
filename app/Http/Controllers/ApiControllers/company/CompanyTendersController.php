@@ -79,46 +79,21 @@ class CompanyTendersController extends ApiController
             $TenderError = [ 'company' => 'Error, no se ha encontrado ninguna licitación' ];
             return $this->errorResponse( $TenderError, 500 );
         }
+        
+        // Traer Licitaciones
+        $userTransform = new UserTransformer();
+        $user = $userTransform->transform($tender->user);
+        unset( $tender->user );
+        $tender->user = $user;
+
+        $version = $tender->tendersVersionLast();
+        if( $version ){
+            $tender->tags = $version->tags;
+        }
 
         $tendersTransformer = new TendersTransformer();
 
         return $this->showOneData( $tendersTransformer->transformDetail($tender), 200 );
     }
-
-
-    // public function detail(Request $request, $slug)
-    // {
-    //     $user       = $this->validateUser();
-
-    //     $name       = $request->name;
-    //     $proyect_id = $request->proyect_id;
-
-    //     if($proyect_id) {
-
-    //         $tenders = Tenders::select('tenders.*')
-    //             ->where('tenders.project_id','=',$proyect_id)
-    //             ->join('companies','companies.id','=','tenders.company_id')
-    //             ->where('companies.slug','=',$slug)
-    //             ->where(strtolower('tenders.name'),'LIKE','%'.strtolower($name ).'%')
-    //             ->orderBy('tenders.updated_at', 'desc')
-    //             ->get(); 
-    //     } else {
-
-    //         $tenders = Tenders::select('tenders.*')
-    //             ->join('companies','companies.id','=','tenders.company_id')
-    //             ->where('companies.slug','=',$slug)
-    //             ->where(strtolower('tenders.name'),'LIKE','%'.strtolower($name ).'%')
-    //             ->orderBy('tenders.updated_at', 'desc')
-    //             ->get(); 
-    //     }
-
-
-    //     if( !$tenders ){
-    //         $tendersError = [ 'tenders' => 'Error, no se ha encontrado ninguna licitación' ];
-    //         return $this->errorResponse( $tendersError, 500 );
-    //     }
-
-    //     return $this->showOneTransformNormal($tenders, 200);
-    // }
 
 }

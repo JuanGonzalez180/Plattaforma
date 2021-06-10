@@ -61,13 +61,11 @@ class TendersTransformer extends TransformerAbstract
 
         $companyTransformer = new CompanyTransformer();
         $projectsTransformer = new ProjectsTransformer();
-        $userTransformer = new UserTransformer();
 
         return [
             //
             'id' => (int)$tender->id,
             'user_id'=> (int)$tender->user_id,
-            'user'=> $userTransformer->transform($tender->user),
             'company_id'=> (int)$tender->company_id,
             'company' => $companyTransformer->transform($tender->company),
             'project_id'=> (int)$tender->project_id,

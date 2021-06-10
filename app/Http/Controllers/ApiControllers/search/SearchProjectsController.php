@@ -39,9 +39,9 @@ class SearchProjectsController extends ApiController
                                         ->get();
 
             foreach( $projects as $key => $project ){
-                $project->user['url'] = $project->user->image ? url( 'storage/' . $project->user->image->url ) : null;
-                $project->company;
-                $project->company->image;
+                // $project->user['url'] = $project->user->image ? url( 'storage/' . $project->user->image->url ) : null;
+                // $project->company;
+                // $project->company->image;
                 /*unset($project->user['id']);
                 unset($project->user['username']);
                 unset($project->user['email']);
