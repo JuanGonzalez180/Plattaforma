@@ -3,8 +3,9 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\QueryWall;
 
-class AddChangesToQuerywallsTable extends Migration
+class AddVisibleToQueryWallsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +15,9 @@ class AddChangesToQuerywallsTable extends Migration
     public function up()
     {
         Schema::table('query_walls', function (Blueprint $table) {
-            $table->renameColumn('licitacion_id', 'tender_id');
-            $table->dropColumn('date');
-            $table->dropColumn('date_update');
+            $table->string('visible')
+                ->default(QueryWall::QUERYWALL_VISIBLE)
+                ->after('status');
         });
     }
 
@@ -29,7 +30,6 @@ class AddChangesToQuerywallsTable extends Migration
     {
         Schema::table('query_walls', function (Blueprint $table) {
             //
-            $table->renameColumn('tender_id', 'licitacion_id');
         });
     }
 }

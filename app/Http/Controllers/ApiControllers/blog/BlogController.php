@@ -114,8 +114,7 @@ class BlogController extends ApiController
             'description_short' => 'required'
         ];
 
-        // var_dump($request);
-        
+        // var_dump($request)
         $this->validate( $request, $rules );
 
         $blog = Blog::findOrFail($id);
