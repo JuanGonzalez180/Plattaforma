@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiControllers\blog\BlogController;
 use App\Http\Controllers\ApiControllers\blog\BlogFilesController;
+use App\Http\Controllers\ApiControllers\querywall\tenderQueryQuestionController;
+use App\Http\Controllers\ApiControllers\querywall\tenderQueryAnswerController;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosController;
 use App\Http\Controllers\ApiControllers\brands\BrandsController;
 use App\Http\Controllers\ApiControllers\category\CategoryController;
@@ -149,6 +151,11 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      */
     Route::resource('/blogs/files', BlogFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('blogsimages');
     Route::resource('/blogs', BlogController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('blogs');
+    /**
+     * Query_wall
+     */
+    Route::resource('/querywall/tenders/question', tenderQueryQuestionController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('querywalltendersQuestions');
+    Route::resource('/querywall/tenders/answer', tenderQueryAnswerController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('querywalltendersAnswer');
     /**
      * portfolios
      */

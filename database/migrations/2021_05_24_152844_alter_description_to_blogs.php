@@ -13,8 +13,8 @@ class AlterDescriptionToBlogs extends Migration
      */
     public function up()
     {
-        Schema::table('blogs', function (Blueprint $table) {
-            DB::statement("ALTER TABLE blogs MODIFY description LONGTEXT");
+        Schema::table('blogs', function (Blueprint $table) {            
+            $table->text('description')->change();
         });
     }
 
