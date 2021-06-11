@@ -22,7 +22,7 @@ class CreateQueryWallsTable extends Migration
             $table->string('question', 1000);
             $table->string('answer', 1000);
             $table->bigInteger('user_id')->unsigned();
-            $table->string('status')->default(QueryWall::QUERYWALL_ERASER);
+            $table->string('status')->default(QueryWall::QUERYWALL_ANSWERED);
             $table->string('date');
             $table->string('date_update');
             $table->timestamps();

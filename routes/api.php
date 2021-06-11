@@ -14,6 +14,7 @@ use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesControl
 use App\Http\Controllers\ApiControllers\company\CompanyController;
 use App\Http\Controllers\ApiControllers\company\CompanyProjectsController;
 use App\Http\Controllers\ApiControllers\company\CompanyTendersController;
+use App\Http\Controllers\ApiControllers\company\CompanyTendersTransactController;
 use App\Http\Controllers\ApiControllers\company\CompanyBlogsController;
 use App\Http\Controllers\ApiControllers\company\CompanyProductsController;
 use App\Http\Controllers\ApiControllers\company\CompanyFilesController;
@@ -188,6 +189,8 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     Route::get('/company/{slug}/tenders', [CompanyTendersController::class, 'index'])->name('company-tenders');
     Route::get('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'show'])->name('company-detail-tenders');
+    //participar en licitación
+    Route::post('/company/{slug}/tenders/{id}/send/participate', [CompanyTendersTransactController::class, 'store'])->name('company-detail-tenders');
 
     Route::get('/company/{slug}/blogs', [CompanyBlogsController::class, 'index'])->name('company-blogs');
     Route::get('/company/{slug}/blogs/{id}', [CompanyBlogsController::class, 'show'])->name('company-detail-blogs');

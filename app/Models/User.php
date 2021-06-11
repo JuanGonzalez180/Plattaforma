@@ -136,6 +136,17 @@ class User extends Authenticatable implements JWTSubject
         return 0;
     }
 
+    public function companyName(){
+        if( count($this->company) && $this->company[0] ){
+            $company = $this->company[0];
+            return $company->name;
+        }elseif( $this->team ){
+            return $this->team->company->name;
+        }
+
+        return 0;
+    }
+
     public static function generateVerificationToken(){
         return Str::random(40);
     }
