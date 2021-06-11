@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
-class PortfoliosFilesController extends ApiController
+class PortfoliosDocumentsController extends ApiController
 {
     public $routeFile = 'public/';
     public $routePortfolios = 'images/portfolios/';
-    public $allowed = ['jpg','png','jpeg','gif'];
+    public $allowed = ['pdf'];
 
     public function validateUser(){
         try {
@@ -29,7 +29,7 @@ class PortfoliosFilesController extends ApiController
 
     public function filesType( $Portfolio ){
         $files = Files::where('filesable_id', $Portfolio->id)
-            ->where('type', 'images')
+            ->where('type', 'documents')
             ->where('filesable_type', Portfolio::class)
             ->get();
 
@@ -65,10 +65,10 @@ class PortfoliosFilesController extends ApiController
             $extension = strtolower($request->file('files')->getClientOriginalExtension());
 
             if( in_array( $extension, $this->allowed ) ){
-                $fileInServer = 'image' . '-' . rand() . '-' . time() . '.' . $extension;
-                $routeFile = $this->routePortfolios.$portfolio->id.'/images/';
+                $fileInServer = 'document' . '-' . rand() . '-' . time() . '.' . $extension;
+                $routeFile = $this->routePortfolios.$portfolio->id.'/documents/';
                 $request->file('files')->storeAs( $this->routeFile . $routeFile, $fileInServer);
-                $portfolio->files()->create([ 'name' => $fileInServer, 'type'=> 'images', 'url' => $routeFile.$fileInServer]);
+                $portfolio->files()->create([ 'name' => $fileInServer, 'type'=> 'documents', 'url' => $routeFile.$fileInServer]);
             }else{
                 return $this->errorResponse( [ 'error' => ['El tipo de archivo no es válido']], 500 );
             }
@@ -91,16 +91,16 @@ class PortfoliosFilesController extends ApiController
         $this->validate( $request, $rules );
         
         // Datos
-        $fileProduct = Files::where('id', $fileId)
+        $filePortfolio = Files::where('id', $fileId)
             ->where('filesable_type', Portfolio::class)
             ->first();
 
-        $portfolio = Portfolio::findOrFail($fileProduct->filesable_id);
+        $portfolio = Portfolio::findOrFail($filePortfolio->filesable_id);
 
-        $tmp = explode('.', $fileProduct->name);
+        $tmp = explode('.', $filePortfolio->name);
         $extension = end($tmp);
 
-        $routeFile = $this->routePortfolios.$portfolio->id.'/images/';
+        $routeFile = $this->routePortfolios.$portfolio->id.'/documents/';
         $file['name'] = preg_replace("/[^A-Za-z0-9]/", '', $request['name']) . "." . $extension;
         $file['url'] = $routeFile . $file['name'];
         
@@ -109,12 +109,12 @@ class PortfoliosFilesController extends ApiController
             return $this->errorResponse( $userError, 500 );
         }
 
-        if( Storage::disk('local')->exists( $this->routeFile . $routeFile . $fileProduct->name ) ){
+        if( Storage::disk('local')->exists( $this->routeFile . $routeFile . $filePortfolio->name ) ){
             if(Storage::move(
-                $this->routeFile . $routeFile . $fileProduct->name, 
+                $this->routeFile . $routeFile . $filePortfolio->name, 
                 $this->routeFile . $routeFile . $file['name'])
             ){
-                $fileProduct->update( $file );
+                $filePortfolio->update( $file );
             }
         }
 
@@ -131,11 +131,11 @@ class PortfoliosFilesController extends ApiController
 
         $portfolio = Portfolio::findOrFail($request->id);
         
-        $fileProduct = Files::where('id', $fileId)->where('filesable_type', Portfolio::class)->first();
+        $filePortfolio = Files::where('id', $fileId)->where('filesable_type', Portfolio::class)->first();
         // Eliminar archivo de los datos
-        Storage::disk('local')->delete( $this->routeFile . $fileProduct->url );
+        Storage::disk('local')->delete( $this->routeFile . $filePortfolio->url );
         // Eliminar archivo de la BD
-        $fileProduct->delete();
+        $filePortfolio->delete();
 
         // return $this->showOneData( ['success' => 'Se ha eliminado el archivo correctamente', 'code' => 200 ], 200);
         return $this->showAll($this->filesType( $portfolio ),200);

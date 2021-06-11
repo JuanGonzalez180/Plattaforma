@@ -69,7 +69,7 @@ class Company extends Model
     }
 
     public function portfolios(){
-        return $this->hasMany(Blog::class);
+        return $this->hasMany(Portfolio::class);
     }
 
     public function projects(){
@@ -82,37 +82,6 @@ class Company extends Model
 
     public function products(){
         return $this->hasMany(Products::class);
-    }
-
-    public function total(){
-        $total = [];
-        
-        $companySinTransform = Company::findOrFail($this->id);
-
-        $total['team'] = Team::where('company_id', $companySinTransform->id)
-                                ->where('status', Team::TEAM_APPROVED)
-                                ->get()
-                                ->count();
-
-        $total['projects'] = $companySinTransform->projects
-                                ->where('visible', Projects::PROJECTS_VISIBLE)
-                                ->count();    
-
-        $total['tenders'] = $companySinTransform->tenders
-                                ->count();
-        
-        
-        $total['products'] = $companySinTransform->products
-                                ->where('status', Products::PRODUCT_PUBLISH)
-                                ->count();
-        
-        $total['blogs'] = $companySinTransform->blogs
-                                ->where('status', Blog::BLOG_PUBLISH)
-                                ->count();
-
-        $total['portfolio'] = count($companySinTransform->files);
-
-        return $total;
     }
 
     public function interests(){
@@ -161,12 +130,39 @@ class Company extends Model
         return $this->morphMany(Files::class, 'filesable');
     }
 
-    public function countPortfolio() {
+    
+
+    public function total(){
+        $total = [];
         
-        return Portfolio::where('portfolios.status',Portfolio::PORTFOLIO_PUBLISH)
-            ->join('companies','companies.id','=','portfolios.company_id')
-            ->where('portfolios.company_id', $this->id)
-            ->get()
-            ->count();
+        $companySinTransform = Company::findOrFail($this->id);
+
+        $total['team'] = Team::where('company_id', $companySinTransform->id)
+                                ->where('status', Team::TEAM_APPROVED)
+                                ->get()
+                                ->count();
+
+        $total['projects'] = $companySinTransform->projects
+                                ->where('visible', Projects::PROJECTS_VISIBLE)
+                                ->count();    
+
+        $total['tenders'] = $companySinTransform->tenders
+                                ->count();
+        
+        
+        $total['products'] = $companySinTransform->products
+                                ->where('status', Products::PRODUCT_PUBLISH)
+                                ->count();
+        
+        $total['blogs'] = $companySinTransform->blogs
+                                ->where('status', Blog::BLOG_PUBLISH)
+                                ->count();
+
+        // $total['portfolio'] = count($companySinTransform->files);
+        $total['portfolio'] = $companySinTransform->portfolios
+                                ->where('status', Portfolio::PORTFOLIO_PUBLISH)
+                                ->count();
+
+        return $total;
     }
 }

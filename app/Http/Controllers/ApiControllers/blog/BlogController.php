@@ -157,6 +157,13 @@ class BlogController extends ApiController
             Blog::disk('local')->delete( $this->routeFile . $blog->image->url );
         }
 
+        if( $blog->files ){
+            foreach ($blog->files as $key => $file) {
+                Storage::disk('local')->delete( $this->routeFile . $file->url );
+                $file->delete();
+            }
+        }
+
         $blog->delete();
 
         return $this->showOneData( ['success' => 'Se ha eliminado correctamente el blog', 'code' => 200 ], 200);

@@ -7,6 +7,7 @@ use App\Models\Blog;
 use App\Models\Company;
 use App\Models\Image;
 use App\Models\Products;
+use App\Models\Portfolio;
 use App\Models\Projects;
 use App\Models\Team;
 use App\Models\Tenders;
@@ -256,6 +257,18 @@ class CompanyController extends ApiController
             unset( $blog->user );
             $blog->user = $user;
             $blog->image;
+            $blog->files;
+        }
+        
+        // Traer Portafolios últimos 8
+        $company->portfolios = $company->portfolios
+                                ->where('status', Portfolio::PORTFOLIO_PUBLISH)
+                                ->skip(0)->take(8)
+                                ->sortBy([ ['updated_at', 'desc'] ]);
+
+        foreach ( $company->portfolios as $key => $portfolio) {
+            $portfolio->image;
+            $portfolio->files;
         }
 
         return $this->showOneTransform($company, 200);

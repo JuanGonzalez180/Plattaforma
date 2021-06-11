@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiControllers\blog\BlogFilesController;
 use App\Http\Controllers\ApiControllers\querywall\tenderQueryQuestionController;
 use App\Http\Controllers\ApiControllers\querywall\tenderQueryAnswerController;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosController;
+use App\Http\Controllers\ApiControllers\portfolios\PortfoliosDocumentsController;
 use App\Http\Controllers\ApiControllers\brands\BrandsController;
 use App\Http\Controllers\ApiControllers\category\CategoryController;
 use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesController;
@@ -159,8 +160,8 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     /**
      * portfolios
      */
-    Route::resource('/portfolios/files', PortfoliosController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('portfoliosimages');
     Route::resource('/portfolios', PortfoliosController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('portfolios');
+    Route::resource('/portfolios/documents', PortfoliosDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('portfoliosdocuments');
     /**
      * Tenders
      */

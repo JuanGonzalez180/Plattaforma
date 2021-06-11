@@ -46,6 +46,7 @@ class PortfoliosController extends ApiController
     {
         $portfolio = Portfolio::findOrFail($id);
         $portfolio->image;
+        $portfolio->files;
         $portfolio->user;
         $portfolio->user->image;
 
@@ -58,9 +59,7 @@ class PortfoliosController extends ApiController
         $companyID = $user->companyId();
 
         $rules = [
-            'name' => 'required',
-            'description' => 'required',
-            'description_short' => 'required'
+            'name' => 'required'
         ];
 
         $this->validate( $request, $rules );
@@ -105,9 +104,7 @@ class PortfoliosController extends ApiController
         $user = $this->validateUser();
 
         $rules = [
-            'name' => ['required', Rule::unique('portfolios')->ignore($id) ],
-            'description' => 'required',
-            'description_short' => 'required'
+            'name' => ['required', Rule::unique('portfolios')->ignore($id) ]
         ];
 
         // var_dump($request);
@@ -150,10 +147,18 @@ class PortfoliosController extends ApiController
         $portfolio = Portfolio::findOrFail($id);
 
         if( $portfolio->image ){
-            Portfolio::disk('local')->delete( $this->routeFile . $portfolio->image->url );
+            Storage::disk('local')->delete( $this->routeFile . $portfolio->image->url );
+        }
+
+        if( $portfolio->files ){
+            foreach ($portfolio->files as $key => $file) {
+                Storage::disk('local')->delete( $this->routeFile . $file->url );
+                $file->delete();
+            }
         }
 
         $portfolio->delete();
+
         return $this->showOneData( ['success' => 'Se ha eliminado correctamente el portafolio', 'code' => 200 ], 200);
     }
 }

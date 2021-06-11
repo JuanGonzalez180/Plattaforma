@@ -284,6 +284,14 @@ class ProjectsController extends ApiController
         foreach( $project->projectTypeProject as $key => $typeProject ){
             $project->projectTypeProject()->detach($typeProject->id);
         }
+
+        if( $project->files ){
+            foreach ($project->files as $key => $file) {
+                Storage::disk('local')->delete( $this->routeFile . $file->url );
+                $file->delete();
+            }
+        }
+
         $project->delete();
 
         return $this->showOneData( ['success' => 'Se ha eliminado correctamente el proyecto', 'code' => 200 ], 200);

@@ -46,6 +46,7 @@ class BlogTransformer extends TransformerAbstract
             'user_id' => (int)$blog->user_id,
             'company_id' => (int)$blog->company_id,
             'image'=> $blog->image,
+            'files'=> $blog->files,
             'user'=> $blog->user,
             'user'=> $userTransform->transform($blog->user),
             'created_at'=> (string)$blog->created_at,

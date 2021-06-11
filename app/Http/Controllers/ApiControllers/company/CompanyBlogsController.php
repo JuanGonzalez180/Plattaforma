@@ -36,6 +36,10 @@ class CompanyBlogsController extends ApiController
                         ->where('status', Blog::BLOG_PUBLISH)
                         ->sortBy([ ['updated_at', 'desc'] ]);
         
+        foreach ( $company->blogs as $key => $blog) {
+            $blog->files;
+        }
+
         return $this->showAllPaginate($company->blogs);
     }
 

@@ -269,6 +269,14 @@ class ProductsController extends ApiController
         foreach( $product->productCategoryServices as $key => $category ){
             $product->productCategoryServices()->detach($category->id);
         }
+
+        if( $product->files ){
+            foreach ($product->files as $key => $file) {
+                Storage::disk('local')->delete( $this->routeFile . $file->url );
+                $file->delete();
+            }
+        }
+
         $product->delete();
 
         return $this->showOneData( ['success' => 'Se ha eliminado correctamente el proyecto', 'code' => 200 ], 200);
