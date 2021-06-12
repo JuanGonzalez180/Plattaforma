@@ -4,8 +4,9 @@ namespace App\Http\Controllers\ApiControllers\company;
 
 use JWTAuth;
 use App\Models\Company;
-use App\Models\Tenders;
 use App\Models\Projects;
+use App\Models\Tenders;
+use App\Models\TendersCompanies;
 use App\Transformers\UserTransformer;
 use App\Transformers\TendersTransformer;
 use App\Http\Controllers\ApiControllers\ApiController;
@@ -31,6 +32,8 @@ class CompanyTendersController extends ApiController
     {
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
+        // Compañía del usuario que está logueado
+        $userCompanyId = $user->companyId();
         $project_id = $request->project_id;
         
         $company = Company::where('slug', $slug )->first();
@@ -42,13 +45,17 @@ class CompanyTendersController extends ApiController
         // Traer Licitaciones
         $userTransform = new UserTransformer();
 
-        $tenders = Tenders::select('tenders.*')
+        $tenders = Tenders::select('tenders.*', 'comp.status AS company_status')
                     ->where('tenders.company_id', $company->id )
                     ->join( 'projects', 'projects.id', '=', 'tenders.project_id' );
 
         if($project_id > 0) { $tenders = $tenders->where('projects.id', $project_id); };
 
         $tenders = $tenders->where('projects.visible', Projects::PROJECTS_VISIBLE)
+                    ->leftjoin('tenders_companies AS comp', function($join) use($userCompanyId){
+                        $join->on('tenders.id', '=', 'comp.tender_id');
+                        $join->where('comp.company_id', '=', $userCompanyId);
+                    })
                     ->orderBy('tenders.updated_at', 'desc')
                     ->get();
 
@@ -72,8 +79,18 @@ class CompanyTendersController extends ApiController
     public function show( $slug, $id ) {
 
         $user = $this->validateUser();
+        // Compañía del usuario que está logueado
+        $userCompanyId = $user->companyId();
 
         $tender = Tenders::where('id', $id)->first();
+        
+        // Tenders Company
+        $tenderCompany = TendersCompanies::where('tender_id', $id)
+                        ->where('company_id', $userCompanyId)
+                        ->first();
+        if( $tenderCompany && $tenderCompany->status ){
+            $tender->company_status = $tenderCompany->status;
+        }
 
         if( !$id || !$tender ){
             $TenderError = [ 'company' => 'Error, no se ha encontrado ninguna licitación' ];
