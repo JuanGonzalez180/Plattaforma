@@ -172,6 +172,8 @@ class CompanyController extends ApiController
     {
         //
         $user = $this->validateUser();
+        // Compañía del usuario que está logueado
+        $userCompanyId = $user->companyId();
         
         $company = Company::where('slug', $slug)->first();
         if( !$company ){
@@ -206,10 +208,14 @@ class CompanyController extends ApiController
         }
 
         // Traer Licitaciones últimas 6
-        $company->tenders = Tenders::select('tenders.*')
+        $company->tenders = Tenders::select('tenders.*', 'comp.status AS company_status')
                         ->where('tenders.company_id', $company->id)
                         ->join( 'projects', 'projects.id', '=', 'tenders.project_id' )
                         ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+                        ->leftjoin('tenders_companies AS comp', function($join) use($userCompanyId){
+                                $join->on('tenders.id', '=', 'comp.tender_id');
+                                $join->where('comp.company_id', '=', $userCompanyId);
+                            })
                         ->skip(0)->take(6)
                         ->orderBy('tenders.updated_at', 'desc')
                         ->get();
