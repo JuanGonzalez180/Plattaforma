@@ -226,7 +226,7 @@ class CompanyController extends ApiController
             unset( $tender->user );
             $tender->user = $user;
 
-            $version = $tender->tendersVersionLast();
+            $version = $tender->tendersVersionLastPublish();
             if( $version ){
                 $tender->tags = $version->tags;
             }

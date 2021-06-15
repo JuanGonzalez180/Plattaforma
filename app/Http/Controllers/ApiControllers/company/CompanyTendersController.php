@@ -66,7 +66,7 @@ class CompanyTendersController extends ApiController
             unset( $tender->user );
             $tender->user = $user;
 
-            $version = $tender->tendersVersionLast();
+            $version = $tender->tendersVersionLastPublish();
             if( $version ){
                 $tender->tags = $version->tags;
             }
@@ -85,6 +85,7 @@ class CompanyTendersController extends ApiController
         $tender = Tenders::where('id', $id)->first();
         
         // Tenders Company
+        $tender->company_status = '';
         $tenderCompany = TendersCompanies::where('tender_id', $id)
                         ->where('company_id', $userCompanyId)
                         ->first();
@@ -103,14 +104,22 @@ class CompanyTendersController extends ApiController
         unset( $tender->user );
         $tender->user = $user;
 
-        $version = $tender->tendersVersionLast();
+        $version = $tender->tendersVersionLastPublish();
         if( $version ){
             $tender->tags = $version->tags;
         }
 
         $tendersTransformer = new TendersTransformer();
+        
+        if ( $tender->company_status == TendersCompanies::STATUS_PARTICIPATING || $tender->company_status == TendersCompanies::STATUS_PROCESS ){
+            return $this->showOneData( $tendersTransformer->transformDetail($tender), 200 );
+        }
+        
+        // Solamente estos datos
+        $tender->tendersVersionLastPublish = $tender->tendersVersionLastPublish();
+        $tender->categories = $tender->categories;
 
-        return $this->showOneData( $tendersTransformer->transformDetail($tender), 200 );
+        return $this->showOne( $tender, 200 );
     }
 
 }

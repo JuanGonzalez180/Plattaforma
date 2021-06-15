@@ -32,8 +32,8 @@ class QueryWall extends Model
     ];
 
     protected $hidden = [
-        // 'querysable_id',
-        // 'querysable_type',
+        'querysable_id',
+        'querysable_type',
     ];
 
     public function querysable(){

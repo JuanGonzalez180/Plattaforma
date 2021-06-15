@@ -23,6 +23,7 @@ class tenderQueryQuestionController extends ApiController
     public function store(Request $request)
     {
         $user = $this->validateUser();
+        $company_id = $user->companyId();
 
         if($user->userType() != 'oferta'){
             $queryError = [ 'querywall' => 'Error, El usuario no puede responder preguntas' ];
@@ -40,7 +41,7 @@ class tenderQueryQuestionController extends ApiController
         $questionFields = $request->all();
         $questionFields['querysable_id']    = $request->tender_id;
         $questionFields['querysable_type']  = Tenders::class;
-        $questionFields['company_id']       = $request->company_id;
+        $questionFields['company_id']       = $company_id;
         $questionFields['user_id']          = $user->id;
         $questionFields['question']         = $request->question;
         $questionFields['status']           = QueryWall::QUERYWALL_PUBLISH;
@@ -55,7 +56,7 @@ class tenderQueryQuestionController extends ApiController
         }
         DB::commit();
         return $this->showOne($question,201);   
-    } 
+    }
 
 
     public function update(Request $request, $id)
