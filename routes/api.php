@@ -188,9 +188,9 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/company/{slug}/project/{id}', [CompanyProjectsController::class, 'show'])->name('company-detail-project');
 
     Route::get('/company/{slug}/tenders', [CompanyTendersController::class, 'index'])->name('company-tenders');
-    Route::get('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'show'])->name('company-detail-tenders');
+    Route::get('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'show'])->name('company-detail-tendersd');
     //participar en licitación
-    Route::post('/company/{slug}/tenders/{id}/send/participate', [CompanyTendersTransactController::class, 'store'])->name('company-detail-tenders');
+    Route::post('/company/{slug}/tenders/{id}/send/participate', [CompanyTendersTransactController::class, 'store'])->name('company-send-participate');
 
     Route::get('/company/{slug}/blogs', [CompanyBlogsController::class, 'index'])->name('company-blogs');
     Route::get('/company/{slug}/blogs/{id}', [CompanyBlogsController::class, 'show'])->name('company-detail-blogs');
