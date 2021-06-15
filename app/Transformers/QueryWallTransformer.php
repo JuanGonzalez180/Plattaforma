@@ -35,7 +35,7 @@ class QueryWallTransformer extends TransformerAbstract
         return [
             'id' => (int)$querywall->id,
             'querysable_id'=> (int)$querywall->querysable_id,
-            'querysable_type'=> (string)$querywall->querysable_type,
+            // 'querysable_type'=> (string)$querywall->querysable_type,
             'company_id'=> (int)$querywall->company_id,
             'company'=> $querywall->company,
             'question'=> (string)$querywall->question,
