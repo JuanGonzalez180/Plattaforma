@@ -3,6 +3,7 @@
 namespace App\Transformers;
 
 use App\Models\QueryWall;
+use App\Transformers\UserTransformer;
 use League\Fractal\TransformerAbstract;
 
 class QueryWallTransformer extends TransformerAbstract
@@ -32,6 +33,8 @@ class QueryWallTransformer extends TransformerAbstract
      */
     public function transform(QueryWall $querywall)
     {
+        $userTransform = new UserTransformer();
+
         return [
             'id' => (int)$querywall->id,
             'querysable_id'=> (int)$querywall->querysable_id,
@@ -41,9 +44,10 @@ class QueryWallTransformer extends TransformerAbstract
             'question'=> (string)$querywall->question,
             'answer'=> (string)$querywall->answer,
             'user_id'=> (int)$querywall->user_id,
-            'user'=> $querywall->user,
+            'user'=> $userTransform->transform($querywall->user),
             'status'=> (string)$querywall->status,
-            'visible'=> (string)$querywall->visible
+            'visible'=> (string)$querywall->visible,
+            'created_at'=> (string)$querywall->created_at
         ];
     }
 }
