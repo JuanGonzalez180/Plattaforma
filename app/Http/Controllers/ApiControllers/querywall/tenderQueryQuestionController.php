@@ -20,13 +20,32 @@ class tenderQueryQuestionController extends ApiController
         return $this->user;
     }
 
+    public function index( Request $request )
+    {
+        $tender_id = $request->tender_id;
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+
+        if($user->userType() != 'oferta'){
+            $queryError = [ 'querywall' => 'Error, El usuario no puede ver las preguntas' ];
+            return $this->errorResponse( $queryError, 500 );
+        }
+
+        $queryWalls  = QueryWall::where('querysable_id', $tender_id)
+            ->where('querysable_type', Tenders::class)
+            ->orderBy('created_at', 'desc')
+            ->get();   
+
+        return $this->showAllPaginate($queryWalls);
+    }
+
     public function store(Request $request)
     {
         $user = $this->validateUser();
         $company_id = $user->companyId();
 
         if($user->userType() != 'oferta'){
-            $queryError = [ 'querywall' => 'Error, El usuario no puede responder preguntas' ];
+            $queryError = [ 'querywall' => 'Error, El usuario no puede hacer preguntas' ];
             return $this->errorResponse( $queryError, 500 );
         }
 
@@ -58,13 +77,12 @@ class tenderQueryQuestionController extends ApiController
         return $this->showOne($question,201);   
     }
 
-
     public function update(Request $request, $id)
     {
         $user = $this->validateUser();
 
         if($user->userType() != 'oferta'){
-            $queryError = [ 'querywall' => 'Error, El usuario no puede responder preguntas' ];
+            $queryError = [ 'querywall' => 'Error, El usuario no puede modificar preguntas' ];
             return $this->errorResponse( $queryError, 500 );
         }
 
@@ -105,7 +123,7 @@ class tenderQueryQuestionController extends ApiController
         $user = $this->validateUser();
 
         if($user->userType() != 'oferta'){
-            $queryError = [ 'querywall' => 'Error, El usuario no puede responder preguntas' ];
+            $queryError = [ 'querywall' => 'Error, El usuario no puede borrar preguntas' ];
             return $this->errorResponse( $queryError, 500 );
         }
 

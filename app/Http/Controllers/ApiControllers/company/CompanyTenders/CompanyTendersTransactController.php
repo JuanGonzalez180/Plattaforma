@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\ApiControllers\company;
+namespace App\Http\Controllers\ApiControllers\company\CompanyTenders;
 
 use JWTAuth;
 use App\Models\User;

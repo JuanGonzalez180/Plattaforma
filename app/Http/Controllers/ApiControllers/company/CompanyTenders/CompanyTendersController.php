@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\ApiControllers\company;
+namespace App\Http\Controllers\ApiControllers\company\CompanyTenders;
 
 use JWTAuth;
 use App\Models\Company;
@@ -112,6 +112,11 @@ class CompanyTendersController extends ApiController
         $tendersTransformer = new TendersTransformer();
         
         if ( $tender->company_status == TendersCompanies::STATUS_PARTICIPATING || $tender->company_status == TendersCompanies::STATUS_PROCESS ){
+
+            foreach( $tender->tendersVersion as $key => $version ){
+                $version->files;
+            }
+
             return $this->showOneData( $tendersTransformer->transformDetail($tender), 200 );
         }
         

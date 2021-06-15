@@ -59,7 +59,7 @@ class ProductsTransformer extends TransformerAbstract
 
     public function transformDetail(Products $product)
     {
-        $userTransform = new UserTransformer();
+        $userTransform  = new UserTransformer();
         $companyTransform = new CompanyTransformer();
         $brandsTransform = new BrandsTransformer();
 

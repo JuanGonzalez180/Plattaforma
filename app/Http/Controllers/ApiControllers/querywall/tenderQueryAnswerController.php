@@ -20,6 +20,35 @@ class tenderQueryAnswerController extends ApiController
         return $this->user;
     }
 
+    public function index( Request $request )
+    {
+        $tender_id = $request->tender_id;
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+
+        if($user->userType() != 'demanda'){
+            $queryError = [ 'querywall' => 'Error, El usuario no puede listar preguntas' ];
+            return $this->errorResponse( $queryError, 500 );
+        }
+
+        $queryWallsNotAnswered  = QueryWall::where('querysable_id', $tender_id)
+            ->where('status',QueryWall::QUERYWALL_ANSWERED)
+            ->where('querysable_type', Tenders::class)
+            ->orderBy('created_at', 'desc')
+            ->get();   
+
+        $queryWallsAnswered  = QueryWall::where('querysable_id', $tender_id)
+            ->where('status','<>',QueryWall::QUERYWALL_ANSWERED)
+            ->where('querysable_type', Tenders::class)
+            ->orderBy('updated_at', 'desc')
+            ->get();   
+
+        $queryWalls = $queryWallsNotAnswered
+            ->merge($queryWallsAnswered);
+
+        return $this->showAllPaginate($queryWalls);
+    }
+
     public function update(Request $request, $id)
     {
         $user = $this->validateUser();
@@ -82,7 +111,7 @@ class tenderQueryAnswerController extends ApiController
         $user = $this->validateUser();
 
         if($user->userType() != 'demanda'){
-            $queryError = [ 'querywall' => 'Error, El usuario no puede responder preguntas' ];
+            $queryError = [ 'querywall' => 'Error, El usuario no puede borrar preguntas' ];
             return $this->errorResponse( $queryError, 500 );
         }
 
@@ -107,37 +136,8 @@ class tenderQueryAnswerController extends ApiController
         }
 
         return $this->showOneData( ['success' => 'Se ha eliminado correctamente la pregunta del muro de consultas', 'code' => 200 ], 200);
-
     }
 
-    public function index( Request $request )
-    {
-        $tender_id = $request->tender_id;
-
-        // Validamos TOKEN del usuario
-        $user = $this->validateUser();
-
-        if($user->userType() != 'demanda'){
-            $queryError = [ 'querywall' => 'Error, El usuario no puede responder preguntas' ];
-            return $this->errorResponse( $queryError, 500 );
-        }
-
-        $queryWallsNotAnswered  = QueryWall::where('querysable_id', $tender_id)
-            ->where('status',QueryWall::QUERYWALL_ANSWERED)
-            ->where('querysable_type', Tenders::class)
-            ->orderBy('created_at', 'desc')
-            ->get();   
-
-        $queryWallsAnswered  = QueryWall::where('querysable_id', $tender_id)
-            ->where('status','<>',QueryWall::QUERYWALL_ANSWERED)
-            ->where('querysable_type', Tenders::class)
-            ->orderBy('updated_at', 'desc')
-            ->get();   
-
-        $queryWalls = $queryWallsNotAnswered
-            ->merge($queryWallsAnswered);
-
-        return $this->showAllPaginate($queryWalls);
-    }
+    
 
 }

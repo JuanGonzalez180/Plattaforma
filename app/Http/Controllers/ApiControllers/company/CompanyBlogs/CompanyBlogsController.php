@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\ApiControllers\company;
+namespace App\Http\Controllers\ApiControllers\company\CompanyBlogs;
 
 use JWTAuth;
+use App\Models\Blog;
 use App\Models\Company;
-use App\Models\Products;
 use Illuminate\Http\Request;
-use App\Transformers\ProductsTransformer;
+use App\Transformers\BlogTransformer;
 use App\Http\Controllers\ApiControllers\ApiController;
 
-class CompanyProductsController extends ApiController
+class CompanyBlogsController extends ApiController
 {
     //
     public function validateUser(){
@@ -31,30 +31,33 @@ class CompanyProductsController extends ApiController
             return $this->errorResponse( $companyError, 500 );
         }
 
-        // Traer Productos de la compañía
-        $company->products = $company->products
-                        ->where('status', Products::PRODUCT_PUBLISH)
+        // Traer Blogs de la compañía
+        $company->blogs = $company->blogs
+                        ->where('status', Blog::BLOG_PUBLISH)
                         ->sortBy([ ['updated_at', 'desc'] ]);
         
-        return $this->showAllPaginate($company->products);
+        foreach ( $company->blogs as $key => $blog) {
+            $blog->files;
+        }
+
+        return $this->showAllPaginate($company->blogs);
     }
 
     public function show( $slug, $id ) {
 
         $user = $this->validateUser();
 
-        $product = Products::where('id', $id)
-                        ->where('status',Products::PRODUCT_PUBLISH)
+        $blog = Blog::where('id', $id)
+                        ->where('status',Blog::BLOG_PUBLISH)
                         ->first();
 
-        if( !$id || !$product ){
-            $prodcutError = [ 'project' => 'Error, no se ha encontrado ningun producto' ];
-            return $this->errorResponse( $prodcutError, 500 );
+        if( !$id || !$blog ){
+            $BlogError = [ 'blog' => 'Error, no se ha encontrado ningun blog' ];
+            return $this->errorResponse( $BlogError, 500 );
         }
 
-        $productTransform = new ProductsTransformer();
+        $blogTransformer = new BlogTransformer();
 
-        return $this->showOneData( $productTransform->transformDetail($product), 200 );
+        return $this->showOneData( $blogTransformer->transformDetail($blog), 200 );
     }
-    
 }
