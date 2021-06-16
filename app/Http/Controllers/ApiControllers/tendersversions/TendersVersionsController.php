@@ -26,7 +26,7 @@ class TendersVersionsController extends ApiController
      */
     public function index()
     {
-        //
+
     }
 
     /**

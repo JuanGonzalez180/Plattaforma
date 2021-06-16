@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ApiControllers\tenders\tenderAction;
 
 use JWTAuth;
 use App\Models\Tenders;
+use App\Models\QueryWall;
 use Illuminate\Http\Request;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
@@ -20,23 +21,7 @@ class TendersActionController extends ApiController
         return $this->user;
     }
 
-    public function viewCompanies($id)
-    {
-        $user = $this->validateUser();
-
-        if($user->userType() != 'demanda'){
-            $queryError = [ 'querywall' => 'Error, El usuario no puede listar las compañias participantes' ];
-            return $this->errorResponse( $queryError, 500 );
-        }
-
-        $Companies = TendersCompanies::where('tender_id', $id)
-            ->orderBy('created_at', 'desc')
-            ->get();
-            
-        return $this->showAllPaginate($Companies);
-    }
-
-    public function update(Request $request, $id)
+    public function updateTenderUser(Request $request, $id)
     {
         $user = $this->validateUser();
 

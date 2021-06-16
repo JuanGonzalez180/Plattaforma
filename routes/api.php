@@ -167,11 +167,9 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/portfolios', PortfoliosController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('portfolios');
     Route::resource('/portfolios/documents', PortfoliosDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('portfoliosdocuments');
     /**
-     * Tenders
+     * Tenders_docuemnts
      */
-    Route::resource('/tenders', TendersController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tenders');
     Route::resource('/tenders/documents', TendersDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('tendersdocuments');
-    
     /**
      * Tenders_vesion
      */
@@ -180,16 +178,20 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      * Tenders_companies
      */
     Route::resource('/tenders/companies', TendersCompaniesController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tendersCompanies');
-    
     /**
      * Tenders_action
      */    
-    Route::get('/tenders/action/{id}/companies', [TendersActionController::class, 'viewCompanies'])->name('company-tender-view-companies');
-    Route::get('/tenders/action/{id}/update/user', [TendersActionController::class, 'update'])->name('company-tender-update-user');
+    Route::put('/tenders/action/{id}/update/user', [TendersActionController::class, 'updateTenderUser'])->name('company-tender-update-user');
+    /**
+     * Tenders
+     */
+    Route::resource('/tenders', TendersController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tenders');
+    
     /**
      * Company
-    */
+     */
     Route::get('/company/{slug}', [CompanyController::class, 'show'])->name('company-show');
+
     Route::get('/company/{slug}/detail', [CompanyController::class, 'detail'])->name('company-detail');
 
     Route::get('/company/{slug}/projects', [CompanyProjectsController::class, 'index'])->name('company-projects');

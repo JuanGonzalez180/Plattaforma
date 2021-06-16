@@ -195,7 +195,6 @@ class TendersController extends ApiController
      */
     public function update(Request $request, $id)
     {
-
         $count = TendersVersions::where('tenders_id',$id)
             ->where('status','=',TendersVersions::LICITACION_CREATED)
             ->get()

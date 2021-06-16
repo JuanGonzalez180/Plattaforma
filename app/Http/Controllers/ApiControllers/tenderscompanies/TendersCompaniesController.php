@@ -5,12 +5,12 @@ namespace App\Http\Controllers\ApiControllers\tenderscompanies;
 use JWTAuth;
 use App\Models\Tenders;
 use App\Models\Company;
-use App\Mail\SendInvitationTenderCompany;
 use Illuminate\Http\Request;
-use App\Models\TendersCompanies;
 use App\Models\TendersVersions;
+use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\SendInvitationTenderCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersCompaniesController extends ApiController
@@ -23,9 +23,21 @@ class TendersCompaniesController extends ApiController
         return $this->user;
     }
 
-    public function index()
+    public function index( Request $request )
     {
-        //
+        $user = $this->validateUser();
+        $tender_id = $request->tender_id;
+
+        if($user->userType() != 'demanda'){
+            $companyError = [ 'querywall' => 'Error, El usuario no puede listar las compañias participantes' ];
+            return $this->errorResponse( $companyError, 500 );
+        }
+
+        $Companies = TendersCompanies::where('tender_id', $tender_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return $this->showAllPaginate($Companies);
     }
 
     public function store( Request $request )
