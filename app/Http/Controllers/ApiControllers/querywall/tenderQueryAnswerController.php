@@ -100,6 +100,30 @@ class tenderQueryAnswerController extends ApiController
 
     }
 
+    public function changevisible(Request $request, int $id)
+    {
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+
+        $rules = [
+            'visible' => 'required'
+        ];
+
+        $this->validate( $request, $rules );
+
+        // Datos
+        $queryWall = QueryWall::findOrFail($id);
+        if( $request->visible == QueryWall::QUERYWALL_VISIBLE ){
+            $request->visible = QueryWall::QUERYWALL_VISIBLE_NO;
+        }else{
+            $request->visible = QueryWall::QUERYWALL_VISIBLE;
+        }
+        $queryWallFields['visible'] = $request->visible;
+        $queryWall->update( $queryWallFields );
+
+        return $this->showOne($queryWall,200);
+    }
+
     public function destroy( int $id)
     {
         $user = $this->validateUser();
