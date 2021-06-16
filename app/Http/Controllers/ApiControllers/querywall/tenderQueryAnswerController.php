@@ -67,12 +67,6 @@ class tenderQueryAnswerController extends ApiController
             return $this->errorResponse( $queryError, 500 );
         }
 
-        if( (!$request['visible']) && ($queryAnswer->status == QueryWall::QUERYWALL_ANSWERED) ) {
-            $queryError = [ 'querywall' => 'Error, La pregunta del muro de consultas ha sido respondia' ];
-            return $this->errorResponse( $queryError, 500 );
-        }
-
-
         $admin_company  = ($queryAnswer->company->user_id == $user->id) ? True : False;
         $tender_resp    = ($queryAnswer->queryWallTenderUser() == $user->id) ? True : False;
         $project_resp   = ($queryAnswer->queryWallProjectUser() == $user->id) ? True : False;

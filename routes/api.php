@@ -30,6 +30,7 @@ use App\Http\Controllers\ApiControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\ApiControllers\tenders\TendersController;
 use App\Http\Controllers\ApiControllers\tenders\TendersDocumentsController;
 use App\Http\Controllers\ApiControllers\tenderscompanies\TendersCompaniesController;
+use App\Http\Controllers\ApiControllers\tenders\tenderAction\TendersActionController;
 use App\Http\Controllers\ApiControllers\tendersversions\TendersVersionsController;
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
@@ -178,6 +179,11 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      */
     Route::resource('/tenders/companies', TendersCompaniesController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tendersCompanies');
     
+    /**
+     * Tenders_action
+     */    
+    Route::get('/tenders/action/{id}/companies', [TendersActionController::class, 'viewCompanies'])->name('company-tender-view-companies');
+    Route::get('/tenders/action/{id}/update/user', [TendersActionController::class, 'update'])->name('company-tender-update-user');
     /**
      * Company
     */
