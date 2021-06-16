@@ -28,10 +28,10 @@ use App\Http\Controllers\ApiControllers\projects\ProjectsFilesController;
 use App\Http\Controllers\ApiControllers\socialnetworks\SocialNetworksController;
 use App\Http\Controllers\ApiControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\ApiControllers\tenders\TendersController;
-use App\Http\Controllers\ApiControllers\tenders\TendersDocumentsController;
-use App\Http\Controllers\ApiControllers\tenderscompanies\TendersCompaniesController;
-use App\Http\Controllers\ApiControllers\tenders\tenderAction\TendersActionController;
-use App\Http\Controllers\ApiControllers\tendersversions\TendersVersionsController;
+use App\Http\Controllers\ApiControllers\tenders\tendersDocuments\TendersDocumentsController;
+use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesController;
+use App\Http\Controllers\ApiControllers\tenders\tendersAction\TendersActionController;
+use App\Http\Controllers\ApiControllers\tenders\tendersVersions\TendersVersionsController;
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
 // Search

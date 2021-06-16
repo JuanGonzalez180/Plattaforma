@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\ApiControllers\tenderscompanies;
+namespace App\Http\Controllers\ApiControllers\tenders\tendersCompanies;
 
 use JWTAuth;
 use App\Models\Tenders;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\ApiControllers\tendersversions;
+namespace App\Http\Controllers\ApiControllers\tenders\tendersVersions;
 
 use JWTAuth;
 use Illuminate\Http\Request;
