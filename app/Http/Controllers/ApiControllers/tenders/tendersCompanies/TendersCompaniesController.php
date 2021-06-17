@@ -29,7 +29,7 @@ class TendersCompaniesController extends ApiController
         $tender_id = $request->tender_id;
 
         if($user->userType() != 'demanda'){
-            $companyError = [ 'querywall' => 'Error, El usuario no puede listar las compañias participantes' ];
+            $companyError = [ 'company' => 'Error, El usuario no puede listar las compañias participantes' ];
             return $this->errorResponse( $companyError, 500 );
         }
 
@@ -103,11 +103,38 @@ class TendersCompaniesController extends ApiController
 
     public function show($id)
     {
-        //
+
+        
     }
 
     public function update(Request $request, $id)
     {
+        $user = $this->validateUser();
+        $status = ($request->status == 'True')? TendersCompanies::STATUS_PARTICIPATING : TendersCompanies::STATUS_REJECTED;
+
+        if($user->userType() != 'demanda'){
+            $companyError = [ 'tenderCompany' => 'Error, El usuario no puede gestionar la validacion de la compañia hacia la licitación' ];
+            return $this->errorResponse( $companyError, 500 );
+        }
+
+        $tenderCompany = TendersCompanies::find($id);
+
+        // Iniciar Transacción
+        DB::beginTransaction();
+
+        $tenderCompany->status = $status;
+
+        try{
+            $tenderCompany->save();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $tenderCompanyError = [ 'tender' => 'Error, no se ha podido gestionar la solicitud de la compañia'];
+            return $this->errorResponse( $tenderCompanyError, 500 );
+        }
+
+        DB::commit();
+
+        return $this->showOne($tenderCompany,200);
 
     }
 
