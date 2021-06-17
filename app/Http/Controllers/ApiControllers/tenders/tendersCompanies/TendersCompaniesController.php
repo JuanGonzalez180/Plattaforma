@@ -10,6 +10,7 @@ use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\sendRespondTenderCompany;
 use App\Mail\SendInvitationTenderCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -142,6 +143,16 @@ class TendersCompaniesController extends ApiController
         }
 
         DB::commit();
+
+        $email          = $tenderCompany->company->user->email;
+        $tender_name    = $tenderCompany->tender->name;
+        $company_name   = $tenderCompany->company->name;
+
+        Mail::to('cris10x@hotmail.com')->send(new sendRespondTenderCompany(
+            $tender_name,
+            $company_name,
+            $status
+        ));
 
         return $this->showOne($tenderCompany,200);
 
