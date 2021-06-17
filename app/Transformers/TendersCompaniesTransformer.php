@@ -47,6 +47,8 @@ class TendersCompaniesTransformer extends TransformerAbstract
             'price'         => (string)$tendersCompanies->price,
             'status'        => (string)$tendersCompanies->status,
             'winner'        => (string)$tendersCompanies->winner,
+            'created_at'    => (string)$tendersCompanies->created_at,
+            'updated_at'    => (string)$tendersCompanies->updated_at,
         ];
     }
 

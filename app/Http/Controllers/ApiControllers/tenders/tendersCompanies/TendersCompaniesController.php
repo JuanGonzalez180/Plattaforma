@@ -33,11 +33,17 @@ class TendersCompaniesController extends ApiController
             return $this->errorResponse( $companyError, 500 );
         }
 
-        $Companies = TendersCompanies::where('tender_id', $tender_id)
-            ->orderBy('created_at', 'desc')
+        $companies = TendersCompanies::select('tenders_companies.*', 'images.url')
+            ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
+            ->leftJoin('images', function($join)
+                            {
+                                $join->on('images.imageable_id', '=', 'companies.id');
+                                $join->where('images.imageable_type', '=', Company::class);
+                            })
+            ->where('tenders_companies.tender_id', $tender_id)
             ->get();
             
-        return $this->showAllPaginate($Companies);
+        return $this->showAllPaginate($companies);
     }
 
     public function store( Request $request )
