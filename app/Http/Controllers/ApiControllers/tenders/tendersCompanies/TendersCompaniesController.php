@@ -50,6 +50,8 @@ class TendersCompaniesController extends ApiController
     {
         $tender_id = $request->tender_id;
         $companies = $request->companies_id;
+
+        $user = $this->validateUser();
         
 
         $tendersCompanies = [];
@@ -68,8 +70,9 @@ class TendersCompaniesController extends ApiController
 
             foreach($companies as $company){
 
-                $tenderCompanyFields['tender_id']  = $tender_id;
-                $tenderCompanyFields['company_id'] = $company["id"];
+                $tenderCompanyFields['tender_id']   = $tender_id;
+                $tenderCompanyFields['company_id']  = $company["id"];
+                $tenderCompanyFields['user_id']     = $user->id;
 
                 try{
                     $tendersCompanies[] = TendersCompanies::create( $tenderCompanyFields );
