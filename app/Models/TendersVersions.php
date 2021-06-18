@@ -15,9 +15,10 @@ class TendersVersions extends Model
 
     public $transformer = TendersVersionsTransformer::class;
 
-    const LICITACION_CREATED = 'Borrador';
-    const LICITACION_PUBLISH = 'Publicada';
-    const LICITACION_CLOSED = 'Cerrada';
+    const LICITACION_CREATED    = 'Borrador';
+    const LICITACION_PUBLISH    = 'Publicada';
+    const LICITACION_CLOSED     = 'Cerrada';
+    const LICITACION_FINISHED   = 'Finalizada';
 
     protected $fillable = [
         'tenders_id',

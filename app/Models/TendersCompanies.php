@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Company;
 use App\Models\Tenders;
 use App\Transformers\TendersCompaniesTransformer;
+use App\Transformers\TendersMyCompanyTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,7 +14,8 @@ class TendersCompanies extends Model
 {
     use HasFactory;
 
-    public $transformer = TendersCompaniesTransformer::class;
+    public $transformer                = TendersCompaniesTransformer::class;
+    public $transformerTenderMyCompany = TendersMyCompanyTransformer::class;
 
     const TYPE_INTERESTED       = 'Interesado';
     const TYPE_INVITED          = 'Invitado';

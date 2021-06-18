@@ -113,7 +113,6 @@ class TendersCompaniesController extends ApiController
 
     public function show($id)
     {
-
         
     }
 
@@ -148,7 +147,7 @@ class TendersCompaniesController extends ApiController
         $tender_name    = $tenderCompany->tender->name;
         $company_name   = $tenderCompany->company->name;
 
-        Mail::to('cris10x@hotmail.com')->send(new sendRespondTenderCompany(
+        Mail::to($email)->send(new sendRespondTenderCompany(
             $tender_name,
             $company_name,
             $status
@@ -160,6 +159,7 @@ class TendersCompaniesController extends ApiController
 
     public function destroy($id)
     {
+        
 
     }
 }

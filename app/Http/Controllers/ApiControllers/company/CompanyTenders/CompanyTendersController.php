@@ -7,8 +7,11 @@ use App\Models\Company;
 use App\Models\Projects;
 use App\Models\Tenders;
 use App\Models\TendersCompanies;
+use App\Models\TendersVersions;
 use App\Transformers\UserTransformer;
 use App\Transformers\TendersTransformer;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendRetirementTenderCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
 use Illuminate\Http\Request;
 
@@ -125,6 +128,33 @@ class CompanyTendersController extends ApiController
         $tender->categories = $tender->categories;
 
         return $this->showOne( $tender, 200 );
+    }
+
+    public function destroy($slug, $id)
+    {
+        $user           = $this->validateUser();
+        $tender_company = TendersCompanies::find($id);
+        $tender_status  = $tender_company->tender->tendersVersionLast()->status;
+
+        if( ($tender_status == TendersVersions::LICITACION_CLOSED) || ($tender_status == TendersVersions::LICITACION_FINISHED) ) {
+            $tenderCompanyError = [ 'tenderCompany' => 'Error, la compañia no se puede retirar de la licitacion, por el motivo que la licitación esta cerrada o finalizada' ];
+            return $this->errorResponse( $tenderCompanyError, 500 );
+        } 
+
+        $tender_company->delete();
+        
+        $company_name           = $tender_company->company->name;
+        $tender_name            = $tender_company->tender->name;
+        $tender_user_email      = $tender_company->tender->user->email;
+        $project_user_email     = $tender_company->tender->project->user->email;
+
+        if($tender_user_email == $project_user_email):
+            Mail::to($tender_user_email)->send(new SendRetirementTenderCompany($tender_name, $company_name));
+        else:
+            Mail::to($tender_user_email)->send(new SendRetirementTenderCompany($tender_name, $company_name));
+            Mail::to($project_user_email)->send(new SendRetirementTenderCompany($tender_name, $company_name));
+        endif;
+
     }
 
 }
