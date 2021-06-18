@@ -48,8 +48,8 @@ class CompanyProductsController extends ApiController
                         ->first();
 
         if( !$id || !$product ){
-            $prodcutError = [ 'project' => 'Error, no se ha encontrado ningun producto' ];
-            return $this->errorResponse( $prodcutError, 500 );
+            $productError = [ 'project' => 'Error, no se ha encontrado ningun producto' ];
+            return $this->errorResponse( $productError, 500 );
         }
 
         $productTransform = new ProductsTransformer();

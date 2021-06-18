@@ -75,11 +75,13 @@ class ProductsTransformer extends TransformerAbstract
             'created_at'=> (string)$product->created_at,
             'updated_at'=> (string)$product->updated_at,
             'user'=> $product->user,
+            'product_categories'=> $product->productCategories,
             'tags'=> $product->tags,
             'user'=> $userTransform->transform($product->user),
             'company'=> $companyTransform->transform($product->company),
             'image'=> $product->image,
             'brand'=> $brandsTransform->transform($product->brand),
+            'files'=> $product->files,
         ];
     }
 }

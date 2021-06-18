@@ -43,7 +43,7 @@ class TendersActionController extends ApiController
 
             DB::beginTransaction();
 
-            $tenderFields['user_id']           = $request['user_id'];
+            $tenderFields['user_id'] = $request['user_id'];
 
             try{
                 $tender->update( $tenderFields );
