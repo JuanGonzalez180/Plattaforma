@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Models\Company;
 use App\Models\Tenders;
 use App\Transformers\TendersCompaniesTransformer;
@@ -29,18 +30,23 @@ class TendersCompanies extends Model
     protected $fillable = [
         'tender_id',
         'company_id',
+        'user_id',
         'type',
         'price',
         'status',
         'winner'
     ];
 
+    public function tender(){
+        return $this->belongsTo(Tenders::class);
+    }
+
     public function company(){
         return $this->belongsTo(Company::class);
     }
 
-    public function tenders(){
-        return $this->belongsTo(Tenders::class);
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 
 }

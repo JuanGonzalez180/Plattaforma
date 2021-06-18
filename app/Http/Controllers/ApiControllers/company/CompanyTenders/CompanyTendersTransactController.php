@@ -46,6 +46,7 @@ class CompanyTendersTransactController extends ApiController
 
         $tenderCompanyFields['tender_id']   = $id;
         $tenderCompanyFields['company_id']  = $user->companyId();
+        $tenderCompanyFields['user_id']     = $user->id;
         $tenderCompanyFields['type']        = TendersCompanies::TYPE_INTERESTED;
         $tenderCompanyFields['status']      = TendersCompanies::STATUS_EARRING;
 

@@ -10,6 +10,7 @@ use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\sendRespondTenderCompany;
 use App\Mail\SendInvitationTenderCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -50,6 +51,8 @@ class TendersCompaniesController extends ApiController
     {
         $tender_id = $request->tender_id;
         $companies = $request->companies_id;
+
+        $user = $this->validateUser();
         
 
         $tendersCompanies = [];
@@ -68,8 +71,9 @@ class TendersCompaniesController extends ApiController
 
             foreach($companies as $company){
 
-                $tenderCompanyFields['tender_id']  = $tender_id;
-                $tenderCompanyFields['company_id'] = $company["id"];
+                $tenderCompanyFields['tender_id']   = $tender_id;
+                $tenderCompanyFields['company_id']  = $company["id"];
+                $tenderCompanyFields['user_id']     = $user->id;
 
                 try{
                     $tendersCompanies[] = TendersCompanies::create( $tenderCompanyFields );
@@ -139,6 +143,16 @@ class TendersCompaniesController extends ApiController
         }
 
         DB::commit();
+
+        $email          = $tenderCompany->company->user->email;
+        $tender_name    = $tenderCompany->tender->name;
+        $company_name   = $tenderCompany->company->name;
+
+        Mail::to('cris10x@hotmail.com')->send(new sendRespondTenderCompany(
+            $tender_name,
+            $company_name,
+            $status
+        ));
 
         return $this->showOne($tenderCompany,200);
 
