@@ -62,6 +62,18 @@ trait ApiResponser{
         return $this->successResponse($collection, $code);
     }
 
+    protected function showAllPaginateSetTransformer(Collection $collection, $transformer, $code = 200){
+
+        if( $collection->isEmpty() ){
+            return $this->successResponse(['data'=>$collection], $code);    
+        }
+
+        $collection = $this->paginate($collection);
+        $collection = $this->transformData($collection, $transformer);
+
+        return $this->successResponse($collection, $code);
+    }
+
     protected function transformData($data, $transformer){
         $transformation = fractal( $data, new $transformer );
         return $transformation->toArray();
@@ -73,6 +85,7 @@ trait ApiResponser{
         $rules = [
             'per_page' => 'integer|min:1|max:50'
         ];
+        
         Validator::validate( request()->all(), $rules );
 
         $page = LengthAwarePaginator::resolveCurrentPage();

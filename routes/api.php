@@ -30,6 +30,7 @@ use App\Http\Controllers\ApiControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\ApiControllers\tenders\TendersController;
 use App\Http\Controllers\ApiControllers\tenders\tendersDocuments\TendersDocumentsController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesController;
+use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesListController;
 use App\Http\Controllers\ApiControllers\tenders\tendersAction\TendersActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersVersions\TendersVersionsController;
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
@@ -178,6 +179,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      * Tenders_companies
      */
     Route::resource('/tenders/companies', TendersCompaniesController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tendersCompanies');
+    Route::get('/tenders/all/companies', [TendersCompaniesListController::class, 'indexTendersCompanies'])->name('company-tender-list');
     /**
      * Tenders_action
      */    
@@ -198,7 +200,9 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/company/{slug}/project/{id}', [CompanyProjectsController::class, 'show'])->name('company-detail-project');
 
     Route::get('/company/{slug}/tenders', [CompanyTendersController::class, 'index'])->name('company-tenders');
-    Route::get('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'show'])->name('company-detail-tendersd');
+    Route::get('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'show'])->name('company-tender-detail');
+    Route::put('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'update'])->name('company-tender-update');
+    Route::delete('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'destroy'])->name('company-tender-destroy');
     //participar en licitación
     Route::post('/company/{slug}/tenders/{id}/send/participate', [CompanyTendersTransactController::class, 'store'])->name('company-send-participate');
 

@@ -4,16 +4,23 @@ namespace App\Http\Controllers\ApiControllers\company\CompanyTenders;
 
 use JWTAuth;
 use App\Models\Company;
-use App\Models\Projects;
 use App\Models\Tenders;
-use App\Models\TendersCompanies;
-use App\Transformers\UserTransformer;
-use App\Transformers\TendersTransformer;
-use App\Http\Controllers\ApiControllers\ApiController;
+use App\Models\Projects;
 use Illuminate\Http\Request;
+use App\Models\TendersVersions;
+use App\Models\TendersCompanies;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Transformers\UserTransformer;
+use Illuminate\Support\Facades\Storage;
+use App\Transformers\TendersTransformer;
+use App\Mail\SendRetirementTenderCompany;
+use App\Http\Controllers\ApiControllers\ApiController;
 
 class CompanyTendersController extends ApiController
 {
+    public $routeFile           = 'public/';
+    public $routeTenderCompany  = 'images/tendercompany/';
     //
     public function validateUser(){
         try {
@@ -78,11 +85,10 @@ class CompanyTendersController extends ApiController
 
     public function show( $slug, $id ) {
 
-        $user = $this->validateUser();
+        $user           = $this->validateUser();
         // Compañía del usuario que está logueado
-        $userCompanyId = $user->companyId();
-
-        $tender = Tenders::where('id', $id)->first();
+        $userCompanyId  = $user->companyId();
+        $tender         = Tenders::where('id', $id)->first();
         
         // Tenders Company
         $tender->company_status = '';
@@ -125,6 +131,77 @@ class CompanyTendersController extends ApiController
         $tender->categories = $tender->categories;
 
         return $this->showOne( $tender, 200 );
+    }
+
+    public function update(Request $request, $slug, $id)
+    {
+        $user           = $this->validateUser();
+        $tender_company = TendersCompanies::find($id);
+        $tender_status  = $tender_company->tender->tendersVersionLast()->status;
+
+        if( ($tender_status == TendersVersions::LICITACION_CLOSED) || ($tender_status == TendersVersions::LICITACION_FINISHED) ) {
+            $tenderCompanyError = [ 'tenderCompany' => 'Error, la compañia no se puede actulizar la licitación, por el motivo que la licitación esta cerrada o finalizada' ];
+            return $this->errorResponse( $tenderCompanyError, 500 );
+        }
+
+        if( $user->id != $tender_company->user_id) {
+            $tenderCompanyError = [ 'tenderCompany' => 'Error, el usuario no tiene permiso para modificar la licitación de la compañia' ];
+            return $this->errorResponse( $tenderCompanyError, 500 );
+        }
+
+        $tenderCompanyFiels['price'] = $request->price;
+        
+        DB::beginTransaction();
+
+        try {
+            $tender_company->update( $tenderCompanyFiels );
+            DB::commit();
+        } catch (\Throwable $th) {
+            // Si existe algún error al actulizar tender-company
+            DB::rollBack();
+            $companyError = [ 'tenderCompany' => 'Error, no se ha podido gestionar la actualización' ];
+            return $this->errorResponse( $companyError, 500 );
+        }
+        return $this->showOne($tender_company,200);
+    }
+
+    public function destroy($slug, $id)
+    {
+        $user           = $this->validateUser();
+        $tender_company = TendersCompanies::find($id);
+        $tender_status  = $tender_company->tender->tendersVersionLast()->status;
+
+        if( ($tender_status == TendersVersions::LICITACION_CLOSED) || ($tender_status == TendersVersions::LICITACION_FINISHED) ) {
+            $tenderCompanyError = [ 'tenderCompany' => 'Error, la compañia no se puede retirar de la licitacion, por el motivo que la licitación esta cerrada o finalizada' ];
+            return $this->errorResponse( $tenderCompanyError, 500 );
+        }
+
+        if( $user->id != $tender_company->user_id) {
+            $tenderCompanyError = [ 'tenderCompany' => 'Error, el usuario no tiene permiso para modificar la licitación de la compañia' ];
+            return $this->errorResponse( $tenderCompanyError, 500 );
+        }
+
+        $tender_company->delete();
+
+        if( $tender_company->files ){
+            foreach ($tender_company->files as $key => $file) {
+                Storage::disk('local')->delete( $this->routeFile . $file->url );
+                $file->delete();
+            }
+        }
+        
+        $company_name       = $tender_company->company->name;
+        $tender_name        = $tender_company->tender->name;
+        $tender_user_email  = $tender_company->tender->user->email;
+        $project_user_email = $tender_company->tender->project->user->email;
+
+        if($tender_user_email == $project_user_email):
+            Mail::to($tender_user_email)->send(new SendRetirementTenderCompany($tender_name, $company_name));
+        else:
+            Mail::to($tender_user_email)->send(new SendRetirementTenderCompany($tender_name, $company_name));
+            Mail::to($project_user_email)->send(new SendRetirementTenderCompany($tender_name, $company_name));
+        endif;
+
     }
 
 }
