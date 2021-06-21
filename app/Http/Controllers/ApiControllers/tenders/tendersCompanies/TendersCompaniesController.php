@@ -134,6 +134,7 @@ class TendersCompaniesController extends ApiController
 
         try{
             $tenderCompany->save();
+            DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
             $tenderCompanyError = [ 'tender' => 'Error, no se ha podido gestionar la solicitud de la compañia'];
