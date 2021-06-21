@@ -38,6 +38,7 @@ class TendersMyCompanyTransformer extends TransformerAbstract
             'id'                    => (int)$tendersCompanies->id,
             'tender_id'             => (int)$tendersCompanies->tender->id,
             'company_id'            => (int)$tendersCompanies->company_id,
+            'slug_company'          => (string)$tendersCompanies->company->slug,
             'tender_name'           => (string)$tendersCompanies->tender->name,
             'tender_status'         => (string)$tendersCompanies->tender->tendersVersionLast()->status,
             'tender_company_status' => (string)$tendersCompanies->status,
