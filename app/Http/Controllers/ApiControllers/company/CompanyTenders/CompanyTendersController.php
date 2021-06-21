@@ -38,10 +38,10 @@ class CompanyTendersController extends ApiController
     public function index( $slug, Request $request )
     {
         // Validamos TOKEN del usuario
-        $user = $this->validateUser();
+        $user           = $this->validateUser();
         // Compañía del usuario que está logueado
-        $userCompanyId = $user->companyId();
-        $project_id = $request->project_id;
+        $userCompanyId  = $user->companyId();
+        $project_id     = $request->project_id;
         
         $company = Company::where('slug', $slug )->first();
         if( !$company ){
@@ -177,7 +177,7 @@ class CompanyTendersController extends ApiController
         }
 
         if( $user->id != $tender_company->user_id) {
-            $tenderCompanyError = [ 'tenderCompany' => 'Error, el usuario no tiene permiso para modificar la licitación de la compañia' ];
+            $tenderCompanyError = [ 'tenderCompany' => 'Error, el usuario no tiene permiso para borrar la licitación de la compañia' ];
             return $this->errorResponse( $tenderCompanyError, 500 );
         }
 
