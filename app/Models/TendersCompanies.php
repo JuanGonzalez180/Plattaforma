@@ -51,4 +51,8 @@ class TendersCompanies extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function files(){
+        return $this->morphMany(Files::class, 'filesable');
+    }
+
 }

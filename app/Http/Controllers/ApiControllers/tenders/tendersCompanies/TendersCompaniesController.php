@@ -127,7 +127,6 @@ class TendersCompaniesController extends ApiController
         }
 
         $tenderCompany = TendersCompanies::find($id);
-
         // Iniciar Transacción
         DB::beginTransaction();
 
