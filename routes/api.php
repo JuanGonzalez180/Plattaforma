@@ -201,6 +201,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     Route::get('/company/{slug}/tenders', [CompanyTendersController::class, 'index'])->name('company-tenders');
     Route::get('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'show'])->name('company-tender-detail');
+    Route::put('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'update'])->name('company-tender-update');
     Route::delete('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'destroy'])->name('company-tender-destroy');
     //participar en licitación
     Route::post('/company/{slug}/tenders/{id}/send/participate', [CompanyTendersTransactController::class, 'store'])->name('company-send-participate');

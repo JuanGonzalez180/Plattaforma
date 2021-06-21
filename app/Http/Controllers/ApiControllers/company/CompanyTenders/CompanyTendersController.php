@@ -4,16 +4,17 @@ namespace App\Http\Controllers\ApiControllers\company\CompanyTenders;
 
 use JWTAuth;
 use App\Models\Company;
-use App\Models\Projects;
 use App\Models\Tenders;
-use App\Models\TendersCompanies;
+use App\Models\Projects;
+use Illuminate\Http\Request;
 use App\Models\TendersVersions;
+use App\Models\TendersCompanies;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Transformers\UserTransformer;
 use App\Transformers\TendersTransformer;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\SendRetirementTenderCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
-use Illuminate\Http\Request;
 
 class CompanyTendersController extends ApiController
 {
@@ -128,6 +129,37 @@ class CompanyTendersController extends ApiController
         $tender->categories = $tender->categories;
 
         return $this->showOne( $tender, 200 );
+    }
+
+    public function update(Request $request, $slug, $id)
+    {
+        $user           = $this->validateUser();
+
+        $tender_company = TendersCompanies::find($id);
+
+        $tender_status  = $tender_company->tender->tendersVersionLast()->status;
+
+        if( ($tender_status == TendersVersions::LICITACION_CLOSED) || ($tender_status == TendersVersions::LICITACION_FINISHED) ) {
+            $tenderCompanyError = [ 'tenderCompany' => 'Error, la compañia no se puede actulizar la licitación, por el motivo que la licitación esta cerrada o finalizada' ];
+            return $this->errorResponse( $tenderCompanyError, 500 );
+        }
+
+        $tenderCompanyFiels['price'] = $request->price;
+
+        DB::beginTransaction();
+
+        try {
+            $tender_company->update( $tenderCompanyFiels );
+            DB::commit();
+        } catch (\Throwable $th) {
+            // Si existe algún error al actulizar tender-company
+            DB::rollBack();
+            $companyError = [ 'tenderCompany' => 'Error, no se ha podido gestionar la actualización' ];
+            return $this->errorResponse( $companyError, 500 );
+        }
+
+        return $this->showOne($tender_company,200);
+
     }
 
     public function destroy($slug, $id)
