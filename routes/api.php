@@ -30,6 +30,7 @@ use App\Http\Controllers\ApiControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\ApiControllers\tenders\TendersController;
 use App\Http\Controllers\ApiControllers\tenders\tendersDocuments\TendersDocumentsController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesController;
+use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesDocumentsController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesListController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersAction\TendersActionController;
@@ -172,6 +173,10 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      * Tenders_docuemnts
      */
     Route::resource('/tenders/documents', TendersDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('tendersdocuments');
+    /**
+     * Tenders_companies_docuemnts
+     */
+    Route::resource('/tenders/companies/documents', TendersCompaniesDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('tenderscompaniesdocuments');
     /**
      * Tenders_vesion
      */
