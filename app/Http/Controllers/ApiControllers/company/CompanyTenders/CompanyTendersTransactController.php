@@ -23,6 +23,25 @@ class CompanyTendersTransactController extends ApiController
         return $this->user;
     }
 
+    public function index($slug, Request $request)
+    {
+        $user           = $this->validateUser();
+        $companies_id   = $request->companies_id;
+
+        $id_array = [];
+
+        foreach($companies_id as $company_id){
+            $id_array[] = $company_id['id'];
+        }
+
+        $tendersCompanies = TendersCompanies::whereIn('id', $id_array)
+            ->get();
+
+        $transformer = TendersCompanies::TRANSFORMER_TENDER_COMPANY_SELECTED;
+
+        return $this->showAllPaginateSetTransformer($tendersCompanies, $transformer);
+    }
+    
     //participar en licitación
     public function store($slug, int $id)
     {

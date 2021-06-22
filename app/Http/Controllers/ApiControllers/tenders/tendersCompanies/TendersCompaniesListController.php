@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
-use App\Transformers\TendersCompaniesTransformer;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersCompaniesListController extends ApiController
@@ -32,9 +31,7 @@ class TendersCompaniesListController extends ApiController
             ->orderBy('updated_at','desc')
             ->get();
 
-        $tendersCompaniesTransformer = new TendersCompaniesTransformer();
-
-        $transformer = $tenders_company->first()->transformerTenderMyCompany;
+        $transformer = TendersCompanies::TRANSFORMER_TENDER_MY_COMPANY;
 
         return $this->showAllPaginateSetTransformer($tenders_company, $transformer);
 

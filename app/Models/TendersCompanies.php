@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Tenders;
 use App\Transformers\TendersCompaniesTransformer;
 use App\Transformers\TendersMyCompanyTransformer;
+use App\Transformers\TendersCompanySelectedTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,8 +15,11 @@ class TendersCompanies extends Model
 {
     use HasFactory;
 
-    public $transformer                = TendersCompaniesTransformer::class;
-    public $transformerTenderMyCompany = TendersMyCompanyTransformer::class;
+    public $transformer                         = TendersCompaniesTransformer::class;
+
+    //CUSTOM_TRANSFORMER
+    const TRANSFORMER_TENDER_MY_COMPANY         = TendersMyCompanyTransformer::class;
+    const TRANSFORMER_TENDER_COMPANY_SELECTED   = TendersCompanySelectedTransformer::class;
 
     const TYPE_INTERESTED       = 'Interesado';
     const TYPE_INVITED          = 'Invitado';
