@@ -89,5 +89,13 @@ class Tenders extends Model
     public function tenderCompanies(){
         return $this->hasMany(TendersCompanies::class, 'tender_id');
     }
+
+    public function isWinner(){
+        $tenderVersion = TendersCompanies::where('tender_id', $this->id)
+            ->where('winner', TendersCompanies::WINNER_TRUE)
+            ->exists();
+
+        return $tenderVersion;
+    }
     
 }

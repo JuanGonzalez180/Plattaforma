@@ -31,6 +31,7 @@ use App\Http\Controllers\ApiControllers\tenders\TendersController;
 use App\Http\Controllers\ApiControllers\tenders\tendersDocuments\TendersDocumentsController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesListController;
+use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersAction\TendersActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersVersions\TendersVersionsController;
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
@@ -180,10 +181,13 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      */
     Route::resource('/tenders/companies', TendersCompaniesController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tendersCompanies');
     Route::get('/tenders/all/companies', [TendersCompaniesListController::class, 'indexTendersCompanies'])->name('company-tender-list');
+    Route::get('/tenders/companies/selected/winner', [TendersCompaniesActionController::class, 'SelectedWinner'])->name('company-company-selected-winner');
+
     /**
      * Tenders_action
      */    
     Route::put('/tenders/action/{id}/update/user', [TendersActionController::class, 'updateTenderUser'])->name('company-tender-update-user');
+    Route::put('/tenders/action/{id}/closed/status', [TendersActionController::class, 'updateStatusClosed'])->name('company-tender-update-status-closed');
     /**
      * Tenders
      */
