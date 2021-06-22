@@ -168,4 +168,16 @@ class User extends Authenticatable implements JWTSubject
     public function image(){
         return $this->morphOne(Image::class, 'imageable');
     }
+
+    //Nombre completo
+    public function fullName(){
+
+        $fullName = $this->name." ".$this->lastname;
+
+        if( is_null($this->lastname) || $this->lastname == ''){
+            return $this->name;
+        }
+        
+        return $fullName;
+    }
 }
