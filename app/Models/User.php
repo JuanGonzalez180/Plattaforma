@@ -172,12 +172,10 @@ class User extends Authenticatable implements JWTSubject
     //Nombre completo
     public function fullName(){
 
-        $fullName = $this->name." ".$this->lastname;
-
-        if( is_null($this->lastname) || $this->lastname == ''){
-            return $this->name;
-        }
-        
+        $fullName = ( is_null($this->lastname) || $this->lastname == '')
+            ? $this->name
+            : $this->name." ".$this->lastname;
+            
         return $fullName;
     }
 }

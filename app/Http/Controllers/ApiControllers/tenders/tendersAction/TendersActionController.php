@@ -6,6 +6,7 @@ use JWTAuth;
 use App\Models\Tenders;
 use App\Models\QueryWall;
 use Illuminate\Http\Request;
+use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
@@ -63,6 +64,26 @@ class TendersActionController extends ApiController
 
         return $this->showOne($tender,200);
 
+    }
+
+    public function updateStatusClosed($id)
+    {
+        $tenderVersionLast = Tenders::find($id)->tendersVersionLast();
+
+        DB::beginTransaction();
+
+        $tenderVersionLast->status = TendersVersions::LICITACION_CLOSED;
+
+        try{
+            $tenderVersionLast->save();
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $tenderVersionError = [ 'tenderVersionLast' => 'Error, no se ha podido gestionar la solicitud de la licitación'];
+            return $this->errorResponse( $tenderVersionError, 500 );
+        }
+
+        return $this->showOne($tenderVersionLast,200);
     }
 
 }

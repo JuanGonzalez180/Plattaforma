@@ -42,7 +42,8 @@ class TendersCompanySelectedTransformer extends TransformerAbstract
             'user_fullname'         => (string)$tendersCompanies->user->fullName(),
             'tender_name'           => (string)$tendersCompanies->tender->name,
             'company_name'          => (string)$tendersCompanies->company->name,
-            'tender_company_price'  => (int)$tendersCompanies->price
+            'tender_company_price'  => (int)$tendersCompanies->price,
+            'files'                 => $tendersCompanies->files
         ];
     }
 }
