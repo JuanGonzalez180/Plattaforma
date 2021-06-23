@@ -36,6 +36,7 @@ use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompanie
 use App\Http\Controllers\ApiControllers\tenders\tendersAction\TendersActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersVersions\TendersVersionsController;
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
+use App\Http\Controllers\ApiControllers\typeproject\TypeProjectListController;
 use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
 // Search
 use App\Http\Controllers\ApiControllers\search\SearchBrandsController;
@@ -118,6 +119,10 @@ Route::resource('/stripe/plans', SubscriptionsStripeController::class, ['only' =
  * TypeProjects
  */
 Route::get('/typesprojects', TypeProjectController::class)->name('typesprojects');
+/**
+ * TypeProjects
+ */
+Route::get('/typesprojects/list/item/child', [TypeProjectListController::class, 'index'])->name('typesprojects-items-child');
 /**
  * Categories
  */
