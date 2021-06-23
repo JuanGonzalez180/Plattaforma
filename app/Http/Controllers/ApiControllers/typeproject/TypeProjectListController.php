@@ -23,6 +23,7 @@ class TypeProjectListController extends ApiController
     {
         $parents = TypeProject::whereNull('parent_id')
             ->where('status', TypeProject::TYPEPROJECT_PUBLISH)
+            ->orderBy('name','ASC')
             ->pluck('id');
 
         $parent_array = [];

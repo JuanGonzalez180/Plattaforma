@@ -8,7 +8,7 @@ begin
     set @sql = '
       select group_concat(id) into @children
       from type_projects
-      where parent_id in ({parents}) and status = "Publicado"
+      where parent_id in ({parents}) and status = "Publicado" order by name asc
     ';
     set @sql = replace(@sql, '{parents}', @parents);
     prepare stmt from @sql;
@@ -22,7 +22,7 @@ begin
     set @sql = '
       select parent_id into @parent
       from type_projects
-      where id = ({child}) and status = "Publicado"
+      where id = ({child}) and status = "Publicado" order by name asc
     ';
     set @sql = replace(@sql, '{child}', @child);
     prepare stmt from @sql;
@@ -34,7 +34,7 @@ begin
   set @sql = '
     select id, name, description, parent_id
     from type_projects
-    where id in ({list}) and status = "Publicado"
+    where id in ({list}) and status = "Publicado" order by name asc
   ';
   set @sql = replace(@sql, '{list}', @list);
   prepare stmt from @sql;
