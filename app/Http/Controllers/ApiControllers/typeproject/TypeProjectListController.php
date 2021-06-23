@@ -29,7 +29,13 @@ class TypeProjectListController extends ApiController
         $parent_array = [];
 
         foreach($parents as $parent) {
-            $parent_array[] = DB::select('call get_child_type_project("'.$parent.'")');
+
+            $childs = DB::select('call get_child_type_project("'.$parent.'")');
+
+            if(count($childs) <= 1)
+                continue;
+
+            $parent_array[] = $childs;
         }
 
         return $parent_array;
