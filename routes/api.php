@@ -10,6 +10,7 @@ use App\Http\Controllers\ApiControllers\portfolios\PortfoliosController;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosDocumentsController;
 use App\Http\Controllers\ApiControllers\brands\BrandsController;
 use App\Http\Controllers\ApiControllers\category\CategoryController;
+use App\Http\Controllers\ApiControllers\category\CategoryListController;
 use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesController;
 use App\Http\Controllers\ApiControllers\company\CompanyController;
 use App\Http\Controllers\ApiControllers\company\CompanyProjects\CompanyProjectsController;
@@ -127,6 +128,7 @@ Route::get('/typesprojects/list/item/child', [TypeProjectListController::class, 
  * Categories
  */
 Route::get('/categories', CategoryController::class)->name('categories');
+Route::get('/categories/list/item/child', [CategoryListController::class, 'index'])->name('categories-items-child');
 Route::get('/categoriesservices', CategoryServicesController::class)->name('categoriesservices');
 
 Route::group(['middleware' => ['jwt.verify']], function() {

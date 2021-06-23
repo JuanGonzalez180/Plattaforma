@@ -1,5 +1,5 @@
-drop procedure if exists get_child_type_project;
-create procedure get_child_type_project(in in_id int)
+drop procedure if exists get_child_type_categoty;
+create procedure get_child_type_categoty(in in_id int)
 begin
   set @list = in_id;
   set @parents = @list;
@@ -7,8 +7,8 @@ begin
   repeat
     set @sql = '
       select group_concat(id) into @children
-      from type_projects
-      where parent_id in ({parents}) and status = "Publicado" order by name asc
+      from categories
+      where parent_id in ({parents}) and status = "Publicado"
     ';
     set @sql = replace(@sql, '{parents}', @parents);
     prepare stmt from @sql;
@@ -21,8 +21,8 @@ begin
   repeat
     set @sql = '
       select parent_id into @parent
-      from type_projects
-      where id = ({child}) and status = "Publicado" order by name asc
+      from categories
+      where id = ({child}) and status = "Publicado"
     ';
     set @sql = replace(@sql, '{child}', @child);
     prepare stmt from @sql;
@@ -33,12 +33,13 @@ begin
 
   set @sql = '
     select id, name, description, parent_id
-    from type_projects
-    where id in ({list}) and status = "Publicado" order by name asc
+    from categories
+    where id in ({list}) and status = "Publicado"
   ';
   set @sql = replace(@sql, '{list}', @list);
   prepare stmt from @sql;
   execute stmt;
 end
 
---call get_child_type_project(33)
+
+--call get_child_type_categoty(122);
