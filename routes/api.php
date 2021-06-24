@@ -39,6 +39,7 @@ use App\Http\Controllers\ApiControllers\tenders\tendersVersions\TendersVersionsC
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectListController;
 use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
+use App\Http\Controllers\ApiControllers\typesentity\TypesEntityListController;
 // Search
 use App\Http\Controllers\ApiControllers\search\SearchBrandsController;
 use App\Http\Controllers\ApiControllers\search\SearchCompanyController;
@@ -76,7 +77,10 @@ use App\Http\Controllers\ApiControllers\user\UsersController;
  * TypesEntity
  */
 Route::get('/typesentity', TypesEntityController::class)->name('typesentity');
-
+/**
+ * TypesEntity_items_child
+ */
+Route::get('/typesentity/list/item/child', [TypesEntityListController::class, 'index'])->name('typesentity-items-child');
 /**
  * Country
  */
