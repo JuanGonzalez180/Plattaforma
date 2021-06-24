@@ -20,24 +20,6 @@ class TypesEntityListController extends ApiController
         return $this->user;
     }
 
-    public function getTypeEntities() {
-
-        $companies = Company::select('types_entities.*')->where('companies.status',Company::COMPANY_APPROVED)
-            ->join('types_entities', 'companies.type_entity_id', '=', 'types_entities.id')
-            ->where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
-            ->join('types', 'types_entities.type_id', '=', 'types.id')
-            ->where('types.slug', $type_slug)
-            ->distinct('types_entities.id')
-            ->orderBy('name','ASC')
-            ->get();
-
-        foreach($companies as $company){
-            var_dump($company->id);
-            var_dump($company->name);
-        }
-
-    }
-
     public function index()
     {
         $user = $this->validateUser();
@@ -48,7 +30,7 @@ class TypesEntityListController extends ApiController
             ->join('types_entities', 'companies.type_entity_id', '=', 'types_entities.id')
             ->where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
             ->join('types', 'types_entities.type_id', '=', 'types.id')
-            ->where('types.slug', 'oferta')
+            ->where('types.slug', $type_slug)
             ->distinct('types_entities.id')
             ->orderBy('name','ASC')
             ->get();
