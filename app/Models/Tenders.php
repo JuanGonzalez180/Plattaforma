@@ -76,7 +76,7 @@ class Tenders extends Model
 
     public function tendersVersionLastPublish(){
         $tenderPublish = $this->tendersVersion
-            ->where( 'status', TendersVersions::LICITACION_PUBLISH )
+            ->where( 'status','<>', TendersVersions::LICITACION_CREATED )
             ->sortBy([ ['created_at', 'desc'] ]);
         
         if( $tenderPublish && $tenderPublish->count() ){
@@ -85,6 +85,18 @@ class Tenders extends Model
 
         return [];
     }
+
+    // public function tendersVersionLastPublish(){
+    //     $tenderPublish = $this->tendersVersion
+    //         ->whereIn( 'status', TendersVersions::LICITACION_PUBLISH)
+    //         ->sortBy([ ['created_at', 'desc'] ]);
+        
+    //     if( $tenderPublish && $tenderPublish->count() ){
+    //         return $tenderPublish->first();
+    //     }
+
+    //     return [];
+    // }
     
     public function tenderCompanies(){
         return $this->hasMany(TendersCompanies::class, 'tender_id');
