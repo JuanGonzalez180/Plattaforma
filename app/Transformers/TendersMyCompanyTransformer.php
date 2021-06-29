@@ -40,11 +40,11 @@ class TendersMyCompanyTransformer extends TransformerAbstract
             'company_id'            => (int)$tendersCompanies->company_id,
             'slug_company'          => (string)$tendersCompanies->company->slug,
             'tender_name'           => (string)$tendersCompanies->tender->name,
-            'tender_status'         => (string)$tendersCompanies->tender->tendersVersionLast()->status,
+            'tender_status'         => (string)$tendersCompanies->tender->tendersVersionLastPublish()->status,
             'tender_company_status' => (string)$tendersCompanies->status,
             'project_name'          => (string)$tendersCompanies->tender->project->name,
-            'closing_date'          => (string)$tendersCompanies->tender->tendersVersionLast()->date,
-            'closing_hour'          => (string)$tendersCompanies->tender->tendersVersionLast()->hour
+            'closing_date'          => (string)$tendersCompanies->tender->tendersVersionLastPublish()->date,
+            'closing_hour'          => (string)$tendersCompanies->tender->tendersVersionLastPublish()->hour
         ];
     }
 }
