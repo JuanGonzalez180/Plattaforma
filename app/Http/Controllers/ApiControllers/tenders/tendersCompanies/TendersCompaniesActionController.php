@@ -44,4 +44,34 @@ class TendersCompaniesActionController extends ApiController
 
         return $this->showOne($tenderCompany,200);
     }
+
+    public function SelectedMoreWinner(Request $request)
+    {
+        $tenders_companies_ids   = $request->tenders_companies_ids;
+
+        $id_array = [];
+
+        foreach($tenders_companies_ids as $tender_company_id){
+            $id_array[] = $tender_company_id['id'];
+        }
+
+        $TendersCompanies   = TendersCompanies::whereIn('id',$id_array);
+        $tenderVersionLast  = $TendersCompanies->get()->first()->tender->tendersVersionLast();
+
+        DB::beginTransaction();
+        $tenderVersionLast->status  = TendersVersions::LICITACION_FINISHED;
+
+        try{
+            $TendersCompanies->update(['winner'=>TendersCompanies::WINNER_TRUE]);
+            $tenderVersionLast->save();
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $tenderError = [ 'tender' => 'Error, no se ha podido gestionar la solicitud de la licitación'];
+            return $this->errorResponse( $tenderError, 500 );
+        }
+
+        return $this->showOne($tenderVersionLast,200);
+    }
 }

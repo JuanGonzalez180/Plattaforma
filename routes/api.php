@@ -10,6 +10,7 @@ use App\Http\Controllers\ApiControllers\portfolios\PortfoliosController;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosDocumentsController;
 use App\Http\Controllers\ApiControllers\brands\BrandsController;
 use App\Http\Controllers\ApiControllers\category\CategoryController;
+use App\Http\Controllers\ApiControllers\category\CategoryListController;
 use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesController;
 use App\Http\Controllers\ApiControllers\company\CompanyController;
 use App\Http\Controllers\ApiControllers\company\CompanyProjects\CompanyProjectsController;
@@ -36,7 +37,9 @@ use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompanie
 use App\Http\Controllers\ApiControllers\tenders\tendersAction\TendersActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersVersions\TendersVersionsController;
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
+use App\Http\Controllers\ApiControllers\typeproject\TypeProjectListController;
 use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
+use App\Http\Controllers\ApiControllers\typesentity\TypesEntityListController;
 // Search
 use App\Http\Controllers\ApiControllers\search\SearchBrandsController;
 use App\Http\Controllers\ApiControllers\search\SearchCompanyController;
@@ -74,7 +77,10 @@ use App\Http\Controllers\ApiControllers\user\UsersController;
  * TypesEntity
  */
 Route::get('/typesentity', TypesEntityController::class)->name('typesentity');
-
+/**
+ * TypesEntity_items_child
+ */
+Route::get('/typesentity/list/item/child', [TypesEntityListController::class, 'index'])->name('typesentity-items-child');
 /**
  * Country
  */
@@ -119,9 +125,14 @@ Route::resource('/stripe/plans', SubscriptionsStripeController::class, ['only' =
  */
 Route::get('/typesprojects', TypeProjectController::class)->name('typesprojects');
 /**
+ * TypeProjects
+ */
+Route::get('/typesprojects/list/item/child', [TypeProjectListController::class, 'index'])->name('typesprojects-items-child');
+/**
  * Categories
  */
 Route::get('/categories', CategoryController::class)->name('categories');
+Route::get('/categories/list/item/child', [CategoryListController::class, 'index'])->name('categories-items-child');
 Route::get('/categoriesservices', CategoryServicesController::class)->name('categoriesservices');
 
 Route::group(['middleware' => ['jwt.verify']], function() {
@@ -187,6 +198,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/tenders/companies', TendersCompaniesController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tendersCompanies');
     Route::get('/tenders/all/companies', [TendersCompaniesListController::class, 'indexTendersCompanies'])->name('company-tender-list');
     Route::get('/tenders/companies/selected/winner', [TendersCompaniesActionController::class, 'SelectedWinner'])->name('company-company-selected-winner');
+    Route::get('/tenders/companies/selected/more/winner', [TendersCompaniesActionController::class, 'SelectedMoreWinner'])->name('company-company-selected-more--winner');
 
     /**
      * Tenders_action
