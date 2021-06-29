@@ -23,7 +23,7 @@ class CompanyTendersTransactController extends ApiController
         return $this->user;
     }
 
-    public function index($slug, Request $request)
+    public function postComparate(Request $request)
     {
         $user           = $this->validateUser();
         $companies_id   = $request->companies_id;

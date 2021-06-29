@@ -167,6 +167,7 @@ class TendersController extends ApiController
                 $tenderVersion->files;
             }
         }
+        $tender->tendersVersionLast = $tender->tendersVersionLast();
 
         return $this->showOne($tender,201);
     }

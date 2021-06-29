@@ -91,12 +91,12 @@ class CompanyTendersController extends ApiController
         $tender         = Tenders::where('id', $id)->first();
         
         // Tenders Company
-        $tender->company_status = '';
+        $company_status = '';
         $tenderCompany = TendersCompanies::where('tender_id', $id)
                         ->where('company_id', $userCompanyId)
                         ->first();
         if( $tenderCompany && $tenderCompany->status ){
-            $tender->company_status = $tenderCompany->status;
+            $company_status = $tenderCompany->status;
         }
 
         if( !$id || !$tender ){
@@ -117,20 +117,31 @@ class CompanyTendersController extends ApiController
 
         $tendersTransformer = new TendersTransformer();
         
-        if ( $tender->company_status == TendersCompanies::STATUS_PARTICIPATING || $tender->company_status == TendersCompanies::STATUS_PROCESS ){
+        if ( $company_status == TendersCompanies::STATUS_PARTICIPATING || $company_status == TendersCompanies::STATUS_PROCESS ){
 
             foreach( $tender->tendersVersion as $key => $version ){
                 $version->files;
             }
-
+            
+            $tender->company_status = $company_status;
             return $this->showOneData( $tendersTransformer->transformDetail($tender), 200 );
         }
         
         // Solamente estos datos
         $tender->tendersVersionLastPublish = $tender->tendersVersionLastPublish();
         $tender->categories = $tender->categories;
+        $tender->company_status = $company_status;
 
         return $this->showOne( $tender, 200 );
+    }
+
+    public function edit( $id ) {
+        //
+        $user = $this->validateUser();
+
+        $tender_company = TendersCompanies::findOrFail($id);
+        $tender_company->files;
+        return $this->showOne($tender_company,200);
     }
 
     public function update(Request $request, $slug, $id)
@@ -140,12 +151,12 @@ class CompanyTendersController extends ApiController
         $tender_status  = $tender_company->tender->tendersVersionLast()->status;
 
         if( ($tender_status == TendersVersions::LICITACION_CLOSED) || ($tender_status == TendersVersions::LICITACION_FINISHED) ) {
-            $tenderCompanyError = [ 'tenderCompany' => 'Error, la compañia no se puede actulizar la licitación, por el motivo que la licitación esta cerrada o finalizada' ];
+            $tenderCompanyError = [ 'tenderCompany' => 'Error, la compañia no puede actualizar la licitación, por el motivo que la licitación esta cerrada o finalizada' ];
             return $this->errorResponse( $tenderCompanyError, 500 );
         }
 
         if( $user->id != $tender_company->user_id) {
-            $tenderCompanyError = [ 'tenderCompany' => 'Error, el usuario no tiene permiso para modificar la licitación de la compañia' ];
+            $tenderCompanyError = [ 'tenderCompany' => 'Error, el usuario no tiene permiso para modificar la licitación de la '. $user->id .'compañia' . $tender_company->user_id ];
             return $this->errorResponse( $tenderCompanyError, 500 );
         }
 
@@ -201,7 +212,8 @@ class CompanyTendersController extends ApiController
             Mail::to($tender_user_email)->send(new SendRetirementTenderCompany($tender_name, $company_name));
             Mail::to($project_user_email)->send(new SendRetirementTenderCompany($tender_name, $company_name));
         endif;
-
+        
+        return $this->showOneData( ['success' => 'Se ha eliminado correctamente.', 'code' => 200 ], 200);
     }
 
 }
