@@ -116,6 +116,18 @@ class CompanyTendersController extends ApiController
         }
 
         $tendersTransformer = new TendersTransformer();
+
+        $arr = [];
+        foreach($tender->tendersVersion as $key => $version) {
+            if($version->status == TendersVersions::LICITACION_PUBLISH)
+                continue;
+            
+            $arr[] = $key;
+        };
+
+        foreach($arr as $position)
+            unset($tender->tendersVersion[$position]);
+            
         
         if ( $company_status == TendersCompanies::STATUS_PARTICIPATING || $company_status == TendersCompanies::STATUS_PROCESS ){
 
