@@ -3,22 +3,23 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 
-class taskFinalizeTender extends Command
+class TaskTenderClosed extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'task:tender_closed';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Cierra todas las licitaciones';
 
     /**
      * Create a new command instance.
@@ -37,6 +38,8 @@ class taskFinalizeTender extends Command
      */
     public function handle()
     {
-        return 0;
+        // $texto = "[".date("Y-m-d H:i:s")."]: Hola, mi nombre es cristian";
+        // Storage::append("archivo.txt", $texto);
+        
     }
 }
