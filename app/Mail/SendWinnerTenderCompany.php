@@ -16,9 +16,10 @@ class SendWinnerTenderCompany extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public function __construct( string $tenderName, string $CompanyName)
     {
-        //
+        $this->tenderName           = $tenderName;
+        $this->CompanyName          = $CompanyName;
     }
 
     /**
@@ -28,6 +29,10 @@ class SendWinnerTenderCompany extends Mailable
      */
     public function build()
     {
-        return $this->view('view.name');
+        return $this->view('emails.send-select-winner-tender-company')
+        ->with([
+            'tenderName'        => $this->tenderName,
+            'CompanyName'       => $this->CompanyName
+        ]);
     }
 }

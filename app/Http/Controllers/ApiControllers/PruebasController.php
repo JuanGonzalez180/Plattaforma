@@ -1,46 +1,17 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Http\Controllers\ApiControllers;
 
 use Carbon\Carbon;
 use App\Models\Tenders;
-use Illuminate\Console\Command;
+use Illuminate\Http\Request;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Controller;
 
-class TaskTenderClosed extends Command
+class PruebasController extends Controller
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'task:tender_closed';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Cierra todas las licitaciones';
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
-    public function handle()
+    public function index()
     {
         $tenders = Tenders::all();
 
@@ -56,6 +27,6 @@ class TaskTenderClosed extends Command
                 $tender->tendersVersionLast()->save();
             };
         }
-        
+
     }
 }

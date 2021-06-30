@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendWinnerTenderCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersCompaniesActionController extends ApiController
@@ -18,6 +20,21 @@ class TendersCompaniesActionController extends ApiController
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
         }
         return $this->user;
+    }
+
+    public function unique_multidim_array($array, $key) {
+        $temp_array = array();
+        $i = 0;
+        $key_array = array();
+       
+        foreach($array as $val) {
+            if (!in_array($val[$key], $key_array)) {
+                $key_array[$i] = $val[$key];
+                $temp_array[$i] = $val;
+            }
+            $i++;
+        }
+        return $temp_array;
     }
 
     public function SelectedWinner(Request $request)
@@ -42,6 +59,22 @@ class TendersCompaniesActionController extends ApiController
             return $this->errorResponse( $tenderError, 500 );
         }
 
+        $companyName    = $tenderCompany->company->name;
+        $tenderName     = $tenderCompany->tender->name;
+
+        $emails = [];
+
+        $emails[] = $tenderCompany->company->user->email;
+        $emails[] = $tenderCompany->user->email;
+        
+        $emails = array_values(array_unique($emails));
+
+        foreach($emails as $email){
+            Mail::to($email)
+                ->send(new SendWinnerTenderCompany($tenderName, $companyName));
+        }
+        
+
         return $this->showOne($tenderCompany,200);
     }
 
@@ -55,15 +88,15 @@ class TendersCompaniesActionController extends ApiController
             $id_array[] = $tender_company_id['id'];
         }
 
-        $TendersCompanies   = TendersCompanies::whereIn('id',$id_array);
-        $tenderVersionLast  = $TendersCompanies->get()->first()->tender->tendersVersionLast();
+        $tendersCompanies   = TendersCompanies::whereIn('id',$id_array);
+        $tenderVersionLast  = $tendersCompanies->get()->first()->tender->tendersVersionLast();
 
         DB::beginTransaction();
         $tenderVersionLast->status  = TendersVersions::LICITACION_FINISHED;
         $tendersVersionLastPublish->status  = TendersVersions::LICITACION_FINISHED;
 
         try{
-            $TendersCompanies->update(['winner'=>TendersCompanies::WINNER_TRUE]);
+            $tendersCompanies->update(['winner'=>TendersCompanies::WINNER_TRUE]);
             $tenderVersionLast->save();
             $tendersVersionLastPublish->save();
 
@@ -73,6 +106,29 @@ class TendersCompaniesActionController extends ApiController
             $tenderError = [ 'tender' => 'Error, no se ha podido gestionar la solicitud de la licitación'];
             return $this->errorResponse( $tenderError, 500 );
         }
+
+   
+        $companiesEmails = [];
+        foreach($tendersCompanies->get() as $tenderCompany){
+
+            $companiesEmails[] = array(
+                "company_name"  => $tenderCompany->company->name,
+                "email"         => $tenderCompany->company->user->email,
+            );
+
+            $companiesEmails[] = array(
+                "company_name"  => $tenderCompany->company->name,
+                "email"         => $tenderCompany->user->email
+            );
+        }
+
+        $companiesEmails = $this->unique_multidim_array($companiesEmails,'email');
+
+        foreach($companiesEmails as $companyEmail){
+            Mail::to($companyEmail['email'])
+                ->send(new SendWinnerTenderCompany($tenderVersionLast->tenders->name, $companyEmail['company_name']));
+        }
+
 
         return $this->showOne($tenderVersionLast,200);
     }
