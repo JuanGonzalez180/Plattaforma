@@ -9,6 +9,7 @@ use App\Http\Controllers\ApiControllers\querywall\tenderQueryAnswerController;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosController;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosDocumentsController;
 use App\Http\Controllers\ApiControllers\brands\BrandsController;
+use App\Http\Controllers\ApiControllers\PruebasController;
 use App\Http\Controllers\ApiControllers\category\CategoryController;
 use App\Http\Controllers\ApiControllers\category\CategoryListController;
 use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesController;
@@ -168,6 +169,10 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      */
     Route::resource('/blogs/files', BlogFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('blogsimages');
     Route::resource('/blogs', BlogController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('blogs');
+    /**
+     * pruebas
+     */
+    Route::resource('/pruebas', PruebasController::class, ['only' => ['index']])->names('pruebas');
     /**
      * Query_wall
      */
