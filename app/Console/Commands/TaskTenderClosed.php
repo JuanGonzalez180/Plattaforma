@@ -38,8 +38,8 @@ class TaskTenderClosed extends Command
      */
     public function handle()
     {
-        // $texto = "[".date("Y-m-d H:i:s")."]: Hola, mi nombre es cristian";
-        // Storage::append("archivo.txt", $texto);
+        $texto = "[".date("Y-m-d H:i:s")."]: Hola, mi nombre es cristian";
+        Storage::append("archivo.txt", $texto);
         
     }
 }
