@@ -29,7 +29,10 @@ class TendersCompaniesController extends ApiController
         $user = $this->validateUser();
         $tender_id = $request->tender_id;
 
-        if($user->userType() != 'demanda'){
+        $tender = Tenders::where('id', $tender_id)->first();
+        $version = $tender->tendersVersionLastPublish();
+
+        if($user->userType() != 'demanda' && ($version->status==TendersVersions::LICITACION_CREATED || $version->status==TendersVersions::LICITACION_PUBLISH) ){
             $companyError = [ 'company' => 'Error, El usuario no puede listar las compañias participantes' ];
             return $this->errorResponse( $companyError, 500 );
         }
