@@ -93,10 +93,12 @@ class TendersCompaniesActionController extends ApiController
 
         DB::beginTransaction();
         $tenderVersionLast->status  = TendersVersions::LICITACION_FINISHED;
+        $tendersVersionLastPublish->status  = TendersVersions::LICITACION_FINISHED;
 
         try{
             $tendersCompanies->update(['winner'=>TendersCompanies::WINNER_TRUE]);
             $tenderVersionLast->save();
+            $tendersVersionLastPublish->save();
 
             DB::commit();
         } catch (\Throwable $th) {
