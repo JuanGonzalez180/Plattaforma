@@ -51,7 +51,6 @@ class TaskTenderClosed extends Command
             $hourValidate   = ($tender->tendersVersionLast()->hour   == Carbon::now()->format('G:i'));
 
             if($statusValidate && $dateValidate && $hourValidate) {
-                var_dump('entro');
                 $tender->tendersVersionLast()->status = TendersVersions::LICITACION_CLOSED;
                 $tender->tendersVersionLast()->save();
             };

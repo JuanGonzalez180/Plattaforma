@@ -208,15 +208,17 @@ class CompanyTendersController extends ApiController
         
         $company_name       = $tender_company->company->name;
         $tender_name        = $tender_company->tender->name;
-        $tender_user_email  = $tender_company->tender->user->email;
-        $project_user_email = $tender_company->tender->project->user->email;
 
-        if($tender_user_email == $project_user_email):
-            Mail::to($tender_user_email)->send(new SendRetirementTenderCompany($tender_name, $company_name));
-        else:
-            Mail::to($tender_user_email)->send(new SendRetirementTenderCompany($tender_name, $company_name));
-            Mail::to($project_user_email)->send(new SendRetirementTenderCompany($tender_name, $company_name));
-        endif;
+        $emails     = [];
+        $emails[]   = $tender_company->tender->user->email;
+        $emails[]   = $tender_company->tender->project->user->email;
+
+        $emails = array_values(array_unique($emails));
+
+        foreach($emails as $email){
+            Mail::to($email)
+                ->send(new SendRetirementTenderCompany($tender_name, $company_name));
+        }
         
         return $this->showOneData( ['success' => 'Se ha eliminado correctamente.', 'code' => 200 ], 200);
     }
