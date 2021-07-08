@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-use App\Models\Addresses;
-use App\Models\Company;
+use App\Models\User;
 use App\Models\Files;
+use App\Models\Image;
+use App\Models\Company;
+use App\Models\Tenders;
+use App\Models\Addresses;
 use App\Models\Interests;
 use App\Models\MetaData;
-use App\Models\User;
 use App\Models\TypeProject;
-use App\Models\Image;
 use App\Models\SocialNetworksRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,11 +20,11 @@ class Projects extends Model
 {
     use HasFactory;
 
-    const PROJECTS_ERASER = 'Borrador';
-    const PROJECTS_PUBLISH = 'Publicado';
+    const PROJECTS_ERASER   = 'Borrador';
+    const PROJECTS_PUBLISH  = 'Publicado';
 
-    const PROJECTS_VISIBLE = 'Visible';
-    const PROJECTS_VISIBLE_NO = 'No-Visible';
+    const PROJECTS_VISIBLE      = 'Visible';
+    const PROJECTS_VISIBLE_NO   = 'No-Visible';
 
     public $transformer = ProjectsTransformer::class;
 
@@ -46,6 +47,10 @@ class Projects extends Model
     
     public function isVisible(){
         return $this->visible == Projects::PROJECTS_VISIBLE;
+    }
+
+    public function tenders(){
+        return $this->hasMany(Tenders::class);
     }
 
     public function company(){

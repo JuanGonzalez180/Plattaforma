@@ -161,7 +161,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     /**
      * pruebas
      */
-    Route::resource('/pruebas', SearchItemController::class, ['only' => ['index']])->names('pruebas');
+    // Route::resource('/search/items', SearchItemController::class, ['only' => ['index']])->names('search-items');
     /**
      * Query_wall
      */
@@ -236,6 +236,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/search/products', SearchProductsController::class)->name('search-products');
     Route::post('/search/brands', SearchBrandsController::class)->name('search-brands');
     Route::post('/search/companies', SearchCompanyController::class)->name('search-companies');
+    Route::resource('/search/items', SearchItemController::class, ['only' => ['index']])->names('search-items');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 });
 // Route::post('/files', FilesController::class)->name('files');
