@@ -42,15 +42,18 @@ class TaskTenderClosed extends Command
      */
     public function handle()
     {
-        $tenders = Tenders::all();
+        $tendersVersionLastPublish = TendersVersions::select(DB::raw('max(created_at), tenders_id'))
+            ->where('status',TendersVersions::LICITACION_PUBLISH)
+            ->groupBy('tenders_id')
+            ->pluck('tenders_id');
+
+        $tenders = Tenders::whereIn('id',$tendersVersionLastPublish)->get();
 
         foreach($tenders as $tender) {
-
-            $statusValidate = ($tender->tendersVersionLast()->status == TendersVersions::LICITACION_PUBLISH);
             $dateValidate   = ($tender->tendersVersionLast()->date   == Carbon::now()->format('Y-m-d'));
             $hourValidate   = ($tender->tendersVersionLast()->hour   == Carbon::now()->format('G:i'));
 
-            if($statusValidate && $dateValidate && $hourValidate) {
+            if($dateValidate && $hourValidate) {
                 $tender->tendersVersionLast()->status = TendersVersions::LICITACION_CLOSED;
                 $tender->tendersVersionLast()->save();
             };

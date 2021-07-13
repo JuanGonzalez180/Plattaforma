@@ -8,11 +8,13 @@ use App\Models\Company;
 use App\Models\Category;
 use App\Models\Tenders;
 use App\Models\Projects;
+use App\Models\Products;
 use App\Models\TypeProject;
 use App\Models\TypesEntity;
 use Illuminate\Http\Request;
 use App\Models\CategoryTenders;
 use App\Models\TendersVersions;
+use App\Models\CategoryProducts;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -31,32 +33,38 @@ class SearchItemController extends ApiController
         $user       = $this->validateUser();
         $type_user  = $user->userType();
 
-        
-        if( isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id)){
+        if( !isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id))
+        {
+            $result['company_list']             = $this->getTypeCompanyAll();
 
-            var_dump('solo comunity_id');
+            if($type_user == 'demanda'){
+                $result['category_product_list']    = $this->getCategoryItemList($this->getCategoryProductPublish());
+            }
 
-            $result['company_list']             = $this->getTypeCompany($request->comunity_id);
-
-        }else if((isset($request->type_project) || isset($request->comunity_id)) && !isset($request->category_id)){
-
-            var_dump('tipo de proyecto y/o comunity_id');
-
+            if($type_user == 'oferta'){
+                $result['project_tender_list']      = $this->getProjectItemList();
+                $result['category_tender_list']     = $this->getCategoryItemList($this->getCategoryTenderPublish());
+            }
+        }
+        else if( isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id))
+        {
+            $result['company_list']             = $this->getTypeCompanyId($request->comunity_id);
+        }
+        else if((isset($request->type_project) || isset($request->comunity_id)) && !isset($request->category_id))
+        {
             if($request->comunity_id)
-                $result['company_list']         = $this->getTypeCompany($request->comunity_id);
+                $result['company_list']         = $this->getTypeCompanyId($request->comunity_id);
 
             if(($request->type_project) && ($request->type_consult == 'projects'))
                 $result['project_list']         = $this->getProjectIdList($request->type_project);
 
             if(($request->type_project) && ($request->type_consult == 'tenders'))
-                $result['project_tender_list']  = $this->getTenderProjectIdList($request->type_project);  
-
-        }else if((isset($request->category_id) || isset($request->comunity_id)) && !isset($request->type_project) ){
-
-            var_dump('category_id y/o comunity_id');
-            
+                $result['project_tender_list']  = $this->getTenderProjectIdList($request->type_project); 
+        }
+        else if((isset($request->category_id) || isset($request->comunity_id)) && !isset($request->type_project))
+        {
             if($request->comunity_id)
-                $result['company_list']         = $this->getTypeCompany($request->comunity_id);
+                $result['company_list']         = $this->getTypeCompanyId($request->comunity_id);
 
             if(($request->category_id) && ($type_user == 'demanda'))
                 $result['category_list']        = $this->getCategoryIdList($request->category_id);
@@ -65,100 +73,196 @@ class SearchItemController extends ApiController
                 $result['category_tender_list'] = $this->getTenderCategoryIdList($request->category_id);
         }
 
-
         return $result;
     }
 
-    public function getCategoryIdList($id)
+    public function getTypeCompanyAll()
     {
-        $childs = DB::select('call get_child_type_categoty("'.$id.'")');
-        return json_decode( json_encode($childs), true);
-    }
+        $user = $this->validateUser();
 
-    public function getProjectIdList($id)
-    {
-        $childs = DB::select('call get_child_type_project("'.$id.'")');
-
-        return json_decode( json_encode($childs), true);
-    }
-
-    public function getCategoryList()
-    {
-        $parents = Category::whereNull('parent_id')
-            ->where('status', Category::CATEGORY_PUBLISH)
+        $type_slug = ($user->userType() == 'demanda')? 'oferta' : 'demanda';
+        
+        $types_entities = Company::select('types_entities.*')
+            ->where('companies.status',Company::COMPANY_APPROVED)
+            ->join('types_entities', 'companies.type_entity_id', '=', 'types_entities.id')
+            ->where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
+            ->join('types', 'types_entities.type_id', '=', 'types.id')
+            ->where('types.slug', $type_slug)
+            ->distinct('types_entities.id')
             ->orderBy('name','ASC')
-            ->pluck('id');
+            ->get();
 
-        $parent_array = [];
+        $array = [];
 
-        foreach($parents as $parent) {
-
-            $childs = DB::select('call get_child_type_categoty("'.$parent.'")');
-
-            if(count($childs) <= 1)
-                continue;
-
-            $parent_array[] = json_decode( json_encode($childs), true);
+        foreach($types_entities as $type_entity) {
+            $array[] = array(
+                "name"      => $type_entity->name,
+                "slug"      => $type_entity->slug,
+                "status"    => $type_entity->status,
+                "entities"  => DB::select('call get_child_type_entity("'.$type_entity->id.'")')
+            );
         }
 
-        return $parent_array;
-
+        return $array;
     }
 
-    public function getProjectList()
+    public function getCategoryItemList($catgoryItem)
+    {
+        $categoryParents        = $this->getCategoryParents();
+        $arryIdCatDadtoChild    = $this->getArrCatProductPublish($catgoryItem);
+
+        $arr = [];
+        foreach( $this->getChildCatProduct($categoryParents) as $key_parent => $parent){
+            foreach($parent as $key_child => $child) {
+                if (in_array($child['id'], $arryIdCatDadtoChild)){
+                    $arr[$key_parent][] = $child;
+                };
+            };
+        }; 
+
+        return array_values($arr);
+    }
+
+    public function getProjectItemList()
+    {
+        $projectParents     = $this->getProjectParents();
+        $tenders            = $this->getTendersLastVersionPublish();
+
+        $arrIdTypeProjects  = Tenders::select('type_projects.*')
+            ->whereIn('tenders.id',$tenders)
+            ->join('projects','projects.id','=','tenders.project_id')
+            ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+            ->join('projects_type_project','projects_type_project.projects_id','=','projects.id')
+            ->join('type_projects','type_projects.id','=','projects_type_project.type_project_id')
+            ->where('type_projects.status', TypeProject::TYPEPROJECT_PUBLISH)
+            ->distinct('type_projects.id')
+            ->pluck('type_projects.id');
+
+        $arrIdTypeProjects = $this->getArrTypeProjets($arrIdTypeProjects);
+
+        $arr = [];
+        foreach( $this->getChildTypeProyect($projectParents) as $key_parent => $parent){
+            foreach($parent as $key_child => $child) {
+                if (in_array($child['id'], $arrIdTypeProjects)){
+                    $arr[$key_parent][] = $child;
+                };
+            };
+        };
+
+        return array_values($arr);
+    }
+
+    public function getCategoryProductPublish()
+    {
+        $categoryProductPublish = CategoryProducts::select('category_products.category_id')
+        ->join('products','products.id','=','category_products.products_id')
+            ->where('products.status',Products::PRODUCT_PUBLISH)
+            ->distinct('category_products.category_id')
+            ->pluck('category_products.category_id');
+            
+        return $categoryProductPublish;
+    }
+
+    public function getCategoryTenderPublish()
+    {
+        $tenders = $this->getTendersLastVersionPublish();
+        
+        $categoryTenderPublish = CategoryTenders::select('category_id')
+        ->whereIn('tenders_id', $tenders)
+            ->distinct('category_id')
+            ->pluck('category_id');
+            
+            return $categoryTenderPublish;
+    }
+
+    public function getArrCatProductPublish($ids) {
+
+        $childs     = $this->getChildCatProduct($ids);
+        $array_id   = [];
+
+        foreach($childs as $rows)
+        {
+            foreach($rows as $columns)
+            {
+                $array_id[] = $columns['id'];
+            };
+        };
+
+        $array_id = array_unique($array_id);
+
+        return $array_id;
+    }
+
+    public function getArrTypeProjets($ids)
+    {
+        $childs     = $this->getChildTypeProyect($ids);
+        $array_id   = [];
+
+        foreach($childs as $rows)
+        {
+            foreach($rows as $columns)
+            {
+                $array_id[] = $columns['id'];
+            };
+        };
+
+        $array_id = array_unique($array_id);
+
+        return $array_id;
+    }
+
+    public function getCategoryParents(){
+        $parents = Category::whereNull('parent_id')
+        ->where('status', Category::CATEGORY_PUBLISH)
+        ->orderBy('name','ASC')
+        ->pluck('id');
+        
+        return $parents;
+    }
+
+    public function getProjectParents()
     {
         $parents = TypeProject::whereNull('parent_id')
             ->where('status', TypeProject::TYPEPROJECT_PUBLISH)
             ->orderBy('name','ASC')
             ->pluck('id');
 
-        $parent_array = [];
-
-        foreach($parents as $parent) {
-
-            $childs = DB::select('call get_child_type_project("'.$parent.'")');
-
-            if(count($childs) <= 1)
-                continue;
-            $parent_array[] = json_decode( json_encode($childs), true);
-        }
-
-        return $parent_array;
-
+        return $parents;
     }
-
-    public function getTenderCategoryIdList($id) {
-
-        $tenders = CategoryTenders::select('tenders.*')
-            ->where('category_tenders.category_id', $id)
-            ->join('tenders','category_tenders.tenders_id','=','tenders.id')
-            ->pluck('tenders.id');
-
-        $tenders = Tenders::whereIn('id',$tenders)->get();
-
-        foreach($tenders as $key =>$tender){
-            if($tender->tendersVersionLast()->status != TendersVersions::LICITACION_PUBLISH)
-                unset($tenders[$key]);
-        };
-
-        return $this->showAllPaginate($tenders);
-    }
-
-    public function getTenderProjectIdList($id) {
-
-        $tenders = Tenders::where('project_id',$id)->get();
-
-        foreach($tenders as $key =>$tender){
-            if($tender->tendersVersionLast()->status != TendersVersions::LICITACION_PUBLISH)
-                unset($tenders[$key]);
-        };
-        
-        return $this->showAllPaginate($tenders);
-    }
-
     
+    public function getChildCatProduct($lists){
+        
+        $array = [];
+        foreach($lists as $list) {
+            $childs = DB::select('call get_child_type_categoty("'.$list.'")');
+            $array[] = json_decode( json_encode($childs), true);
+        }
+        
+        return $array;
+    }
 
-    public function getTypeCompany($id)
+    public function getChildTypeProyect($lists){
+        
+        $array = [];
+        foreach($lists as $list) {
+            $childs = DB::select('call get_child_type_project("'.$list.'")');
+            $array[] = json_decode( json_encode($childs), true);
+        }
+        
+        return $array;
+    }
+
+    public function getTendersLastVersionPublish()
+    {
+        $tenders = TendersVersions::select(DB::raw('max(created_at), tenders_id'))
+            ->where('status',TendersVersions::LICITACION_PUBLISH)
+            ->groupBy('tenders_id')
+            ->pluck('tenders_id');
+
+        return $tenders;
+    }
+
+    public function getTypeCompanyId($id)
     {
         $user = $this->validateUser();
 
@@ -189,5 +293,43 @@ class SearchItemController extends ApiController
         return $array;
     }
 
-    
+    public function getProjectIdList($id)
+    {
+        $childs = DB::select('call get_child_type_project("'.$id.'")');
+        return json_decode( json_encode($childs), true);
+    }
+
+    public function getTenderProjectIdList($id)
+    {
+        $tenders     = $this->getTendersLastVersionPublish();
+
+        $tenders    = Tenders::whereIn('id',$tenders)
+            ->where('project_id',$id)
+            ->get();
+        
+        return $this->showAllPaginate($tenders);
+    }
+
+    public function getCategoryIdList($id)
+    {
+        $childs = DB::select('call get_child_type_categoty("'.$id.'")');
+        return json_decode( json_encode($childs), true);
+    }
+
+    public function getTenderCategoryIdList($id)
+    {
+        $tenders = $this->getTendersLastVersionPublish();
+
+        $tenders = CategoryTenders::select('tenders.*')
+            ->where('category_tenders.category_id', $id)
+            ->join('tenders','category_tenders.tenders_id','=','tenders.id')
+            ->whereIn('tenders.id', $tenders)
+            ->distinct('tenders.id')
+            ->pluck('tenders.id');
+
+        $tenders = Tenders::whereIn('id',$tenders)->get();
+
+        return $this->showAllPaginate($tenders);
+    }
+      
 }
