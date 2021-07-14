@@ -1,4 +1,5 @@
 drop procedure if exists get_child_type_entity;
+DELIMITER $$
 create procedure get_child_type_entity(in in_id int)
 begin
   set @list     = in_id;
@@ -17,4 +18,4 @@ begin
   set @sql = replace(@sql, '{list}', @list);
   prepare stmt from @sql;
   execute stmt;
-end
+END;$$

@@ -1,4 +1,5 @@
 drop procedure if exists get_child_type_project;
+DELIMITER $$
 create procedure get_child_type_project(in in_id int)
 begin
   set @list     = in_id;
@@ -39,6 +40,6 @@ begin
   set @sql = replace(@sql, '{list}', @list);
   prepare stmt from @sql;
   execute stmt;
-end
+END;$$
 
 --call get_child_type_project(33)
