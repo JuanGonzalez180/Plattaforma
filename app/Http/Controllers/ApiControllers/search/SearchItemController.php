@@ -28,6 +28,114 @@ class SearchItemController extends ApiController
         return $this->user;
     }
 
+    public function search(Request $request)
+    {
+        $user       = $this->validateUser();
+        $type_user  = $user->userType();
+
+        if( !isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id))
+        {
+            if($type_user == 'demanda'){
+                $result['product_list'] = $this->getAllProducts();
+            }
+            if($type_user == 'oferta'){
+                $result['tenders_list'] = $this->getAllTenders();
+            }
+        }
+        else if( isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id))
+        {
+            // if($type_user == 'demanda'){
+            //     // devolver compañias de ofertas del id
+            // }
+            // if($type_user == 'oferta'){
+            //     // devolver compañias demanda de id
+            // }
+            $result['company_list']     = $this->getTypeCompanyId($request->comunity_id);
+        }
+        else if( isset($request->comunity_id) && isset($request->type_project) && !isset($request->category_id))
+        {
+            if(($type_user == 'oferta') && isset($request->comunity_id) ){
+                // devolver proyectos con el tipo de proyecto seleccionado y pertenscan a ese cominuy_id
+                $result['project_list'] = $this->getProjects($request->type_project , $request->comunity_id);//pendiente 
+            } else {
+                // devolver proyectos con el tipo de proyectos seleccionados.
+                $result['project_list'] = $this->getProjects($request->type_project , null);
+            }
+        }
+        else if(isset($request->type_project) && isset($request->category_id))
+        {
+            if(($type_user == 'oferta') && isset($request->comunity_id) ){
+                // devolver las licitaciones que pertenecan a type_project,a la categoria de la licitacion y al tipo de entidad
+            } else {
+                // devolver las licitaciones que pertenecan a type_project y a la categoria de la licitacion.
+            }
+        }
+        // else if(!isset($request->type_project) && isset($request->category_id))
+        // {
+        //     if($type_user == 'demanda' && isset($request->comunity_id))
+        //     {
+        //         // devolver productos de la categoria que pertenescan a ese tipo de entidad
+        //     }
+        //     else if($type_user == 'demanda')
+        //     {
+        //         // devolver productos de la categoria
+        //     }
+        //     if($type_user == 'oferta' && isset($request->comunity_id))
+        //     {
+        //         // devolver licitaciones de la categoria que pertenescan a ese tipo de entidad
+        //     }
+        //     else if($type_user == 'oferta')
+        //     {
+        //         // devolver licitaciones de la categoria
+        //     }
+        // }
+        return $result;
+    }
+
+    public function getAllProducts()
+    {
+        $products = Products::where('status', Products::PRODUCT_PUBLISH)
+                                        ->orderBy('id', 'desc')
+                                        ->get();
+
+        foreach( $products as $key => $product ){
+            $product->user['url'] = $product->user->image ? url( 'storage/' . $product->user->image->url ) : null;
+            $product->company;
+            $product->company->image;
+        }
+
+        return $this->showAllPaginate($products);
+    }
+
+    public function getAllTenders()
+    {
+        $tenderLastVersionsPublish  = $this->getTendersLastVersionPublish();
+        $tenders                    = Tenders::WhereIn('id', $tenderLastVersionsPublish)->get();
+
+        return $this->showAllPaginate($tenders); 
+    }
+
+    public function getProjects($type_project_id, $comunity_id)
+    {
+        $type_project_ids = TypeProject::select('projects_type_project.projects_id')
+            ->where('type_projects.id',$type_project_id)
+            ->where('type_projects.status',TypeProject::TYPEPROJECT_PUBLISH)
+            ->join('projects_type_project','projects_type_project.type_project_id','=','type_projects.id')
+            ->distinct('projects_type_project.projects_id')
+            ->pluck('projects_type_project.projects_id');
+        
+        $projects = Projects::whereIn('id', $type_project_ids)
+            ->where('visible', Projects::PROJECTS_VISIBLE);
+
+        if(isset($comunity_id)){
+            $projects = $projects->where('visible', Projects::PROJECTS_VISIBLE);
+        }
+
+        $projects = $projects->get();
+
+        return $this->showAllPaginate($projects); 
+    }
+
     public function index(Request $request)
     {
         $user       = $this->validateUser();
