@@ -44,25 +44,20 @@ class SearchItemController extends ApiController
         }
         else if( isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id))
         {
-            // if($type_user == 'demanda'){
-            //     // devolver compañias de ofertas del id
-            // }
-            // if($type_user == 'oferta'){
-            //     // devolver compañias demanda de id
-            // }
             $result['company_list']     = $this->getTypeCompanyId($request->comunity_id);
         }
         else if( isset($request->comunity_id) && isset($request->type_project) && !isset($request->category_id))
         {
-            if(($type_user == 'oferta') && isset($request->comunity_id) ){
+            if(($type_user == 'oferta') && isset($request->comunity_id))
+            {
                 // devolver proyectos con el tipo de proyecto seleccionado y pertenscan a ese cominuy_id
-                $result['project_list'] = $this->getProjects($request->type_project , $request->comunity_id);//pendiente 
+                $result['project_list'] = $this->getProjects($request->type_project , $request->comunity_id);
             } else {
                 // devolver proyectos con el tipo de proyectos seleccionados.
                 $result['project_list'] = $this->getProjects($request->type_project , null);
             }
         }
-        else if(isset($request->type_project) && isset($request->category_id))
+        else if(!isset($request->comunity_id) && isset($request->type_project) && isset($request->category_id))
         {
             if(($type_user == 'oferta') && isset($request->comunity_id) ){
                 // devolver las licitaciones que pertenecan a type_project,a la categoria de la licitacion y al tipo de entidad
@@ -127,15 +122,23 @@ class SearchItemController extends ApiController
         $projects = Projects::whereIn('id', $type_project_ids)
             ->where('visible', Projects::PROJECTS_VISIBLE);
 
-        if(isset($comunity_id)){
-            $projects = $projects->where('visible', Projects::PROJECTS_VISIBLE);
+        if(isset($comunity_id))
+        {
+            $companies = Company::select('companies.id')
+            ->where('companies.status',Company::COMPANY_APPROVED)
+            ->join('types_entities','types_entities.id','=','companies.type_entity_id')
+            ->where('companies.type_entity_id', $comunity_id)
+            ->distinct('companies.id')
+            ->pluck('companies.id');
+
+            $projects = $projects->whereIn('company_id', $companies);
         }
 
         $projects = $projects->get();
 
         return $this->showAllPaginate($projects); 
     }
-
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------
     public function index(Request $request)
     {
         $user       = $this->validateUser();
