@@ -283,6 +283,7 @@ class SearchItemController extends ApiController
 
         foreach($types_entities as $type_entity) {
             $array[] = array(
+                "id"        => $type_entity->id,
                 "name"      => $type_entity->name,
                 "slug"      => $type_entity->slug,
                 "status"    => $type_entity->status,
@@ -301,7 +302,7 @@ class SearchItemController extends ApiController
 
     public function getTenderProjectIdList($id)
     {
-        $tenders     = $this->getTendersLastVersionPublish();
+        $tenders    = $this->getTendersLastVersionPublish();
 
         $tenders    = Tenders::whereIn('id',$tenders)
             ->where('project_id',$id)
