@@ -380,7 +380,7 @@ class SearchItemController extends ApiController
 
         $type_slug = ($user->userType() == 'demanda')? 'oferta' : 'demanda';
         
-        $types_entities = Company::select('types_entities.*')
+        $companies = Company::select('companies.*')
             ->where('companies.status',Company::COMPANY_APPROVED)
             ->join('types_entities', 'companies.type_entity_id', '=', 'types_entities.id')
             ->where('types_entities.id', $id)
@@ -391,20 +391,40 @@ class SearchItemController extends ApiController
             ->orderBy('name','ASC')
             ->get();
 
-        $array = [];
-
-        foreach($types_entities as $type_entity) {
-            $array[] = array(
-                "id"        => $type_entity->id,
-                "name"      => $type_entity->name,
-                "slug"      => $type_entity->slug,
-                "status"    => $type_entity->status,
-                "entities"  => DB::select('call get_child_type_entity("'.$type_entity->id.'")')
-            );
-        }
-
-        return $array;
+        return $this->showAllPaginate($companies);
     }
+
+    // public function getTypeCompanyId($id)
+    // {
+    //     $user = $this->validateUser();
+
+    //     $type_slug = ($user->userType() == 'demanda')? 'oferta' : 'demanda';
+        
+    //     $types_entities = Company::select('types_entities.*')
+    //         ->where('companies.status',Company::COMPANY_APPROVED)
+    //         ->join('types_entities', 'companies.type_entity_id', '=', 'types_entities.id')
+    //         ->where('types_entities.id', $id)
+    //         ->where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
+    //         ->join('types', 'types_entities.type_id', '=', 'types.id')
+    //         ->where('types.slug', $type_slug)
+    //         ->distinct('types_entities.id')
+    //         ->orderBy('name','ASC')
+    //         ->get();
+
+    //     $array = [];
+
+    //     foreach($types_entities as $type_entity) {
+    //         $array[] = array(
+    //             "id"        => $type_entity->id,
+    //             "name"      => $type_entity->name,
+    //             "slug"      => $type_entity->slug,
+    //             "status"    => $type_entity->status,
+    //             "entities"  => DB::select('call get_child_type_entity("'.$type_entity->id.'")')
+    //         );
+    //     }
+
+    //     return $array;
+    // }
 
     public function getProjectIdList($id)
     {
