@@ -96,6 +96,7 @@ class SearchItemController extends ApiController
 
         foreach($types_entities as $type_entity) {
             $array[] = array(
+                "id"        => $type_entity->id,
                 "name"      => $type_entity->name,
                 "slug"      => $type_entity->slug,
                 "status"    => $type_entity->status,
