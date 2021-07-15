@@ -387,8 +387,8 @@ class SearchItemController extends ApiController
             ->where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
             ->join('types', 'types_entities.type_id', '=', 'types.id')
             ->where('types.slug', $type_slug)
-            ->distinct('types_entities.id')
-            ->orderBy('name','ASC')
+            ->distinct('companies.id')
+            ->orderBy('companies.name','ASC')
             ->get();
 
         return $this->showAllPaginate($companies);
