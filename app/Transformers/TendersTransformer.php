@@ -53,7 +53,8 @@ class TendersTransformer extends TransformerAbstract
             'hour'=> (string)$tender->hour,
             'user'=> $tender->user,
             'tendersVersionLast'=> $tender->tendersVersionLast(),
-            'tendersVersionLastPublish'=> $tender->tendersVersion,
+            'tendersList'=> $tender->tendersVersion,
+            'tendersVersionLastPublish'=> $tender->tendersVersionLastPublish(),
             'tendersVersionCount'=> count($tender->tendersVersion),
         ];
     }
