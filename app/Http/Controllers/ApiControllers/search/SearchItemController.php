@@ -61,25 +61,25 @@ class SearchItemController extends ApiController
                 $result['tender_list'] = $this->getAllTenderList($request->type_project ,$request->category_id, null);
             }
         }
-        // else if(!isset($request->type_project) && isset($request->category_id))
-        // {
-        //     if($type_user == 'demanda' && isset($request->comunity_id))
-        //     {
-        //         // devolver productos de la categoria que pertenescan a ese tipo de entidad
-        //     }
-        //     else if($type_user == 'demanda')
-        //     {
-        //         // devolver productos de la categoria
-        //     }
-        //     if($type_user == 'oferta' && isset($request->comunity_id))
-        //     {
-        //         // devolver licitaciones de la categoria que pertenescan a ese tipo de entidad
-        //     }
-        //     else if($type_user == 'oferta')
-        //     {
-        //         // devolver licitaciones de la categoria
-        //     }
-        // }
+        else if(!isset($request->type_project) && isset($request->category_id))
+        {
+            if($type_user == 'demanda' && isset($request->comunity_id))
+            {
+                // devolver productos de la categoria que pertenescan a ese tipo de entidad
+            }
+            else if($type_user == 'demanda')
+            {
+                // devolver productos de la categoria
+            }
+            if($type_user == 'oferta' && isset($request->comunity_id))
+            {
+                // devolver licitaciones de la categoria que pertenescan a ese tipo de entidad
+            }
+            else if($type_user == 'oferta')
+            {
+                $result = $this->getTenders($request->category_id , null);
+            }
+        }
         return $result;
     }
 
@@ -130,12 +130,14 @@ class SearchItemController extends ApiController
         return $type_project_ids;
     }
 
+    
+
 
     public function getProjects($type_project_id, $comunity_id)
     {
-        $type_project_ids = $this->getTypeProjectToProjectIds($type_project_id);
+        $project_ids = $this->getTypeProjectToProjectIds($type_project_id);
         
-        $projects = Projects::whereIn('id', $type_project_ids)
+        $projects = Projects::whereIn('id', $project_ids)
             ->where('visible', Projects::PROJECTS_VISIBLE);
 
         if(isset($comunity_id))
@@ -153,6 +155,35 @@ class SearchItemController extends ApiController
         $projects = $projects->get();
 
         return $this->showAllPaginate($projects); 
+    }
+
+    public function getCategoriesTendersIds($category_id)
+    {
+        $childs = $this->getCategoryIdList($category_id);
+
+        $categoryChildIds = array_column($childs, 'id');
+
+        $categories_ids = Category::select('category_tenders.category_id')
+            ->whereIn('categories.id',$categoryChildIds)
+            ->where('categories.status',Category::CATEGORY_PUBLISH)
+            ->join('category_tenders','category_tenders.category_id','=','categories.id')
+            ->distinct('category_tenders.category_id')
+            ->pluck('category_tenders.category_id');
+
+        return $categories_ids;
+    }
+
+    public function getTenders($category_id)
+    {
+        $tenders_id     = $this->getCategoriesTendersIds($category_id);
+        $tendersPublish = $this->getTendersLastVersionPublish();
+
+        // $tenders_ids    = array_merge($tenders_id, $tendersPublish);
+
+        $tenders   = Tenders::whereIn('id',$tendersPublish)->whereIn('id',$tenders_id)->get();
+
+        return $this->showAllPaginate($tenders); 
+
     }
     // ---------------------------------------------------------------------------------------------------------------------------------------------------
     public function index(Request $request)
