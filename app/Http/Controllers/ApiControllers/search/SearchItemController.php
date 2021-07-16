@@ -70,6 +70,7 @@ class SearchItemController extends ApiController
             else if($type_user == 'demanda')
             {
                 // devolver productos de la categoria
+                $result = $this->getProducts($request->category_id , null);
             }
             if($type_user == 'oferta' && isset($request->comunity_id))
             {
@@ -130,9 +131,6 @@ class SearchItemController extends ApiController
         return $type_project_ids;
     }
 
-    
-
-
     public function getProjects($type_project_id, $comunity_id)
     {
         $project_ids = $this->getTypeProjectToProjectIds($type_project_id);
@@ -183,6 +181,36 @@ class SearchItemController extends ApiController
         return $this->showAllPaginate($tenders); 
 
     }
+
+    public function getCategoriesProductsIds($category_id)
+    {
+        $childs = $this->getCategoryIdList($category_id);
+
+        $categoryChildIds = array_column($childs, 'id');
+
+        $categories_ids = Category::select('category_products.products_id')
+            ->whereIn('categories.id',$categoryChildIds)
+            ->where('categories.status',Category::CATEGORY_PUBLISH)
+            ->join('category_products','category_products.category_id','=','categories.id')
+            ->distinct('category_products.products_id')
+            ->pluck('category_products.products_id');
+
+        return $categories_ids;
+    }
+
+    public function getProducts($category_id)
+    {
+        $products_id     = $this->getCategoriesProductsIds($category_id);
+
+        $products = Products::whereIn('id', $products_id)
+            ->where('status', Products::PRODUCT_PUBLISH);
+
+        $products = $products->get();
+
+        return $this->showAllPaginate($products); 
+
+    }
+
     // ---------------------------------------------------------------------------------------------------------------------------------------------------
     public function index(Request $request)
     {
