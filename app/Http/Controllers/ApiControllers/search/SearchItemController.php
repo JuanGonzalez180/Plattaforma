@@ -70,7 +70,7 @@ class SearchItemController extends ApiController
             else if($type_user == 'demanda')
             {
                 // devolver productos de la categoria
-                $result = $this->getProducts($request->category_id , null);
+                $result = $this->getProducts($request->category_id , null); //pruebaf
             }
             if($type_user == 'oferta' && isset($request->comunity_id))
             {
