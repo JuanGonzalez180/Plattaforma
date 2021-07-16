@@ -32,27 +32,33 @@ class SearchItemController extends ApiController
     {
         $user       = $this->validateUser();
         $type_user  = $user->userType();
+        
 
         if( !isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id))
         {
-            $result = ($type_user == 'demanda') ? $this->getAllProducts() : $this->getAllTenders();
+            $result     = ($type_user == 'demanda') ? $this->getAllProducts() : $this->getAllTenders();
         }
         else if( isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id))
         {
             $result     = $this->getTypeCompanyId($request->comunity_id);
         }
-        else if( isset($request->comunity_id) && isset($request->type_project) && !isset($request->category_id))
+        else if( isset($request->type_project) && !isset($request->category_id))
         {
-            $result = (($type_user == 'oferta') && isset($request->comunity_id))
+            $result     = (($type_user == 'oferta') && isset($request->comunity_id))
                 ? $this->getProjects($request->type_project , $request->comunity_id)
                 : $this->getProjects($request->type_project , null);
         }
-        else if(!isset($request->comunity_id) && isset($request->type_project) && isset($request->category_id))
-        {
-            if(($type_user == 'oferta') && isset($request->comunity_id) ){
-                // devolver las licitaciones que pertenecan a type_project,a la categoria de la licitacion y al tipo de entidad
-            } else {
+        else if(isset($request->comunity_id) && isset($request->type_project) && isset($request->category_id))
+        {   
+            if(($type_user == 'oferta') && isset($request->comunity_id) )
+            {
+                // devolver las licitaciones que pertenecan a type_project, a la categoria de la licitacion y al tipo de entidad
+                $result['tender_list'] = $this->getAllTenderList($request->type_project ,$request->category_id, $request->comunity_id);
+            }
+            else
+            {
                 // devolver las licitaciones que pertenecan a type_project y a la categoria de la licitacion.
+                $result['tender_list'] = $this->getAllTenderList($request->type_project ,$request->category_id, null);
             }
         }
         // else if(!isset($request->type_project) && isset($request->category_id))
@@ -75,6 +81,14 @@ class SearchItemController extends ApiController
         //     }
         // }
         return $result;
+    }
+
+    public function getAllTenderList($type_project_id, $category_id, $comunity_id)
+    {
+        
+        $type_project_ids           = $this->getTypeProjectToProjectIds($type_project_id);
+        $tenderLastVersionsPublish  = $this->getTendersLastVersionPublish();
+
     }
 
     public function getAllProducts()
@@ -100,14 +114,26 @@ class SearchItemController extends ApiController
         return $this->showAllPaginate($tenders); 
     }
 
-    public function getProjects($type_project_id, $comunity_id)
+    public function getTypeProjectToProjectIds($type_project_id)
     {
+        $childs = $this->getProjectIdList($type_project_id);
+
+        $projectChildIds = array_column($childs, 'id');
+
         $type_project_ids = TypeProject::select('projects_type_project.projects_id')
-            ->where('type_projects.id',$type_project_id)
+            ->whereIn('type_projects.id',$projectChildIds)
             ->where('type_projects.status',TypeProject::TYPEPROJECT_PUBLISH)
             ->join('projects_type_project','projects_type_project.type_project_id','=','type_projects.id')
             ->distinct('projects_type_project.projects_id')
             ->pluck('projects_type_project.projects_id');
+
+        return $type_project_ids;
+    }
+
+
+    public function getProjects($type_project_id, $comunity_id)
+    {
+        $type_project_ids = $this->getTypeProjectToProjectIds($type_project_id);
         
         $projects = Projects::whereIn('id', $type_project_ids)
             ->where('visible', Projects::PROJECTS_VISIBLE);

@@ -32,31 +32,18 @@ class SearchParameterController extends ApiController
 
         if( !isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id))
         {
-            if($type_user == 'demanda')
-            {
-                $result['product_list'] = $this->getAllProducts();
-            }
-            if($type_user == 'oferta')
-            {
-                $result['tenders_list'] = $this->getAllTenders();
-            }
+            $result     = ($type_user == 'demanda') ? $this->getAllProducts() : $this->getAllTenders();
         }
         else if( isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id))
         {
-            $result['company_list']     = $this->getTypeCompanyId($request->comunity_id);
+            $result     = $this->getTypeCompanyId($request->comunity_id);
         }
         else if( isset($request->comunity_id) && isset($request->type_project) && !isset($request->category_id))
         {
-            if(($type_user == 'oferta') && isset($request->comunity_id))
-            {
-                // devolver proyectos con el tipo de proyecto seleccionado y pertenscan a ese cominuy_id
-                $result['project_list'] = $this->getProjects($request->type_project , $request->comunity_id);
-            }
-            else
-            {
-                // devolver proyectos con el tipo de proyectos seleccionados.
-                $result['project_list'] = $this->getProjects($request->type_project , null);
-            }
+            $result     = (($type_user == 'oferta') && isset($request->comunity_id))
+                ? $this->getProjects($request->type_project , $request->comunity_id)
+                : $this->getProjects($request->type_project , null);
+
         }
         else if(!isset($request->comunity_id) && isset($request->type_project) && isset($request->category_id))
         {
