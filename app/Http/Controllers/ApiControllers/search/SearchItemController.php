@@ -163,12 +163,12 @@ class SearchItemController extends ApiController
 
         $categoryChildIds = array_column($childs, 'id');
 
-        $categories_ids = Category::select('category_tenders.category_id')
+        $categories_ids = Category::select('category_tenders.tenders_id')
             ->whereIn('categories.id',$categoryChildIds)
             ->where('categories.status',Category::CATEGORY_PUBLISH)
             ->join('category_tenders','category_tenders.category_id','=','categories.id')
-            ->distinct('category_tenders.category_id')
-            ->pluck('category_tenders.category_id');
+            ->distinct('category_tenders.tenders_id')
+            ->pluck('category_tenders.tenders_id');
 
         return $categories_ids;
     }
@@ -177,8 +177,6 @@ class SearchItemController extends ApiController
     {
         $tenders_id     = $this->getCategoriesTendersIds($category_id);
         $tendersPublish = $this->getTendersLastVersionPublish();
-
-        // $tenders_ids    = array_merge($tenders_id, $tendersPublish);
 
         $tenders   = Tenders::whereIn('id',$tendersPublish)->whereIn('id',$tenders_id)->get();
 
