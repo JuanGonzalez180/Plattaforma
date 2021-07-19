@@ -98,14 +98,15 @@ class SearchItemController extends ApiController
     public function getAllTenderList($type_project_id, $category_id, $comunity_id)
     {
         // tender
-        $tenderLastVersionsPublish  = $this->getTendersLastVersionPublish();
-        //projects
-        $projectsIds    = $this->getTypeProjectToProjectIds($type_project_id);
-        //category tenders
-        $tendersIds     = $this->getCategoriesTendersIds($category_id);
+        $tendersPublish  = $this->getTendersLastVersionPublish(); // ids de ultimas licitaciones en estado publicado
+        $tendersCategory = $this->getCategoriesTendersIds($category_id); // ids de licitaciones relacionadas a cierta categoria/s
 
-        $tender_ids     = array_unique(array_merge(json_decode($tenderLastVersionsPublish), json_decode($tendersIds)));
-        $tenders        = Tenders::WhereIn('id', $tender_ids);
+        $tender_ids      = array_unique(array_merge(json_decode($tendersPublish), json_decode($tendersCategory)));
+        $tenders         = Tenders::WhereIn('id', $tender_ids);
+        
+        //projects
+        $projectsIds     = $this->getTypeProjectToProjectIds($type_project_id);
+        $tenders         = $tenders->WhereIn('project_id', $projectsIds);
 
         //entities to company
         if(isset($comunity_id)){
@@ -232,12 +233,12 @@ class SearchItemController extends ApiController
 
     public function getTenders($category_id, $comunity_id)
     {
-        $tendersCategory = $this->getCategoriesTendersIds($category_id);
-        $tendersPublish  = $this->getTendersLastVersionPublish();
+        $tendersPublish  = $this->getTendersLastVersionPublish(); // ids de ultimas licitaciones en estado publicado
+        $tendersCategory = $this->getCategoriesTendersIds($category_id); // ids de licitaciones relacionadas a cierta categoria/s
 
         // une ambas cadenas de arrays de tendersCategory y de tendersPublish, quita los ids repetidos y deja uno solo de cada uno
-        $tenders         = array_unique(array_merge(json_decode($tendersCategory), json_decode($tendersPublish)));
-        $tenders         = Tenders::whereIn('id',$tenders)->get();
+        $tender_ids      = array_unique(array_merge(json_decode($tendersCategory), json_decode($tendersPublish)));
+        $tenders         = Tenders::whereIn('id',$tender_ids)->get();
 
         if(isset($comunity_id))
         {
