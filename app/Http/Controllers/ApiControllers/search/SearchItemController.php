@@ -243,7 +243,6 @@ class SearchItemController extends ApiController
         {
             $companiesIds   = $this->getEntityByCompanies($comunity_id);
             $tenders        = $tenders->whereIn('company_id', $companiesIds);
-
         };
 
         return $this->showAllPaginate($tenders); 
