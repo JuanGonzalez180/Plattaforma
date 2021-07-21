@@ -33,43 +33,26 @@ class SearchItemController extends ApiController
         $user       = $this->validateUser();
         $type_user  = $user->userType();
         
+        $result = [];
+
+        // Si no viene ningún FILTRO
         if( !isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id))
         {
-            $result     = ($type_user == 'demanda') ? $this->getAllProducts() : $this->getAllTenders();
+            $result = ($type_user == 'demanda') ? $this->getAllProducts() : $this->getAllTenders();
         }
+        // Si vienen los 3 FILTROS
+        else if(isset($request->comunity_id) && isset($request->type_project) && isset($request->category_id))
+        {
+            // devolver las licitaciones que pertenecan a type_project, a la categoria de la licitacion y al tipo de entidad
+            $result = $this->getAllTenderList($request->type_project ,$request->category_id, $request->comunity_id);
+        }
+        // Si solo viene Entidad
         else if( isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id))
         {
-            $result     = $this->getTypeCompanyId($request->comunity_id);
+            $result = $this->getTypeCompanyId($request->comunity_id);
         }
-        else if( isset($request->type_project) && !isset($request->category_id))
-        {
-            if($request->type_consult == 'tenders')
-            {
-                $result     = (($type_user == 'oferta') && isset($request->comunity_id))
-                    ? $this->getTendersByProjects($request->type_project , $request->comunity_id)
-                    : $this->getTendersByProjects($request->type_project , null);
-            } else {
-
-                $result     = (($type_user == 'oferta') && isset($request->comunity_id))
-                    ? $this->getProjects($request->type_project , $request->comunity_id)
-                    : $this->getProjects($request->type_project , null);
-            }
-
-        }
-        else if(isset($request->comunity_id) && isset($request->type_project) && isset($request->category_id))
-        {   
-            if(($type_user == 'oferta') && isset($request->comunity_id) )
-            {
-                // devolver las licitaciones que pertenecan a type_project, a la categoria de la licitacion y al tipo de entidad
-                $result   =   $this->getAllTenderList($request->type_project ,$request->category_id, $request->comunity_id);
-            }
-            else
-            {
-                // devolver las licitaciones que pertenecan a type_project y a la categoria de la licitacion.
-                $result   =   $this->getAllTenderList($request->type_project ,$request->category_id, null);
-            }
-        }
-        else if(!isset($request->type_project) && isset($request->category_id))
+        // Si viene categoría y no viene tipo de proyecto con o sin Comunidad
+        else if( !isset($request->type_project) && isset($request->category_id))
         {
             if($type_user == 'demanda' && isset($request->comunity_id))
             {
@@ -92,6 +75,26 @@ class SearchItemController extends ApiController
                 $result = $this->getTenders($request->category_id , null);
             }
         }
+        // Si viene tipo de proyecto y no viene categorías con o sin Comunidad
+        else if( isset($request->type_project) && !isset($request->category_id))
+        {
+            if($request->type_consult == 'tenders')
+            {
+                $result     = (($type_user == 'oferta') && isset($request->comunity_id))
+                    ? $this->getTendersByProjects($request->type_project , $request->comunity_id)
+                    : $this->getTendersByProjects($request->type_project , null);
+            } else {
+                $result     = (($type_user == 'oferta') && isset($request->comunity_id))
+                    ? $this->getProjects($request->type_project , $request->comunity_id)
+                    : $this->getProjects($request->type_project , null);
+            }
+        }
+        // Si viene Tipo de proyecto y Categoria
+        else if(!isset($request->comunity_id) && isset($request->type_project) && isset($request->category_id)){
+            // devolver las licitaciones que pertenecan a type_project y a la categoria de la licitacion.
+            $result = $this->getAllTenderList($request->type_project ,$request->category_id, null);
+        }
+
         return $result;
     }
 
@@ -101,8 +104,13 @@ class SearchItemController extends ApiController
         $tendersPublish  = $this->getTendersLastVersionPublish(); // ids de ultimas licitaciones en estado publicado
         $tendersCategory = $this->getCategoriesTendersIds($category_id); // ids de licitaciones relacionadas a cierta categoria/s
 
-        $tender_ids      = array_unique(array_merge(json_decode($tendersPublish), json_decode($tendersCategory)));
-        $tenders         = Tenders::WhereIn('id', $tender_ids);
+        // $tender_ids      = array_unique(array_merge(json_decode($tendersPublish), json_decode($tendersCategory)));
+        $tender_ids = [];
+        foreach ($tendersCategory as $key => $id) {
+            if( in_array( $id, json_decode($tendersPublish) ) )
+                $tender_ids[] = $id;
+        }
+        $tenders = Tenders::WhereIn('id', $tender_ids);
         
         //projects
         $projectsIds     = $this->getTypeProjectToProjectIds($type_project_id);
@@ -116,7 +124,7 @@ class SearchItemController extends ApiController
 
         $tenders = $tenders->get();
 
-        return $tenders;
+        return $this->showAllPaginate($tenders);
     }
 
     public function getAllProducts()
@@ -237,7 +245,13 @@ class SearchItemController extends ApiController
         $tendersCategory = $this->getCategoriesTendersIds($category_id); // ids de licitaciones relacionadas a cierta categoria/s
 
         // une ambas cadenas de arrays de tendersCategory y de tendersPublish, quita los ids repetidos y deja uno solo de cada uno
-        $tender_ids      = array_unique(array_merge(json_decode($tendersCategory), json_decode($tendersPublish)));
+        // $tender_ids      = array_unique(array_merge(json_decode($tendersCategory), json_decode($tendersPublish)));
+        $tender_ids = [];
+        foreach ($tendersCategory as $key => $id) {
+            if( in_array( $id, json_decode($tendersPublish) ) )
+                $tender_ids[] = $id;
+        }
+
         $tenders         = Tenders::whereIn('id',$tender_ids)->get();
 
         if(isset($comunity_id))
