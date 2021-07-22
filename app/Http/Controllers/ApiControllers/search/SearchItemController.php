@@ -110,6 +110,7 @@ class SearchItemController extends ApiController
             if( in_array( $id, json_decode($tendersPublish) ) )
                 $tender_ids[] = $id;
         }
+
         $tenders = Tenders::WhereIn('id', $tender_ids);
         
         //projects
@@ -122,6 +123,7 @@ class SearchItemController extends ApiController
             $tenders        = $tenders->whereIn('company_id', $companiesIds);
         }
 
+        
         $tenders = $tenders->get();
 
         return $this->showAllPaginate($tenders);
@@ -438,11 +440,11 @@ class SearchItemController extends ApiController
         $tenders = $this->getTendersLastVersionPublish();
         
         $categoryTenderPublish = CategoryTenders::select('category_id')
-        ->whereIn('tenders_id', $tenders)
+            ->whereIn('tenders_id', $tenders)
             ->distinct('category_id')
             ->pluck('category_id');
             
-            return $categoryTenderPublish;
+        return $categoryTenderPublish;
     }
 
     public function getArrCatProductPublish($ids) {
@@ -524,10 +526,48 @@ class SearchItemController extends ApiController
 
     public function getTendersLastVersionPublish()
     {
-        $tenders = TendersVersions::select(DB::raw('max(created_at), tenders_id'))
-            ->where('status',TendersVersions::LICITACION_PUBLISH)
-            ->groupBy('tenders_id')
-            ->pluck('tenders_id');
+
+        $tenders = DB::table('tenders_versions as a')
+            ->select(DB::raw('max(a.created_at), a.tenders_id'))
+            ->where('a.status',TendersVersions::LICITACION_PUBLISH)
+            ->where((function($query)
+            {
+                $query->select(DB::raw('COUNT(*)'))
+                      ->from('tenders_versions as b')
+                      ->where(function($q){
+                          $q->where('b.status', TendersVersions::LICITACION_FINISHED)
+                          ->orWhere('b.status', TendersVersions::LICITACION_CLOSED);
+                      })
+                      ->where('b.tenders_id', 'a.tenders_id')
+                      ->get();
+                      
+            }), '=', 0)
+            ->groupBy('a.tenders_id');
+            // ->pluck('a.tenders_id');
+
+        // $tenders = DB::select(DB::raw("select max(a.created_at), a.tenders_id 
+        // from `tenders_versions` as `a` 
+        // where `a`.`status` = '".TendersVersions::LICITACION_PUBLISH."' 
+        // and (select COUNT(*) from `tenders_versions` as `b` where (`b`.`status` = '".TendersVersions::LICITACION_FINISHED."' or `b`.`status` = '".TendersVersions::LICITACION_CLOSED."') and `b`.`tenders_id` = a.tenders_id) = 0 
+        // group by `a`.`tenders_id`;"));
+
+
+        
+        // $tenders = array_column($tenders, 'tenders_id');
+
+
+
+
+        $sql = $tenders->toSql();
+
+        var_dump($sql);
+        
+        $bindings = $tenders->getBindings();
+        var_dump($bindings);
+
+        die;
+
+        // var_dump($tenders);
 
         return $tenders;
     }
