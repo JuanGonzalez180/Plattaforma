@@ -43,7 +43,8 @@ class Company extends Model
         'country_code',
         'web',
         'status',
-        'user_id'
+        'user_id',
+        'slug'
     ];
 
     /**
