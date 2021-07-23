@@ -395,18 +395,19 @@ class SearchItemController extends ApiController
             
             $categoryItem = CategoryTenders::select('category_id')
                 ->whereIn('tenders_id', $tenders);
-               
+            
+            if( isset($comunity_id) || isset($type_project) ){
+                $categoryItem = $categoryItem->join('tenders', 'tenders.id', '=', 'category_tenders.tenders_id' );
+            }
+
             if( isset($comunity_id) ){
-                $categoryItem = $categoryItem->join('tenders', 'tenders.id', '=', 'category_tenders.tenders_id' )
-                                        ->join('companies', 'companies.id', '=', 'tenders.company_id' )
+                $categoryItem = $categoryItem->join('companies', 'companies.id', '=', 'tenders.company_id' )
                                         ->where('companies.type_entity_id', '=', $comunity_id);
             }
             
             if( isset($type_project) ){
                 $typesProjectsIds = $this->getArrTypeProjets( [$type_project] );
-
-                $categoryItem = $categoryItem->join('tenders', 'tenders.id', '=', 'category_tenders.tenders_id' )
-                            ->join('projects_type_project', 'projects_type_project.projects_id', '=', 'tenders.project_id')
+                $categoryItem = $categoryItem->join('projects_type_project', 'projects_type_project.projects_id', '=', 'tenders.project_id')
                             ->whereIn( 'projects_type_project.type_project_id', $typesProjectsIds );
             }
 
