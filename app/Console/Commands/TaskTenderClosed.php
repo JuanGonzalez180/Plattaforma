@@ -58,7 +58,6 @@ class TaskTenderClosed extends Command
             ->groupBy('a.tenders_id')
             ->pluck('a.tenders_id');
 
-
         $tenders = Tenders::whereIn('id',$tendersVersionLastPublish)->get();
 
         foreach($tenders as $tender) {
