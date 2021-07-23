@@ -16,6 +16,7 @@ use App\Models\CategoryTenders;
 use App\Models\TendersVersions;
 use App\Models\CategoryProducts;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class SearchItemController extends ApiController
@@ -526,48 +527,19 @@ class SearchItemController extends ApiController
 
     public function getTendersLastVersionPublish()
     {
-
         $tenders = DB::table('tenders_versions as a')
             ->select(DB::raw('max(a.created_at), a.tenders_id'))
             ->where('a.status',TendersVersions::LICITACION_PUBLISH)
             ->where((function($query)
             {
-                $query->select(DB::raw('COUNT(*)'))
-                      ->from('tenders_versions as b')
-                      ->where(function($q){
-                          $q->where('b.status', TendersVersions::LICITACION_FINISHED)
-                          ->orWhere('b.status', TendersVersions::LICITACION_CLOSED);
-                      })
-                      ->where('b.tenders_id', 'a.tenders_id')
-                      ->get();
-                      
+                $query->select(DB::raw("COUNT(*) from `tenders_versions` as `b` 
+                    where (`b`.`status` = '".TendersVersions::LICITACION_FINISHED."' 
+                    or `b`.`status` = '".TendersVersions::LICITACION_CLOSED."') 
+                    and `b`.`tenders_id` = a.tenders_id")
+                );
             }), '=', 0)
-            ->groupBy('a.tenders_id');
-            // ->pluck('a.tenders_id');
-
-        // $tenders = DB::select(DB::raw("select max(a.created_at), a.tenders_id 
-        // from `tenders_versions` as `a` 
-        // where `a`.`status` = '".TendersVersions::LICITACION_PUBLISH."' 
-        // and (select COUNT(*) from `tenders_versions` as `b` where (`b`.`status` = '".TendersVersions::LICITACION_FINISHED."' or `b`.`status` = '".TendersVersions::LICITACION_CLOSED."') and `b`.`tenders_id` = a.tenders_id) = 0 
-        // group by `a`.`tenders_id`;"));
-
-
-        
-        // $tenders = array_column($tenders, 'tenders_id');
-
-
-
-
-        $sql = $tenders->toSql();
-
-        var_dump($sql);
-        
-        $bindings = $tenders->getBindings();
-        var_dump($bindings);
-
-        die;
-
-        // var_dump($tenders);
+            ->groupBy('a.tenders_id')
+            ->pluck('a.tenders_id');
 
         return $tenders;
     }
