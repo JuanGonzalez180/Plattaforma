@@ -136,13 +136,14 @@ class CompanyController extends ApiController
                 'country_code' => $request['country_code'],
                 'web' => $request['web'],
                 'user_id' => $user['id'],
-                'slug' => Str::slug($request->name), 
+                'slug' => Str::slug($request['name']), 
             ];
+            
             
             try {
                 // Crear la compañia
                 $company = Company::create( $companyFields );
-
+                
                 // Ingresar País en una Compañía
                 $company->countries()->attach($request['country_backend']);
 
@@ -150,7 +151,7 @@ class CompanyController extends ApiController
             } catch (\Throwable $th) {
                 // Si existe algún error al generar la compañía
                 DB::rollBack();
-                $companyError = [ 'company' => 'Error, no se ha podido crear la compañia' ];
+                $companyError = [ 'company' => 'Error, no se ha podido crear la compañia'];
                 return $this->errorResponse( $companyError, 500 );
             }
         }
