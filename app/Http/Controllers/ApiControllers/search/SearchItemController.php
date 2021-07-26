@@ -485,17 +485,6 @@ class SearchItemController extends ApiController
 
         return $parents;
     }
-    
-    public function getChildCatProduct($lists){
-        
-        $array = [];
-        foreach($lists as $list) {
-            $childs = DB::select('call get_child_type_categoty("'.$list.'")');
-            $array[] = json_decode( json_encode($childs), true);
-        }
-        
-        return $array;
-    }
 
     public function getChildTypeProyect($lists){
         
@@ -576,6 +565,19 @@ class SearchItemController extends ApiController
         return json_decode( json_encode($childs), true);
     }
 
+    public function getProjectIdChildList($id)
+    {
+        $childs = DB::select('call get_child_type_project("'.$id.'")');
+
+        foreach ($childs as $key => $child)
+        {
+            if($id > $child->id)
+                unset($childs[$key]);
+        };
+
+        return json_decode( json_encode($childs), true);
+    }
+
     public function getTenderProjectIdList($id)
     {
         $tenders    = $this->getTendersLastVersionPublish();
@@ -590,6 +592,19 @@ class SearchItemController extends ApiController
     public function getCategoryIdList($id)
     {
         $childs = DB::select('call get_child_type_categoty("'.$id.'")');
+        return json_decode( json_encode($childs), true);
+    }
+
+    public function getCategoryIdChildList($id)
+    {
+        $childs = DB::select('call get_child_type_categoty("'.$id.'")');
+
+        foreach ($childs as $key => $child)
+        {
+            if($id > $child->id)
+                unset($childs[$key]);
+        };
+
         return json_decode( json_encode($childs), true);
     }
 

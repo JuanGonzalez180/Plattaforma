@@ -40,6 +40,7 @@ use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
 // Search
 use App\Http\Controllers\ApiControllers\search\SearchItemController;
+use App\Http\Controllers\ApiControllers\search\SearchLikeItemController;
 use App\Http\Controllers\ApiControllers\search\SearchParameterController;
 use App\Http\Controllers\ApiControllers\search\SearchBrandsController;
 use App\Http\Controllers\ApiControllers\search\SearchCompanyController;
@@ -238,6 +239,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('/search/brands', SearchBrandsController::class)->name('search-brands');
     Route::post('/search/companies', SearchCompanyController::class)->name('search-companies');
     Route::resource('/search/items', SearchItemController::class, ['only' => ['index']])->names('search-items');
+    Route::resource('/search/like/items', SearchLikeItemController::class, ['only' => ['index']])->names('search-like-items');
 
     // Route::resource('/search/items/parameters', SearchParameterController::class, ['only' => ['index']])->names('search-parameter');
     Route::get('/search/items/parameters', [SearchItemController::class, 'search'])->name('search-parameter');
