@@ -8,6 +8,10 @@ use App\Models\Company;
 use App\Models\Projects;
 use App\Models\TypeProject;
 use App\Models\TypesEntity;
+use App\Models\Tenders;
+use App\Models\Products;
+use App\Models\Tags;
+use App\Models\TendersVersions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiControllers\ApiController;
@@ -47,16 +51,35 @@ class SearchLikeItemController extends ApiController
                 }
                 else if($type_consult == 'tenders')
                 {
-                    var_dump('tenders');
+                    //Busca por las licitaciones
+                    $result = $this->getTenders($search_item);
                 }
             }
             else if(!isset($type_consult))
             {
-
+                $result = $this->getTenders($search_item);
             }
         }
         else
         {
+            if(isset($type_consult))
+            {
+                if($type_consult == 'companies')
+                {
+                    //Busqueda por las compañias
+                    $result = $this->getCompanies($search_item);
+                }
+                else if($type_consult == 'products')
+                {
+                    //Busca por los productos
+                    $result = $this->getProducts($search_item);
+                }
+            }
+            else if(!isset($type_consult))
+            {
+                //Busca por los productos
+                $result = $this->getProducts($search_item);
+            }
 
         };
 
@@ -124,25 +147,71 @@ class SearchLikeItemController extends ApiController
         return $projects;
     }
 
-    // public function getChildProjects($project_id)
-    // {
-    //     $childs = DB::select('call get_child_type_project("'.$id.'")');
-
-    //     foreach ($childs as $key => $child)
-    //     {
-    //         if($id > $child->id)
-    //             unset($childs[$key]);
-    //     };
-
-    //     return json_decode( json_encode($childs), true);
-    // }
-
     public function getTenders($like)
     {
+        $tendesPublish = $this->getTendersLastVersionPublish();
+        $tenders       = Tenders::whereIn('id',$tendesPublish)
+            ->where(strtolower('name'),'LIKE','%'.strtolower($like).'%')
+            ->get();  
 
+        return $this->showAllPaginate($tenders);
     }
 
+    public function getTendersLastVersionPublish()
+    {
+        $tenders = DB::table('tenders_versions as a')
+            ->select(DB::raw('max(a.created_at), a.tenders_id'))
+            ->where('a.status',TendersVersions::LICITACION_PUBLISH)
+            ->where((function($query)
+            {
+                $query->select(DB::raw("COUNT(*) from `tenders_versions` as `b` 
+                    where (`b`.`status` = '".TendersVersions::LICITACION_FINISHED."' 
+                    or `b`.`status` = '".TendersVersions::LICITACION_CLOSED."') 
+                    and `b`.`tenders_id` = a.tenders_id")
+                );
+            }), '=', 0)
+            ->groupBy('a.tenders_id')
+            ->pluck('a.tenders_id');
 
+        return $tenders;
+    }
 
-   
+    public function getProducts($like)
+    {
+        //buscar el producto por el nombre del producto
+        $productName    = $this->getProductName($like);
+        //busca los productos relacionados por nombre de tag
+        $productTags    = $this->getProductTags($like);
+
+        //hace un merge de $productName y $productTags, quita los id repetidos, dejando uno de cada uno
+        $products_ids   = array_unique(array_merge(json_decode($productName), json_decode($productTags)));
+
+        $products       = Products::whereIn('id', $products_ids)->get();
+
+        return $this->showAllPaginate($products);
+    }
+
+    public function getProductName($like)
+    {
+        $productName = Products::select('id')
+        ->where('status', Products::PRODUCT_PUBLISH)
+        ->where(strtolower('name'),'LIKE','%'.strtolower($like).'%')
+        ->pluck('id');  
+
+        return $productName;
+    }
+
+    public function getProductTags($like)
+    {
+        $productTag = Tags::select('tags.tagsable_id')
+            ->where('tags.tagsable_type', Products::class)
+            ->where(strtolower('tags.name'),'LIKE','%'.strtolower($like).'%')
+            ->join('products','products.id','=','tags.tagsable_id')
+            ->where('products.status', Products::PRODUCT_PUBLISH)
+            ->distinct('tags.tagsable_id')
+            ->pluck('tags.tagsable_id');
+
+        return $productTag;
+    }
+
 }
