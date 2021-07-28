@@ -583,6 +583,17 @@ class SearchItemController extends ApiController
 
         return $parents;
     }
+    
+    public function getChildCatProduct($lists){
+        
+        $array = [];
+        foreach($lists as $list) {
+            $childs = DB::select('call get_child_type_categoty("'.$list.'")');
+            $array[] = json_decode( json_encode($childs), true);
+        }
+        
+        return $array;
+    }
 
     public function getChildTypeProyect($lists){
         
