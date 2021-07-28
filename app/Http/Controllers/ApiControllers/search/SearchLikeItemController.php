@@ -36,6 +36,10 @@ class SearchLikeItemController extends ApiController
         $search_item    = $request->search_item;
         $type_consult   = $request->type_consult;
 
+        $filters        = [];
+        if( isset($request->date) )
+            $filters['date']    = $request->date;
+
         $result = "";
         if($type_user == 'oferta')
         {
@@ -49,7 +53,7 @@ class SearchLikeItemController extends ApiController
                 else if($type_consult == 'projets')
                 {
                     //Busca por los proyectos
-                    $result = $this->getProjects($search_item);
+                    $result = $this->getProjects($search_item, $filters);
                 }
                 else if($type_consult == 'tenders')
                 {
@@ -153,8 +157,15 @@ class SearchLikeItemController extends ApiController
         //hace un merge de $projetName y $projetTypeProject, quita los id repetidos, dejando uno de cada uno
         $projects_ids       = array_unique(array_merge(json_decode($projetName), json_decode($projetAddress) , json_decode($projetTypeProject)));
 
-        $projects           = Projects::whereIn('id', $projects_ids)->orderBy('name', 'asc')->get();
+        $projects           = Projects::whereIn('id', $projects_ids);
+        
+        if( isset($filters) && $filters['date']){
+            $projects   = $projects->where('date_start','>=', $filters['date']);
+            $projects   = $projects->where('date_end','<=', $filters['date']);
+        };
 
+        $projects           = $projects->orderBy('name', 'asc')->get();
+        
         return $this->showAllPaginate($projects);
     }
 
