@@ -53,7 +53,7 @@ class SearchLikeItemController extends ApiController
                     //Busqueda por las compañias
                     $result = $this->getCompanies($search_item);
                 }
-                else if($type_consult == 'projets')
+                else if($type_consult == 'projects')
                 {
                     //Busca por los proyectos
                     $result = $this->getProjects($search_item, $filters);
