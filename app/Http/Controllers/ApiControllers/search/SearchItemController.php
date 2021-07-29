@@ -197,19 +197,8 @@ class SearchItemController extends ApiController
         $projects = Projects::whereIn('id', $project_ids)
             ->where('visible', Projects::PROJECTS_VISIBLE);
         
-        if( $filters && isset($filters['status'])){
-            if( $filters['status'] == 'especificaciones-tecnicas' ){
-                $projects = $projects->where('status','=', 'especificaciones-tecnicas');
-            }elseif( $filters['status'] == 'en-construccion' ){
-                $projects = $projects->where('status','=', 'en-construccion');
-            }
-        }
-
-        if( $filters && isset($filters['date'])){
-            $date = Carbon::createFromFormat('Y-m-d', $filters['date']);
-            $projects = $projects->where('date_start','<=', $date->format('Y-m-d'))
-                                 ->where('date_end','>=', $date->format('Y-m-d'));
-        }
+        $projects = $this->statusProjects($projects, $filters);
+        $projects = $this->dateProjects($projects, $filters);
 
         if(isset($comunity_id) && $comunity_id != 'all')
         {
@@ -246,19 +235,8 @@ class SearchItemController extends ApiController
         $projects       = Projects::whereIn('id', $project_ids)
             ->where('visible', Projects::PROJECTS_VISIBLE);
             
-        if( $filters && isset($filters['status'])){
-            if( $filters['status'] == 'especificaciones-tecnicas' ){
-                $projects = $projects->where('status','=', 'especificaciones-tecnicas');
-            }elseif( $filters['status'] == 'en-construccion' ){
-                $projects = $projects->where('status','=', 'en-construccion');
-            }
-        }
-
-        if( $filters && isset($filters['date'])){
-            $date = Carbon::createFromFormat('Y-m-d', $filters['date']);
-            $projects = $projects->where('date_start','<=', $date->format('Y-m-d'))
-                                 ->where('date_end','>=', $date->format('Y-m-d'));
-        }
+        $projects = $this->statusProjects($projects, $filters);
+        $projects = $this->dateProjects($projects, $filters);
 
         $projects = $projects->get();
         $projects       = json_decode( json_encode($projects), true);
@@ -274,6 +252,43 @@ class SearchItemController extends ApiController
         $tenders = $tenders->get();
 
         return $this->showAllPaginate($tenders);
+    }
+
+    public function statusProjects( $projects, $filters ){
+        if( $filters && isset($filters['status'])){
+            if( $filters['status'] == 'especificaciones-tecnicas' ){
+                $projects = $projects->where('status','=', 'especificaciones-tecnicas');
+            }elseif( $filters['status'] == 'en-construccion' ){
+                $projects = $projects->where('status','=', 'en-construccion');
+            }
+        }
+
+        return $projects;
+    }
+
+    public function dateProjects( $projects, $filters ){
+        if( $filters && isset($filters['date']) || isset($filters['date_end']) ){
+            $date_start = $date_end = '';
+            if( isset($filters['date']) )
+                $date_start = Carbon::createFromFormat('Y-m-d', $filters['date']);
+            if( isset($filters['date_end']) )
+                $date_end = Carbon::createFromFormat('Y-m-d', $filters['date_end']);
+
+            if( $date_start && $date_end ){
+                $projects = $projects->where(function($query) use ($date_start,$date_end){
+                    $query->whereBetween('date_start', [$date_start, $date_end])
+                          ->orWhereBetween('date_end', [$date_start, $date_end]);
+                });
+            }elseif( $date_start ){
+                $projects->where('date_start','<=', $date_start->format('Y-m-d'))
+                         ->where('date_end','>=', $date_start->format('Y-m-d'));
+            }elseif( $date_end ){
+                $projects->where('date_start','<=', $date_end->format('Y-m-d'))
+                         ->where('date_end','>=', $date_end->format('Y-m-d'));
+            }
+        }
+
+        return $projects;
     }
 
     public function getCategoriesTendersIds($category_id)
