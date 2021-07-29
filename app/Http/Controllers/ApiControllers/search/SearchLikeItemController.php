@@ -214,7 +214,7 @@ class SearchLikeItemController extends ApiController
         return $projects;
     }
 
-    public function getTenders($like, $filter)
+    public function getTenders($like, $filters)
     {
         //trae los ids de las licitaciones que esta en ultimas versiones publicadas
         $tendesPublish          = $this->getTendersLastVersionPublish();
@@ -229,20 +229,39 @@ class SearchLikeItemController extends ApiController
 
         $tender                 = Tenders::WhereIn('id', $tender_ids);
 
-        if()
+        //solo ingresa al filtro cuando recibe una fecha inicial o cuando recibe una fecha inicial y una fecha final
+        if( $filters && isset($filters['date']) && !isset($filters['date_end']))
         {
-
+            $tender     = $this->getTenderFilterByDate($tender, $filters['date'], null);
+        }else if( $filters && isset($filters['date']) && isset($filters['date_end']))
+        {
+            $tender     = $this->getTenderFilterByDate($tender, $filters['date'], $filters['date_end']);
         }
 
-        $tender                 = $tender->get();
+        $tender  = $tender->get();
 
         return $this->showAllPaginate($tender);
     }
 
     public function getTenderFilterByDate($tender, $start_date, $end_date)
     {
+        $tenders = $tender->get();
 
+        $tenderVersionLastIds = [];
+        foreach ($tenders as $key => $tender)
+        {
+            $tenderVersionLastIds[] = $tender->tendersVersionLast()->id;
+        };
 
+        $tenderVersionLast = TendersVersions::select('tenders_id')->whereIn('id',$tenderVersionLastIds);
+
+        $tenderVersionLast = (isset($end_date)) ? 
+            $tenderVersionLast->whereBetween('date',[ $start_date, $end_date]) : // existe la fecha inicial y final
+            $tenderVersionLast->where('date','>=', $start_date); // solo existe la fecha inicial
+
+        $tenderVersionLast = $tenderVersionLast->pluck('tenders_id');
+
+        return Tenders::whereIn('id', $tenderVersionLast);
     }
 
     public function getTendersLastVersionPublish()
