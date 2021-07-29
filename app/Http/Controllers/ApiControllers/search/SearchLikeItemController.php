@@ -3,19 +3,20 @@
 namespace App\Http\Controllers\ApiControllers\search;
 
 use JWTAuth;
+use Carbon\Carbon;
+use App\Models\Tags;
 use App\Models\User;
+use App\Models\Brands;
 use App\Models\Company;
-use App\Models\Addresses;
+use App\Models\Tenders;
 use App\Models\Projects;
-use App\Models\TendersVersions;
+use App\Models\Products;
+use App\Models\Addresses;
 use App\Models\TypeProject;
 use App\Models\TypesEntity;
-use App\Models\Tenders;
-use App\Models\Products;
-use App\Models\Brands;
-use App\Models\Tags;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\TendersVersions;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class SearchLikeItemController extends ApiController
@@ -145,7 +146,7 @@ class SearchLikeItemController extends ApiController
         return $companies;
     }
 
-    public function getProjects($like)
+    public function getProjects($like, $filters)
     {
         //busca por el nombre/descripción del proyecto
         $projetName         = $this->getNameDescriptionProject($like);
@@ -159,9 +160,11 @@ class SearchLikeItemController extends ApiController
 
         $projects           = Projects::whereIn('id', $projects_ids);
         
-        if( isset($filters) && $filters['date']){
-            $projects   = $projects->where('date_start','>=', $filters['date']);
-            $projects   = $projects->where('date_end','<=', $filters['date']);
+        if( isset($filters) && isset($filters['date']))
+        {
+            $date       = Carbon::createFromFormat('Y-m-d', $filters['date']);
+            $projects   = $projects->where('date_start','>=', $date);
+            $projects   = $projects->where('date_end','<=', $date);
         };
 
         $projects           = $projects->orderBy('name', 'asc')->get();
