@@ -39,6 +39,8 @@ class SearchItemController extends ApiController
             $filters['status'] = $request->status;
         if( isset($request->date) )
             $filters['date'] = $request->date;
+        if( isset($request->date_end) )
+            $filters['date_end'] = $request->date_end;
         
         $result = [];
 
@@ -267,11 +269,11 @@ class SearchItemController extends ApiController
     }
 
     public function dateProjects( $projects, $filters ){
-        if( $filters && isset($filters['date']) || isset($filters['date_end']) ){
+        if( $filters && (isset($filters['date']) || isset($filters['date_end'])) ){
             $date_start = $date_end = '';
-            if( isset($filters['date']) )
+            if( isset($filters['date']) && $filters['date'] != 'null' )
                 $date_start = Carbon::createFromFormat('Y-m-d', $filters['date']);
-            if( isset($filters['date_end']) )
+            if( isset($filters['date_end']) && $filters['date_end'] != 'null' )
                 $date_end = Carbon::createFromFormat('Y-m-d', $filters['date_end']);
 
             if( $date_start && $date_end ){
@@ -280,11 +282,11 @@ class SearchItemController extends ApiController
                           ->orWhereBetween('date_end', [$date_start, $date_end]);
                 });
             }elseif( $date_start ){
-                $projects->where('date_start','<=', $date_start->format('Y-m-d'))
-                         ->where('date_end','>=', $date_start->format('Y-m-d'));
+                $projects->where('date_start','<=', $date_start)
+                         ->where('date_end','>=', $date_start);
             }elseif( $date_end ){
-                $projects->where('date_start','<=', $date_end->format('Y-m-d'))
-                         ->where('date_end','>=', $date_end->format('Y-m-d'));
+                $projects->where('date_start','<=', $date_end)
+                         ->where('date_end','>=', $date_end);
             }
         }
 
