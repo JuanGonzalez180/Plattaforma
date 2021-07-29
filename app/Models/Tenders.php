@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Tags;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\Remarks;
@@ -72,6 +73,17 @@ class Tenders extends Model
         }
 
         return [];
+    }
+
+    public function tendersVersionLastTags(){
+        $tenderVesionLast_id = $this->tendersVersionLast()->id;
+
+        $hola = Tags::where('tagsable_id', $tenderVesionLast_id)
+            ->where('tagsable_type', TendersVersions::class)
+            ->orderBy('name','asc')
+            ->pluck('name');
+
+        return $hola;
     }
 
     public function tendersVersionLastPublish(){
