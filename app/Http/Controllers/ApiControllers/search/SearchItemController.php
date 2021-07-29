@@ -272,9 +272,9 @@ class SearchItemController extends ApiController
         if( $filters && (isset($filters['date']) || isset($filters['date_end'])) ){
             $date_start = $date_end = '';
             if( isset($filters['date']) && $filters['date'] != 'null' )
-                $date_start = Carbon::createFromFormat('Y-m-d', $filters['date']);
+                $date_start = Carbon::createFromFormat('Y-m-d', $filters['date'])->format('Y-m-d');
             if( isset($filters['date_end']) && $filters['date_end'] != 'null' )
-                $date_end = Carbon::createFromFormat('Y-m-d', $filters['date_end']);
+                $date_end = Carbon::createFromFormat('Y-m-d', $filters['date_end'])->format('Y-m-d');
 
             if( $date_start && $date_end ){
                 $projects = $projects->where(function($query) use ($date_start,$date_end){
