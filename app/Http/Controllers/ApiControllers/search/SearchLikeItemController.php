@@ -280,13 +280,13 @@ class SearchLikeItemController extends ApiController
         }
         else if(isset($filters['date']) && !isset($filters['date_end']))
         {
-            $start_date     = $filters['date'];
+            $start_date     = Carbon::createFromFormat('Y-m-d', $filters['date']);
             $end_date       = null;
         }
         else if(isset($filters['date']) && isset($filters['date_end']))
         {
-            $start_date     = $filters['date'];
-            $end_date       = $filters['date_end'];
+            $start_date     = Carbon::createFromFormat($filters['date']);
+            $end_date       = Carbon::createFromFormat($filters['date_end']);
         }
 
         $tenders  = $tender->get();

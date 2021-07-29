@@ -77,11 +77,11 @@ class SearchItemController extends ApiController
             if($type_user == 'oferta' && isset($request->comunity_id))
             {
                 // devolver licitaciones de la categoria que pertenescan a ese tipo de entidad
-                $result = $this->getTenders($request->category_id , $request->comunity_id);
+                $result = $this->getTenders($request->category_id , $request->comunity_id, $filters);
             }
             else if($type_user == 'oferta')
             {
-                $result = $this->getTenders($request->category_id , null);
+                $result = $this->getTenders($request->category_id , null, $filters);
             }
         }
         // Si viene tipo de proyecto y no viene categorías con o sin Comunidad
@@ -309,7 +309,7 @@ class SearchItemController extends ApiController
         return $categories_ids;
     }
 
-    public function getTenders($category_id, $comunity_id)
+    public function getTenders($category_id, $comunity_id, $filters)
     {
         $tendersPublish  = $this->getTendersLastVersionPublish(); // ids de ultimas licitaciones en estado publicado
         $tender_ids = [];
