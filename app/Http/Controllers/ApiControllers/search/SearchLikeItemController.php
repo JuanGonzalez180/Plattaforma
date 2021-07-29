@@ -39,7 +39,7 @@ class SearchLikeItemController extends ApiController
 
         $filters        = [];
         if( isset($request->date) )
-            $filters['date']    = $request->date;
+            $filters['date']        = $request->date;
         if( isset($request->date_end) )
             $filters['date_end']    = $request->date_end;
 
@@ -161,19 +161,40 @@ class SearchLikeItemController extends ApiController
         $projects_ids       = array_unique(array_merge(json_decode($projetName), json_decode($projetAddress) , json_decode($projetTypeProject)));
 
         $projects           = Projects::whereIn('id', $projects_ids);
-        
-        if( isset($filters) && isset($filters['date']))
-        {
-            $date       = Carbon::createFromFormat('Y-m-d', $filters['date']);
-            $projects   = $projects->where('date_start','>=', $date);
-            $projects   = $projects->where('date_end','<=', $date);
-        };
+
+        $projects           = $this->dateProjects($projects, $filters);
 
         $projects           = $projects->orderBy('name', 'asc')->get();
         
         return $this->showAllPaginate($projects);
     }
 
+    public function dateProjects($projects, $filters)
+    {
+        if( $filters && (isset($filters['date']) || isset($filters['date_end'])) )
+        {
+            $date_start = $date_end = '';
+            if( isset($filters['date']) && $filters['date'] != 'null' )
+                $date_start = Carbon::createFromFormat('Y-m-d', $filters['date']);
+            if( isset($filters['date_end']) && $filters['date_end'] != 'null' )
+                $date_end = Carbon::createFromFormat('Y-m-d', $filters['date_end']);
+
+            if( $date_start && $date_end ){
+                $projects = $projects->where(function($query) use ($date_start,$date_end){
+                    $query->whereBetween('date_start', [$date_start, $date_end])
+                          ->orWhereBetween('date_end', [$date_start, $date_end]);
+                });
+            }elseif( $date_start ){
+                $projects->where('date_start','<=', $date_start)
+                         ->where('date_end','>=', $date_start);
+            }elseif( $date_end ){
+                $projects->where('date_start','<=', $date_end)
+                         ->where('date_end','>=', $date_end);
+            }
+        }
+
+        return $projects;
+    }
 
     public function getNameDescriptionProject($like)
     {
