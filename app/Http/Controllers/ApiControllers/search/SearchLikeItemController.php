@@ -266,22 +266,26 @@ class SearchLikeItemController extends ApiController
         $tender                 = Tenders::WhereIn('id', $tender_ids);
 
         //solo ingresa al filtro cuando recibe una fecha inicial o cuando recibe una fecha inicial y una fecha final
-        if( $filters && isset($filters['date']) && !isset($filters['date_end']))
-        {
-            $tender     = $this->getTenderFilterByDate($tender, $filters['date'], null);
-        }else if( $filters && isset($filters['date']) && isset($filters['date_end']))
-        {
-            $tender     = $this->getTenderFilterByDate($tender, $filters['date'], $filters['date_end']);
-        }
-
-        $tender  = $tender->get();
+        // if( $filters && isset($filters['date']) && !isset($filters['date_end']))
+        // {
+        //     $tender     = $this->getTenderFilterByDate($tender, $filters['date'], null);
+        // }else if( $filters && isset($filters['date']) && isset($filters['date_end']))
+        // {
+            //     $tender     = $this->getTenderFilterByDate($tender, $filters['date'], $filters['date_end']);
+            // }
+        $tender                 = $this->getTenderFilterByDate($tender, $filters);
+            
+        $tender                 = $tender->get();
 
         return $this->showAllPaginate($tender);
     }
 
-    public function getTenderFilterByDate($tender, $start_date, $end_date)
+    public function getTenderFilterByDate($tender, $filters)
     {
-        $tenders = $tender->get();
+        $tenders        = $tender->get();
+
+        $start_date     = (isset($filters['date']))? $filters['date'] : null;
+        $end_date       = (isset($filters['date_end']))? $filters['date_end'] : null;
 
         $tenderVersionLastIds = [];
         foreach ($tenders as $key => $tender)
