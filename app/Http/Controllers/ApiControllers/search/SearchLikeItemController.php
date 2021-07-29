@@ -299,8 +299,8 @@ class SearchLikeItemController extends ApiController
     {
         $tenderNameDescript = Tenders::whereIn('id', $tendesPublish)
             ->where( function($query) use ($like){
-                $query->where(strtolower('name'),'LIKE','% '.strtolower($like).'%')
-                ->orWhere(strtolower('description'),'LIKE','% '.strtolower($like).'%');
+                $query->where(strtolower('name'),'LIKE','%'.strtolower($like).'%')
+                ->orWhere(strtolower('description'),'LIKE','%'.strtolower($like).'%');
             })
             ->pluck('id');
 
