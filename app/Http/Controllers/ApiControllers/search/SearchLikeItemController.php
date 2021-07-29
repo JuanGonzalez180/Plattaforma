@@ -38,6 +38,8 @@ class SearchLikeItemController extends ApiController
         $type_consult   = $request->type_consult;
 
         $filters        = [];
+        if( isset($request->status) )
+            $filters['status'] = $request->status;
         if( isset($request->date) )
             $filters['date']        = $request->date;
         if( isset($request->date_end) )
@@ -162,11 +164,24 @@ class SearchLikeItemController extends ApiController
 
         $projects           = Projects::whereIn('id', $projects_ids);
 
+        $projects           = $this->statusProjects($projects, $filters);
         $projects           = $this->dateProjects($projects, $filters);
 
         $projects           = $projects->orderBy('name', 'asc')->get();
         
         return $this->showAllPaginate($projects);
+    }
+
+    public function statusProjects( $projects, $filters ){
+        if( $filters && isset($filters['status'])){
+            if( $filters['status'] == 'especificaciones-tecnicas' ){
+                $projects = $projects->where('status','=', 'especificaciones-tecnicas');
+            }elseif( $filters['status'] == 'en-construccion' ){
+                $projects = $projects->where('status','=', 'en-construccion');
+            }
+        }
+
+        return $projects;
     }
 
     public function dateProjects($projects, $filters)
