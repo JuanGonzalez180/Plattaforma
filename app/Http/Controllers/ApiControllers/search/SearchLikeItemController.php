@@ -333,7 +333,7 @@ class SearchLikeItemController extends ApiController
 
         foreach ($tenders as $tender)
         {
-            $tenderVersionLastID[] = $tender->tendersVersionLast()->id;
+            $tenderVersionLastID[] = $tender->tendersVersionLastPublish()->id;
         };
 
         $tenderTag = Tags::select('tagsable_id')
@@ -371,7 +371,7 @@ class SearchLikeItemController extends ApiController
         $tender_last = [];
         foreach ($tenderAdenda as $key => $tender)
         {
-            $tender_last[] = $tender->tendersVersionLast()->id;
+            $tender_last[] = $tender->tendersVersionLastPublish()->id;
         };
 
         $tenders = TendersVersions::whereIn('id', $tender_last)

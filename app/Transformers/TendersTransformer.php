@@ -40,7 +40,7 @@ class TendersTransformer extends TransformerAbstract
             'company_id'=> (int)$tender->company_id,
             'project'=> $tender->project,
             'categories'=> $tender->categories,
-            'tags'=> $tender->tendersVersionLastTags(),
+            'tags'=> $tender->tendersVersionLastPublishTags(),
             'project_id'=> (int)$tender->project_id,
             'name'=> (string)$tender->name,
             'status'=> (string)$tender->status,

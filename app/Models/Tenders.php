@@ -75,8 +75,8 @@ class Tenders extends Model
         return [];
     }
 
-    public function tendersVersionLastTags(){
-        $tenderVesionLast_id = $this->tendersVersionLast()->id;
+    public function tendersVersionLastPublishTags(){
+        $tenderVesionLast_id = $this->tendersVersionLastPublish()->id;
 
         $tags = Tags::where('tagsable_id', $tenderVesionLast_id)
             ->where('tagsable_type', TendersVersions::class)
