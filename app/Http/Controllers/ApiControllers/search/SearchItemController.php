@@ -140,7 +140,8 @@ class SearchItemController extends ApiController
         }
 
         $tenders = $tenders->get();
-
+        $tenders = $this->addTagsTenders($tenders);
+        
         return $this->showAllPaginate($tenders);
     }
 
@@ -163,6 +164,7 @@ class SearchItemController extends ApiController
     {
         $tenderLastVersionsPublish  = $this->getTendersLastVersionPublish();
         $tenders                    = Tenders::WhereIn('id', $tenderLastVersionsPublish)->get();
+        $tenders = $this->addTagsTenders($tenders);
 
         return $this->showAllPaginate($tenders); 
     }
@@ -252,8 +254,21 @@ class SearchItemController extends ApiController
         };
 
         $tenders = $tenders->get();
-
+        $tenders = $this->addTagsTenders($tenders);
+        // 
+        
         return $this->showAllPaginate($tenders);
+    }
+    
+    public function addTagsTenders( $tenders ){
+        foreach ( $tenders as $key => $tender) {
+            $tendersPublish = $tender->tendersVersionLastPublish();
+            if( $tendersPublish ){
+                $tender->tags = $tendersPublish->tags;
+            }
+        }
+
+        return $tenders;
     }
 
     public function statusProjects( $projects, $filters ){
@@ -332,7 +347,8 @@ class SearchItemController extends ApiController
             $companiesIds   = $this->getEntityByCompanies($comunity_id);
             $tenders        = $tenders->whereIn('company_id', $companiesIds);
         };
-
+        $tenders = $this->addTagsTenders($tenders);
+        
         return $this->showAllPaginate($tenders); 
     }
 
