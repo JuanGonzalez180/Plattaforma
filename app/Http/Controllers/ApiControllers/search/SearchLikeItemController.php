@@ -289,8 +289,6 @@ class SearchLikeItemController extends ApiController
             $end_date       = $filters['date_end'];
         }
 
-        var_dump('pasa por aca');
-
         $tenders  = $tender->get();
         $tenderVersionLastIds = [];
         foreach ($tenders as $key => $tender)
