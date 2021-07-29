@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\search;
 
 use JWTAuth;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\Category;
@@ -205,8 +206,9 @@ class SearchItemController extends ApiController
         }
 
         if( $filters && isset($filters['date'])){
-            $projects = $projects->where('date_start','>=', $filters['date'])
-                                 ->where('date_end','>=', $filters['date']);
+            $date = Carbon::createFromFormat('Y-m-d', $filters['date']);
+            $projects = $projects->where('date_start','<=', $date->format('Y-m-d'))
+                                 ->where('date_end','>=', $date->format('Y-m-d'));
         }
 
         if(isset($comunity_id) && $comunity_id != 'all')
@@ -244,7 +246,7 @@ class SearchItemController extends ApiController
         $projects       = Projects::whereIn('id', $project_ids)
             ->where('visible', Projects::PROJECTS_VISIBLE);
             
-        if( isset($filters) && $filters['status']){
+        if( $filters && isset($filters['status'])){
             if( $filters['status'] == 'especificaciones-tecnicas' ){
                 $projects = $projects->where('status','=', 'especificaciones-tecnicas');
             }elseif( $filters['status'] == 'en-construccion' ){
@@ -252,9 +254,10 @@ class SearchItemController extends ApiController
             }
         }
 
-        if( isset($filters) && $filters['date']){
-            $projects = $projects->where('date_start','>=', $filters['date']);
-            $projects = $projects->where('date_end','<=', $filters['date']);
+        if( $filters && isset($filters['date'])){
+            $date = Carbon::createFromFormat('Y-m-d', $filters['date']);
+            $projects = $projects->where('date_start','<=', $date->format('Y-m-d'))
+                                 ->where('date_end','>=', $date->format('Y-m-d'));
         }
 
         $projects = $projects->get();
