@@ -328,14 +328,27 @@ class SearchLikeItemController extends ApiController
 
     public function getTenderTags($like, $tendesPublish)
     {
+        $tenders             = Tenders::whereIn('id', $tendesPublish)->get();
+        $tenderVersionLastID = [];
+
+        foreach ($tenders as $tender)
+        {
+            $tenderVersionLastID[] = $tender->tendersVersionLast()->id;
+        };
+
         $tenderTag = Tags::select('tagsable_id')
             ->where('tagsable_type', TendersVersions::class)
-            ->whereIn('tagsable_id', $tendesPublish)
+            ->whereIn('tagsable_id', $tenderVersionLastID)
             ->where(strtolower('name'),'LIKE','%'.strtolower($like).'%')
             ->distinct('tagsable_id')
             ->pluck('tagsable_id');
 
-        return $tenderTag;
+        $tender = TendersVersions::select('tenders_id')
+            ->whereIn('id', $tenderTag)
+            ->distinct('tenders_id')
+            ->pluck('tenders_id');
+
+        return $tender;
     }
 
     public function getTenderNameDescript($like, $tendesPublish)
