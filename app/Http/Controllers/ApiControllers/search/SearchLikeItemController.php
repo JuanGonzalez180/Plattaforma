@@ -40,6 +40,8 @@ class SearchLikeItemController extends ApiController
         $filters        = [];
         if( isset($request->date) )
             $filters['date']    = $request->date;
+        if( isset($request->date_end) )
+            $filters['date_end']    = $request->date_end;
 
         $result = "";
         if($type_user == 'oferta')
@@ -59,12 +61,12 @@ class SearchLikeItemController extends ApiController
                 else if($type_consult == 'tenders')
                 {
                     //Busca por las licitaciones
-                    $result = $this->getTenders($search_item);
+                    $result = $this->getTenders($search_item, $filters);
                 }
             }
             else if(!isset($type_consult))
             {
-                $result = $this->getTenders($search_item);
+                $result = $this->getTenders($search_item, $filters);
             }
         }
         else
@@ -212,11 +214,10 @@ class SearchLikeItemController extends ApiController
         return $projects;
     }
 
-    public function getTenders($like)
+    public function getTenders($like, $filter)
     {
         //trae los ids de las licitaciones que esta en ultimas versiones publicadas
         $tendesPublish          = $this->getTendersLastVersionPublish();
-
         //buscar por los tags de la licitacion y retorna los ids de las licitaciones relacionadas
         $tenderTag              = $this->getTenderTags($like, $tendesPublish);
         //buscar por el nombre o descripción de la licitación y retorna los ids de las licitaciones relacionadas
@@ -226,9 +227,22 @@ class SearchLikeItemController extends ApiController
 
         $tender_ids             = array_unique(array_merge(json_decode($tenderTag), json_decode($tenderNameDescript), json_decode($tenderAdenda)));
 
-        $tender                 = Tenders::WhereIn('id', $tender_ids)->orderBy('name', 'asc')->get();
+        $tender                 = Tenders::WhereIn('id', $tender_ids);
+
+        if()
+        {
+
+        }
+
+        $tender                 = $tender->get();
 
         return $this->showAllPaginate($tender);
+    }
+
+    public function getTenderFilterByDate($tender, $start_date, $end_date)
+    {
+
+
     }
 
     public function getTendersLastVersionPublish()
