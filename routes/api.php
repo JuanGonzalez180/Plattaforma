@@ -18,6 +18,7 @@ use App\Http\Controllers\ApiControllers\company\CompanyTenders\CompanyTendersCon
 use App\Http\Controllers\ApiControllers\company\CompanyTenders\CompanyTendersTransactController;
 use App\Http\Controllers\ApiControllers\company\CompanyBlogs\CompanyBlogsController;
 use App\Http\Controllers\ApiControllers\company\CompanyProducts\CompanyProductsController;
+use App\Http\Controllers\ApiControllers\company\CompanyTeams\CompanyTeamsController;
 use App\Http\Controllers\ApiControllers\company\CompanyFiles\CompanyFilesController;
 use App\Http\Controllers\ApiControllers\country\CountryController;
 use App\Http\Controllers\ApiControllers\files\FilesController;
@@ -231,6 +232,9 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     Route::get('/company/{slug}/products', [CompanyProductsController::class, 'index'])->name('company-products');
     Route::get('/company/{slug}/products/{id}', [CompanyProductsController::class, 'show'])->name('company-detail-products');
+
+    Route::get('/company/{slug}/teams', [CompanyTeamsController::class, 'index'])->name('company-teams');
+    // Route::get('/company/{slug}/products/{id}', [CompanyProductsController::class, 'show'])->name('company-detail-products');
 
     /**
      * Search
