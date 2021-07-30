@@ -47,7 +47,7 @@ class SearchItemController extends ApiController
         // Si no viene ningún FILTRO
         if( !isset($request->comunity_id) && !isset($request->type_project) && !isset($request->category_id))
         {
-            $result = ($type_user == 'demanda') ? $this->getAllProducts() : $this->getAllTenders();
+            $result = ($type_user == 'demanda') ? $this->getAllProducts() : $this->getAllTenders($filters);
         }
         // Si vienen los 3 FILTROS
         else if(isset($request->comunity_id) && isset($request->type_project) && isset($request->category_id))
@@ -160,13 +160,54 @@ class SearchItemController extends ApiController
         return $this->showAllPaginate($products);
     }
 
-    public function getAllTenders()
+    public function getAllTenders($filters)
     {
         $tenderLastVersionsPublish  = $this->getTendersLastVersionPublish();
-        $tenders                    = Tenders::WhereIn('id', $tenderLastVersionsPublish)->get();
-        $tenders = $this->addTagsTenders($tenders);
+        $tenders                    = Tenders::WhereIn('id', $tenderLastVersionsPublish);
+
+        //filtro de fechas, recibe solo una fecha inicial o la inicial y la final.
+        $tenders                    = $this->getTenderFiltegetTendersrByDate($tenders, $filters);
+
+        $tenders                    = $tenders->get();
+        $tenders                    = $this->addTagsTenders($tenders);
 
         return $this->showAllPaginate($tenders); 
+    }
+
+    public function getTenderFiltegetTendersrByDate($tender, $filters)
+    {
+        if(!isset($filters['date']) && !isset($filters['date_end']))
+        {
+            return $tender;
+        }
+        else if(isset($filters['date']) && !isset($filters['date_end']))
+        {
+            $start_date     = Carbon::createFromFormat('Y-m-d', $filters['date']);
+            $end_date       = null;
+        }
+        else if(isset($filters['date']) && isset($filters['date_end']))
+        {
+            $start_date     = Carbon::createFromFormat('Y-m-d', $filters['date']);
+            $end_date       = Carbon::createFromFormat('Y-m-d', $filters['date_end']);
+        }
+
+        $tenders  = $tender->get();
+
+        $tenderVersionLastIds = [];
+        foreach ($tenders as $key => $tender)
+        {
+            $tenderVersionLastIds[] = $tender->tendersVersionLast()->id;
+        };
+
+        $tenderVersionLast = TendersVersions::select('tenders_id')->whereIn('id',$tenderVersionLastIds);
+
+        $tenderVersionLast = (isset($end_date)) ? 
+            $tenderVersionLast->whereBetween('date',[ $start_date, $end_date]) : // existe la fecha inicial y final
+            $tenderVersionLast->where('date','>=', $start_date); // solo existe la fecha inicial
+
+        $tenderVersionLast = $tenderVersionLast->pluck('tenders_id');
+
+        return Tenders::whereIn('id', $tenderVersionLast);
     }
 
     public function getTypeProjectToProjectIds($type_project_id)
@@ -340,13 +381,17 @@ class SearchItemController extends ApiController
             $tender_ids = $tendersPublish;
         }
 
-        $tenders         = Tenders::whereIn('id',$tender_ids)->get();
+        $tenders         = Tenders::whereIn('id',$tender_ids);  
 
         if(isset($comunity_id) && $comunity_id != 'all')
         {
             $companiesIds   = $this->getEntityByCompanies($comunity_id);
             $tenders        = $tenders->whereIn('company_id', $companiesIds);
         };
+
+        $tenders         = $this->getTenderFiltegetTendersrByDate($tenders, $filters);
+        $tenders         = $tenders->get();
+
         $tenders = $this->addTagsTenders($tenders);
         
         return $this->showAllPaginate($tenders); 
