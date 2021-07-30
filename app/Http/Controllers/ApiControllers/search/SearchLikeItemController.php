@@ -263,13 +263,23 @@ class SearchLikeItemController extends ApiController
 
         $tender_ids             = array_unique(array_merge(json_decode($tenderTag), json_decode($tenderNameDescript), json_decode($tenderAdenda)));
 
-        $tender                 = Tenders::WhereIn('id', $tender_ids);
+        $tenders                 = Tenders::WhereIn('id', $tender_ids);
+        $tenders                 = $this->getTenderFilterByDate($tenders, $filters);
+        $tenders                 = $tenders->get();
+        $tenders                 = $this->addTagsTenders($tenders);
 
-        $tender                 = $this->getTenderFilterByDate($tender, $filters);
-            
-        $tender                 = $tender->get();
+        return $this->showAllPaginate($tenders);
+    }
 
-        return $this->showAllPaginate($tender);
+    public function addTagsTenders( $tenders ){
+        foreach ( $tenders as $key => $tender) {
+            $tendersPublish = $tender->tendersVersionLastPublish();
+            if( $tendersPublish ){
+                $tender->tags = $tendersPublish->tags;
+            }
+        }
+
+        return $tenders;
     }
 
     public function getTenderFilterByDate($tender, $filters)
@@ -328,27 +338,15 @@ class SearchLikeItemController extends ApiController
 
     public function getTenderTags($like, $tendesPublish)
     {
-        $tenders             = Tenders::whereIn('id', $tendesPublish)->get();
-        $tenderVersionLastID = [];
-
-        foreach ($tenders as $tender)
-        {
-            $tenderVersionLastID[] = $tender->tendersVersionLastPublish()->id;
-        };
-
-        $tenderTag = Tags::select('tagsable_id')
+        $tenderTag = Tags::select('tenders_versions.tenders_id')
             ->where('tagsable_type', TendersVersions::class)
-            ->whereIn('tagsable_id', $tenderVersionLastID)
+            ->join('tenders_versions','tenders_versions.id','=','tags.tagsable_id')
+            ->whereIn('tenders_versions.tenders_id', $tendesPublish)
             ->where(strtolower('name'),'LIKE','%'.strtolower($like).'%')
-            ->distinct('tagsable_id')
-            ->pluck('tagsable_id');
-
-        $tender = TendersVersions::select('tenders_id')
-            ->whereIn('id', $tenderTag)
             ->distinct('tenders_id')
             ->pluck('tenders_id');
 
-        return $tender;
+        return $tenderTag;
     }
 
     public function getTenderNameDescript($like, $tendesPublish)
