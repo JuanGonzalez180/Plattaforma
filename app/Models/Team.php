@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\User;
 use App\Models\Company;
 use App\Transformers\TeamTransformer;
+use App\Transformers\TeamDetailTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Paginatable;
@@ -16,6 +17,7 @@ class Team extends Model
     protected $perPage = 9;
 
     public $transformer = TeamTransformer::class;
+    const TRANSFORMER_TEAM_COMPANY = TeamDetailTransformer::class;
 
     protected $fillable = [
         'user_id',
