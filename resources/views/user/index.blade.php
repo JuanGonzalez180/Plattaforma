@@ -62,5 +62,10 @@
                 @endforelse
             </tbody>
         </table>
+
+        <div class="d-flex justify-content-center mb-5">
+            {!! $users->links() !!}
+        </div>
+
     @include('partials.structure.close-main')
 @endsection
