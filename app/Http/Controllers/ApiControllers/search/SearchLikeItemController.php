@@ -285,34 +285,38 @@ class SearchLikeItemController extends ApiController
     public function getTenderFilterByDate($tender, $filters)
     {
         if(!isset($filters['date']) && !isset($filters['date_end']))
-        {
             return $tender;
-        }
-        else if(isset($filters['date']) && !isset($filters['date_end']))
-        {
-            $start_date     = Carbon::createFromFormat('Y-m-d', $filters['date'])->format('Y-m-d');
-            $end_date       = null;
-        }
-        else if(isset($filters['date']) && isset($filters['date_end']))
-        {
-            $start_date     = Carbon::createFromFormat('Y-m-d', $filters['date'])->format('Y-m-d');
-            $end_date       = Carbon::createFromFormat('Y-m-d', $filters['date_end'])->format('Y-m-d');
-        }
 
-        $tenders  = $tender->get();
+        $tenders              = $tender->get();
         $tenderVersionLastIds = [];
+
         foreach ($tenders as $key => $tender)
         {
             $tenderVersionLastIds[] = $tender->tendersVersionLast()->id;
         };
 
-        $tenderVersionLast = TendersVersions::select('tenders_id')->whereIn('id',$tenderVersionLastIds);
+        $tenderVersionLast = TendersVersions::select('tenders_id')
+            ->whereIn('id',$tenderVersionLastIds);
 
-        $tenderVersionLast = (isset($end_date)) ? 
-            $tenderVersionLast->whereBetween('date',[ $start_date, $end_date]) : // existe la fecha inicial y final
-            $tenderVersionLast->where('date','>=', $start_date); // solo existe la fecha inicial
+        if(isset($filters['date']) && !isset($filters['date_end']))
+        {
+            $start_date     = Carbon::createFromFormat('Y-m-d', $filters['date'])->format('Y-m-d');
+            $tenderVersionLast->where('date','>=', $start_date);
+        }
+        else if(!isset($filters['date']) && isset($filters['date_end']))
+        {
+            $end_date       = Carbon::createFromFormat('Y-m-d', $filters['date_end'])->format('Y-m-d');
+            $tenderVersionLast->where('date','<=', $end_date);
+        }
+        else if(isset($filters['date']) && isset($filters['date_end']))
+        {
+            $start_date     = Carbon::createFromFormat('Y-m-d', $filters['date'])->format('Y-m-d');
+            $end_date       = Carbon::createFromFormat('Y-m-d', $filters['date_end'])->format('Y-m-d');
+            $tenderVersionLast->whereBetween('date',[ $start_date, $end_date]);
+        }
 
-        $tenderVersionLast = $tenderVersionLast->pluck('tenders_id');
+        $tenderVersionLast = $tenderVersionLast
+            ->pluck('tenders_id');
 
         return Tenders::whereIn('id', $tenderVersionLast);
     }
