@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\ApiControllers\tenders\tendersAction;
 
 use JWTAuth;
+use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\QueryWall;
 use Illuminate\Http\Request;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendDeclinedTenderCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersActionController extends ApiController
@@ -88,7 +91,8 @@ class TendersActionController extends ApiController
 
     public function updateStatusDeclined($id)
     {
-        $tenderVersionLast = Tenders::find($id)->tendersVersionLast();
+        $tender            = Tenders::find($id);
+        $tenderVersionLast = $tender->tendersVersionLast();
 
         DB::beginTransaction();
 
@@ -98,6 +102,9 @@ class TendersActionController extends ApiController
             $tenderVersionLast->save();
             DB::commit();
             // Informar por correo a los participantes que se ha declinado la licitación.
+            $companies  = $this->getCompanyTenders($id);
+            foreach ($companies as $company)
+                Mail::to('cris10x@hotmail.com')->send(new SendDeclinedTenderCompany($tender->name, $company->name));
 
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -106,6 +113,17 @@ class TendersActionController extends ApiController
         }
 
         return $this->showOne($tenderVersionLast,200);
+    }
+
+    public function getCompanyTenders($tender_id)
+    {
+        $companies = Company::select('companies.*')
+            ->join( 'tenders_companies', 'tenders_companies.company_id', '=', 'companies.id' )
+            ->where( 'tenders_companies.tender_id', $tender_id)
+            ->where('tenders_companies.status', TendersCompanies::STATUS_PARTICIPATING)
+            ->get();
+
+        return $companies;
     }
 
 }
