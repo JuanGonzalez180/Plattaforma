@@ -201,6 +201,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      */    
     Route::put('/tenders/action/{id}/update/user', [TendersActionController::class, 'updateTenderUser'])->name('company-tender-update-user');
     Route::put('/tenders/action/{id}/closed/status', [TendersActionController::class, 'updateStatusClosed'])->name('company-tender-update-status-closed');
+    Route::put('/tenders/action/{id}/declined/status', [TendersActionController::class, 'updateStatusDeclined'])->name('company-tender-update-status-declined');
     /**
      * Tenders
      */

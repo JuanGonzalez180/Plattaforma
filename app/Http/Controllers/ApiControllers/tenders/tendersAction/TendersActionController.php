@@ -86,4 +86,26 @@ class TendersActionController extends ApiController
         return $this->showOne($tenderVersionLast,200);
     }
 
+    public function updateStatusDeclined($id)
+    {
+        $tenderVersionLast = Tenders::find($id)->tendersVersionLast();
+
+        DB::beginTransaction();
+
+        $tenderVersionLast->status = TendersVersions::LICITACION_DECLINED;
+
+        try{
+            $tenderVersionLast->save();
+            DB::commit();
+            // Informar por correo a los participantes que se ha declinado la licitación.
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $tenderVersionError = [ 'tenderVersionLast' => 'Error, no se ha podido gestionar la solicitud de la licitación'];
+            return $this->errorResponse( $tenderVersionError, 500 );
+        }
+
+        return $this->showOne($tenderVersionLast,200);
+    }
+
 }

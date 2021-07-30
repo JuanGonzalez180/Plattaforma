@@ -19,6 +19,7 @@ class TendersVersions extends Model
     const LICITACION_PUBLISH    = 'Publicada';
     const LICITACION_CLOSED     = 'Cerrada';
     const LICITACION_FINISHED   = 'Finalizada';
+    const LICITACION_DECLINED   = 'Declinada';
 
     protected $fillable = [
         'tenders_id',
