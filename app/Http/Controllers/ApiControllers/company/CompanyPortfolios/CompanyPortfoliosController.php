@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\ApiControllers\company\CompanyTeams;
+namespace App\Http\Controllers\ApiControllers\company\CompanyPortfolios;
 
 use JWTAuth;
 use App\Models\Company;
-use App\Models\Team;
+use App\Models\Portfolio;
 use Illuminate\Http\Request;
-use App\Transformers\TeamsTransformer;
 use App\Http\Controllers\ApiControllers\ApiController;
 
-class CompanyTeamsController extends ApiController
+class CompanyPortfoliosController extends ApiController
 {
     //
     public function validateUser(){
@@ -31,14 +30,18 @@ class CompanyTeamsController extends ApiController
             return $this->errorResponse( $companyError, 500 );
         }
 
-        $teams = Team::where('company_id', $company->id)
-                ->where('status', Team::TEAM_APPROVED)
-                ->orderBy('updated_at', 'desc')
-                ->get();
+        $portfolios = Portfolio::where('company_id', $company->id)
+                ->where('status', Portfolio::PORTFOLIO_PUBLISH)
+                ->orderBy('updated_at', 'desc');
         
-        $transformer = Team::TRANSFORMER_TEAM_COMPANY;
+        foreach ( $portfolios as $key => $portfolio) {
+            $portfolio->image;
+            $portfolio->files;
+        }
 
-        return $this->showAllPaginateSetTransformer($teams, $transformer);
+        $portfolios = $portfolios->get();
+        
+        return $this->showAllPaginate($portfolios);
     }
     
 }

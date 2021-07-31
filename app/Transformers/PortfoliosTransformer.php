@@ -47,6 +47,7 @@ class PortfoliosTransformer extends TransformerAbstract
             'user_id' => (int)$portfolio->user_id,
             'company_id' => (int)$portfolio->company_id,
             'image'=> $portfolio->image,
+            'files'=> $portfolio->files,
             'user'=> $portfolio->user,
             'user'=> $userTransform->transform($portfolio->user),
             'created_at'=> (string)$portfolio->created_at,
