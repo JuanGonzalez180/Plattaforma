@@ -79,11 +79,17 @@ class TypesEntityController extends Controller
     public function update(Request $request, TypesEntity $typeEntity)
     {
         $requestValidated = $request->validate([
-            'name' => ['required'],
-            'type_id' => ['required'],
+            'name'      => ['required'],
+            'type_id'   => ['required'],
+            'status'    => ['required']
         ]);
-            
-        $typeEntity->update( $requestValidated );
+
+        $typeEntity->name       = $requestValidated["name"];
+        $typeEntity->type_id    = $requestValidated["type_id"];
+        $typeEntity->status     = $requestValidated["status"];
+
+        $typeEntity->save();
+        
         return redirect()->route('typesentity.index')->with([
             'status' => 'edit',
             'title' => __( $this->sectionTitle ),

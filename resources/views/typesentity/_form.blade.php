@@ -23,6 +23,15 @@
             </span>
         @enderror
     </div>
+
+    <div class="form-group col-md-6">
+        <label for="status">Estado</label>
+        <select name="status" id="type_id" class="form-control">
+            <option value="Publicado" {{ old('status', $typeEntity->status) == 'Publicado' ? 'selected' : '' }}>Publicado</option>
+            <option value="Borrador" {{ old('status', $typeEntity->status) == 'Borrador' ? 'selected' : '' }}>Borrador</option>
+        </select>
+    </div>
+
 </div>
 <a type="button" class="btn btn-danger" href="{{ route('typesentity.index') }}"><span class="oi oi-x" title="{{ $btnTextCancel }}" aria-hidden="true"></span> {{ $btnTextCancel }}</a>
 <button type="submit" class="btn btn-primary"><span class="oi oi-check" title="{{ $btnTextPrimary }}" aria-hidden="true"></span> {{ $btnTextPrimary }}</button>

@@ -14,21 +14,21 @@
                 <a type="button" class="btn btn-primary" href="{{ route('typesentity.create') }}"><span class="oi oi-plus" title="Nuevo" aria-hidden="true"></span> Crear Tipo de Entidad</a>
             </div>
         </div>
-
+        <hr>
         @include('partials.session-status')
-        <table class="table table-striped">
-            <thead class="thead-dark">
+        <table id="myTable" class="display">
+            <thead>
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Acciones</th>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($typesEntity as $typeEntity)
                     <tr>
-                        <th scope="row">{{ $loop->iteration }}</th>
+                        <td scope="row">{{ $loop->iteration }}</td>
                         <td>{{ $typeEntity->name }}</td>
                         <td>{{ $typeEntity->type->name }}</td>
                         <td>
