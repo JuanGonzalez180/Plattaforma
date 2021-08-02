@@ -22,6 +22,7 @@
                     <th>#</th>
                     <th>Nombre</th>
                     <th>Tipo</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -31,6 +32,7 @@
                         <td scope="row">{{ $loop->iteration }}</td>
                         <td>{{ $typeEntity->name }}</td>
                         <td>{{ $typeEntity->type->name }}</td>
+                        <td>{{ $typeEntity->status }}</td>
                         <td>
                             <a type="button" href="{{ route( 'typesentity.edit', $typeEntity ) }}" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
                             <form method="POST" action="{{ route( 'typesentity.destroy', $typeEntity ) }}" class="d-inline">
