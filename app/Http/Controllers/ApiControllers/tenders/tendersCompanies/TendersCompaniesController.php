@@ -62,10 +62,10 @@ class TendersCompaniesController extends ApiController
 
         $tender = Tenders::findOrFail($tender_id);
 
-        if( count($companies) + count($tender->tenderCompanies) < 3 ){
+        /*if( count($companies) + count($tender->tenderCompanies) < 3 ){
             $tenderCompanyError = [ 'tenderVersion' => 'Error, Se debe seleccionar mínimo 3 compañías'];
             return $this->errorResponse( $tenderCompanyError, 500 );
-        }
+        }*/
 
         // Iniciar Transacción
         DB::beginTransaction();
