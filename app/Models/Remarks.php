@@ -2,47 +2,48 @@
 
 namespace App\Models;
 
-use App\User;
-use App\Tenders;
+use App\Models\User;
+use App\Models\Tenders;
+use App\Transformers\RemarksTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Remarks extends Model
 {
-    use HasFactory;
+    protected $guarded = [];
 
+    use HasFactory;
+    
     const REMARKS_CREATED = 'Creado';
-    const REMARKS_HIDDEN = 'Oculto';
-    const REMARKS_ANSWERED = 'Respondido';
+    // const REMARKS_HIDDEN = 'Oculto';
+    // const REMARKS_ANSWERED = 'Respondido';
+    
+    public $transformer = RemarksTransformer::class;
 
     protected $fillable = [
         'user_id',
-        'type',
-        'type_id',
+        'company_id',
+        'remarksable_id',
+        'remarksable_type',
         'calification',
         'message',
-        'status',
-        'date',
-        'date_update'
+        'status'
+    ];
+
+    protected $hidden = [
+        'remarksable_id',
+        'remarksable_type',
     ];
 
     public function isStatusCreated(){
         return $this->status == Remarks::REMARKS_CREATED;
     }
 
-    public function isStatusHidden(){
-        return $this->status == Remarks::REMARKS_HIDDEN;
-    }
-
-    public function isStatusAnswered(){
-        return $this->status == Remarks::REMARKS_ANSWERED;
-    }
-
     public function user(){
         return $this->belongsTo(User::class);
     }
 
-    public function tender(){
-        return $this->belongsTo(Tenders::class);
+    public function remarksable(){
+        return $this->morphTo();
     }
 }
