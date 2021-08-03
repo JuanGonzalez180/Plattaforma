@@ -18,6 +18,7 @@ use App\Http\Controllers\ApiControllers\company\CompanyTenders\CompanyTendersCon
 use App\Http\Controllers\ApiControllers\company\CompanyTenders\CompanyTendersTransactController;
 use App\Http\Controllers\ApiControllers\company\CompanyBlogs\CompanyBlogsController;
 use App\Http\Controllers\ApiControllers\company\CompanyProducts\CompanyProductsController;
+use App\Http\Controllers\ApiControllers\company\CompanyRemarks\CompanyRemarksController;
 use App\Http\Controllers\ApiControllers\company\CompanyTeams\CompanyTeamsController;
 use App\Http\Controllers\ApiControllers\company\CompanyPortfolios\CompanyPortfoliosController;
 use App\Http\Controllers\ApiControllers\company\CompanyFiles\CompanyFilesController;
@@ -61,6 +62,8 @@ use App\Http\Controllers\ApiControllers\myaccount\RegisterMemberController;
 // Subscriptions
 use App\Http\Controllers\ApiControllers\stripe\SubscriptionsStripeController;
 use App\Http\Controllers\ApiControllers\user\UsersController;
+// Remarks
+use App\Http\Controllers\ApiControllers\remarks\RemarksController;
 
 /*
 |--------------------------------------------------------------------------
@@ -213,12 +216,12 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      * Company
      */
     Route::get('/company/{slug}', [CompanyController::class, 'show'])->name('company-show');
-
+    
     Route::get('/company/{slug}/detail', [CompanyController::class, 'detail'])->name('company-detail');
-
+    
     Route::get('/company/{slug}/projects', [CompanyProjectsController::class, 'index'])->name('company-projects');
     Route::get('/company/{slug}/project/{id}', [CompanyProjectsController::class, 'show'])->name('company-detail-project');
-
+    
     Route::get('/company/{slug}/tenders', [CompanyTendersController::class, 'index'])->name('company-tenders');
     Route::get('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'show'])->name('company-tender-detail');
     Route::get('/company/tenders/{id}/edit', [CompanyTendersController::class, 'edit'])->name('company-tender-edit');
@@ -227,16 +230,18 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     //participar en licitación
     Route::post('/company/{slug}/tenders/{id}/send/participate', [CompanyTendersTransactController::class, 'store'])->name('company-send-participate');
     Route::post('/company/tenders/select/participate', [CompanyTendersTransactController::class, 'postComparate'])->name('company-select-participate');
-
+    
     Route::get('/company/{slug}/blogs', [CompanyBlogsController::class, 'index'])->name('company-blogs');
     Route::get('/company/{slug}/blogs/{id}', [CompanyBlogsController::class, 'show'])->name('company-detail-blogs');
-
+    
     Route::get('/company/{slug}/products', [CompanyProductsController::class, 'index'])->name('company-products');
     Route::get('/company/{slug}/products/{id}', [CompanyProductsController::class, 'show'])->name('company-detail-products');
-
+    
     Route::get('/company/{slug}/teams', [CompanyTeamsController::class, 'index'])->name('company-teams');
     Route::get('/company/{slug}/portfolios', [CompanyPortfoliosController::class, 'index'])->name('company-portfolios');
 
+    Route::get('/company/{slug}/remarks', [CompanyRemarksController::class, 'index'])->name('company-remarks');
+    
     /**
      * Search
      */
@@ -246,10 +251,14 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('/search/companies', SearchCompanyController::class)->name('search-companies');
     Route::resource('/search/items', SearchItemController::class, ['only' => ['index']])->names('search-items');
     Route::resource('/search/like/items', SearchLikeItemController::class, ['only' => ['index']])->names('search-like-items');
-
+    
     // Route::resource('/search/items/parameters', SearchParameterController::class, ['only' => ['index']])->names('search-parameter');
     Route::get('/search/items/parameters', [SearchItemController::class, 'search'])->name('search-parameter');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
+
+    /*Remarks*/
+    Route::resource('/remarks', RemarksController::class, ['only' => ['index', 'store','edit','update','destroy']])->names('remarks');
+
 });
 // Route::post('/files', FilesController::class)->name('files');
 

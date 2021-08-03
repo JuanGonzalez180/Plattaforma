@@ -130,8 +130,20 @@ class Company extends Model
     public function files(){
         return $this->morphMany(Files::class, 'filesable');
     }
-
     
+    /*public function reviewsA(){
+        $company->
+    }*/
+
+    public function calification(){
+        $remarks = Remarks::select('remarks.*')
+                ->where('remarks.company_id', $this->id )
+                ->avg('calification');
+        if( $remarks ){
+            return $remarks;
+        }
+        return 0;
+    }
 
     public function total(){
         $total = [];
@@ -162,6 +174,10 @@ class Company extends Model
         // $total['portfolio'] = count($companySinTransform->files);
         $total['portfolio'] = $companySinTransform->portfolios
                                 ->where('status', Portfolio::PORTFOLIO_PUBLISH)
+                                ->count();
+        
+        $total['remarks'] = Remarks::select('remarks.*')
+                                ->where('remarks.company_id', $companySinTransform->id )
                                 ->count();
 
         return $total;
