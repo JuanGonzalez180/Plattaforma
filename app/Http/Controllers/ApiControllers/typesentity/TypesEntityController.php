@@ -14,7 +14,7 @@ class TypesEntityController extends ApiController
      */
     public function __invoke()
     {
-        $typesEntity = TypesEntity::all();
+        $typesEntity = TypesEntity::where('status', TypesEntity::ENTITY_PUBLISH)->get();
         return $this->showAll($typesEntity);
     }
 }

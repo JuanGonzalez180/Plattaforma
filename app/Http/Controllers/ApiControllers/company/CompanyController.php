@@ -6,9 +6,10 @@ use JWTAuth;
 use App\Models\Blog;
 use App\Models\Company;
 use App\Models\Image;
+use App\Models\Remarks;
 use App\Models\Products;
-use App\Models\Portfolio;
 use App\Models\Projects;
+use App\Models\Portfolio;
 use App\Models\Team;
 use App\Models\Tenders;
 use App\Models\TypesEntity;
@@ -276,6 +277,18 @@ class CompanyController extends ApiController
         foreach ( $company->portfolios as $key => $portfolio) {
             $portfolio->image;
             $portfolio->files;
+        }
+
+        // Calificaciones.
+        $company->remarks = Remarks::select('remarks.*')
+                    ->where('remarks.company_id', $company->id )
+                    ->skip(0)->take(8)
+                    ->orderBy('id', 'desc')
+                    ->get();
+        foreach ( $company->remarks as $key => $remark) {
+            $user = $userTransform->transform($remark->user);
+            unset( $remark->user );
+            $remark->user = $user;
         }
 
         return $this->showOneTransform($company, 200);
