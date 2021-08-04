@@ -21,7 +21,7 @@
             </div>
         @endif
 
-        <table id="myTable" class="display">
+        <table id="myTable" class="table table-striped">
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>

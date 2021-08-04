@@ -16,7 +16,7 @@
         </div>
 
         @include('partials.session-status')        
-        <table class="table table-striped">
+        <table id="myTable" class="table table-striped">
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>

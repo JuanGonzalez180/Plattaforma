@@ -16,8 +16,8 @@
         </div>
         <hr>
         @include('partials.session-status')
-        <table id="myTable" class="display">
-            <thead>
+        <table id="myTable" class="table table-striped">
+            <thead class="thead-dark">
                 <tr>
                     <th>#</th>
                     <th>Nombre</th>

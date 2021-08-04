@@ -8,12 +8,7 @@
 @section('content')
     @include('partials.structure.open-main')
 
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('companies.index') }}">Compañias</a></li>
-            <li class="breadcrumb-item active">Proyectos</li>
-        </ol>
-    </nav>
+    <a href="{{ route('companies.index') }}"  class="link-primary"><span class="oi oi-arrow-left" title="Ver" aria-hidden="true"></span> Atras</a>
 
     <div class="row align-items-center">
         <div class="col">
@@ -21,8 +16,10 @@
         </div>
     </div>
 
+    <hr>
+
     @include('partials.session-status')
-    <table id="myTable" class="display">
+    <table id="myTable" class="table table-striped">
         <thead class="thead-dark">
             <tr>
                 <th scope="col">#</th>
@@ -53,7 +50,7 @@
                     <div class="btn-group" role="group">
                         <a type="button" href="{{ url('/proyecto/'.$project->id) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
                         <button id="btnGroupDrop1" type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="oi oi-cog" title="Ver" aria-hidden="true"></span>
+                            <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                             <a class="dropdown-item" href="{{ url('/tender/project/'.$project->id) }}">Licitaciones</a>

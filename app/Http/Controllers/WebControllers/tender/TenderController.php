@@ -12,8 +12,7 @@ class TenderController extends Controller
     public function index($type, $id)
     {
         $tenders = ($type == 'company') ? Tenders::where('company_id',$id) : Tenders::where('project_id',$id);
-        $tenders = $tenders->orderBy('created_at','asc')
-                    ->paginate(15);
+        $tenders = $tenders->orderBy('created_at','asc')->get();
             
         return view('tender.index', compact('tenders'));
     }

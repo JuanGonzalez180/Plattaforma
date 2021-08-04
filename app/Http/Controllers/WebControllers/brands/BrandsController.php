@@ -23,9 +23,17 @@ class BrandsController extends Controller
      */
     public function index()
     {
-        $brands = Brands::all();
-        $enabled = Brands::BRAND_ENABLED;
+        $brands     = Brands::all();
+        $enabled    = Brands::BRAND_ENABLED;
         return view('brand.index', compact('brands', 'enabled'));
+    }
+
+    public function indexCompanyBrand($id)
+    {
+        $brands     = Brands::where('company_id',$id)->get();
+        $enabled    = Brands::BRAND_ENABLED;
+        $type       = 'Company';
+        return view('brand.index', compact('brands', 'enabled', 'type'));
     }
 
     /**

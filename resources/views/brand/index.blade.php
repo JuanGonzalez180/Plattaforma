@@ -7,6 +7,11 @@
 
 @section('content')
     @include('partials.structure.open-main')
+
+        @if(isset($type) && $type == 'Company')
+            <a href="{{ route('companies.index') }}"  class="link-primary"><span class="oi oi-arrow-left" title="Ver" aria-hidden="true"></span> Atras</a>
+        @endif
+
         <div class="row align-items-center">
             <div class="col">
                 <h1>Marcas</h1>
@@ -21,7 +26,9 @@
             </div>
         @endif
 
-        <table class="table table-striped">
+        <hr>
+
+        <table id="myTable" class="table table-striped">
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>
@@ -43,9 +50,9 @@
                                     @csrf
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Deseas cambiar el estado de la Marca?')" data-toggle="tooltip" title='Eliminar'> 
                                         @if ($brand->status == $enabled)
-                                            <i class="fas fa-eye"> </i> 
+                                            <i class="far fa-eye"></i>
                                         @else
-                                            <i class="fas fa-eye-slash"> </i> 
+                                            <i class="far fa-eye-slash"></i>
                                         @endif
                                     </button>
                                 </form>

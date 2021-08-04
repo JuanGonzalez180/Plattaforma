@@ -12,8 +12,9 @@
             <h1>Licitaciones</h1>
         </div>
     </div>
+    <hr>
     @include('partials.session-status')
-    <table id="myTable" class="display">
+    <table id="myTable" class="table table-striped">
         <thead class="thead-dark">
             <tr>
                 <th scope="col">#</th>
@@ -38,7 +39,7 @@
                         <div class="btn-group" role="group">
                             <a type="button" href="{{ url('/licitaciones/'.$tender->id) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
                             <button id="btnGroupDrop1" type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="oi oi-cog" title="Ver" aria-hidden="true"></span>
+                                <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                             </button>
                             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                             </div>

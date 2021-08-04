@@ -7,13 +7,8 @@
 @section('content')
     @include('partials.structure.open-main')
 
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('companies.index') }}">Compañias</a></li>
-                <li class="breadcrumb-item"><a href="{{ url('/project/company/'.$project->company_id) }}">Proyectos</a></li>
-                <li class="breadcrumb-item active">Detalle del proyecto</li>
-            </ol>
-        </nav>
+        <a href="{{ url()->previous() }}" class="link-primary"><span class="oi oi-arrow-left" title="Ver" aria-hidden="true"></span> Atras</a>
+        
         <h1>Proyecto</h1>
 
         <dl class="row">
