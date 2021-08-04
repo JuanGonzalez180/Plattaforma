@@ -1,5 +1,9 @@
 $(document).ready( function () {
     $('#myTable').DataTable({
+        "lengthMenu": [
+            [20, 50, 100],
+            [20, 50, 100]
+        ],
         "language": {
             "lengthMenu": "Mostrar _MENU_ registros por pagina",
             "zeroRecords": "Nothing found - sorry",

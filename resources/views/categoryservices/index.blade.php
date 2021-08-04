@@ -21,7 +21,7 @@
             </div>
         @endif
 
-        <table class="table table-striped">
+        <table id="myTable" class="display">
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">#</th>
@@ -35,7 +35,11 @@
                     <tr>
                         <th scope="row">{{ $loop->iteration }}</th>
                         <td>{{ $category->name }}</td>
-                        <td>{{ $category->parent['name'] }}</td>
+                        <td>
+                            @if(!is_null($category->parent['name']))
+                                {{$category->parent['name']}}
+                            @endif
+                        </td>
                         <td>
                             <a type="button" href="{{ route('categoryservices.edit', $category ) }}" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
                             <form method="POST" action="{{ route('categoryservices.destroy', $category->id) }}" class="d-inline">
