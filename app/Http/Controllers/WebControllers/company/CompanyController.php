@@ -13,6 +13,17 @@ class CompanyController extends Controller
         $companies = Company::query()->get();
         return view('company.index', compact('companies'));
     }
+
+    public function getCompanyType($type)
+    {
+        $companies = Company::select('companies.*')
+            ->join('types_entities','types_entities.id','=','companies.type_entity_id')
+            ->join('types','types.id','=','types_entities.type_id')
+            ->where('types.name','=',$type)
+            ->get();
+
+        return view('company.index', compact('companies','type'));
+    }
     
     public function show($id)
     {

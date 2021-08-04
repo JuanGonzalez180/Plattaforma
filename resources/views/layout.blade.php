@@ -77,9 +77,15 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('companies.index') }}">
+                                    <a class="nav-link" href="{{ route('companies-type', 'Demanda') }}">
                                         <span data-feather="home"></span>
-                                        Compañias <span class="sr-only">(current)</span>
+                                        Compañias Demanda<span class="sr-only">(current)</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('companies-type', 'Oferta') }}">
+                                        <span data-feather="home"></span>
+                                        Compañias Oferta<span class="sr-only">(current)</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">

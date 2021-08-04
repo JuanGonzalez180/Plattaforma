@@ -6,11 +6,7 @@
 
 @section('content')
     @include('partials.structure.open-main')
-
-        <a href="{{ url()->previous() }}" class="link-primary"><span class="oi oi-arrow-left" title="Ver" aria-hidden="true"></span> Atras</a>
-        
         <h1>Proyecto</h1>
-
         <dl class="row">
             <dt class="col-sm-4">Nombre:</dt>
             <dd class="col-sm-8">{{ $project->name }}</dd>

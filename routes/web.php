@@ -75,6 +75,8 @@ Route::group(['middleware' => 'auth'], function() {
                 ->names('companies')
                 ->parameters(['companias' => 'companies']);
 
+        Route::get('/company/{type}', [CompanyController::class, 'getCompanyType'])->name('companies-type');
+
         // Licitaciones
         Route::resource('licitaciones', TenderController::class, ['only' => ['edit','show']])
                 ->names('tender')

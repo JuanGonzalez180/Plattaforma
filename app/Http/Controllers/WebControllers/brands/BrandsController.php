@@ -156,7 +156,6 @@ class BrandsController extends Controller
      */
     public function destroy($id)
     {
-        //
         $brand = Brands::find($id);
         $status = ($brand->status == Brands::BRAND_ENABLED) ? Brands::BRAND_DISABLED : Brands::BRAND_ENABLED;
         $brand->status = $status;

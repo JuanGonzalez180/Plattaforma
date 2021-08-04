@@ -6,9 +6,7 @@
 
 @section('content')
     @include('partials.structure.open-main')
-
-        <a href="{{ route('companies.index') }}"  class="link-primary"><span class="oi oi-arrow-left" title="Ver" aria-hidden="true"></span> Atras</a>
-
+    
         <h1>Compañia</h1>
 
         <dl class="row">

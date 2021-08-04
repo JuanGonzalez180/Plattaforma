@@ -2,14 +2,24 @@
 @extends('layout')
 
 @section('title')
-    Compañias
+    @if($type == 'Demanda')
+        Compañias tipo demanda
+    @else    
+        Compañias tipo oferta
+    @endif
 @endsection
 
 @section('content')
     @include('partials.structure.open-main')
     <div class="row align-items-center">
         <div class="col">
-            <h1>Compañias</h1>
+            <h1>
+            @if($type == 'Demanda')
+                Compañias tipo demanda
+            @else    
+                Compañias tipo Oferta
+            @endif
+            </h1>
         </div>
     </div>
     <hr>
@@ -20,7 +30,6 @@
                 <th scope="col">#</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Entidad</th>
-                <th scope="col">Tipo</th>
                 <th scope="col">Estado</th>
                 <th scope="col">Acciones</th>
             </tr>
@@ -31,7 +40,6 @@
                 <td>{{$loop->iteration}}</td>
                 <td>{{$company->name}}</td>
                 <td>{{$company->type_entity->name}}</td>
-                <td>{{$company->type_entity->type->name}}</td>
                 <td>{{$company->status}}</td>
                 <td>
                     <div class="btn-group" role="group">

@@ -8,10 +8,6 @@
 @section('content')
     @include('partials.structure.open-main')
 
-        @if(isset($type) && $type == 'Company')
-            <a href="{{ route('companies.index') }}"  class="link-primary"><span class="oi oi-arrow-left" title="Ver" aria-hidden="true"></span> Atras</a>
-        @endif
-
         <div class="row align-items-center">
             <div class="col">
                 <h1>Marcas</h1>
