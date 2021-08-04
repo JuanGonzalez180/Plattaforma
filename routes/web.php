@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebControllers\user\UsersController;
+use App\Http\Controllers\WebControllers\company\CompanyController;
+use App\Http\Controllers\WebControllers\project\ProjectController;
+use App\Http\Controllers\WebControllers\tender\TenderController;
 use App\Http\Controllers\WebControllers\country\CountryController;
 use App\Http\Controllers\WebControllers\category\CategoryController;
 use App\Http\Controllers\WebControllers\categoryservices\CategoryServicesController;
@@ -63,6 +66,26 @@ Route::group(['middleware' => 'auth'], function() {
         Route::resource('tipos-entidad', TypesEntityController::class)
                 ->names('typesentity')
                 ->parameters(['tipos-entidad' => 'typeEntity']);
+
+        // Compañias
+        Route::resource('companias', CompanyController::class)
+                ->names('companies')
+                ->parameters(['companias' => 'companies']);
+
+        // Licitaciones
+        Route::resource('licitaciones', TenderController::class, ['only' => ['edit','show']])
+                ->names('tender')
+                ->parameters(['licitaciones' => 'tender']);
+
+        Route::get('/tender/{type}/{id}', [TenderController::class, 'index'])->name('tender-company-id');
+        
+        // Proyectos
+        
+        Route::resource('proyecto', ProjectController::class, ['only' => ['edit','show']])
+                ->names('project')
+                ->parameters(['proyecto' => 'project']);
+
+        Route::get('/project/company/{id}', [ProjectController::class, 'index'])->name('project-company-id');
 
         // Contenido estatico
         Route::resource('contenido-estatico', StaticContentController::class)

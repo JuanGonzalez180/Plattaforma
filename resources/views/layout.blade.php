@@ -74,6 +74,12 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('companies.index') }}">
+                                        <span data-feather="home"></span>
+                                        Compañias <span class="sr-only">(current)</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" href="{{ route('countries.index') }}">
                                         <span data-feather="file"></span>
                                         Paises

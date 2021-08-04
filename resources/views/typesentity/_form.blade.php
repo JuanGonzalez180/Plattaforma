@@ -26,10 +26,16 @@
 
     <div class="form-group col-md-6">
         <label for="status">Estado</label>
-        <select name="status" id="type_id" class="form-control">
+        <select name="status" id="status" class="form-control">
+            <option value="">Estado</option>
             <option value="Publicado" {{ old('status', $typeEntity->status) == 'Publicado' ? 'selected' : '' }}>Publicado</option>
             <option value="Borrador" {{ old('status', $typeEntity->status) == 'Borrador' ? 'selected' : '' }}>Borrador</option>
         </select>
+        @error('status')
+            <span class="text-danger" role="alert">
+                <small><b>{{ $message }}</b></small>
+            </span>
+        @enderror
     </div>
 
 </div>

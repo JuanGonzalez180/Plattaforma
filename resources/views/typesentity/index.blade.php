@@ -27,7 +27,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($typesEntity as $typeEntity)
+                @forelse($typesEntity as $typeEntity)
                     <tr>
                         <td scope="row">{{ $loop->iteration }}</td>
                         <td>{{ $typeEntity->name }}</td>
@@ -42,9 +42,6 @@
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="4">No hay elementos</td>
-                    </tr>
                 @endforelse
             </tbody>
         </table>
