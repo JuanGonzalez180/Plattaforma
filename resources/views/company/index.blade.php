@@ -24,6 +24,13 @@
     </div>
     <hr>
     @include('partials.session-status')
+
+    @if(session()->get('success'))
+        <div class="alert alert-success">
+            {{ session()->get('success') }}
+        </div>
+    @endif
+
     <table id="myTable" class="table table-striped">
         <thead class="thead-dark">
             <tr>
@@ -44,7 +51,7 @@
                 <td>
                     <div class="btn-group" role="group">
                         <a type="button" href="{{ route('companies.show', $company->id ) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
-                        <!--<a type="button" href="" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Ver" aria-hidden="true"></span> </a>-->
+                        <a type="button" href="{{ route('companies.edit', $company->id ) }}" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
                         <button id="btnGroupDrop1" type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                         </button>

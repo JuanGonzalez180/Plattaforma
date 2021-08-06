@@ -85,11 +85,12 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/tender/{type}/{id}', [TenderController::class, 'index'])->name('tender-company-id');
 
         // Productos/Servicios
-        Route::resource('product', ProductController::class, ['only' => ['edit','show']])
+        Route::get('/company/{type}/{id}', [ProductController::class, 'indexType'])->name('product-company-id');
+        
+        Route::resource('product', ProductController::class, ['only' => ['edit','show','update']])
                 ->names('productos')
                 ->parameters(['product' => 'productos']);
 
-        Route::get('/company/{type}/{id}', [ProductController::class, 'indexType'])->name('product-company-id');
         
         // Proyectos
         Route::resource('proyecto', ProjectController::class, ['only' => ['edit','show']])

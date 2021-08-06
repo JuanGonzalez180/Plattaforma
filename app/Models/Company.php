@@ -31,9 +31,9 @@ class Company extends Model
     public $transformer = CompanyTransformer::class;
     public $transformerDetail = CompanyDetailTransformer::class;
 
-    const COMPANY_CREATED = 'Creado';
-    const COMPANY_APPROVED = 'Aprobado';
-    const COMPANY_REJECTED = 'Rechazado';
+    const COMPANY_CREATED   = 'Creado';
+    const COMPANY_APPROVED  = 'Aprobado';
+    const COMPANY_REJECTED  = 'Rechazado';
 
     protected $fillable = [
         'name',
