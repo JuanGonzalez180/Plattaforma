@@ -71,12 +71,6 @@
                         <div class="sidebar-sticky">
                             <ul class="nav flex-column">
                                 <li class="nav-item">
-                                    <a class="nav-link active" href="{{ route('users.index') }}">
-                                        <span data-feather="home"></span>
-                                        Usuarios <span class="sr-only">(current)</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
                                     <a class="nav-link" href="{{ route('companies-type', 'Demanda') }}">
                                         <span data-feather="home"></span>
                                         Compañias Demanda<span class="sr-only">(current)</span>
@@ -165,6 +159,7 @@
         <!-- Datatables -->
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
         <script src="{{ asset('js/datatables/app.js') }}"></script>
+        <script src="{{ asset('js/tooltip/app.js') }}"></script>
         @yield('js')
     </body>
 </html>

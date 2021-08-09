@@ -40,11 +40,39 @@ class UsersController extends Controller
         // Enviamos mensaje al correo del usuario
         Mail::to($user->email)->send(new ValidatedAccount($user));
 
-        return redirect()->route('users.index')->with([
+        return ($company->type_company() == 'Oferta') 
+        ? redirect()->route('companies-type', 'Oferta')->with([
             'status' => 'edit',
             'title' => __( $this->sectionTitle ),
-        ]);
+        ])
+        : redirect()->route('companies-type', 'Demanda')->with([
+            'status' => 'edit',
+            'title' => __( $this->sectionTitle ),
+        ]) ;
     }
+
+    public function disapproved(Request $request){
+        $user    = User::findOrFail($request->id);
+        // Obtenemos la Compañia 
+        $company = $user->company->first();
+        // Cambiamos el estado de la compañia
+        $company->status = Company::COMPANY_REJECTED;
+        $company->save();
+
+        return ($company->type_company() == 'Oferta') 
+        ? redirect()->route('companies-type', 'Oferta')->with([
+            'status' => 'edit',
+            'title' => __( $this->sectionTitle ),
+        ])
+        : redirect()->route('companies-type', 'Demanda')->with([
+            'status' => 'edit',
+            'title' => __( $this->sectionTitle ),
+        ]) ;
+    }
+
+
+
+    
 
     /**
      * Show the form for editing the specified resource.

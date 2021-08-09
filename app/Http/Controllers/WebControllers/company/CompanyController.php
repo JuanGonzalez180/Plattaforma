@@ -5,8 +5,10 @@ namespace App\Http\Controllers\WebControllers\company;
 use App\Models\Company;
 use App\Models\Addresses;
 use Illuminate\Http\Request;
+use App\Mail\ValidatedAccount;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 
 class CompanyController extends Controller
 {
@@ -18,11 +20,24 @@ class CompanyController extends Controller
 
     public function getCompanyType($type)
     {
-        $companies = Company::select('companies.*')
+
+        $companies_a = Company::select('companies.*')
+            ->where('companies.status','=',Company::COMPANY_CREATED)
             ->join('types_entities','types_entities.id','=','companies.type_entity_id')
             ->join('types','types.id','=','types_entities.type_id')
             ->where('types.name','=',$type)
+            ->orderBy('companies.updated_at','desc')
             ->get();
+            
+        $companies_b = Company::select('companies.*')
+            ->where('companies.status','<>',Company::COMPANY_CREATED)
+            ->join('types_entities','types_entities.id','=','companies.type_entity_id')
+            ->join('types','types.id','=','types_entities.type_id')
+            ->where('types.name','=',$type)
+            ->orderBy('companies.updated_at','desc')
+            ->get();
+
+        $companies = $companies_a->merge($companies_b);
 
         return view('company.index', compact('companies','type'));
     }
@@ -78,6 +93,36 @@ class CompanyController extends Controller
 
         return redirect()->route('companies-type', ($company->type_entity->type->name == 'Demanda')? 'Demanda': 'Oferta')->with([
             'title' => "La compañia fue actulizada con exito",
+        ]);
+    }
+
+    public function approve(Request $request){
+        $company = Company::find($request->id);
+        // Cambiamos el estado de la compañia
+        $company->status = Company::COMPANY_APPROVED;
+        $company->save();
+        // Enviamos mensaje al correo del usuario
+        Mail::to($company->user->email)->send(new ValidatedAccount($company->user));
+
+        $type_company = ($company->type_company() == 'Oferta')? 'Oferta' : 'Demanda';
+
+        return redirect()->route('companies-type', $type_company)->with([
+            'status'    => 'edit',
+            'title'     => 'La compañia'
+        ]);
+    }
+
+    public function disapproved(Request $request){
+        $company = Company::find($request->id);
+        // Cambiamos el estado de la compañia
+        $company->status = Company::COMPANY_REJECTED;
+        $company->save();
+
+        $type_company = ($company->type_company() == 'Oferta')? 'Oferta' : 'Demanda';
+
+        return redirect()->route('companies-type', $type_company)->with([
+            'status'    => 'edit',
+            'title'     => 'La compañia'
         ]);
     }
 }

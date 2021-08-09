@@ -119,7 +119,11 @@ Route::group(['middleware' => 'auth'], function() {
                 ->names('users')
                 ->parameters(['usuarios' => 'user']);
 
-        Route::post('usuarios',[App\Http\Controllers\WebControllers\user\UsersController::class, 'approve'])
+                
+        Route::post('usuarios/disapproved',[CompanyController::class, 'disapproved'])
+                ->name('users.disapproved');
+
+        Route::post('usuarios/approve',[CompanyController::class, 'approve'])
                 ->name('users.approve');
 
         // Stripe

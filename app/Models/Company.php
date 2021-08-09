@@ -61,6 +61,10 @@ class Company extends Model
         return $this->belongsTo(TypesEntity::class);
     }
 
+    public function type_company(){
+        return $this->type_entity->type->name;
+    }
+
     public function user(){
         return $this->belongsTo(User::class);
     }

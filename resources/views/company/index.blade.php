@@ -47,11 +47,27 @@
                 <td>{{$loop->iteration}}</td>
                 <td>{{$company->name}}</td>
                 <td>{{$company->type_entity->name}}</td>
-                <td>{{$company->status}}</td>
+                <td>
+                    @if($company && $company->status == 'Creado' )
+                    <form method="POST" action="{{ route( 'users.approve', $company->user ) }}" class="d-inline">
+                        @csrf
+                        <input type="hidden" name="id" value="{{$company->id}}"/>
+                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('¿Deseas aprobar el usuario?')" data-toggle="tooltip" title='Abrobar'><i class="fas fa-check"></i></i></button>
+                    </form>
+                    <form method="POST" action="{{ route( 'users.disapproved', $company->user ) }}" class="d-inline">
+                        @csrf
+                        <input type="hidden" name="id" value="{{$company->id}}"/>
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Deseas rechazar el usuario?')" data-toggle="tooltip" title='Rechazar'><i class="fas fa-times"></i></button>
+                    </form>
+                    @elseif($company && $company->status == 'Aprobado' )
+                        <span class="badge badge-success"><i class="fas fa-check"></i> {{$company->status}}</span>
+                    @else
+                        <span class="badge badge-danger"><i class="fas fa-times"></i> {{$company->status}}</span>
+                    @endif
+                </td>
                 <td>
                     <div class="btn-group" role="group">
                         <a type="button" href="{{ route('companies.show', $company->id ) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
-                        <a type="button" href="{{ route('companies.edit', $company->id ) }}" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
                         <button id="btnGroupDrop1" type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                         </button>

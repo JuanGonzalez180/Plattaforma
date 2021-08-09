@@ -33,20 +33,18 @@
                 <dt class="col-sm-12">Versiones de la licitación:</dt>
                 <dd class="col-sm-12">
                     <div class="accordion" id="accordionExample">
-
-                        @foreach($tender->tendersVersion as $key=>$version)
+                        @foreach($tender->tendersVersion->sortBy([ ['updated_at', 'desc'] ]) as $key=>$version)
                         <div class="card">
                             <div class="card-header" id="heading{{$key}}">
                             <h2 class="mb-0">
                                 <button class="btn btn-link btn-block text-left {{ ($key > 0)? 'collapsed' : ''}}" type="button" data-toggle="collapse" data-target="#collapse{{$key}}" aria-expanded="{{ ($key > 0)? 'true' : 'false'}}" aria-controls="collapse{{$key}}">
-                                {{$version->adenda}}
+                                {{$version->updated_at}}
                                 </button>
                             </h2>
                             </div>
                             <div id="collapse{{$key}}" class="collapse {{ ($key > 0)? '' : 'show'}}" aria-labelledby="heading{{$key}}" data-parent="#accordionExample">
                                 <div class="card-body">
                                     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                    
                                 </div>
                             </div>
                         </div>
