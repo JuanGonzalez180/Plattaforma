@@ -5,6 +5,8 @@ use App\Http\Controllers\WebControllers\user\UsersController;
 use App\Http\Controllers\WebControllers\company\CompanyController;
 use App\Http\Controllers\WebControllers\project\ProjectController;
 use App\Http\Controllers\WebControllers\tender\TenderController;
+use App\Http\Controllers\WebControllers\blog\BlogController;
+use App\Http\Controllers\WebControllers\portfolio\PortfolioController;
 use App\Http\Controllers\WebControllers\product\ProductController;
 use App\Http\Controllers\WebControllers\country\CountryController;
 use App\Http\Controllers\WebControllers\category\CategoryController;
@@ -75,6 +77,9 @@ Route::group(['middleware' => 'auth'], function() {
                 ->names('companies')
                 ->parameters(['companias' => 'companies']);
 
+        Route::post('companies/edit/status',[CompanyController::class, 'editStatus'])
+                ->name('company.edit.status');
+
         Route::get('/company/{type}', [CompanyController::class, 'getCompanyType'])->name('companies-type');
 
         // Licitaciones
@@ -83,6 +88,9 @@ Route::group(['middleware' => 'auth'], function() {
                 ->parameters(['licitaciones' => 'tender']);
 
         Route::get('/tender/{type}/{id}', [TenderController::class, 'index'])->name('tender-company-id');
+
+        Route::post('/tender/decline',[TenderController::class, 'updateStatusDecline'])
+                ->name('tender.decline');
 
         // Productos/Servicios
         Route::get('/company/{type}/{id}', [ProductController::class, 'indexType'])->name('product-company-id');
@@ -99,6 +107,9 @@ Route::group(['middleware' => 'auth'], function() {
 
         Route::get('/project/company/{id}', [ProjectController::class, 'index'])->name('project-company-id');
 
+        Route::post('/project/edit/visible',[ProjectController::class, 'editVisible'])
+                ->name('project.edit.visible');
+
         // Contenido estatico
         Route::resource('contenido-estatico', StaticContentController::class)
                 ->names('staticcontent')
@@ -114,17 +125,18 @@ Route::group(['middleware' => 'auth'], function() {
                 ->names('socialnetwork')
                 ->parameters(['redessociales' => 'socialnetwork']);
 
-        // Usuarios
-        Route::resource('usuarios', UsersController::class, ['only' => ['index', 'edit']])
-                ->names('users')
-                ->parameters(['usuarios' => 'user']);
+        // Categorías
+        Route::resource('redessociales', SocialNetworksController::class)
+                ->names('socialnetwork')
+                ->parameters(['redessociales' => 'socialnetwork']);
 
-                
-        Route::post('usuarios/disapproved',[CompanyController::class, 'disapproved'])
-                ->name('users.disapproved');
+        // Blogs
+        Route::get('/blog/company/{id}', [BlogController::class, 'index'])
+                ->name('blog.company.id');
 
-        Route::post('usuarios/approve',[CompanyController::class, 'approve'])
-                ->name('users.approve');
+        // portafolio
+        Route::get('/portfolio/company/{id}', [PortfolioController::class, 'index'])
+                ->name('portfolio.company.id');
 
         // Stripe
         Route::resource('productos-stripe', ProductsStripeController::class)

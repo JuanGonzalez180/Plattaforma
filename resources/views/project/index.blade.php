@@ -40,7 +40,19 @@
                         <span class="badge badge-danger">{{ $project->status }}</span>
                     @endif
                 </td>
-                <td></td>
+                <td>
+                <form method="POST" action="{{ route( 'project.edit.visible') }}" class="d-inline form-project-status">
+                    @csrf
+                    <input type="hidden" name="id" value="{{$project->id}}"/>
+                    <button type="submit" class="btn btn-link btn-sm"> 
+                        @if ($project->visible == $visible)
+                            <i class="far fa-eye" data-toggle="tooltip" title='Visible'></i>
+                        @else
+                            <i class="far fa-eye-slash" data-toggle="tooltip" title='No visible'></i>
+                        @endif
+                    </button>
+                </form>
+                </td>
                 <td>
                     <div class="btn-group" role="group">
                         <a type="button" href="{{ url('/proyecto/'.$project->id) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
@@ -62,4 +74,23 @@
         </tbody>
     </table>
     @include('partials.structure.close-main')
+    <script>
+        $('.form-project-status').submit(function(e){
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "Deseas cambiar el estado del proyecto?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor:  '#d33',
+                confirmButtonText:  '¡Si, Cambiar!',
+                cancelButtonText:   'Cancelar'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                this.submit();
+            }
+            })
+        });
+    </script>
 @endsection

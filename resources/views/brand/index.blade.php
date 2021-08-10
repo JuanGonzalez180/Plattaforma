@@ -41,10 +41,10 @@
                             <a type="button" href="{{ route('brand.edit', $brand ) }}" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
                             
                             @if ( $brand->id != 1 )
-                                <form method="POST" action="{{ route('brand.destroy', $brand->id) }}" class="d-inline">
+                                <form method="POST" action="{{ route('brand.destroy', $brand->id) }}" class="d-inline form-brand-status">
                                     @method('DELETE')
                                     @csrf
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Deseas cambiar el estado de la Marca?')" data-toggle="tooltip" title='Eliminar'> 
+                                    <button type="submit" class="btn btn-danger btn-sm" data-toggle="tooltip" title='Eliminar'> 
                                         @if ($brand->status == $enabled)
                                             <i class="far fa-eye"></i>
                                         @else
@@ -63,4 +63,23 @@
             </tbody>
         </table>
     @include('partials.structure.close-main')
+    <script>
+        $('.form-brand-status').submit(function(e){
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "Deseas cambiar el estado de la Marca?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor:  '#d33',
+                confirmButtonText:  '¡Si, Cambiar!',
+                cancelButtonText:   'Cancelar'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                this.submit();
+            }
+            })
+        });
+    </script>
 @endsection

@@ -49,15 +49,17 @@
                 <td>{{$company->type_entity->name}}</td>
                 <td>
                     @if($company && $company->status == 'Creado' )
-                    <form method="POST" action="{{ route( 'users.approve', $company->user ) }}" class="d-inline">
+                    <form method="POST" action="{{ route( 'company.edit.status', $company->user ) }}" class="d-inline form-company-approve">
                         @csrf
                         <input type="hidden" name="id" value="{{$company->id}}"/>
-                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('¿Deseas aprobar el usuario?')" data-toggle="tooltip" title='Abrobar'><i class="fas fa-check"></i></i></button>
+                        <input type="hidden" name="status" value="Aprobado"/>
+                        <button type="submit" class="btn btn-success btn-sm" data-toggle="tooltip" title='Abrobar'><i class="far fa-thumbs-up"></i></button>
                     </form>
-                    <form method="POST" action="{{ route( 'users.disapproved', $company->user ) }}" class="d-inline">
+                    <form method="POST" action="{{ route( 'company.edit.status', $company->user ) }}" class="d-inline form-company-disapprove">
                         @csrf
                         <input type="hidden" name="id" value="{{$company->id}}"/>
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Deseas rechazar el usuario?')" data-toggle="tooltip" title='Rechazar'><i class="fas fa-times"></i></button>
+                        <input type="hidden" name="status" value="Rechazado"/>
+                        <button type="submit" class="btn btn-danger btn-sm" data-toggle="tooltip" title='Rechazar'><i class="far fa-thumbs-down"></i></button>
                     </form>
                     @elseif($company && $company->status == 'Aprobado' )
                         <span class="badge badge-success"><i class="fas fa-check"></i> {{$company->status}}</span>
@@ -71,18 +73,18 @@
                         <button id="btnGroupDrop1" type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                         </button>
-                        @if($company->type_entity->type->name == 'Demanda')
                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                        @if($company->type_entity->type->name == 'Demanda')
                             <a class="dropdown-item" href="{{ route('project-company-id', $company->id ) }}">Proyectos</a>
                             <a class="dropdown-item" href="{{ route('tender-company-id', ['company',$company->id] ) }}">Licitaciones</a>
-                        </div>
                         @else
-                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                             <a class="dropdown-item" href="{{ route('product-company-id', ['product', $company->id] ) }}">Productos</a>
                             <a class="dropdown-item" href="{{ route('product-company-id', ['service', $company->id] ) }}">Servicios</a>
-                            <a class="dropdown-item" href="{{ route('company-brand-id', $company->id ) }}">Marca</a>
-                        </div>
+                            <a class="dropdown-item" href="{{ route('company-brand-id', $company->id ) }}">Marcas</a>
                         @endif
+                            <a class="dropdown-item" href="{{ route('blog.company.id', $company->id ) }}">Blogs</a>
+                            <a class="dropdown-item" href="{{ route('portfolio.company.id', $company->id ) }}">Portafolios</a>
+                        </div>
                     </div>
                 </td>
             </tr>
@@ -94,4 +96,40 @@
         </tbody>
     </table>
     @include('partials.structure.close-main')
+    <script>
+        $('.form-company-approve').submit(function(e){
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "La compañia estara aprobada",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor:  '#d33',
+                confirmButtonText:  '¡Si, Aprobar!',
+                cancelButtonText:   'Cancelar'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                this.submit();
+            }
+            })
+        });
+        $('.form-company-disapprove').submit(function(e){
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "La compañia estara desaprobada",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor:  '#d33',
+                confirmButtonText:  '¡Si, desaprobar!',
+                cancelButtonText:   'Cancelar'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                this.submit();
+            }
+            })
+        });
+    </script>
 @endsection
