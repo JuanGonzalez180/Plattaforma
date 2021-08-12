@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\WebControllers\category;
 
+use DataTables;
 use App\Models\Image;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use TaylorNetwork\UsernameGenerator\Generator;
@@ -22,8 +24,45 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
-        return view('category.index', compact('categories'));
+        $parents = Category::select('id','name')
+            ->whereNull('parent_id')
+            ->orderBy('name','asc')
+            ->get();
+
+        return view('category.index', compact('parents'));
+    }
+
+    public function getCategoryParent()
+    {
+        $parent = Category::select('id','name')
+            ->whereNull('parent_id')
+            ->orderBy('name','asc')
+            ->get();
+
+        return response($parent, 200);
+    }
+
+    public function getCategoryChilds(Request $request)
+    {
+        $parent_id  = $request->parent_id;
+        $childs     = DB::select('call get_child_type_categoty("'.$parent_id.'")');
+        $ids        = array_column($childs, 'id');
+
+        $category   = Category::select('id','name','parent_id','status');
+
+        $category = (count($ids) <= 0)
+            ? $category->where('id', $parent_id) ->orderBy('id','asc')
+            : $category->whereIn('id', $ids)->orderBy('id','asc');
+
+        return DataTables::of($category)
+            ->editColumn('parent_id', function(Category $value){
+                return (is_null($value->parent_id))
+                    ? '<span class="badge badge-warning"><i class="fas fa-circle"></i> Padre</span>'
+                    : $value->parent['name'];
+            })
+            ->addColumn('actions','category.datatables.action')
+            ->rawColumns(['actions','parent_id'])
+            ->toJson();
     }
 
     /**
@@ -99,9 +138,9 @@ class CategoryController extends Controller
     public function edit($id)
     {
         //
-        $category = Category::findOrFail($id);
-        $category->icon = Image::where('imageable_id', $category->id)->where('imageable_type', $this->modelIcon)->first();
-        $categoryOptions = Category::get();
+        $category           = Category::findOrFail($id);
+        $category->icon     = Image::where('imageable_id', $category->id)->where('imageable_type', $this->modelIcon)->first();
+        $categoryOptions    = Category::get();
         return view('category.edit', compact('category', 'categoryOptions'));
     }
 

@@ -31,8 +31,8 @@
         </div>
     @endif
 
-    <table id="myTable" class="table table-striped">
-        <thead class="thead-dark">
+    <table id="myTable" class="table table-striped table-bordered" style="width:100%">
+        <thead>
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Nombre</th>
@@ -123,7 +123,7 @@
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor:  '#d33',
-                confirmButtonText:  '¡Si, desaprobar!',
+                confirmButtonText:  '¡Si, Rechazar!',
                 cancelButtonText:   'Cancelar'
             }).then((result) => {
             if (result.isConfirmed) {

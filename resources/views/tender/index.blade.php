@@ -20,9 +20,9 @@
             {{ session()->get('success') }}
         </div>
     @endif
-    
-    <table id="myTable" class="table table-striped">
-        <thead class="thead-dark">
+
+    <table id="myTable" class="table table-striped table-bordered" style="width:100%">
+        <thead>
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Nombre</th>
@@ -58,6 +58,12 @@
                                     <i class="fas fa-minus-circle"></i>
                                 </button>
                             @endif
+                            <button id="btnGroupDrop1" type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                <a class="dropdown-item" href="">Licitaciones</a>
+                            </div>
                         </div>
                     </td>
                 </tr>

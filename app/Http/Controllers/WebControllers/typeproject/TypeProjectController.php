@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\WebControllers\typeproject;
 
 
+use DataTables;
 use App\Models\Image;
 use App\Models\TypeProject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use TaylorNetwork\UsernameGenerator\Generator;
@@ -23,8 +25,35 @@ class TypeProjectController extends Controller
      */
     public function index()
     {
-        $typeprojects = TypeProject::all();
-        return view('typeproject.index', compact('typeprojects'));
+        $parents = TypeProject::select('id','name')
+            ->whereNull('parent_id')
+            ->orderBy('name','asc')
+            ->get();
+
+        return view('typeproject.index', compact('parents'));
+    }
+
+    public function getTypeProyectChilds(Request $request)
+    {
+        $parent_id  = $request->parent_id;
+        $childs     = DB::select('call get_child_type_project("'.$parent_id.'")');
+        $ids        = array_column($childs, 'id');
+
+        $category   = TypeProject::select('id','name','parent_id','status');
+
+        $category = (count($ids) <= 0)
+            ? $category->where('id', $parent_id) ->orderBy('id','asc')
+            : $category->whereIn('id', $ids)->orderBy('id','asc');
+
+        return DataTables::of($category)
+            ->editColumn('parent_id', function(TypeProject $value){
+                return (is_null($value->parent_id))
+                    ? '<span class="badge badge-warning"><i class="fas fa-circle"></i> Padre</span>'
+                    : $value->parent['name'];
+            })
+            ->addColumn('actions','typeproject.datatables.action')
+            ->rawColumns(['actions','parent_id'])
+            ->toJson();
     }
 
     /**

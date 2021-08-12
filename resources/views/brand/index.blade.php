@@ -24,8 +24,8 @@
 
         <hr>
 
-        <table id="myTable" class="table table-striped">
-            <thead class="thead-dark">
+        <table id="myTable" class="table table-striped table-bordered" style="width:100%">
+            <thead>
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Marca</th>

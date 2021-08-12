@@ -16,8 +16,8 @@
         </div>
         <hr>
         @include('partials.session-status')
-        <table id="myTable" class="table table-striped">
-            <thead class="thead-dark">
+        <table id="myTable" class="table table-striped table-bordered" style="width:100%">
+            <thead>
                 <tr>
                     <th>#</th>
                     <th>Nombre</th>

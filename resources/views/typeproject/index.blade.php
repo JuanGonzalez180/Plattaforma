@@ -21,36 +21,81 @@
             </div>
         @endif
 
-        <table id="myTable" class="table table-striped">
-            <thead class="thead-dark">
+        <div class="form-group col-md-6">
+            <label for="parent_id">Proyectos</label>
+            <select name="parent_id" id="parent_id" class="form-control form-control-sm" onchange="getProjectChilds(this.value);">
+            @foreach($parents as $parent)
+                <option value="{{$parent->id}}">{{$parent->name}}</option>
+            @endforeach
+            </select>
+        </div>
+
+        <table id="project_table" class="table table-striped table-bordered" style="width:100%">
+            <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Tipo de Proyecto</th>
+                    <th scope="col">Proyecto</th>
                     <th scope="col">Padre</th>
+                    <th scope="col">Estado</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
-            <tbody>
-                @forelse ($typeprojects as $typeproject)
-                    <tr>
-                        <th scope="row">{{ $loop->iteration }}</th>
-                        <td>{{ $typeproject->name }}</td>
-                        <td>{{ $typeproject->parent['name'] }}</td>
-                        <td>
-                            <a type="button" href="{{ route('typeproject.edit', $typeproject ) }}" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
-                            <form method="POST" action="{{ route('typeproject.destroy', $typeproject->id) }}" class="d-inline">
-                                @method('DELETE')
-                                @csrf
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Deseas Eliminar la Tipo de Proyecto?')" data-toggle="tooltip" title='Eliminar'> <i class="oi oi-trash"> </i></button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4">No hay elementos</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+        </table> 
     @include('partials.structure.close-main')
+    <script>
+
+var table;
+
+        $(document).ready(function(){      
+            table = $('#project_table').DataTable( {
+                "serverSide": true,
+                "ajax": {
+                    "url": "{{ route('type.projects.childs') }}",
+                    "type": "POST",
+                    "headers": {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    "data": function(d){
+                        d.parent_id = getParentId();
+                    }
+                },
+                "columns" : [
+                    {data: 'id'},
+                    {data: 'name'},
+                    {data: 'parent_id'},
+                    {data: 'status'},
+                    {data: 'actions'},
+                ],
+                "lengthMenu": [
+                    [20, 50, 100],
+                    [20, 50, 100]
+                ],
+                "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "Nothing found - sorry",
+                    "info": "Mostrando la pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No hay elementos",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate":{
+                        "next":"Siguiente",
+                        "previous":"Anterior"
+                    }
+                }
+            } );
+        });
+
+        function getParentId()
+        {
+            var select = document.getElementById('parent_id');
+            var value = select.options[select.selectedIndex].value;
+
+            return value;
+        }
+
+        function getProjectChilds()
+        {
+            table.ajax.reload();
+        }
+    </script>
 @endsection

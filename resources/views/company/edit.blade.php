@@ -19,14 +19,13 @@
         <div class="mb-5"></div>
     @include('partials.structure.close-main')
     <script>
-    
         function getCountryCode() {
             fetch('https://restcountries.eu/rest/v2/all')
                 .then(function(response) {
                     return response.json();
                 })
                 .then(function(myJson) {
-                    let items = "<option value='' selected>Seleccione un pais</option>\n";
+                    let items = "";
                     myJson.forEach(element => {
                         if(element['alpha2Code'] == '{{ $company->country_code }}')
                         {
@@ -40,8 +39,6 @@
                     document.querySelector('#country_code').innerHTML = items;
                 });
         }
-
         getCountryCode();
-        
     </script>
 @endsection

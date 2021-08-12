@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\WebControllers\categoryservices;
 
+use DataTables;
 use App\Models\Image;
-use App\Models\CategoryService;
 use Illuminate\Http\Request;
+use App\Models\CategoryService;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use TaylorNetwork\UsernameGenerator\Generator;
@@ -22,8 +24,35 @@ class CategoryServicesController extends Controller
      */
     public function index()
     {
-        $categories = CategoryService::all();
-        return view('categoryservices.index', compact('categories'));
+        $parents = CategoryService::select('id','name')
+            ->whereNull('parent_id')
+            ->orderBy('name','asc')
+            ->get();
+
+        return view('categoryservices.index', compact('parents'));
+    }
+
+    public function getCategoryServiceChilds(Request $request)
+    {
+        $parent_id  = $request->parent_id;
+        $childs     = DB::select('call get_child_type_category_service("'.$parent_id.'")');
+        $ids        = array_column($childs, 'id');
+
+        $category   = CategoryService::select('id','name','parent_id','status');
+
+        $category = (count($ids) <= 0)
+            ? $category->where('id', $parent_id) ->orderBy('id','asc')
+            : $category->whereIn('id', $ids)->orderBy('id','asc');
+
+        return DataTables::of($category)
+            ->editColumn('parent_id', function(CategoryService $value){
+                return (is_null($value->parent_id))
+                    ? '<span class="badge badge-warning"><i class="fas fa-circle"></i> Padre</span>'
+                    : $value->parent['name'];
+            })
+            ->addColumn('actions','categoryservices.datatables.action')
+            ->rawColumns(['actions','parent_id'])
+            ->toJson();
     }
 
     /**

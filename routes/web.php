@@ -49,12 +49,18 @@ Route::group(['middleware' => 'auth'], function() {
         Route::resource('categorias', CategoryController::class)
                 ->names('category')
                 ->parameters(['categorias' => 'category']);
-
-        // Categorías
+                
+        Route::post('/category/childs', [CategoryController::class, 'getCategoryChilds'])
+                ->name('category.childs');
+        
+        // Categorías servicios
         Route::resource('categorias_servicios', CategoryServicesController::class)
                 ->names('categoryservices')
                 ->parameters(['categorias_servicios' => 'categoryservices']);
-
+        
+        Route::post('/categoryservices/childs', [CategoryServicesController::class, 'getCategoryServiceChilds'])
+                ->name('category.services.childs');
+        
         // Marcas
         Route::resource('brands', BrandsController::class)
                 ->names('brand')
@@ -66,6 +72,9 @@ Route::group(['middleware' => 'auth'], function() {
         Route::resource('tipos-proyectos', TypeProjectController::class)
                 ->names('typeproject')
                 ->parameters(['tipos-proyecto' => 'project']);
+
+        Route::post('/type/project/childs', [TypeProjectController::class, 'getTypeProyectChilds'])
+                ->name('type.projects.childs');
 
         // Tipo de Entidades
         Route::resource('tipos-entidad', TypesEntityController::class)
