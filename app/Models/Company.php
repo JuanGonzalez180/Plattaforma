@@ -31,9 +31,9 @@ class Company extends Model
     public $transformer = CompanyTransformer::class;
     public $transformerDetail = CompanyDetailTransformer::class;
 
-    const COMPANY_CREATED = 'Creado';
-    const COMPANY_APPROVED = 'Aprobado';
-    const COMPANY_REJECTED = 'Rechazado';
+    const COMPANY_CREATED   = 'Creado';
+    const COMPANY_APPROVED  = 'Aprobado';
+    const COMPANY_REJECTED  = 'Rechazado';
 
     protected $fillable = [
         'name',
@@ -59,6 +59,10 @@ class Company extends Model
 
     public function type_entity(){
         return $this->belongsTo(TypesEntity::class);
+    }
+
+    public function type_company(){
+        return $this->type_entity->type->name;
     }
 
     public function user(){

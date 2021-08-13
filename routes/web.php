@@ -2,6 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebControllers\user\UsersController;
+use App\Http\Controllers\WebControllers\company\CompanyController;
+use App\Http\Controllers\WebControllers\project\ProjectController;
+use App\Http\Controllers\WebControllers\tender\TenderController;
+use App\Http\Controllers\WebControllers\blog\BlogController;
+use App\Http\Controllers\WebControllers\portfolio\PortfolioController;
+use App\Http\Controllers\WebControllers\product\ProductController;
 use App\Http\Controllers\WebControllers\country\CountryController;
 use App\Http\Controllers\WebControllers\category\CategoryController;
 use App\Http\Controllers\WebControllers\categoryservices\CategoryServicesController;
@@ -43,26 +49,75 @@ Route::group(['middleware' => 'auth'], function() {
         Route::resource('categorias', CategoryController::class)
                 ->names('category')
                 ->parameters(['categorias' => 'category']);
-
-        // Categorías
+                
+        Route::post('/category/childs', [CategoryController::class, 'getCategoryChilds'])
+                ->name('category.childs');
+        
+        // Categorías servicios
         Route::resource('categorias_servicios', CategoryServicesController::class)
                 ->names('categoryservices')
                 ->parameters(['categorias_servicios' => 'categoryservices']);
-
+        
+        Route::post('/categoryservices/childs', [CategoryServicesController::class, 'getCategoryServiceChilds'])
+                ->name('category.services.childs');
+        
         // Marcas
         Route::resource('brands', BrandsController::class)
                 ->names('brand')
                 ->parameters(['brands' => 'brand']);
+
+        Route::get('/company/brand/{id}', [BrandsController::class, 'indexCompanyBrand'])->name('company-brand-id');
 
         // Tipo de Proyectos
         Route::resource('tipos-proyectos', TypeProjectController::class)
                 ->names('typeproject')
                 ->parameters(['tipos-proyecto' => 'project']);
 
+        Route::post('/type/project/childs', [TypeProjectController::class, 'getTypeProyectChilds'])
+                ->name('type.projects.childs');
+
         // Tipo de Entidades
         Route::resource('tipos-entidad', TypesEntityController::class)
                 ->names('typesentity')
                 ->parameters(['tipos-entidad' => 'typeEntity']);
+
+        // Compañias
+        Route::resource('companias', CompanyController::class)
+                ->names('companies')
+                ->parameters(['companias' => 'companies']);
+
+        Route::post('companies/edit/status',[CompanyController::class, 'editStatus'])
+                ->name('company.edit.status');
+
+        Route::get('/company/{type}', [CompanyController::class, 'getCompanyType'])->name('companies-type');
+
+        // Licitaciones
+        Route::resource('licitaciones', TenderController::class, ['only' => ['edit','show']])
+                ->names('tender')
+                ->parameters(['licitaciones' => 'tender']);
+
+        Route::get('/tender/{type}/{id}', [TenderController::class, 'index'])->name('tender-company-id');
+
+        Route::post('/tender/decline',[TenderController::class, 'updateStatusDecline'])
+                ->name('tender.decline');
+
+        // Productos/Servicios
+        Route::get('/company/{type}/{id}', [ProductController::class, 'indexType'])->name('product-company-id');
+        
+        Route::resource('product', ProductController::class, ['only' => ['edit','show','update']])
+                ->names('productos')
+                ->parameters(['product' => 'productos']);
+
+        
+        // Proyectos
+        Route::resource('proyecto', ProjectController::class, ['only' => ['edit','show']])
+                ->names('project')
+                ->parameters(['proyecto' => 'project']);
+
+        Route::get('/project/company/{id}', [ProjectController::class, 'index'])->name('project-company-id');
+
+        Route::post('/project/edit/visible',[ProjectController::class, 'editVisible'])
+                ->name('project.edit.visible');
 
         // Contenido estatico
         Route::resource('contenido-estatico', StaticContentController::class)
@@ -79,13 +134,18 @@ Route::group(['middleware' => 'auth'], function() {
                 ->names('socialnetwork')
                 ->parameters(['redessociales' => 'socialnetwork']);
 
-        // Usuarios
-        Route::resource('usuarios', UsersController::class, ['only' => ['index', 'edit']])
-                ->names('users')
-                ->parameters(['usuarios' => 'user']);
+        // Categorías
+        Route::resource('redessociales', SocialNetworksController::class)
+                ->names('socialnetwork')
+                ->parameters(['redessociales' => 'socialnetwork']);
 
-        Route::post('usuarios',[App\Http\Controllers\WebControllers\user\UsersController::class, 'approve'])
-                ->name('users.approve');
+        // Blogs
+        Route::get('/blog/company/{id}', [BlogController::class, 'index'])
+                ->name('blog.company.id');
+
+        // portafolio
+        Route::get('/portfolio/company/{id}', [PortfolioController::class, 'index'])
+                ->name('portfolio.company.id');
 
         // Stripe
         Route::resource('productos-stripe', ProductsStripeController::class)

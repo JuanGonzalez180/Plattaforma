@@ -21,7 +21,8 @@
         "s-ichikawa/laravel-sendgrid-driver": "^3.0",
         "spatie/laravel-fractal": "^5.8",
         "taylornetwork/laravel-username-generator": "^2.5",
-        "tymon/jwt-auth": "dev-develop"
+        "tymon/jwt-auth": "dev-develop",
+        "yajra/laravel-datatables-oracle": "^9.18"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",

@@ -27,25 +27,6 @@ class UsersController extends Controller
         $users = User::query()->paginate(15);
         return view('user.index', compact('users'));
     }
-
-    public function approve(Request $request){
-        $user = User::findOrFail($request->id);
-        
-        // Obtenemos la Compañia 
-        $company = $user->company->first();
-        // Cambiamos el estado de la compañia
-        $company->status = Company::COMPANY_APPROVED;
-        $company->save();
-
-        // Enviamos mensaje al correo del usuario
-        Mail::to($user->email)->send(new ValidatedAccount($user));
-
-        return redirect()->route('users.index')->with([
-            'status' => 'edit',
-            'title' => __( $this->sectionTitle ),
-        ]);
-    }
-
     /**
      * Show the form for editing the specified resource.
      *

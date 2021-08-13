@@ -181,6 +181,8 @@ return [
         Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider::class,
         // JWT
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+        // Yajra
+        Yajra\DataTables\DataTablesServiceProvider::class,
 
     ],
 
@@ -236,6 +238,8 @@ return [
         // JWT
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+        //Yajra
+        'DataTables' => Yajra\DataTables\Facades\DataTables::class,
 
     ],
 
