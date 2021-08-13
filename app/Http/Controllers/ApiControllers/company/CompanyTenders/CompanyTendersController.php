@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Projects;
 use Illuminate\Http\Request;
+use App\Models\Notifications;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
@@ -192,7 +193,8 @@ class CompanyTendersController extends ApiController
             return $this->errorResponse( $tenderCompanyError, 500 );
         }
 
-        if( $user->id != $tender_company->user_id) {
+        // Revisar consulta.
+        if( $user->company[0]->id != $tender_company->company->id) {
             $tenderCompanyError = [ 'tenderCompany' => 'Error, el usuario no tiene permiso para borrar la licitación de la compañia' ];
             return $this->errorResponse( $tenderCompanyError, 500 );
         }
@@ -219,6 +221,12 @@ class CompanyTendersController extends ApiController
             Mail::to($email)
                 ->send(new SendRetirementTenderCompany($tender_name, $company_name));
         }
+
+        // Enviar invitación por notificación
+        $notificationsIds = [];
+        $notificationsIds[] = $tender_company->tender->user_id;
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery( $tender_company, Notifications::NOTIFICATION_TENDERCOMPANYNOPARTICIPATE, $notificationsIds );
         
         return $this->showOneData( ['success' => 'Se ha eliminado correctamente.', 'code' => 200 ], 200);
     }

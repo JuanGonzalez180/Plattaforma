@@ -6,6 +6,7 @@ use JWTAuth;
 use App\Models\Tenders;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use App\Models\Notifications;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
@@ -95,20 +96,36 @@ class TendersCompaniesController extends ApiController
         $tenderVersion          = $tender->tendersVersionLast();
         $tenderVersion->status  = TendersVersions::LICITACION_PUBLISH;
         $tenderVersion->save();
+        DB::commit();
 
-        //envia invitacion a correos
-        foreach($companies as $company){
+        // Enviar invitación por correo y notificación
+        $notificationsIds = [];
+        foreach ($tendersCompanies as $key => $tenderCompany) {
+            $notificationsIds[] = $tenderCompany->company->user->id;
 
-            $companyInfo = Company::findOrFail($company["id"]);
-
-            Mail::to($companyInfo->user->email)->send(new SendInvitationTenderCompany(
+            Mail::to($tenderCompany->company->user->email)->send(new SendInvitationTenderCompany(
                 $tender->name, 
                 $tenderVersion->adenda, 
-                $companyInfo->name
+                $tenderCompany->company->name
             ));
         }
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERINVITECOMPANIES, $notificationsIds );
 
-        DB::commit();
+        // Enviar notificaciones a las compañías que ya estaban en el PROCESO.
+        $notificationsIdsVersion = [];
+        foreach ($tender->tenderCompanies as $key => $tenderCompany) {
+            if( 
+                !in_array( $tenderCompany->company_id, $companies ) && 
+                $tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING
+            ){
+                $notificationsIdsVersion[] = $tenderCompany->company->user->id;
+                
+                // Correo
+            }
+        }
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION, $notificationsIdsVersion );
 
         // return $this->showOne($tendersCompanies,201);
         return $this->showOne($tender,201);
@@ -155,6 +172,12 @@ class TendersCompaniesController extends ApiController
             $company_name,
             $status
         ));
+
+        // Enviar invitación por notificación
+        $notificationsIds = [];
+        $notificationsIds[] = $tenderCompany->company->user->id;
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery( $tenderCompany, Notifications::NOTIFICATION_TENDERRESPONSECOMPANIES, $notificationsIds );
 
         return $this->showOne($tenderCompany,200);
 

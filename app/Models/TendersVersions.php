@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Tags;
 use App\Models\Files;
 use App\Models\Tenders;
+use App\Models\Notifications;
 use App\Transformers\TendersVersionsTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -54,5 +55,10 @@ class TendersVersions extends Model
     // Relacion uno a muchos polimorfica
     public function tags(){
         return $this->morphMany(Tags::class, 'tagsable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function notifications(){
+        return $this->morphMany(Notifications::class, 'notificationsable');
     }
 }

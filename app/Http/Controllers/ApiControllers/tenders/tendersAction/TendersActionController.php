@@ -6,9 +6,10 @@ use JWTAuth;
 use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\QueryWall;
-use Illuminate\Http\Request;
+use App\Models\Notifications;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendDeclinedTenderCompany;
@@ -101,29 +102,27 @@ class TendersActionController extends ApiController
         try{
             $tenderVersionLast->save();
             DB::commit();
-            // Informar por correo a los participantes que se ha declinado la licitación.
-            $companies  = $this->getCompanyTenders($id);
-            foreach ($companies as $company)
+            $companies  = $tender->tenderCompanies;
+            $notificationsIds = [];
+
+            foreach ($companies as $companyTender){
+                $user = $companyTender->user;
+                $company = $companyTender->company;
+                // Informar por correo a los participantes que se ha declinado la licitación.
                 Mail::to($company->user->email)->send(new SendDeclinedTenderCompany($tender->name, $company->name));
+                array_push($notificationsIds, $company->user->id);
+            }
+            
+            $notifications = new Notifications();
+            $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERSDECLINED, $notificationsIds );
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            $tenderVersionError = [ 'tenderVersionLast' => 'Error, no se ha podido gestionar la solicitud de la licitación'];
+            $tenderVersionError = [ 'tenderVersionLast' => 'Error, no se ha podido gestionar la solicitud de la licitación' ];
             return $this->errorResponse( $tenderVersionError, 500 );
         }
 
         return $this->showOne($tenderVersionLast,200);
-    }
-
-    public function getCompanyTenders($tender_id)
-    {
-        $companies = Company::select('companies.*')
-            ->join( 'tenders_companies', 'tenders_companies.company_id', '=', 'companies.id' )
-            ->where( 'tenders_companies.tender_id', $tender_id)
-            ->where('tenders_companies.status', TendersCompanies::STATUS_PARTICIPATING)
-            ->get();
-
-        return $companies;
     }
 
 }

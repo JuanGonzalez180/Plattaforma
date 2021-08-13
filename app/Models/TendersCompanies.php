@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Remarks;
+use App\Models\Notifications;
 use App\Transformers\TendersCompaniesTransformer;
 use App\Transformers\TendersMyCompanyTransformer;
 use App\Transformers\TendersCompanySelectedTransformer;
@@ -63,6 +64,11 @@ class TendersCompanies extends Model
     // Relacion uno a muchos polimorfica
     public function remarks(){
         return $this->morphMany(Remarks::class, 'remarksable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function notifications(){
+        return $this->morphMany(Notifications::class, 'notificationsable');
     }
 
 }

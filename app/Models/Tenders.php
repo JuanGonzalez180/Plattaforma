@@ -9,6 +9,7 @@ use App\Models\Remarks;
 use App\Models\Projects;
 use App\Models\Interests;
 use App\Models\QueryWall;
+use App\Models\Notifications;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Database\Eloquent\Model;
@@ -76,14 +77,16 @@ class Tenders extends Model
     }
 
     public function tendersVersionLastPublishTags(){
-        $tenderVesionLast_id = $this->tendersVersionLastPublish()->id;
-
-        $tags = Tags::where('tagsable_id', $tenderVesionLast_id)
-            ->where('tagsable_type', TendersVersions::class)
-            ->orderBy('name','asc')
-            ->pluck('name');
-
-        return $tags;
+        $tenderVersionLastPublish = $this->tendersVersionLastPublish();
+        if( $tenderVersionLastPublish ){
+            $tags = Tags::where('tagsable_id', $tenderVersionLastPublish->id)
+                ->where('tagsable_type', TendersVersions::class)
+                ->orderBy('name','asc')
+                ->pluck('name');
+    
+            return $tags;
+        }
+        return [];
     }
 
     public function tendersVersionLastPublish(){
@@ -120,6 +123,11 @@ class Tenders extends Model
             ->exists();
 
         return $tenderVersion;
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function notifications(){
+        return $this->morphMany(Notifications::class, 'notificationsable');
     }
     
 }

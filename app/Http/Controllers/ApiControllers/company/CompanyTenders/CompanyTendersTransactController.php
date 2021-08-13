@@ -6,6 +6,7 @@ use JWTAuth;
 use App\Models\User;
 use App\Models\Tenders;
 use Illuminate\Http\Request;
+use App\Models\Notifications;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -80,13 +81,18 @@ class CompanyTendersTransactController extends ApiController
 
         $email = Tenders::find($id)->user->email;
 
-
         Mail::to($email)->send(new SendParticipateTenderCompany(
             Tenders::find($id)->name,
             $user->companyName()
         ));
 
+        // Enviar invitación por notificación
+        $notificationsIds = [];
+        $notificationsIds[] = $tenderCompany->tender->user_id;
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery( $tenderCompany, Notifications::NOTIFICATION_TENDERCOMPANYPARTICIPATE, $notificationsIds );
+
         return $this->showOne($tenderCompany,201); 
-    } 
+    }
 
 }

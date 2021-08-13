@@ -41,6 +41,7 @@ use App\Http\Controllers\ApiControllers\tenders\tendersAction\TendersActionContr
 use App\Http\Controllers\ApiControllers\tenders\tendersVersions\TendersVersionsController;
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
+
 // Search
 use App\Http\Controllers\ApiControllers\search\SearchItemController;
 use App\Http\Controllers\ApiControllers\search\SearchLikeItemController;
@@ -64,6 +65,9 @@ use App\Http\Controllers\ApiControllers\stripe\SubscriptionsStripeController;
 use App\Http\Controllers\ApiControllers\user\UsersController;
 // Remarks
 use App\Http\Controllers\ApiControllers\remarks\RemarksController;
+// Notifications
+use App\Http\Controllers\ApiControllers\notifications\UsersTokensController;
+use App\Http\Controllers\ApiControllers\notifications\NotificationsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -256,13 +260,18 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/search/items/parameters', [SearchItemController::class, 'search'])->name('search-parameter');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 
-    /*Remarks*/
+    // Remarks
     Route::resource('/remarks', RemarksController::class, ['only' => ['index', 'store','edit','update','destroy']])->names('remarks');
+    // Notifications 
+    Route::resource('/tokens', UsersTokensController::class, ['only' => ['store']])->names('tokens');
+    Route::resource('/notifications', NotificationsController::class, ['only' => ['index', 'destroy']])->names('notifications');
 
 });
 // Route::post('/files', FilesController::class)->name('files');
 
 Route::resource('/myaccount/registermember', RegisterMemberController::class, ['only' => ['store']])->names('registermember');
+
+Route::post('/tokens/test', [UsersTokensController::class, 'sendWebNotification'])->name('test-notification');
 
 /**
  * User
