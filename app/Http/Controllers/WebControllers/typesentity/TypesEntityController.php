@@ -65,8 +65,9 @@ class TypesEntityController extends Controller
      */
     public function edit(TypesEntity $typeEntity)
     {
-        $typeOptions = Type::get();
-        return view('typesentity.edit', compact('typeOptions', 'typeEntity'));
+        $typeOptions    = Type::get();
+        $status         = [TypesEntity::ENTITY_ERASER, TypesEntity::ENTITY_PUBLISH];
+        return view('typesentity.edit', compact('typeOptions', 'typeEntity','status'));
     }
 
     /**

@@ -30,12 +30,21 @@
 <div class="form-group col-md-12">
     <label for="description">@lang('lang.description')</label>
     <textarea type="text" class="form-control" name="description" id="description" placeholder="@lang('lang.description')">{{ old('description', $category->description ) }}</textarea>
-
     @error('description')
         <span class="text-danger" role="alert">
             <small><b>{{ $errors->getBag('default')->first('description') }}</b></small>
         </span>
     @enderror
+</div>
+
+<div class="form-group col-md-6">
+    <label for="type_id">Estado</label>
+    <select name="type_id" id="type_id" class="form-control">
+        <option value="" selected>Estado</option>
+        @foreach ($status as $value)
+            <option value="{{ $value }}" {{ old('status', $value) == $value ? 'selected' : '' }}>{{$value}}</option>
+        @endforeach
+    </select>
 </div>
 
 <div class="col-md-12">
