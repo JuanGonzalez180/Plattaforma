@@ -18,6 +18,7 @@ class Notifications extends Model
     const NOTIFICATION_TENDERCOMPANYNOPARTICIPATE = 'TenderCompanyNoParticipate';
     const NOTIFICATION_TENDERRESPONSECOMPANIES = 'TenderResponseCompanies';
     const NOTIFICATION_TENDERCOMPANYPARTICIPATE = 'TenderCompanyParticipate';
+    const NOTIFICATION_TENDERCOMPANYNEWVERSION = 'TenderCompanyNewVersion';
 
     protected $guarded = [];
 
@@ -73,6 +74,11 @@ class Notifications extends Model
             'subtitle' => '', 
             'message' => 'La compañía %s quiere participar en la licitación.',
         ],
+        Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION => [ 
+            'title' => 'Licitación: %s', 
+            'subtitle' => '', 
+            'message' => 'Se ha actualizado una licitación en la que estás participando',
+        ],
     ];
 
     public function registerNotificationQuery( $query, $type, $usersIds, $params = [] ){
@@ -88,9 +94,15 @@ class Notifications extends Model
         $data['type'] = $type;
         $data['id'] = $query->id;
 
-        if( $type == Notifications::NOTIFICATION_TENDERSDECLINED || $type == Notifications::NOTIFICATION_TENDERINVITECOMPANIES ){
+        if( 
+            $type == Notifications::NOTIFICATION_TENDERSDECLINED || 
+            $type == Notifications::NOTIFICATION_TENDERINVITECOMPANIES ||
+            $type == Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION 
+        ){
             $title = sprintf($title, $query->name);
-        }elseif( $type == Notifications::NOTIFICATION_TENDERCOMPANYSELECTED){
+        }elseif( 
+            $type == Notifications::NOTIFICATION_TENDERCOMPANYSELECTED
+        ){
             $title = sprintf($title, $query->tender->name);
         }elseif( $type == Notifications::NOTIFICATION_TENDERCOMPANYNOPARTICIPATE ){
             $title = sprintf($title, $query->tender->name);

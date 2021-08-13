@@ -83,6 +83,8 @@ class TendersCompaniesActionController extends ApiController
         $notifications = new Notifications();
         $notifications->registerNotificationQuery( $tenderCompany, Notifications::NOTIFICATION_TENDERCOMPANYSELECTED, $notificationsIds );
 
+        // Falta notificar a las NO GANADORAS.
+        
         return $this->showOne($tenderCompany,200);
     }
 
@@ -114,7 +116,6 @@ class TendersCompaniesActionController extends ApiController
             $tenderError = [ 'tender' => 'Error, no se ha podido gestionar la solicitud de la licitación'];
             return $this->errorResponse( $tenderError, 500 );
         }
-
    
         $companiesEmails = [];
         foreach($tendersCompanies->get() as $tenderCompany){

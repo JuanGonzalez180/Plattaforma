@@ -36,15 +36,21 @@ class NotificationsController extends ApiController
             ){
                 // 
                 $tenderCompanies = TendersCompanies::find($notification->notificationsable_id);
-                if( $tenderCompanies )
+                if( $tenderCompanies ){
                     $notification->query_id = $tenderCompanies->tender->project_id;
+                }else{
+                    $notification->query_id = '';
+                }
             }elseif( 
                 $notification->type == Notifications::NOTIFICATION_TENDERCOMPANYPARTICIPATE && 
                 $notification->notificationsable_type == TendersCompanies::class
             ){  
                 $tenderCompanies = TendersCompanies::find($notification->notificationsable_id);
-                if( $tenderCompanies )
+                if( $tenderCompanies ){
                     $notification->query_id = $tenderCompanies->tender->project_id . '/' . $tenderCompanies->tender->id;
+                }else{
+                    $notification->query_id = '';
+                }
             }
         }
 

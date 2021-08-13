@@ -77,14 +77,16 @@ class Tenders extends Model
     }
 
     public function tendersVersionLastPublishTags(){
-        $tenderVesionLast_id = $this->tendersVersionLastPublish()->id;
-
-        $tags = Tags::where('tagsable_id', $tenderVesionLast_id)
-            ->where('tagsable_type', TendersVersions::class)
-            ->orderBy('name','asc')
-            ->pluck('name');
-
-        return $tags;
+        $tenderVersionLastPublish = $this->tendersVersionLastPublish();
+        if( $tenderVersionLastPublish ){
+            $tags = Tags::where('tagsable_id', $tenderVersionLastPublish->id)
+                ->where('tagsable_type', TendersVersions::class)
+                ->orderBy('name','asc')
+                ->pluck('name');
+    
+            return $tags;
+        }
+        return [];
     }
 
     public function tendersVersionLastPublish(){

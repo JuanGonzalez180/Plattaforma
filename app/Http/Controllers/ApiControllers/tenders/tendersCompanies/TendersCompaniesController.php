@@ -96,27 +96,36 @@ class TendersCompaniesController extends ApiController
         $tenderVersion          = $tender->tendersVersionLast();
         $tenderVersion->status  = TendersVersions::LICITACION_PUBLISH;
         $tenderVersion->save();
+        DB::commit();
 
-        //envia invitacion a correos
-        foreach($companies as $company){
-            $companyInfo = Company::findOrFail($company["id"]);
-
-            Mail::to($companyInfo->user->email)->send(new SendInvitationTenderCompany(
-                $tender->name, 
-                $tenderVersion->adenda, 
-                $companyInfo->name
-            ));
-        }
-
-        // Enviar invitación por notificación
+        // Enviar invitación por correo y notificación
         $notificationsIds = [];
         foreach ($tendersCompanies as $key => $tenderCompany) {
             $notificationsIds[] = $tenderCompany->company->user->id;
+
+            Mail::to($tenderCompany->company->user->email)->send(new SendInvitationTenderCompany(
+                $tender->name, 
+                $tenderVersion->adenda, 
+                $tenderCompany->company->name
+            ));
         }
         $notifications = new Notifications();
         $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERINVITECOMPANIES, $notificationsIds );
 
-        DB::commit();
+        // Enviar notificaciones a las compañías que ya estaban en el PROCESO.
+        $notificationsIdsVersion = [];
+        foreach ($tender->tenderCompanies as $key => $tenderCompany) {
+            if( 
+                !in_array( $tenderCompany->company_id, $companies ) && 
+                $tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING
+            ){
+                $notificationsIdsVersion[] = $tenderCompany->company->user->id;
+                
+                // Correo
+            }
+        }
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION, $notificationsIdsVersion );
 
         // return $this->showOne($tendersCompanies,201);
         return $this->showOne($tender,201);
