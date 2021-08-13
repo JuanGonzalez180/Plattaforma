@@ -11,6 +11,7 @@ use App\Models\Addresses;
 use App\Models\Interests;
 use App\Models\MetaData;
 use App\Models\TypeProject;
+use App\Models\Notifications;
 use App\Models\SocialNetworksRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -92,5 +93,10 @@ class Projects extends Model
     // Relacion uno a muchos polimorfica
     public function files(){
         return $this->morphMany(Files::class, 'filesable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function notifications(){
+        return $this->morphMany(Notifications::class, 'notificationsable');
     }
 }

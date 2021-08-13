@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ApiControllers\tenders\tendersCompanies;
 use JWTAuth;
 use App\Models\Tenders;
 use Illuminate\Http\Request;
+use App\Models\Notifications;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
@@ -63,17 +64,24 @@ class TendersCompaniesActionController extends ApiController
         $tenderName     = $tenderCompany->tender->name;
 
         $emails = [];
+        $notificationsIds = [];
 
         $emails[] = $tenderCompany->company->user->email;
         $emails[] = $tenderCompany->user->email;
+
+        $notificationsIds[] = $tenderCompany->company->user->id;
+        $notificationsIds[] = $tenderCompany->user->id;
         
         $emails = array_values(array_unique($emails));
+        $notificationsIds = array_values(array_unique($notificationsIds));
 
         foreach($emails as $email){
             Mail::to($email)
                 ->send(new SendWinnerTenderCompany($tenderName, $companyName));
         }
         
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery( $tenderCompany, Notifications::NOTIFICATION_TENDERCOMPANYSELECTED, $notificationsIds );
 
         return $this->showOne($tenderCompany,200);
     }

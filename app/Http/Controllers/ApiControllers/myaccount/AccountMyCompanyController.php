@@ -71,7 +71,7 @@ class AccountMyCompanyController extends ApiController
         if( $user ){
             $rules = [
                 'name' => ['required', 'regex:/^[a-zA-Z\s]*$/'],
-                'nit' => 'nullable|numeric',
+                'nit' => 'nullable',
                 'country_code' => 'required',
                 'web' => 'nullable|url',
                 // 'country_backend' => 'required',

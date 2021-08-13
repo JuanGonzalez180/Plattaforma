@@ -10,6 +10,7 @@ use App\Models\Files;
 use App\Models\Company;
 use App\Models\Category;
 use App\Models\Interests;
+use App\Models\Notifications;
 use App\Models\CategoryService;
 use App\Transformers\ProductsTransformer;
 use Illuminate\Database\Eloquent\Model;
@@ -84,5 +85,10 @@ class Products extends Model
     // Relacion uno a muchos polimorfica
     public function tags(){
         return $this->morphMany(Tags::class, 'tagsable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function notifications(){
+        return $this->morphMany(Notifications::class, 'notificationsable');
     }
 }

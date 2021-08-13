@@ -6,6 +6,8 @@ use App\Models\Blog;
 use App\Models\Image;
 use App\Models\Company;
 use App\Models\Team;
+use App\Models\Notifications;
+use App\Models\UsersToken;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -155,6 +157,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Blog::class);
     }
 
+    public function tokens(){
+        return $this->hasMany(UsersToken::class);
+    }
+
     public function company(){
         return $this->hasMany(Company::class);
     }
@@ -167,6 +173,11 @@ class User extends Authenticatable implements JWTSubject
     // Relacion uno a uno polimorfica
     public function image(){
         return $this->morphOne(Image::class, 'imageable');
+    }
+
+    // Relacion uno a uno polimorfica
+    public function notifications(){
+        return $this->hasMany(Notifications::class);
     }
 
     //Nombre completo

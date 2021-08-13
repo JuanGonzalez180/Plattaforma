@@ -42,6 +42,7 @@ class TendersMyCompanyTransformer extends TransformerAbstract
             'tender_name'           => (string)$tendersCompanies->tender->name,
             'tender_status'         => (string)$tendersCompanies->tender->tendersVersionLastPublish()->status,
             'tender_company_status' => (string)$tendersCompanies->status,
+            'winner'                => $tendersCompanies->winner,
             'project_name'          => (string)$tendersCompanies->tender->project->name,
             'closing_date'          => (string)$tendersCompanies->tender->tendersVersionLastPublish()->date,
             'closing_hour'          => (string)$tendersCompanies->tender->tendersVersionLastPublish()->hour

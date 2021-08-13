@@ -9,6 +9,7 @@ use App\Models\Remarks;
 use App\Models\Projects;
 use App\Models\Interests;
 use App\Models\QueryWall;
+use App\Models\Notifications;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Database\Eloquent\Model;
@@ -120,6 +121,11 @@ class Tenders extends Model
             ->exists();
 
         return $tenderVersion;
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function notifications(){
+        return $this->morphMany(Notifications::class, 'notificationsable');
     }
     
 }

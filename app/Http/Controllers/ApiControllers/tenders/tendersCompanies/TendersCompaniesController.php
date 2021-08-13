@@ -6,6 +6,7 @@ use JWTAuth;
 use App\Models\Tenders;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use App\Models\Notifications;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
@@ -98,7 +99,6 @@ class TendersCompaniesController extends ApiController
 
         //envia invitacion a correos
         foreach($companies as $company){
-
             $companyInfo = Company::findOrFail($company["id"]);
 
             Mail::to($companyInfo->user->email)->send(new SendInvitationTenderCompany(
@@ -107,6 +107,14 @@ class TendersCompaniesController extends ApiController
                 $companyInfo->name
             ));
         }
+
+        // Enviar invitación por notificación
+        $notificationsIds = [];
+        foreach ($tendersCompanies as $key => $tenderCompany) {
+            $notificationsIds[] = $tenderCompany->company->user->id;
+        }
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERINVITECOMPANIES, $notificationsIds );
 
         DB::commit();
 
@@ -155,6 +163,12 @@ class TendersCompaniesController extends ApiController
             $company_name,
             $status
         ));
+
+        // Enviar invitación por notificación
+        $notificationsIds = [];
+        $notificationsIds[] = $tenderCompany->company->user->id;
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery( $tenderCompany, Notifications::NOTIFICATION_TENDERRESPONSECOMPANIES, $notificationsIds );
 
         return $this->showOne($tenderCompany,200);
 

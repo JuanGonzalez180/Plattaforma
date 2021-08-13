@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\Tenders;
+use App\Models\Notifications;
 use App\Transformers\RemarksTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -45,5 +46,10 @@ class Remarks extends Model
 
     public function remarksable(){
         return $this->morphTo();
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function notifications(){
+        return $this->morphMany(Notifications::class, 'notificationsable');
     }
 }
