@@ -2,6 +2,9 @@
 
 namespace App\Transformers;
 
+use App\Models\User;
+use App\Models\Company;
+use App\Models\Brands;
 use App\Models\Products;
 use App\Transformers\UserTransformer;
 use App\Transformers\CompanyTransformer;
@@ -48,7 +51,7 @@ class ProductsTransformer extends TransformerAbstract
             'description'=> (string)$product->description,
             'created_at'=> (string)$product->created_at,
             'updated_at'=> (string)$product->updated_at,
-            'user'=> $product->user,
+            // 'user'=> $product->user,
             'tags'=> $product->tags,
             'brand'=> $product->brand,
             'user'=> $userTransform->transform($product->user),

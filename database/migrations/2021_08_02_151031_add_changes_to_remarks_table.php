@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Remarks;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -35,7 +36,6 @@ class AddChangesToRemarksTable extends Migration
     public function down()
     {
         Schema::table('remarks', function (Blueprint $table) {
-            //
             $table->dropColumn('remarksable_id');
             $table->dropColumn('remarksable_type');
             $table->string('type')->after('id');
