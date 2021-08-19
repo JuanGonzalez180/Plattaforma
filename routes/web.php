@@ -140,6 +140,11 @@ Route::group(['middleware' => 'auth'], function() {
                 ->parameters(['redessociales' => 'socialnetwork']);
 
         // Blogs
+
+        Route::resource('blog', BlogController::class, ['only' => ['edit','show']])
+                ->names('blog')
+                ->parameters(['blog' => 'blog']);
+
         Route::get('/blog/company/{id}', [BlogController::class, 'index'])
                 ->name('blog.company.id');
 
