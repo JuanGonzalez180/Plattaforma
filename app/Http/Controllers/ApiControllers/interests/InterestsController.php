@@ -35,7 +35,7 @@ class InterestsController extends ApiController
             $interests = $interests->where('interestsable_type', Company::class);
         }
 
-        return $interests->get();
+        return $interests->first();
     }
 
     public function index(Request $request)
@@ -54,7 +54,7 @@ class InterestsController extends ApiController
     {
         //
         $user = $this->validateUser();
-        if( $request->calification && $request->message ){
+        if( $request->type && $user->id && $request->id ){
             if( $request->type === 'tenders' ){
                 $item = Tenders::find($request->id);
             }elseif( $request->type === 'products' ){
@@ -69,11 +69,12 @@ class InterestsController extends ApiController
             $favorite = $this->findInterests($request->id, $user->id, $request->type );
             if( $favorite ){
                 $favorite->delete();
+            }else{
+                $item->interests()->create([ 'user_id' => $user->id ]);
+                $favorite = $this->findInterests($request->id, $user->id, $request->type );
             }
 
-            $item->interests()->create([ 'user_id' => $user->id ]);
-
-            return $this->showOne($item,200);
+            return $this->showOne($favorite,200);
         }else{
             $calificationError = [ 'calification' => 'Error, no se ha podido registrar el favorito' ];
             return $this->errorResponse( $calificationError, 500 );
