@@ -90,10 +90,6 @@ class Company extends Model
         return $this->hasMany(Products::class);
     }
 
-    public function interests(){
-        return $this->belongsToMany(Interests::class);
-    }
-
     public function metaDatos(){
         return $this->hasMany(MetaData::class);
     }
@@ -187,5 +183,10 @@ class Company extends Model
     // Relacion uno a muchos polimorfica
     public function remarks(){
         return $this->morphMany(Remarks::class, 'remarksable');
+    }
+    
+    // Relacion uno a muchos polimorfica
+    public function interests(){
+        return $this->morphMany(Interests::class, 'interestsable');
     }
 }

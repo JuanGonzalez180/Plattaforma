@@ -2,38 +2,35 @@
 
 namespace App\Models;
 
-use App\Company;
-use App\Products;
-use App\Projects;
-use App\Tenders;
+use App\Models\User;
+use App\Transformers\InterestsTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Interests extends Model
 {
+    protected $guarded = [];
+
     use HasFactory;
+
+    public $transformer = InterestsTransformer::class;
 
     protected $fillable = [
         'user_id',
-        'type',
-        'type_id',
-        'date',
-        'date_update'
+        'interestsable_id',
+        'interestsable_type'
     ];
 
-    public function company(){
-        return $this->belongsToMany(Company::class);
+    protected $hidden = [
+        'interestsable_id',
+        'interestsable_type',
+    ];
+
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 
-    public function products(){
-        return $this->belongsToMany(Products::class);
-    }
-
-    public function projects(){
-        return $this->belongsToMany(Projects::class);
-    }
-
-    public function tenders(){
-        return $this->belongsToMany(Tenders::class);
+    public function interestsable(){
+        return $this->morphTo();
     }
 }

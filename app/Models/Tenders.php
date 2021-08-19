@@ -46,14 +46,6 @@ class Tenders extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function interests(){
-        return $this->belongsToMany(Interests::class);
-    }
-
-    public function remarks(){
-        return $this->hasMany(Remarks::class);
-    }
-
     // Relacion uno a muchos polimorfica
     public function querywalls(){
         return $this->morphMany(QueryWall::class, 'querysable');
@@ -130,4 +122,8 @@ class Tenders extends Model
         return $this->morphMany(Notifications::class, 'notificationsable');
     }
     
+    // Relacion uno a muchos polimorfica
+    public function interests(){
+        return $this->morphMany(Interests::class, 'interestsable');
+    }
 }
