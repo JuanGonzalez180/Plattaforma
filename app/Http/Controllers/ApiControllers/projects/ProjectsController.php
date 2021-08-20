@@ -37,14 +37,13 @@ class ProjectsController extends ApiController
             if( $user->isAdminFrontEnd() ){
                 // IS ADMIN
                 $projects = Projects::where('company_id', $companyID)
-                ->orderBy('id', 'desc')
-                ->get();
+                                    ->orderBy('id', 'desc')
+                                    ->get();
             }else{
                 $projects = Projects::where('company_id', $companyID)
                                         ->where('user_id', $user->id)
                                         ->orderBy('id', 'desc')
                                         ->get();
-                                        var_dump('paso por aca');
             }
 
             foreach( $projects as $key => $project ){

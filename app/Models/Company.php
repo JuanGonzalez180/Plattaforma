@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Files;
 use App\Models\Image;
 use App\Models\Country;
+use App\Models\Remarks;
 use App\Models\Tenders;
 use App\Models\MetaData;
 use App\Models\Products;
@@ -134,10 +135,6 @@ class Company extends Model
     public function files(){
         return $this->morphMany(Files::class, 'filesable');
     }
-    
-    /*public function reviewsA(){
-        $company->
-    }*/
 
     public function calification(){
         $remarks = Remarks::select('remarks.*')
@@ -185,5 +182,10 @@ class Company extends Model
                                 ->count();
 
         return $total;
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function remarks(){
+        return $this->morphMany(Remarks::class, 'remarksable');
     }
 }

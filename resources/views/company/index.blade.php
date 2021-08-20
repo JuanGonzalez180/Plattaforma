@@ -3,9 +3,9 @@
 
 @section('title')
     @if($type == 'Demanda')
-        Compañias tipo demanda
+        Compañias demanda
     @else    
-        Compañias tipo oferta
+        Compañias oferta
     @endif
 @endsection
 
@@ -15,9 +15,9 @@
         <div class="col">
             <h1>
             @if($type == 'Demanda')
-                Compañias tipo demanda
+                Compañias demanda
             @else    
-                Compañias tipo Oferta
+                Compañias oferta
             @endif
             </h1>
         </div>
@@ -69,7 +69,7 @@
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <a type="button" href="{{ route('companies.show', $company->id ) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
+                        <a type="button" href="{{ route('companies.show', $company->id ) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span></a>
                         <button id="btnGroupDrop1" type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                         </button>

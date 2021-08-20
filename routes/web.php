@@ -5,6 +5,7 @@ use App\Http\Controllers\WebControllers\user\UsersController;
 use App\Http\Controllers\WebControllers\company\CompanyController;
 use App\Http\Controllers\WebControllers\project\ProjectController;
 use App\Http\Controllers\WebControllers\tender\TenderController;
+use App\Http\Controllers\WebControllers\tendercompanies\TenderCompaniesController;
 use App\Http\Controllers\WebControllers\blog\BlogController;
 use App\Http\Controllers\WebControllers\portfolio\PortfolioController;
 use App\Http\Controllers\WebControllers\product\ProductController;
@@ -99,7 +100,14 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/tender/{type}/{id}', [TenderController::class, 'index'])->name('tender-company-id');
 
         Route::post('/tender/decline',[TenderController::class, 'updateStatusDecline'])
-                ->name('tender.decline');
+        ->name('tender.decline');
+
+        // Licitaciones - Compañias
+        Route::get('/tendercompanies/{id}', [TenderCompaniesController::class, 'index'])->name('tender-companies-id');
+
+        Route::resource('tender/companies/detail', TenderCompaniesController::class, ['only' => ['edit','show']])
+                ->names('tender-companies')
+                ->parameters(['tendercompanies' => 'tender']);
 
         // Productos/Servicios
         Route::get('/company/{type}/{id}', [ProductController::class, 'indexType'])->name('product-company-id');
@@ -140,6 +148,11 @@ Route::group(['middleware' => 'auth'], function() {
                 ->parameters(['redessociales' => 'socialnetwork']);
 
         // Blogs
+
+        Route::resource('blog', BlogController::class, ['only' => ['edit','show']])
+                ->names('blog')
+                ->parameters(['blog' => 'blog']);
+
         Route::get('/blog/company/{id}', [BlogController::class, 'index'])
                 ->name('blog.company.id');
 

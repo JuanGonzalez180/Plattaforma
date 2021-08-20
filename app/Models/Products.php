@@ -8,6 +8,7 @@ use App\Models\Brands;
 use App\Models\Tags;
 use App\Models\Files;
 use App\Models\Company;
+use App\Models\Remarks;
 use App\Models\Category;
 use App\Models\Interests;
 use App\Models\Notifications;
@@ -90,5 +91,10 @@ class Products extends Model
     // Relacion uno a muchos polimorfica
     public function notifications(){
         return $this->morphMany(Notifications::class, 'notificationsable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function remarks(){
+        return $this->morphMany(Remarks::class, 'remarksable');
     }
 }

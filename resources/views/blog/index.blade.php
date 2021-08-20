@@ -47,9 +47,7 @@
                             @endif
                         </td>
                         <td>
-                            <div class="btn-group" role="group">
-                                <a type="button" href="" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
-                            </div>
+                            <a type="button" href="{{ route('blog.show', $blog->id ) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
                         </td>
                     </tr>
                 @empty

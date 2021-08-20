@@ -49,5 +49,4 @@ class Blog extends Model
     public function files(){
         return $this->morphMany(Files::class, 'filesable');
     }
-
 }
