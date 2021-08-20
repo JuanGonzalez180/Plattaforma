@@ -25,6 +25,16 @@
         <div class="tab-pane fade show active" id="company-info" role="tabpanel" aria-labelledby="company-info-tab">
 
             <dlv class="row">
+
+                @if($company->image)
+                <dt class="col-sm-4">Imagen:</dt>
+                <dd class="col-sm-8">
+                    <a href="{{ url('storage/' . $company->image->url ) }}" target="_blank">
+                        <img src="{{ url('storage/' . $company->image->url ) }}" alt="preview image" class="rounded float-left" style="width: 150px;">
+                    </a>
+                </dd>
+                @endif
+
                 <dt class="col-sm-4">Nombre:</dt>
                 <dd class="col-sm-8">{{$company->name}}</dd>
     
@@ -37,14 +47,12 @@
                 <dt class="col-sm-4">NIT:</dt>
                 <dd class="col-sm-8"><b>{{$company->nit}}</b></dd>
     
+                @if($company->description)
                 <dt class="col-sm-4">Descripción:</dt>
                 <dd class="col-sm-8">
-                    @if(is_null($company->description))
-                        <span class="badge badge-secondary">Sin descripción</span>
-                    @else
-                        <textarea class="form-control" rows="6" disabled>{{$company->description}}</textarea>
-                    @endif
+                    <textarea class="form-control" rows="6" disabled>{{$company->description}}</textarea>
                 </dd>
+                @endif
                 
                 <dt class="col-sm-4">Estado:</dt>
                 <dd class="col-sm-8">

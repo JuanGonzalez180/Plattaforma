@@ -14,7 +14,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="blof-file-tab" data-toggle="pill" href="#blof-file" role="tab" aria-controls="blof-file" aria-selected="false">
+            <a class="nav-link" id="blog-file-tab" data-toggle="pill" href="#blog-file" role="tab" aria-controls="blog-file" aria-selected="false">
                 <i class="far fa-file-alt"></i>&nbsp;Archivos
             </a>
         </li>
@@ -23,10 +23,9 @@
         <div class="tab-pane fade show active" id="blog-info" role="tabpanel" aria-labelledby="blog-info-tab">
             @include('blog.show_detail.info')
         </div>
-        <div class="tab-pane fade" id="blof-file" role="tabpanel" aria-labelledby="blof-file-tab">
-        @include('blog.show_detail.file')
+        <div class="tab-pane fade" id="blog-file" role="tabpanel" aria-labelledby="blog-file-tab">
+            @include('blog.show_detail.file')
         </div>
     </div>
-
     @include('partials.structure.close-main')
 @endsection

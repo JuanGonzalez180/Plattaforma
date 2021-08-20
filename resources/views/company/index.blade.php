@@ -3,9 +3,9 @@
 
 @section('title')
     @if($type == 'Demanda')
-        Compañias tipo demanda
+        Compañias demanda
     @else    
-        Compañias tipo oferta
+        Compañias oferta
     @endif
 @endsection
 
@@ -15,9 +15,9 @@
         <div class="col">
             <h1>
             @if($type == 'Demanda')
-                Compañias tipo demanda
+                Compañias demanda
             @else    
-                Compañias tipo Oferta
+                Compañias oferta
             @endif
             </h1>
         </div>

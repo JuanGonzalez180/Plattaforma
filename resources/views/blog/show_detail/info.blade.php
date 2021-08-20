@@ -1,4 +1,12 @@
-<dlv class="row">
+<div class="row">
+    @if($blog->image)
+    <dt class="col-sm-4">Imagen:</dt>
+    <dd class="col-sm-8">
+        <a href="{{ url('storage/'.$file->url)}}" target="_blank">
+            <img src="{{ url('storage/' . $blog->image->url ) }}" alt="preview image" class="rounded float-left" style="width: 150px;">
+        </a>
+    </dd>
+    @endif
     <dt class="col-sm-4">Nombre:</dt>
     <dd class="col-sm-8">{{$blog->name}}</dd>
     <dt class="col-sm-4">Usuario</dt>
@@ -29,4 +37,5 @@
             <span class="badge badge-success">{{$blog->status}}</span>
         @endif
     </dd>
-</dl>
+</div>
+

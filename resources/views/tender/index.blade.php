@@ -62,7 +62,7 @@
                                 <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                             </button>
                             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                <a class="dropdown-item" href="">Licitaciones</a>
+                                <a class="dropdown-item" href="{{ route('tender-companies-id', $tender->id ) }}">Compañias licitantes</a>
                             </div>
                         </div>
                     </td>

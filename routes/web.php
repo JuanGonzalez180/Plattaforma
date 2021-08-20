@@ -5,6 +5,7 @@ use App\Http\Controllers\WebControllers\user\UsersController;
 use App\Http\Controllers\WebControllers\company\CompanyController;
 use App\Http\Controllers\WebControllers\project\ProjectController;
 use App\Http\Controllers\WebControllers\tender\TenderController;
+use App\Http\Controllers\WebControllers\tendercompanies\TenderCompaniesController;
 use App\Http\Controllers\WebControllers\blog\BlogController;
 use App\Http\Controllers\WebControllers\portfolio\PortfolioController;
 use App\Http\Controllers\WebControllers\product\ProductController;
@@ -99,7 +100,10 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/tender/{type}/{id}', [TenderController::class, 'index'])->name('tender-company-id');
 
         Route::post('/tender/decline',[TenderController::class, 'updateStatusDecline'])
-                ->name('tender.decline');
+        ->name('tender.decline');
+
+        // Licitaciones - Compañias
+        Route::get('/tendercompanies/{id}', [TenderCompaniesController::class, 'index'])->name('tender-companies-id');
 
         // Productos/Servicios
         Route::get('/company/{type}/{id}', [ProductController::class, 'indexType'])->name('product-company-id');
