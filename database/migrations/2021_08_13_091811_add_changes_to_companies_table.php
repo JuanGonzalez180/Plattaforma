@@ -28,7 +28,7 @@ class AddChangesToCompaniesTable extends Migration
     {
         Schema::table('companies', function (Blueprint $table) {
             //
-            $table->integer('nit')->change();
+            $table->string('nit')->change();
         });
     }
 }

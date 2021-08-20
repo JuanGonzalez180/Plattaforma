@@ -7,9 +7,10 @@ use App\Models\Files;
 use App\Models\Image;
 use App\Models\Company;
 use App\Models\Tenders;
+use App\Models\Remarks;
+use App\Models\MetaData;
 use App\Models\Addresses;
 use App\Models\Interests;
-use App\Models\MetaData;
 use App\Models\TypeProject;
 use App\Models\Notifications;
 use App\Models\SocialNetworksRelation;
@@ -98,5 +99,10 @@ class Projects extends Model
     // Relacion uno a muchos polimorfica
     public function notifications(){
         return $this->morphMany(Notifications::class, 'notificationsable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function remarks(){
+        return $this->morphMany(Remarks::class, 'remarksable');
     }
 }

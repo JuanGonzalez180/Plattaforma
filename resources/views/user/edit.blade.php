@@ -39,7 +39,8 @@
         
         <div class="row">
             <div class="col-sm-12">
-                <a type="button" class="btn btn-danger" href="{{ route('users.index') }}"><span class="oi oi-x" title="Atrás" aria-hidden="true"></span> Atrás</a>
+                <!--href="{{ route('users.index') }}"--> 
+                <a type="button" class="btn btn-danger"><span class="oi oi-x" title="Atrás" aria-hidden="true"></span> Atrás</a>
             </div>
         </div>
                 
