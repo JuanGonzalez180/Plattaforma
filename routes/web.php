@@ -105,6 +105,10 @@ Route::group(['middleware' => 'auth'], function() {
         // Licitaciones - Compañias
         Route::get('/tendercompanies/{id}', [TenderCompaniesController::class, 'index'])->name('tender-companies-id');
 
+        Route::resource('tender/companies/detail', TenderCompaniesController::class, ['only' => ['edit','show']])
+                ->names('tender-companies')
+                ->parameters(['tendercompanies' => 'tender']);
+
         // Productos/Servicios
         Route::get('/company/{type}/{id}', [ProductController::class, 'indexType'])->name('product-company-id');
         

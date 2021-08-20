@@ -15,4 +15,11 @@ class TenderCompaniesController extends Controller
 
         return view('tendercompanies.index', compact('tenderCompanies'));
     }
+    
+    public function show($tender_company_id)
+    {
+        $tenderCompany = TendersCompanies::find($tender_company_id);
+        
+        return view('tendercompanies.show', compact('tenderCompany'));
+    }
 }
