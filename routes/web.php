@@ -148,7 +148,6 @@ Route::group(['middleware' => 'auth'], function() {
                 ->parameters(['redessociales' => 'socialnetwork']);
 
         // Blogs
-
         Route::resource('blog', BlogController::class, ['only' => ['edit','show']])
                 ->names('blog')
                 ->parameters(['blog' => 'blog']);
@@ -157,6 +156,10 @@ Route::group(['middleware' => 'auth'], function() {
                 ->name('blog.company.id');
 
         // portafolio
+        Route::resource('portfolio', PortfolioController::class, ['only' => ['edit','show']])
+                ->names('portfolio')
+                ->parameters(['portfolio' => 'portfolio']);
+
         Route::get('/portfolio/company/{id}', [PortfolioController::class, 'index'])
                 ->name('portfolio.company.id');
 

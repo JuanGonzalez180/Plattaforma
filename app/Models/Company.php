@@ -7,6 +7,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Models\Files;
 use App\Models\Image;
+use App\Models\Brands;
 use App\Models\Country;
 use App\Models\Remarks;
 use App\Models\Tenders;
@@ -88,6 +89,10 @@ class Company extends Model
 
     public function products(){
         return $this->hasMany(Products::class);
+    }
+
+    public function brands(){
+        return $this->hasMany(Brands::class);
     }
 
     public function interests(){

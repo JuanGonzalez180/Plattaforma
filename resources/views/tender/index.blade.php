@@ -44,21 +44,21 @@
                     <td>{{$tender->tendersVersionLast()->status}}</td>
                     <td>
                         <div class="btn-group" role="group">
-                            <a type="button" href="{{ url('/licitaciones/'.$tender->id) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
+                            <a type="button" href="{{ url('/licitaciones/'.$tender->id) }}" class="btn btn-outline-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
                             @if($tender->tendersVersionLast()->status == 'Publicada')
                                 <form method="POST" action="{{ route( 'tender.decline') }}"  class="d-inline form-tender-decline">
                                     @csrf
                                     <input type="hidden" name="id" value="{{$tender->tendersVersionLast()->id}}"/>
-                                    <button type="submit" class="btn btn-danger btn-sm"> 
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"> 
                                         <i class="fas fa-minus-circle"></i>
                                     </button>
                                 </form>
                             @else
-                                <button type="button" class="btn btn-secondary btn-sm" disabled='disabled'>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" disabled='disabled'>
                                     <i class="fas fa-minus-circle"></i>
                                 </button>
                             @endif
-                            <button id="btnGroupDrop1" type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button id="btnGroupDrop1" type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                             </button>
                             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">

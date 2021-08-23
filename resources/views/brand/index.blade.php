@@ -29,6 +29,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Marca</th>
+                    <th scope="col">Compañia</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
@@ -37,6 +38,7 @@
                     <tr>
                         <th scope="row">{{ $loop->iteration }}</th>
                         <td>{{ $brand->name }}</td>
+                        <td>{{ $brand->company['name'] }}</td>
                         <td>
                             <a type="button" href="{{ route('brand.edit', $brand ) }}" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
                             

@@ -6,7 +6,9 @@
 
 @section('content')
     @include('partials.structure.open-main')
+
     <h1>Licitación</h1>
+    <hr>
 
     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
         
@@ -18,7 +20,8 @@
     
         <li class="nav-item">
             <a class="nav-link" id="tender-versions-tab" data-toggle="pill" href="#tender-versions" role="tab" aria-controls="tender-versions" aria-selected="false">
-            <i class="fas fa-code-branch"></i>&nbsp;Versiones
+                <i class="fas fa-code-branch"></i>&nbsp;Versiones
+                <span class="badge badge-light">{{count($tender->tendersVersion)}}</span>
             </a>
         </li>
 

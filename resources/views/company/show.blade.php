@@ -6,7 +6,10 @@
 
 @section('content')
     @include('partials.structure.open-main')
+    
     <h1>Compañia</h1>
+    <hr>
+
     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
         
         <li class="nav-item">
@@ -17,6 +20,7 @@
         <li class="nav-item">
             <a class="nav-link" id="file-company-tab" data-toggle="pill" href="#file-company" role="tab" aria-controls="file-company" aria-selected="false">
                 <i class="far fa-file-alt"></i>&nbsp;Archivos
+                <span class="badge badge-light">{{count($company->files)}}</span>
             </a>
         </li>
         
