@@ -12,9 +12,10 @@
                 <h1>Categorías</h1>
             </div>
             <div class="col text-right">
-                <a type="button" class="btn btn-primary" href="{{ route('category.create') }}"><span class="oi oi-plus" title="Nuevo" aria-hidden="true"></span> Crear Categoría</a>
+                <a type="button" class="btn btn-primary btn-sm" href="{{ route('category.create') }}"><i class="fas fa-plus"></i>&nbsp;Crear Categoría</a>
             </div>
         </div>
+        <hr>
         @if(session()->get('success'))
             <div class="alert alert-success">
                 {{ session()->get('success') }}

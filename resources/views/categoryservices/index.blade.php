@@ -12,7 +12,7 @@
                 <h1>Categorías del servicio</h1>
             </div>
             <div class="col text-right">
-                <a type="button" class="btn btn-primary" href="{{ route('categoryservices.create') }}"><span class="oi oi-plus" title="Nuevo" aria-hidden="true"></span> Crear Categoría</a>
+                <a type="button" class="btn btn-primary btn-sm" href="{{ route('categoryservices.create') }}"><i class="fas fa-plus"></i>&nbsp;Crear Categoría</a>
             </div>
         </div>
         @if(session()->get('success'))
@@ -20,7 +20,7 @@
                 {{ session()->get('success') }}
             </div>
         @endif
-
+        
         <div class="form-group col-md-6">
             <label for="parent_id">Categorias padre</label>
             <select name="parent_id" id="parent_id" class="form-control form-control-sm" onchange="getCategoryChilds(this.value);">

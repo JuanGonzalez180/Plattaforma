@@ -8,26 +8,13 @@ use App\Models\Products;
 
 class ProductController extends Controller
 {
-    public function indexType($type, $id)
+    public function index($id)
     {
-        if($type == 'product')
-        {
-            $title      = 'Productos';
-            $products   = Products::where('company_id',$id)
-                    ->where('type', Products::TYPE_PRODUCT)
-                    ->orderBy('name','asc')
-                    ->get();
-        }
-        else
-        {
-            $title      = 'Servicios';
-            $products   = Products::where('company_id',$id)
-                    ->where('type', Products::TYPE_SERVICE)
-                    ->orderBy('name','asc')
-                    ->get();
-        }
+        $products   = Products::where('company_id',$id)
+                ->orderBy('name','asc')
+                ->get();
 
-        return view('product.index', compact('title','products'));
+        return view('product.index', compact('products'));
     }
 
     public function show($id)

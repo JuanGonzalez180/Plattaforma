@@ -30,7 +30,7 @@ class TeamController extends Controller
     {
         $team = Team::find($id);
 
-        return view('team.index', compact('teams'));
+        return view('team.show', compact('team'));
     }
 
     public function editStatus(Request $request)

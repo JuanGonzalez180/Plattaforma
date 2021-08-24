@@ -69,8 +69,8 @@
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <a type="button" href="{{ route('companies.show', $company->id ) }}" class="btn btn-outline-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span></a>
-                        <button id="btnGroupDrop1" type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a type="button" href="{{ route('companies.show', $company->id ) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
+                        <button id="btnGroupDrop1" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
@@ -84,8 +84,10 @@
                                 <span class="badge badge-primary">{{count($company->tenders)}}</span>
                             </a>
                         @else
-                            <a class="dropdown-item" href="{{ route('product-company-id', ['product', $company->id] ) }}">Productos</a>
-                            <a class="dropdown-item" href="{{ route('product-company-id', ['service', $company->id] ) }}">Servicios</a>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->products)<=0) disabled @endif" href="{{ route('product-company-id', $company->id ) }}">
+                                Productos
+                                <span class="badge badge-primary">{{count($company->products)}}</span>
+                            </a>
                             <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->brands)<=0) disabled @endif" href="{{ route('company-brand-id', $company->id ) }}">
                                 Marcas
                                 <span class="badge badge-primary">{{count($company->brands)}}</span>
