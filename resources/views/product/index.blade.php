@@ -2,14 +2,14 @@
 @extends('layout')
 
 @section('title')
-    {{$title}}
+    Productos
 @endsection
 
 @section('content')
     @include('partials.structure.open-main')
     <div class="row align-items-center">
         <div class="col">
-            <h1>{{$title}}</h1>
+            <h1>Productos</h1>
         </div>
     </div>
     <hr>
@@ -40,8 +40,7 @@
                 <td>
 
                 <div class="btn-group" role="group">
-                    <a type="button" href="{{ route('productos.show', $product->id) }}" class="btn btn-outline-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
-                    <a type="button" href="{{ route('productos.edit', $product->id) }}" class="btn btn-outline-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
+                    <a type="button" href="{{ route('productos.show', $product->id) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
                 </div>
 
                 </td>

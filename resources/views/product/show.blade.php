@@ -1,56 +1,33 @@
 @extends('layout')
 
 @section('title')
-    {{ ucwords($product->type) }}
+    Producto
 @endsection
 
 @section('content')
     @include('partials.structure.open-main')
-
-    
-    
-    <h1>{{ ucwords($product->type) }}</h1>
-
-    <dl class="row">
-        <dt class="col-sm-4">Nombre:</dt>
-        <dd class="col-sm-8">{{$product->name}}</dd>
-        <dt class="col-sm-4">Compañia:</dt>
-        <dd class="col-sm-8">{{$product->company->name}}</dd>
-        <dt class="col-sm-4">Marca:</dt>
-        <dd class="col-sm-8">{{$product->brand->name}}</dd>
-        <dt class="col-sm-4">Descripción:</dt>
-        <dd class="col-sm-8">
-            @if(!is_null($product->description))
-                {{$product->description}}
-            @else
-                <span class="badge badge-secondary">Sin descripción</span>
-            @endif
-        </dd>
-        <dt class="col-sm-4">Tipo:</dt>
-        <dd class="col-sm-8">{{$product->type}}</dd>
-        <dt class="col-sm-4">Estado:</dt>
-        <dd class="col-sm-8">{{$product->status}}</dd>
-        @if(count($product->tags) > 0)
-        <dt class="col-sm-4">Etiquetas:</dt>
-        <dd class="col-sm-8">
-            @foreach($product->tags as $tag)
-            <span class="badge badge-info">{{$tag->name}}</span>
-            @endforeach
-        </dd>
-        @endif
-
-        @if(count($product->productCategories) > 0)
-        <dt class="col-sm-4">Categorias:</dt>
-        <dd class="col-sm-8">
-            @foreach($product->productCategories as $category)
-                @if($category->status == 'Publicado')
-                    <span class="badge badge-info">{{$category->name}}</span>
-                @endif
-            @endforeach
-        </dd>
-        @endif
-    </dl>
-
-        
+    <h1>Producto</h1>
+    <hr>
+    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="product-info-tab" data-toggle="pill" href="#product-info" role="tab" aria-controls="product-info" aria-selected="true">
+                <i class="fas fa-info-circle"></i>&nbsp;Información
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="product-file-tab" data-toggle="pill" href="#product-file" role="tab" aria-controls="product-file" aria-selected="false">
+                <i class="far fa-file-alt"></i>&nbsp;Archivos
+                <span class="badge badge-light">{{count($product->files)}}</span>
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="product-info" role="tabpanel" aria-labelledby="product-info-tab">
+            @include('product.show_detail.info')
+        </div>
+        <div class="tab-pane fade" id="product-file" role="tabpanel" aria-labelledby="project-file-tab">
+            @include('product.show_detail.files')
+        </div>
+    </div>
     @include('partials.structure.close-main')
 @endsection

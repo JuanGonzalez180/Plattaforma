@@ -122,7 +122,7 @@ Route::group(['middleware' => 'auth'], function() {
                 ->parameters(['tendercompanies' => 'tender']);
 
         // Productos/Servicios
-        Route::get('/company/{type}/{id}', [ProductController::class, 'indexType'])->name('product-company-id');
+        Route::get('/company/product/{id}', [ProductController::class, 'index'])->name('product-company-id');
         
         Route::resource('product', ProductController::class, ['only' => ['edit','show','update']])
                 ->names('productos')

@@ -84,8 +84,10 @@
                                 <span class="badge badge-primary">{{count($company->tenders)}}</span>
                             </a>
                         @else
-                            <a class="dropdown-item" href="{{ route('product-company-id', ['product', $company->id] ) }}">Productos</a>
-                            <a class="dropdown-item" href="{{ route('product-company-id', ['service', $company->id] ) }}">Servicios</a>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->products)<=0) disabled @endif" href="{{ route('product-company-id', $company->id ) }}">
+                                Productos
+                                <span class="badge badge-primary">{{count($company->products)}}</span>
+                            </a>
                             <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->brands)<=0) disabled @endif" href="{{ route('company-brand-id', $company->id ) }}">
                                 Marcas
                                 <span class="badge badge-primary">{{count($company->brands)}}</span>
