@@ -91,6 +91,10 @@
                                 <span class="badge badge-primary">{{count($company->brands)}}</span>
                             </a>
                         @endif
+                            <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->teams)<=0) disabled @endif" href="{{ route('teams-company-id', $company->id ) }}">
+                                Equipo    
+                                <span class="badge badge-primary">{{count($company->teams)}}</span>
+                            </a>
                             <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->blogs)<=0) disabled @endif" href="{{ route('blog.company.id', $company->id ) }}">
                                 Blogs
                                 <span class="badge badge-primary">{{count($company->blogs)}}</span>

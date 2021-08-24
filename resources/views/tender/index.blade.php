@@ -62,7 +62,10 @@
                                 <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                             </button>
                             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                <a class="dropdown-item" href="{{ route('tender-companies-id', $tender->id ) }}">Compañias licitantes</a>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($tender->tenderCompanies)<=0) disabled @endif" href="{{ route('tender-companies-id', $tender->id ) }}">
+                                    Compañias licitantes&nbsp;
+                                    <span class="badge badge-primary">{{count($tender->tenderCompanies)}}</span>
+                                </a>
                             </div>
                         </div>
                     </td>

@@ -83,6 +83,7 @@
                                                     <i class="fas fa-angle-right"></i>&nbsp;Demanda
                                                 </a>
                                             </li>
+                                            <div class="dropdown-divider"></div>
                                             <li class="nav-item">
                                                 <a class="nav-link py-0" href="{{ route('companies-type', 'Oferta') }}">
                                                     <i class="fas fa-angle-right"></i>&nbsp;Oferta

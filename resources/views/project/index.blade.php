@@ -55,12 +55,12 @@
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <a type="button" href="{{ url('/proyecto/'.$project->id) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
-                        <button id="btnGroupDrop1" type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a type="button" href="{{ route('project.show', $project->id ) }}" class="btn btn-outline-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
+                        <button id="btnGroupDrop1" type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                            <a class="dropdown-item" href="{{ url('/tender/project/'.$project->id) }}">Licitaciones</a>
+                            <a class="dropdown-item" href="{{ route('tender-company-id', ['project',$project->id] ) }}">Licitaciones</a>
                         </div>
                     </div>
                 </td>

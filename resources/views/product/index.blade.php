@@ -40,8 +40,8 @@
                 <td>
 
                 <div class="btn-group" role="group">
-                    <a type="button" href="{{ route('productos.show', $product->id) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
-                    <a type="button" href="{{ route('productos.edit', $product->id) }}" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
+                    <a type="button" href="{{ route('productos.show', $product->id) }}" class="btn btn-outline-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
+                    <a type="button" href="{{ route('productos.edit', $product->id) }}" class="btn btn-outline-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
                 </div>
 
                 </td>

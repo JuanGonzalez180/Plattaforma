@@ -40,14 +40,14 @@
                         <td>{{ $brand->name }}</td>
                         <td>{{ $brand->company['name'] }}</td>
                         <td>
-                            <a type="button" href="{{ route('brand.edit', $brand ) }}" class="btn btn-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
+                            <a type="button" href="{{ route('brand.edit', $brand ) }}" class="btn btn-outline-dark btn-sm"> <span class="oi oi-pencil" title="Editar" aria-hidden="true"></span> </a>
                             
                             @if ( $brand->id != 1 )
                                 <form method="POST" action="{{ route('brand.destroy', $brand->id) }}" class="d-inline form-brand-status">
                                     @method('DELETE')
                                     @csrf
-                                    <button type="submit" class="btn btn-danger btn-sm" data-toggle="tooltip" title='Eliminar'> 
-                                        @if ($brand->status == $enabled)
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" data-toggle="tooltip" @if($brand->status == $enabled) title='Visible' @else  title='No visible' @endif> 
+                                        @if($brand->status == $enabled)
                                             <i class="far fa-eye"></i>
                                         @else
                                             <i class="far fa-eye-slash"></i>
