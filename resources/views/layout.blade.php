@@ -73,18 +73,26 @@
                     <nav class="col-md-2 d-none d-md-block bg-light sidebar">
                         <div class="sidebar-sticky">
                             <ul class="nav flex-column">
+
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('companies-type', 'Demanda') }}">
-                                        <span data-feather="home"></span>
-                                        Compañias Demanda<span class="sr-only">(current)</span>
-                                    </a>
+                                    <a class="nav-link collapsed text-truncate" href="#companySubmenu" data-toggle="collapse" data-target="#companySubmenu"><span class="d-none d-sm-inline">Compañias</span></a>
+                                    <div class="collapse" id="companySubmenu" aria-expanded="false">
+                                        <ul class="flex-column pl-2 nav">
+                                            <li class="nav-item">
+                                                <a class="nav-link py-0" href="{{ route('companies-type', 'Demanda') }}">
+                                                    <i class="fas fa-angle-right"></i>&nbsp;Demanda
+                                                </a>
+                                            </li>
+                                            <div class="dropdown-divider"></div>
+                                            <li class="nav-item">
+                                                <a class="nav-link py-0" href="{{ route('companies-type', 'Oferta') }}">
+                                                    <i class="fas fa-angle-right"></i>&nbsp;Oferta
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('companies-type', 'Oferta') }}">
-                                        <span data-feather="home"></span>
-                                        Compañias Oferta<span class="sr-only">(current)</span>
-                                    </a>
-                                </li>
+
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('countries.index') }}">
                                         <span data-feather="file"></span>

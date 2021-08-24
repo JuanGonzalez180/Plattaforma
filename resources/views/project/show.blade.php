@@ -16,6 +16,7 @@
         <li class="nav-item">
             <a class="nav-link" id="project-file-tab" data-toggle="pill" href="#project-file" role="tab" aria-controls="project-file" aria-selected="false">
                 <i class="far fa-file-alt"></i>&nbsp;Archivos
+                <span class="badge badge-light">{{count($project->files)}}</span>
             </a>
         </li>
     </ul>

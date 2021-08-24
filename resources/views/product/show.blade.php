@@ -7,7 +7,7 @@
 @section('content')
     @include('partials.structure.open-main')
 
-    <a href="{{ url()->previous() }}" class="link-primary"><span class="oi oi-arrow-left" title="Ver" aria-hidden="true"></span> Atras</a>
+    
     
     <h1>{{ ucwords($product->type) }}</h1>
 

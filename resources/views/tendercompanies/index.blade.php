@@ -50,7 +50,7 @@
                         @endif
                     </td>
                     <td>
-                        <a type="button" href="{{ route('tender-companies.show', $company->id ) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
+                        <a type="button" href="{{ route('tender-companies.show', $company->id ) }}" class="btn btn-outline-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
                     </td>
                 </tr>
             @empty

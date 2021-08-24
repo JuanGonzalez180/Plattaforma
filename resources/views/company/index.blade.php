@@ -69,21 +69,40 @@
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <a type="button" href="{{ route('companies.show', $company->id ) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span></a>
-                        <button id="btnGroupDrop1" type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a type="button" href="{{ route('companies.show', $company->id ) }}" class="btn btn-outline-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span></a>
+                        <button id="btnGroupDrop1" type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                         @if($company->type_entity->type->name == 'Demanda')
-                            <a class="dropdown-item" href="{{ route('project-company-id', $company->id ) }}">Proyectos</a>
-                            <a class="dropdown-item" href="{{ route('tender-company-id', ['company',$company->id] ) }}">Licitaciones</a>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->projects)<=0) disabled @endif" href="{{ route('project-company-id', $company->id ) }}">
+                                Proyectos
+                                <span class="badge badge-primary">{{count($company->projects)}}</span>
+                            </a>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->tenders)<=0) disabled @endif" href="{{ route('tender-company-id', ['company',$company->id] ) }}">
+                                Licitaciones
+                                <span class="badge badge-primary">{{count($company->tenders)}}</span>
+                            </a>
                         @else
                             <a class="dropdown-item" href="{{ route('product-company-id', ['product', $company->id] ) }}">Productos</a>
                             <a class="dropdown-item" href="{{ route('product-company-id', ['service', $company->id] ) }}">Servicios</a>
-                            <a class="dropdown-item" href="{{ route('company-brand-id', $company->id ) }}">Marcas</a>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->brands)<=0) disabled @endif" href="{{ route('company-brand-id', $company->id ) }}">
+                                Marcas
+                                <span class="badge badge-primary">{{count($company->brands)}}</span>
+                            </a>
                         @endif
-                            <a class="dropdown-item" href="{{ route('blog.company.id', $company->id ) }}">Blogs</a>
-                            <a class="dropdown-item" href="{{ route('portfolio.company.id', $company->id ) }}">Portafolios</a>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->teams)<=0) disabled @endif" href="{{ route('teams-company-id', $company->id ) }}">
+                                Equipo    
+                                <span class="badge badge-primary">{{count($company->teams)}}</span>
+                            </a>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->blogs)<=0) disabled @endif" href="{{ route('blog.company.id', $company->id ) }}">
+                                Blogs
+                                <span class="badge badge-primary">{{count($company->blogs)}}</span>
+                            </a>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->portfolios)<=0) disabled @endif" href="{{ route('portfolio.company.id', $company->id ) }}">
+                                Portafolios
+                                <span class="badge badge-primary">{{count($company->portfolios)}}</span>
+                            </a>
                         </div>
                     </div>
                 </td>

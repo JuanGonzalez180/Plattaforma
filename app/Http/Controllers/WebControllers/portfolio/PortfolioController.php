@@ -16,4 +16,10 @@ class PortfolioController extends Controller
 
         return view('portfolio.index', compact('portfolios'));
     }
+    
+    public function show($id)
+    {
+        $portfolio = Portfolio::find($id);
+        return view('portfolio.show', compact('portfolio'));
+    }
 }
