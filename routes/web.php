@@ -104,7 +104,7 @@ Route::group(['middleware' => 'auth'], function() {
         ->name('tender.decline');
 
         // Teams - Equipo 
-        Route::get('/teams/{id}', [TeamController::class, 'index'])->name('teams-company-id');
+        Route::get('/teams/company/{id}', [TeamController::class, 'index'])->name('teams-company-id');
 
         Route::resource('teams', TeamController::class, ['only' => ['edit','show']])
                 ->names('team')

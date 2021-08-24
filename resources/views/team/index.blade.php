@@ -30,7 +30,10 @@
             <tr>
                 <td>{{$loop->iteration}}</td>
                 <td>
-                    {{$team->user->username}}
+                    {{$team->user->username}}&nbsp;
+                    @if($team->user->isAdmin())
+                        <span class="badge badge-warning">Administrador</span>
+                    @endif
                 </td>   
                 <td>{{$team->company->name}}</td>  
                 <td class="text-center">
@@ -48,11 +51,15 @@
                         @csrf
                         <input type="hidden" name="id" value="{{$team->id}}"/>
                         <input type="hidden" name="status" value="Aprobado"/>
-                        <button type="submit" class="btn btn-outline-success btn-sm" data-toggle="tooltip" title='Aprobar'><i class="far fa-thumbs-up"></i></button>
+                        <button type="submit" class="btn btn-success btn-sm" data-toggle="tooltip" title='Aprobar'><i class="far fa-thumbs-up"></i></button>
                     </form>
                 @endif
                 </td>  
-                <td></td>  
+                <td>
+                    <a type="button" href="{{ route('team.show', $team->id ) }}" class="btn btn-success btn-sm">
+                        <span class="oi oi-eye" title="Ver" aria-hidden="true"></span>
+                    </a>
+                </td>  
             </tr>
             @empty
                 <tr>

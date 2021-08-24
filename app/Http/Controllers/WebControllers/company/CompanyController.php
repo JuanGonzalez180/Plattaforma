@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\WebControllers\company;
 
+use App\Models\Type;
 use App\Models\Company;
 use App\Models\Addresses;
 use Illuminate\Http\Request;
@@ -14,8 +15,11 @@ class CompanyController extends Controller
 {
     public function index()
     {
-        $companies = Company::query()->get();
-        return view('company.index', compact('companies'));
+        $types = Type::select('id','name')
+            ->orderBy('name','asc')
+            ->get();
+
+        return view('company.index2', compact('types'));
     }
 
     public function getCompanyType($type)

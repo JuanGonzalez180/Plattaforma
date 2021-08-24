@@ -69,8 +69,8 @@
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <a type="button" href="{{ route('companies.show', $company->id ) }}" class="btn btn-outline-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span></a>
-                        <button id="btnGroupDrop1" type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a type="button" href="{{ route('companies.show', $company->id ) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
+                        <button id="btnGroupDrop1" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">

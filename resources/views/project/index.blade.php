@@ -31,7 +31,7 @@
             <tr>
                 <td>{{$loop->iteration}}</td>
                 <td>{{$project->name}}</td>
-                <td>{{$project->user->name}}</td>
+                <td>{{$project->user->username}}</td>
                 <td>{{$project->company->name}}</td>
                 <td>
                     @if($project->status == 'especificaciones-tecnicas')
@@ -55,7 +55,9 @@
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <a type="button" href="{{ route('project.show', $project->id ) }}" class="btn btn-outline-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
+                        <a type="button" href="{{ route('project.show', $project->id ) }}" class="btn btn-outline-success btn-sm">
+                            <span class="oi oi-eye" title="Ver" aria-hidden="true"></span>
+                        </a>
                         <button id="btnGroupDrop1" type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                         </button>
