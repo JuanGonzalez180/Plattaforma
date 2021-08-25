@@ -48,7 +48,7 @@ Portafolios
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a type="button" href="" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
+                                <a type="button" href="{{ route('portfolio.show', $portfolio->id ) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>
                             </div>
                         </td>
                     </tr>

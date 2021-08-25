@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\WebControllers\company;
 
+use DataTables;
+use App\Models\Type;
 use App\Models\Company;
 use App\Models\Addresses;
 use Illuminate\Http\Request;
@@ -14,13 +16,15 @@ class CompanyController extends Controller
 {
     public function index()
     {
-        $companies = Company::query()->get();
-        return view('company.index', compact('companies'));
+        $types = Type::select('id','name')
+            ->orderBy('name','asc')
+            ->get();
+
+        return view('company.index2', compact('types'));
     }
 
     public function getCompanyType($type)
     {
-
         $companies_a = Company::select('companies.*')
             ->where('companies.status','=',Company::COMPANY_CREATED)
             ->join('types_entities','types_entities.id','=','companies.type_entity_id')
@@ -112,4 +116,36 @@ class CompanyController extends Controller
             'title'     => 'La compañia'
         ]);
     }
+
+    public function getTypeCompanies(Request $request)
+    {
+        $type_id  = $request->type_id;
+
+        $companies_a = Company::select('companies.*')
+            ->where('companies.status','=',Company::COMPANY_CREATED)
+            ->join('types_entities','types_entities.id','=','companies.type_entity_id')
+            ->join('types','types.id','=','types_entities.type_id')
+            ->where('types.id','=',$type_id)
+            ->orderBy('companies.updated_at','desc')
+            ->get();
+
+        $companies_b = Company::select('companies.*')
+            ->where('companies.status','<>',Company::COMPANY_CREATED)
+            ->join('types_entities','types_entities.id','=','companies.type_entity_id')
+            ->join('types','types.id','=','types_entities.type_id')
+            ->where('types.id','=',$type_id)
+            ->orderBy('companies.updated_at','desc')
+            ->get();
+
+        $companies = $companies_a->merge($companies_b);
+
+        return DataTables::of($companies)
+            ->addColumn('type_entity','company.datatables.entity')
+            ->addColumn('status','company.datatables.status')
+            ->addColumn('action','company.datatables.action')
+            ->rawColumns(['actions','status','type_entity'])
+            ->toJson();
+    }
+
+
 }

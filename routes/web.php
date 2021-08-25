@@ -1,25 +1,27 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WebControllers\HomeController;
+use App\Http\Controllers\WebControllers\team\TeamController;
+use App\Http\Controllers\WebControllers\blog\BlogController;
 use App\Http\Controllers\WebControllers\user\UsersController;
+use App\Http\Controllers\WebControllers\stripe\PlanController;
+use App\Http\Controllers\WebControllers\brands\BrandsController;
+use App\Http\Controllers\WebControllers\tender\TenderController;
 use App\Http\Controllers\WebControllers\company\CompanyController;
 use App\Http\Controllers\WebControllers\project\ProjectController;
-use App\Http\Controllers\WebControllers\tender\TenderController;
-use App\Http\Controllers\WebControllers\blog\BlogController;
-use App\Http\Controllers\WebControllers\portfolio\PortfolioController;
 use App\Http\Controllers\WebControllers\product\ProductController;
 use App\Http\Controllers\WebControllers\country\CountryController;
 use App\Http\Controllers\WebControllers\category\CategoryController;
-use App\Http\Controllers\WebControllers\categoryservices\CategoryServicesController;
+use App\Http\Controllers\WebControllers\stripe\SubscriptionController;
+use App\Http\Controllers\WebControllers\portfolio\PortfolioController;
+use App\Http\Controllers\WebControllers\stripe\ProductsStripeController;
 use App\Http\Controllers\WebControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\WebControllers\typesentity\TypesEntityController;
 use App\Http\Controllers\WebControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\WebControllers\socialnetworks\SocialNetworksController;
-use App\Http\Controllers\WebControllers\HomeController;
-use App\Http\Controllers\WebControllers\stripe\PlanController;
-use App\Http\Controllers\WebControllers\stripe\ProductsStripeController;
-use App\Http\Controllers\WebControllers\stripe\SubscriptionController;
-use App\Http\Controllers\WebControllers\brands\BrandsController;
+use App\Http\Controllers\WebControllers\tendercompanies\TenderCompaniesController;
+use App\Http\Controllers\WebControllers\categoryservices\CategoryServicesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,6 +91,9 @@ Route::group(['middleware' => 'auth'], function() {
         Route::post('companies/edit/status',[CompanyController::class, 'editStatus'])
                 ->name('company.edit.status');
 
+        Route::post('/companias/type', [CompanyController::class, 'getTypeCompanies'])
+                ->name('companies.type');
+
         Route::get('/company/{type}', [CompanyController::class, 'getCompanyType'])->name('companies-type');
 
         // Licitaciones
@@ -99,10 +104,28 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/tender/{type}/{id}', [TenderController::class, 'index'])->name('tender-company-id');
 
         Route::post('/tender/decline',[TenderController::class, 'updateStatusDecline'])
-                ->name('tender.decline');
+        ->name('tender.decline');
+
+        // Teams - Equipo 
+        Route::get('/teams/company/{id}', [TeamController::class, 'index'])->name('teams-company-id');
+
+        Route::resource('teams', TeamController::class, ['only' => ['edit','show']])
+                ->names('team')
+                ->parameters(['teams' => 'team']);
+
+        Route::post('teams/edit/status',[TeamController::class, 'editStatus'])
+                ->name('teams.edit.status');
+
+
+        // Licitaciones - Compañias
+        Route::get('/tendercompanies/{id}', [TenderCompaniesController::class, 'index'])->name('tender-companies-id');
+
+        Route::resource('tender/companies/detail', TenderCompaniesController::class, ['only' => ['edit','show']])
+                ->names('tender-companies')
+                ->parameters(['tendercompanies' => 'tender']);
 
         // Productos/Servicios
-        Route::get('/company/{type}/{id}', [ProductController::class, 'indexType'])->name('product-company-id');
+        Route::get('/company/product/{id}', [ProductController::class, 'index'])->name('product-company-id');
         
         Route::resource('product', ProductController::class, ['only' => ['edit','show','update']])
                 ->names('productos')
@@ -140,10 +163,18 @@ Route::group(['middleware' => 'auth'], function() {
                 ->parameters(['redessociales' => 'socialnetwork']);
 
         // Blogs
+        Route::resource('blog', BlogController::class, ['only' => ['edit','show']])
+                ->names('blog')
+                ->parameters(['blog' => 'blog']);
+
         Route::get('/blog/company/{id}', [BlogController::class, 'index'])
                 ->name('blog.company.id');
 
         // portafolio
+        Route::resource('portfolio', PortfolioController::class, ['only' => ['edit','show']])
+                ->names('portfolio')
+                ->parameters(['portfolio' => 'portfolio']);
+
         Route::get('/portfolio/company/{id}', [PortfolioController::class, 'index'])
                 ->name('portfolio.company.id');
 

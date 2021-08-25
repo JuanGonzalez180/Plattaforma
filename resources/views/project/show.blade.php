@@ -6,46 +6,27 @@
 
 @section('content')
     @include('partials.structure.open-main')
-        <h1>Proyecto</h1>
-        <dl class="row">
-            <dt class="col-sm-4">Nombre:</dt>
-            <dd class="col-sm-8">{{ $project->name }}</dd>
-            <dt class="col-sm-4">Encargado:</dt>
-            <dd class="col-sm-8">{{ $project->user->username }}</dd>
-            <dt class="col-sm-4">Compañia:</dt>
-            <dd class="col-sm-8">{{ $project->company->name }}</dd>
-            <dt class="col-sm-4">Descripción:</dt>
-            <dd class="col-sm-8">{{ $project->description }}</dd>
-            <dt class="col-sm-4">Dirección:</dt>
-            <dd class="col-sm-8">
-                @if(!is_null($project->address) && !is_null($project->address->address))
-                    {{ $project->address->address }}
-                @else
-                    <span class="badge badge-secondary">Sin dirección</span>
-                @endif
-            </dd>
-            <dt class="col-sm-4">Metros cuadrados:</dt>
-            <dd class="col-sm-8">{{ $project->meters }}</dd>
-            <dt class="col-sm-4">Fecha de inicio del proyecto:</dt>
-            <dd class="col-sm-8">{{ $project->date_start }}</dd>
-            <dt class="col-sm-4">Fecha final del proyecto:</dt>
-            <dd class="col-sm-8">{{ $project->date_end }}</dd>
-
-
-            <dt class="col-sm-4">Estado:</dt>
-            <dd class="col-sm-8">
-                @if($project->status == 'especificaciones-tecnicas')
-                    <span class="badge badge-warning">{{ $project->status }}</span>
-                @else
-                    <span class="badge badge-danger">{{ $project->status }}</span>
-                @endif
-            </dd>
-
-
-
-            <dt class="col-sm-4">Visible:</dt>
-            <dd class="col-sm-8">{{ $project->visible }}</dd>
-        </dl>
-
+    <h1>Proyecto</h1>
+    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="project-info-tab" data-toggle="pill" href="#project-info" role="tab" aria-controls="project-info" aria-selected="true">
+                <i class="fas fa-info-circle"></i>&nbsp;Información
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="project-file-tab" data-toggle="pill" href="#project-file" role="tab" aria-controls="project-file" aria-selected="false">
+                <i class="far fa-file-alt"></i>&nbsp;Archivos
+                <span class="badge badge-light">{{count($project->files)}}</span>
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="project-info" role="tabpanel" aria-labelledby="project-info-tab">
+            @include('project.show_detail.info')
+        </div>
+        <div class="tab-pane fade" id="project-file" role="tabpanel" aria-labelledby="project-file-tab">
+            @include('project.show_detail.files')
+        </div>
+    </div>
     @include('partials.structure.close-main')
 @endsection

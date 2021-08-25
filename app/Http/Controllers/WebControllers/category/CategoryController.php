@@ -73,9 +73,10 @@ class CategoryController extends Controller
     public function create()
     {
         //
-        $categoryOptions = Category::get();
-        $category = new Category;
-        return view('category.create', compact('category','categoryOptions'));
+        $categoryOptions    = Category::get();
+        $category           = new Category;
+        $status             = [Category::CATEGORY_ERASER, Category::CATEGORY_PUBLISH];
+        return view('category.create', compact('category','categoryOptions','status'));
     }
 
     /**
@@ -141,7 +142,8 @@ class CategoryController extends Controller
         $category           = Category::findOrFail($id);
         $category->icon     = Image::where('imageable_id', $category->id)->where('imageable_type', $this->modelIcon)->first();
         $categoryOptions    = Category::get();
-        return view('category.edit', compact('category', 'categoryOptions'));
+        $status             = [Category::CATEGORY_ERASER, Category::CATEGORY_PUBLISH];
+        return view('category.edit', compact('category', 'categoryOptions', 'status'));
     }
 
     /**

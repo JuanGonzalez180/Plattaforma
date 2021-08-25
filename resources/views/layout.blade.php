@@ -14,6 +14,7 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" integrity="sha256-BJ/G+e+y7bQdrYkS2RBTyNfBHpA9IuGaPmf9htub5MQ=" crossorigin="anonymous" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css" integrity="sha256-BJ/G+e+y7bQdrYkS2RBTyNfBHpA9IuGaPmf9htub5MQ=" crossorigin="anonymous" />
+        <!-- Jquery -->
         <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
         <!-- Datatables -->
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
@@ -73,16 +74,30 @@
                     <nav class="col-md-2 d-none d-md-block bg-light sidebar">
                         <div class="sidebar-sticky">
                             <ul class="nav flex-column">
+
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('companies-type', 'Demanda') }}">
-                                        <span data-feather="home"></span>
-                                        Compañias Demanda<span class="sr-only">(current)</span>
-                                    </a>
+                                    <a class="nav-link collapsed text-truncate" href="#companySubmenu" data-toggle="collapse" data-target="#companySubmenu"><span class="d-none d-sm-inline">Compañias</span></a>
+                                    <div class="collapse" id="companySubmenu" aria-expanded="false">
+                                        <ul class="flex-column pl-2 nav">
+                                            <li class="nav-item">
+                                                <a class="nav-link py-0" href="{{ route('companies-type', 'Demanda') }}">
+                                                    <i class="fas fa-angle-right"></i>&nbsp;Demanda
+                                                </a>
+                                            </li>
+                                            <div class="dropdown-divider"></div>
+                                            <li class="nav-item">
+                                                <a class="nav-link py-0" href="{{ route('companies-type', 'Oferta') }}">
+                                                    <i class="fas fa-angle-right"></i>&nbsp;Oferta
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </li>
+
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('companies-type', 'Oferta') }}">
-                                        <span data-feather="home"></span>
-                                        Compañias Oferta<span class="sr-only">(current)</span>
+                                    <a class="nav-link" href="{{ route('companies.index') }}">
+                                        <span data-feather="file"></span>
+                                        Compañias 2
                                     </a>
                                 </li>
                                 <li class="nav-item">

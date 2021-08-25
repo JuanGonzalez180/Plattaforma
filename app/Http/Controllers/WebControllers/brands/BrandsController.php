@@ -63,12 +63,11 @@ class BrandsController extends Controller
         ];
 
         $this->validate( $request, $rules );
-
-
         $fields = $request->all();
-        $fields['name'] = ucwords($request->name);
-        $fields['status'] = Brands::BRAND_ENABLED;
-        $fields['user_id'] = auth()->user()->id;
+
+        $fields['name']     = ucwords($request->name);
+        $fields['status']   = $request->status;
+        $fields['user_id']  = auth()->user()->id;
         $brand = Brands::create( $fields );
 
         $generator = new Generator();
