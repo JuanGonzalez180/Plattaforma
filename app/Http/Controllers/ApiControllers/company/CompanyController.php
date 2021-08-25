@@ -73,15 +73,15 @@ class CompanyController extends ApiController
 
         //Verificar que este registrado y adicionar otras validaciones
         $errors = [];
-        if ( $type['type']['slug'] == 'demanda' ) {
+        
+        /*if ( $type['type']['slug'] == 'demanda' ) {
 
             if ( !$request['nit'] )
                 $errors['nit'] = ['El campo nit es obligatorio'];
 
             if ( !$request['web'] )
                 $errors['web'] = ['El campo web es obligatorio'];
-
-        }
+        }*/
 
         //Verificar si existen errores
         if ( !empty( $errors ) )

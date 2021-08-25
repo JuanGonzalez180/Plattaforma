@@ -55,7 +55,7 @@ class Company extends Model
      * @var array
      */
     protected $hidden = [
-        'status',
+        //'status',
         'user_id',
     ];
 

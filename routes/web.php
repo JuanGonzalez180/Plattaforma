@@ -91,6 +91,9 @@ Route::group(['middleware' => 'auth'], function() {
         Route::post('companies/edit/status',[CompanyController::class, 'editStatus'])
                 ->name('company.edit.status');
 
+        Route::post('/companias/type', [CompanyController::class, 'getTypeCompanies'])
+                ->name('companies.type');
+
         Route::get('/company/{type}', [CompanyController::class, 'getCompanyType'])->name('companies-type');
 
         // Licitaciones
