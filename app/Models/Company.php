@@ -91,6 +91,7 @@ class Company extends Model
         return $this->hasMany(Products::class);
     }
 
+<<<<<<< HEAD
     public function brands(){
         return $this->hasMany(Brands::class);
     }
@@ -99,6 +100,8 @@ class Company extends Model
         return $this->belongsToMany(Interests::class);
     }
 
+=======
+>>>>>>> Plat-72-Me-Interesa
     public function metaDatos(){
         return $this->hasMany(MetaData::class);
     }
@@ -192,5 +195,10 @@ class Company extends Model
     // Relacion uno a muchos polimorfica
     public function remarks(){
         return $this->morphMany(Remarks::class, 'remarksable');
+    }
+    
+    // Relacion uno a muchos polimorfica
+    public function interests(){
+        return $this->morphMany(Interests::class, 'interestsable');
     }
 }

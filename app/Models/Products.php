@@ -61,10 +61,6 @@ class Products extends Model
         return $this->belongsTo(Brands::class);
     }
 
-    public function interests(){
-        return $this->belongsToMany(Interests::class);
-    }
-
     // Relacion uno a uno polimorfica
     public function image(){
         return $this->morphOne(Image::class, 'imageable');
@@ -96,5 +92,10 @@ class Products extends Model
     // Relacion uno a muchos polimorfica
     public function remarks(){
         return $this->morphMany(Remarks::class, 'remarksable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function interests(){
+        return $this->morphMany(Interests::class, 'interestsable');
     }
 }

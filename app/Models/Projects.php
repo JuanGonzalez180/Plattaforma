@@ -63,10 +63,6 @@ class Projects extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function interests(){
-        return $this->belongsToMany(Interests::class);
-    }
-
     // Relacion uno a uno polimorfica
     public function image(){
         return $this->morphOne(Image::class, 'imageable');
@@ -104,5 +100,10 @@ class Projects extends Model
     // Relacion uno a muchos polimorfica
     public function remarks(){
         return $this->morphMany(Remarks::class, 'remarksable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function interests(){
+        return $this->morphMany(Interests::class, 'interestsable');
     }
 }
