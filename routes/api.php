@@ -65,8 +65,9 @@ use App\Http\Controllers\ApiControllers\stripe\SubscriptionsStripeController;
 use App\Http\Controllers\ApiControllers\user\UsersController;
 // Remarks
 use App\Http\Controllers\ApiControllers\remarks\RemarksController;
-// Interests
+// Interests or Favorites
 use App\Http\Controllers\ApiControllers\interests\InterestsController;
+use App\Http\Controllers\ApiControllers\favorites\FavoritesController;
 // Notifications
 use App\Http\Controllers\ApiControllers\notifications\UsersTokensController;
 use App\Http\Controllers\ApiControllers\notifications\NotificationsController;
@@ -264,8 +265,11 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     // Remarks
     Route::resource('/remarks', RemarksController::class, ['only' => ['index', 'store','edit','update','destroy']])->names('remarks');
-    // Interests
-    Route::resource('/interests', InterestsController::class, ['only' => ['index', 'store','edit','update','destroy']])->names('interests');
+    
+    // Interests or Favorites
+    Route::resource('/interests', InterestsController::class, ['only' => ['index', 'store','destroy']])->names('interests');
+    Route::resource('/favorites', FavoritesController::class, ['only' => ['index', 'store','edit','update','destroy']])->names('favorites');
+
     // Notifications 
     Route::resource('/tokens', UsersTokensController::class, ['only' => ['store']])->names('tokens');
     Route::resource('/notifications', NotificationsController::class, ['only' => ['index', 'destroy']])->names('notifications');
