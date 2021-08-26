@@ -91,17 +91,6 @@ class Company extends Model
         return $this->hasMany(Products::class);
     }
 
-<<<<<<< HEAD
-    public function brands(){
-        return $this->hasMany(Brands::class);
-    }
-
-    public function interests(){
-        return $this->belongsToMany(Interests::class);
-    }
-
-=======
->>>>>>> Plat-72-Me-Interesa
     public function metaDatos(){
         return $this->hasMany(MetaData::class);
     }

@@ -229,7 +229,7 @@ class CompanyController extends ApiController
         
         $tenders = [];
         foreach ( $company->tenders as $key => $tender) {
-            $user = $userTransform->transform($tender->user);
+            $user = $tender->user;
             unset( $tender->user );
             $tender->user = $user;
 
