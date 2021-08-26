@@ -106,8 +106,7 @@ class CompanyTendersController extends ApiController
         }
         
         // Traer Licitaciones
-        $userTransform  = new UserTransformer();
-        $user           = $userTransform->transform($tender->user);
+        $user = $tender->user;
         unset( $tender->user );
         $tender->user = $user;
 
