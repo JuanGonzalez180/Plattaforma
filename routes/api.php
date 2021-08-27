@@ -149,7 +149,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/myaccount/accountedit', AccountEditController::class, ['only' => ['store']])->names('accountedit');
     Route::get('/myaccount/mycompany', AccountMyCompanyController::class)->name('mycompany');
     Route::resource('/myaccount/mycompany', AccountMyCompanyController::class, ['only' => ['store']])->names('mycompany');
-    Route::resource('/myaccount/myservice', AccountMyServicesController::class, ['only' => ['index','store']])->names('myservice');
+    Route::resource('/myaccount/myservices', AccountMyServicesController::class, ['only' => ['index','store']])->names('myservices');
     Route::resource('/myaccount/myteam', AccountMyTeamController::class, ['only' => ['index', 'store', 'update', 'destroy']])->names('myteam');
     Route::resource('/company/files', CompanyFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('companyimages');
     /**
