@@ -66,6 +66,14 @@
                                     Compañias licitantes&nbsp;
                                     <span class="badge badge-primary">{{count($tender->tenderCompanies)}}</span>
                                 </a>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($tender->querywalls)<=0) disabled @endif" href="{{ route('query.class.id', $tender->id ) }}">
+                                    Muro de consultas&nbsp;
+                                    <span class="badge badge-primary">{{count($tender->querywalls)}}</span>
+                                </a>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($tender->remarks)<=0) disabled @endif" href="{{ route('remark.class.id', ['tender',$tender->id] ) }}">
+                                    Reseñas&nbsp;
+                                    <span class="badge badge-primary">{{count($tender->remarks)}}</span>
+                                </a>
                             </div>
                         </div>
                     </td>

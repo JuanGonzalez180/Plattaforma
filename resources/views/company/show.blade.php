@@ -39,7 +39,9 @@
                 @endif
 
                 <dt class="col-sm-4">Nombre:</dt>
-                <dd class="col-sm-8">{{$company->name}}</dd>
+                <dd class="col-sm-8">
+                    {{$company->name}}
+                </dd>
     
                 <dt class="col-sm-4">Entidad:</dt> 
                 <dd class="col-sm-8">{{$company->type_entity->name}}</dd>

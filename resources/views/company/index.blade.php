@@ -45,7 +45,9 @@
             @forelse($companies as $company)
             <tr>
                 <td>{{$loop->iteration}}</td>
-                <td>{{$company->name}}</td>
+                <td>
+                    {{$company->name}}
+                </td>
                 <td>{{$company->type_entity->name}}</td>
                 <td>
                     @if($company && $company->status == 'Creado' )
@@ -104,6 +106,10 @@
                             <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->portfolios)<=0) disabled @endif" href="{{ route('portfolio.company.id', $company->id ) }}">
                                 Portafolios
                                 <span class="badge badge-primary">{{count($company->portfolios)}}</span>
+                            </a>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->remarks)<=0) disabled @endif" href="{{ route('remark.class.id', ['company',$company->id] ) }}">
+                                Reseñas
+                                <span class="badge badge-primary">{{count($company->remarks)}}</span>
                             </a>
                         </div>
                     </div>

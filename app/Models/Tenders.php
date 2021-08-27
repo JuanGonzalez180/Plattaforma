@@ -51,7 +51,8 @@ class Tenders extends Model
     }
 
     public function remarks(){
-        return $this->hasMany(Remarks::class);
+        //return $this->hasMany(Remarks::class);
+        return $this->morphMany(Remarks::class, 'remarksable');
     }
 
     // Relacion uno a muchos polimorfica
