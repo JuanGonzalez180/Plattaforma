@@ -6,6 +6,7 @@ use App\Http\Controllers\WebControllers\team\TeamController;
 use App\Http\Controllers\WebControllers\blog\BlogController;
 use App\Http\Controllers\WebControllers\user\UsersController;
 use App\Http\Controllers\WebControllers\stripe\PlanController;
+use App\Http\Controllers\WebControllers\remark\RemarkController;
 use App\Http\Controllers\WebControllers\brands\BrandsController;
 use App\Http\Controllers\WebControllers\tender\TenderController;
 use App\Http\Controllers\WebControllers\company\CompanyController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\WebControllers\project\ProjectController;
 use App\Http\Controllers\WebControllers\product\ProductController;
 use App\Http\Controllers\WebControllers\country\CountryController;
 use App\Http\Controllers\WebControllers\category\CategoryController;
+use App\Http\Controllers\WebControllers\querywall\QueryWallController;
 use App\Http\Controllers\WebControllers\stripe\SubscriptionController;
 use App\Http\Controllers\WebControllers\portfolio\PortfolioController;
 use App\Http\Controllers\WebControllers\stripe\ProductsStripeController;
@@ -69,6 +71,15 @@ Route::group(['middleware' => 'auth'], function() {
                 ->parameters(['brands' => 'brand']);
 
         Route::get('/company/brand/{id}', [BrandsController::class, 'indexCompanyBrand'])->name('company-brand-id');
+
+        // Muro de consultas
+        Route::get('/querywall/{id}', [QueryWallController::class, 'index'])->name('query.class.id');
+
+        Route::post('/querywall/edit/visible',[QueryWallController::class, 'editVisible'])
+                ->name('querywall.edit.visible');
+
+        //reseñas
+        Route::get('/remark/{class}/{id}', [RemarkController::class, 'index'])->name('remark.class.id');
 
         // Tipo de Proyectos
         Route::resource('tipos-proyectos', TypeProjectController::class)

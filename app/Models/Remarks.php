@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Notifications;
 use App\Transformers\RemarksTransformer;
@@ -42,6 +43,10 @@ class Remarks extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function company(){
+        return $this->belongsTo(Company::class);
     }
 
     public function remarksable(){

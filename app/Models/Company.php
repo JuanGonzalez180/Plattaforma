@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Blog;
 use App\Models\Team;
 use App\Models\User;
+use App\Models\Tags;
 use App\Models\Files;
 use App\Models\Image;
 use App\Models\Brands;
@@ -19,12 +20,12 @@ use App\Models\Addresses;
 use App\Models\Interests;
 use App\Models\TypesEntity;
 use App\Models\SocialNetworks;
-use App\Models\SocialNetworksRelation;
 use App\Models\CategoryService;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\SocialNetworksRelation;
 use Illuminate\Database\Eloquent\Model;
 use App\Transformers\CompanyTransformer;
 use App\Transformers\CompanyDetailTransformer;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Company extends Model
 {
@@ -55,7 +56,7 @@ class Company extends Model
      * @var array
      */
     protected $hidden = [
-        //'status',
+        'status',
         'user_id',
     ];
 
@@ -133,6 +134,11 @@ class Company extends Model
         return $this->morphMany(Files::class, 'filesable');
     }
 
+    // Relacion uno a muchos polimorfica
+    public function tags(){
+        return $this->morphMany(Tags::class, 'tagsable');
+    }
+
     public function calification(){
         $remarks = Remarks::select('remarks.*')
                 ->where('remarks.company_id', $this->id )
@@ -189,5 +195,10 @@ class Company extends Model
     // Relacion uno a muchos polimorfica
     public function interests(){
         return $this->morphMany(Interests::class, 'interestsable');
+    }
+
+    // relacion de uno a muchos 
+    public function brands(){
+        return $this->hasMany(Brands::class);
     }
 }
