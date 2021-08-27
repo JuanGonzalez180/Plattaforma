@@ -91,7 +91,8 @@ class TendersController extends ApiController
         $tendersFields['company_id'] = $user->companyId();
         $tendersFields['project_id'] = $request['project'];
         
-        $tendersVersionFields['adenda'] = $request['adenda'];
+        // El campo Adenda quedará igual al nombre de la licitación por primera vez.
+        $tendersVersionFields['adenda'] = $request['name'];
         $tendersVersionFields['price'] = $request['price'];
         if( $request['date'] ){
             $tendersVersionFields['date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
