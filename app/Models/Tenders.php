@@ -92,18 +92,6 @@ class Tenders extends Model
 
         return [];
     }
-
-    // public function tendersVersionLastPublish(){
-    //     $tenderPublish = $this->tendersVersion
-    //         ->whereIn( 'status', TendersVersions::LICITACION_PUBLISH)
-    //         ->sortBy([ ['created_at', 'desc'] ]);
-        
-    //     if( $tenderPublish && $tenderPublish->count() ){
-    //         return $tenderPublish->first();
-    //     }
-
-    //     return [];
-    // }
     
     public function tenderCompanies(){
         return $this->hasMany(TendersCompanies::class, 'tender_id');
@@ -121,9 +109,15 @@ class Tenders extends Model
     public function notifications(){
         return $this->morphMany(Notifications::class, 'notificationsable');
     }
+
+    // Relacion uno a muchos polimorfica
+    public function remarks(){
+        return $this->morphMany(Remarks::class, 'remarksable');
+    }
     
     // Relacion uno a muchos polimorfica
     public function interests(){
         return $this->morphMany(Interests::class, 'interestsable');
     }
+
 }
