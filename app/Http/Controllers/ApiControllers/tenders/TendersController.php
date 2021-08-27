@@ -35,7 +35,7 @@ class TendersController extends ApiController
         $user = $this->validateUser();
         
         $rules = [
-            'project' => 'required|numeric',
+            'project' => 'nullable|numeric',
         ];
         
         $this->validate( $request, $rules );
@@ -44,11 +44,14 @@ class TendersController extends ApiController
         $companyID = $user->companyId();
 
         if( $companyID && $user->userType() == 'demanda' ){
-            $tenders = Tenders::where('company_id', $companyID)->where('project_id', $request->project)->get();
+            $tenders = Tenders::where('company_id', $companyID);
+            if( $request->project ){
+                $tenders = $tenders->where('project_id', $request->project);
+            }
+            $tenders = $tenders->get();
 
             foreach( $tenders as $key => $tender ){
                 $tender->user;
-                // $tender->tendersVersionLast = $tender->tendersVersionLast();
             }
 
             return $this->showAllPaginate($tenders);

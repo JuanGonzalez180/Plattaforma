@@ -152,7 +152,12 @@ class CompanyController extends ApiController
             } catch (\Throwable $th) {
                 // Si existe algún error al generar la compañía
                 DB::rollBack();
-                $companyError = [ 'company' => 'Error, no se ha podido crear la compañia'];
+                $companyError = [ 'company' => 'Error, no se ha podido crear la compañia' ];
+
+                if ( $th->getCode()==23000 && $th->errorInfo[1] == 1062 ) {
+                    $companyError = [ 'company' => 'Error, ya se encuentra registrada la compañia'];
+                }
+
                 return $this->errorResponse( $companyError, 500 );
             }
         }
@@ -224,7 +229,7 @@ class CompanyController extends ApiController
         
         $tenders = [];
         foreach ( $company->tenders as $key => $tender) {
-            $user = $userTransform->transform($tender->user);
+            $user = $tender->user;
             unset( $tender->user );
             $tender->user = $user;
 

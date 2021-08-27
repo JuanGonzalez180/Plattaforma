@@ -3,6 +3,7 @@
 namespace App\Transformers;
 
 use App\Models\Tenders;
+use App\Transformers\UserTransformer;
 use App\Transformers\CompanyTransformer;
 use League\Fractal\TransformerAbstract;
 
@@ -33,6 +34,7 @@ class TendersTransformer extends TransformerAbstract
      */
     public function transform(Tenders $tender)
     {
+        $userTransform = new UserTransformer();
         return [
             //
             'id' => (int)$tender->id,
@@ -52,7 +54,7 @@ class TendersTransformer extends TransformerAbstract
             'updated_at'=> (string)$tender->updated_at,
             'date'=> (string)$tender->date,
             'hour'=> (string)$tender->hour,
-            'user'=> $tender->user,
+            'user'=> $userTransform->transform($tender->user),
             'tendersVersionLast'=> $tender->tendersVersionLast(),
             'tendersList'=> $tender->tendersVersion,
             'tendersVersionLastPublish'=> $tender->tendersVersionLastPublish(),
@@ -62,7 +64,7 @@ class TendersTransformer extends TransformerAbstract
 
     public function transformDetail(Tenders $tender)
     {
-
+        $userTransform = new UserTransformer();
         $companyTransformer = new CompanyTransformer();
         $projectsTransformer = new ProjectsTransformer();
 
@@ -85,7 +87,7 @@ class TendersTransformer extends TransformerAbstract
             'updated_at'=> (string)$tender->updated_at,
             'date'=> (string)$tender->date,
             'hour'=> (string)$tender->hour,
-            'user'=> $tender->user,
+            'user'=> $userTransform->transform($tender->user),
             'tendersVersionLast'=> $tender->tendersVersionLast(),
             'tendersVersionLastPublish'=> $tender->tendersVersionLastPublish(),
             'tendersVersionCount'=> count($tender->tendersVersion),
