@@ -190,4 +190,9 @@ class Company extends Model
     public function interests(){
         return $this->morphMany(Interests::class, 'interestsable');
     }
+
+    // relacion de uno a muchos 
+    public function brands(){
+        return $this->hasMany(Brands::class);
+    }
 }
