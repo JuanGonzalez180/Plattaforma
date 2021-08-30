@@ -20,7 +20,32 @@ class ProjectController extends Controller
     public function show($id)
     {
         $project    = Projects::find($id);
-        return view('project.show', compact('project'));
+
+        $status = array(
+            'especificaciones-tecnicas',
+            'en-construccion', 
+        );
+
+        return view('project.show', compact(['project','status']));
+    }
+
+    public function update(Request $request)
+    {
+        $project = Projects::find($request->id);
+        $project->status = $request->status;
+        $project->save();
+
+        $message = "Se ha modificado el estado con exito";
+        switch ($request->status) {
+            case Projects::PROJECTS_ERASER:
+                //
+                break;
+            case Projects::PROJECTS_PUBLISH:
+                //
+                break;
+        };
+
+        return response()->json(['message' => $message], 200);
     }
 
     public function editVisible(Request $request)

@@ -24,8 +24,6 @@
     @endif
     <dt class="col-sm-4">Tipo:</dt>
     <dd class="col-sm-8">{{$product->type}}</dd>
-    <dt class="col-sm-4">Estatus:</dt>
-    <dd class="col-sm-8">{{$product->status}}</dd>
     @if(count($product->productCategories)>0)
     <dt class="col-sm-4">Categorias:</dt>
     <dd class="col-sm-8">
@@ -47,4 +45,26 @@
         <span class="badge badge-primary">{{$tag->name}}</span>
     @endforeach
     @endif
+
+
+    <dd class="col-sm-8">
+        <hr>
+        <form id="product_form">
+            @csrf
+            <input type="hidden" id="id" value="{{$product->id}}" name="id"/>
+            <div class="form-row">
+                <div class="form-group col-md-8">
+                    <label for="status">Estado</label>
+                    <select name="status" id="status" class="form-control">
+                        @foreach($status as $value)
+                            <option value="{{ $value }}" {{ old('status', $value) == $product->status ? 'selected' : '' }} >{{ $value }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-md-8">
+                    <button type="submit" class="btn btn-success">Aceptar</button>
+                </div>
+            </div>
+        </form>
+    </dd>
 </div>

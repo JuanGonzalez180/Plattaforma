@@ -128,17 +128,22 @@ Route::group(['middleware' => 'auth'], function() {
                 ->name('teams.edit.status');
 
 
-        // Licitaciones - Compañias
+        // Compañias licitantes
         Route::get('/tendercompanies/{id}', [TenderCompaniesController::class, 'index'])->name('tender-companies-id');
+        
+        Route::resource('tender/companies/detail', TenderCompaniesController::class, ['only' => ['show']])
+        ->names('tender-companies')
+        ->parameters(['tendercompanies' => 'tender']);
 
-        Route::resource('tender/companies/detail', TenderCompaniesController::class, ['only' => ['edit','show']])
-                ->names('tender-companies')
-                ->parameters(['tendercompanies' => 'tender']);
+        Route::PUT('/tendercompanies', [TenderCompaniesController::class, 'update'])->name('tender-companies-update');
+        
 
         // Productos/Servicios
         Route::get('/company/product/{id}', [ProductController::class, 'index'])->name('product-company-id');
+
+        Route::PUT('/product', [ProductController::class, 'update'])->name('product-update');
         
-        Route::resource('product', ProductController::class, ['only' => ['edit','show','update']])
+        Route::resource('product', ProductController::class, ['only' => ['edit','show']])
                 ->names('productos')
                 ->parameters(['product' => 'productos']);
 
@@ -147,6 +152,8 @@ Route::group(['middleware' => 'auth'], function() {
         Route::resource('proyecto', ProjectController::class, ['only' => ['edit','show']])
                 ->names('project')
                 ->parameters(['proyecto' => 'project']);
+
+        Route::PUT('/project', [ProjectController::class, 'update'])->name('project-companies-update');
 
         Route::get('/project/company/{id}', [ProjectController::class, 'index'])->name('project-company-id');
 
@@ -178,6 +185,8 @@ Route::group(['middleware' => 'auth'], function() {
                 ->names('blog')
                 ->parameters(['blog' => 'blog']);
 
+        Route::PUT('/blog', [BlogController::class, 'update'])->name('blog-update');
+
         Route::get('/blog/company/{id}', [BlogController::class, 'index'])
                 ->name('blog.company.id');
 
@@ -185,6 +194,8 @@ Route::group(['middleware' => 'auth'], function() {
         Route::resource('portfolio', PortfolioController::class, ['only' => ['edit','show']])
                 ->names('portfolio')
                 ->parameters(['portfolio' => 'portfolio']);
+
+        Route::PUT('/portfolio', [PortfolioController::class, 'update'])->name('portfolio-update');
 
         Route::get('/portfolio/company/{id}', [PortfolioController::class, 'index'])
                 ->name('portfolio.company.id');

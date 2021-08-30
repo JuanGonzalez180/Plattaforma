@@ -11,26 +11,7 @@ use App\Models\Projects;
 class QueryWallController extends Controller
 {
     public function index($id)
-    //public function index($class, $id)
     {
-
-        /*if ($class == 'Tender') {
-            $class = Tenders::class;
-            $tittle = 'Licitación';
-            $sql   = Tenders::find($id);
-            $name  = $sql->name;
-        } elseif ($class == 'Project') {
-            $class = Projects::class;
-            $tittle = 'Proyecto';
-            $sql   = Projects::find($id);
-            $name  = $sql->name;
-        };*/
-
-        /*$queryWalls = QueryWall::where('querysable_type', $class)
-            ->where('querysable_id', $id)
-            ->orderBy('updated_at','desc')
-            ->get();*/
-
         $queryWalls = QueryWall::where('querysable_type', Tenders::class)
             ->where('querysable_id', $id)
             ->orderBy('updated_at','desc')

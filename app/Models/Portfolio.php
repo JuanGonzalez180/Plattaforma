@@ -12,7 +12,7 @@ class Portfolio extends Model
 {
     use HasFactory;
 
-    const PORTFOLIO_ERASER = 'Borrador';
+    const PORTFOLIO_ERASER  = 'Borrador';
     const PORTFOLIO_PUBLISH = 'Publicado';
 
     public $transformer = PortfoliosTransformer::class;

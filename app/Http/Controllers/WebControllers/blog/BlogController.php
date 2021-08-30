@@ -20,6 +20,31 @@ class BlogController extends Controller
     public function show($id)
     {
         $blog = Blog::find($id);
-        return view('blog.show', compact('blog'));
+
+        $status = array(
+            Blog::BLOG_ERASER,
+            Blog::BLOG_PUBLISH, 
+        );
+
+        return view('blog.show', compact(['blog','status']));
+    }
+
+    public function update(Request $request)
+    {
+        $tenderCompany = Blog::find($request->id);
+        $tenderCompany->status = $request->status;
+        $tenderCompany->save();
+
+        $message = "Se ha modificado el estado con exito";
+        switch ($request->status) {
+            case Blog::BLOG_ERASER:
+                //
+                break;
+            case Blog::BLOG_PUBLISH:
+                //
+                break;
+        };
+
+        return response()->json(['message' => $message], 200);
     }
 }

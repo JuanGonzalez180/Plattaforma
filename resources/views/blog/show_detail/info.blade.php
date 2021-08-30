@@ -29,13 +29,28 @@
             <textarea class="form-control" rows="6" disabled>{{$blog->description}}</textarea>
         @endif
     </dd>
-    <dt class="col-sm-4">Estado:</dt>
+    
+
     <dd class="col-sm-8">
-        @if($blog->status == 'Borrador')
-            <span class="badge badge-warning">{{$blog->status}}</span>
-        @else
-            <span class="badge badge-success">{{$blog->status}}</span>
-        @endif
+        <hr>
+        <form id="blog_form">
+            @csrf
+            <input type="hidden" id="id" value="{{$blog->id}}" name="id"/>
+            <div class="form-row">
+                <div class="form-group col-md-8">
+                    <label for="status">Estado</label>
+                    <select name="status" id="status" class="form-control">
+                        @foreach($status as $value)
+                            <option value="{{ $value }}" {{ old('status', $value) == $blog->status ? 'selected' : '' }} >{{ $value }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-md-8">
+                    <button type="submit" class="btn btn-success">Aceptar</button>
+                </div>
+            </div>
+        </form>
     </dd>
+
 </div>
 

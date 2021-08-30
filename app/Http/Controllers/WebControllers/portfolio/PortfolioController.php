@@ -20,6 +20,31 @@ class PortfolioController extends Controller
     public function show($id)
     {
         $portfolio = Portfolio::find($id);
-        return view('portfolio.show', compact('portfolio'));
+        $status = [
+            Portfolio::PORTFOLIO_ERASER,
+            Portfolio::PORTFOLIO_PUBLISH
+        ];
+
+        return view('portfolio.show', compact(['portfolio','status']));
     }
+
+    public function update(Request $request)
+    {
+        $tenderCompany = Portfolio::find($request->id);
+        $tenderCompany->status = $request->status;
+        $tenderCompany->save();
+
+        $message = "Se ha modificado el estado con exito";
+        switch ($request->status) {
+            case Portfolio::PORTFOLIO_ERASER:
+                //
+                break;
+            case Portfolio::PORTFOLIO_PUBLISH:
+                //
+                break;
+        };
+
+        return response()->json(['message' => $message], 200);
+    }
+
 }
