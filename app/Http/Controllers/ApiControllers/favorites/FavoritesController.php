@@ -65,10 +65,10 @@ class FavoritesController extends ApiController
     }
 
     public function destroy($id){
-        // $user = $this->validateUser();
-        // $interests = Interests::find($id);
-        // $interests->delete();
+        $user = $this->validateUser();
+        $interests = Interests::find($id);
+        $interests->delete();
 
-        // return $this->showOneData( ['success' => 'Se ha eliminado correctamente.', 'code' => 200 ], 200);
+        return $this->showOneData( ['success' => 'Se ha eliminado correctamente.', 'code' => 200 ], 200);
     }
 }
