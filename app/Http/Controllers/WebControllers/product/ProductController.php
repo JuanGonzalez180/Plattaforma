@@ -21,18 +21,37 @@ class ProductController extends Controller
     {
         $product    = Products::find($id);
 
-        return view('product.show', compact('product'));
+        $status     = [
+            Products::PRODUCT_ERASER,
+            Products::PRODUCT_PUBLISH
+        ];
+
+        return view('product.show', compact(['product','status']));
     }
 
     public function edit($id)
     {
-        $product = Products::find($id);
+        $product    = Products::find($id);
+
         return view('product.edit',compact('product'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
+        $product = Products::find($request->id);
+        $product->status = $request->status;
+        $product->save();
 
-        return view('product.show', compact('product'));
+        $message = "Se ha modificado el estado con exito";
+        switch ($request->status) {
+            case Products::PRODUCT_ERASER:
+                //
+                break;
+            case Products::PRODUCT_PUBLISH:
+                //
+                break;
+        };
+
+        return response()->json(['message' => $message], 200);
     }
 }

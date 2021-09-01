@@ -29,4 +29,50 @@
         </div>
     </div>
     @include('partials.structure.close-main')
+
+
+    <script>
+        $("#project_form").submit(function(e){
+            e.preventDefault();
+            let id      = $('#id').val();
+            let status  = $('#status').val();
+            let _token  = $("input[name=_token]").val();
+
+            Swal.fire({
+                title: '¿Estas seguro?',
+                text: "Cambiar el estado de la compañia licitante ?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor:  '#d33',
+                confirmButtonText:  '¡Si, Cambiar!',
+                cancelButtonText:   'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: "{{route('project-companies-update')}}",
+                        type:"PUT",
+                        data:{
+                            id: id,
+                            status: status,
+                            _token: _token
+                        },
+                        success:function(data)
+                        {
+                            Swal.fire(
+                                'Exito!',
+                                data['message'],
+                                'success',
+                            ).then((result) => {
+                                if (result.isConfirmed) {
+                                    location.reload();
+                                }
+                            })
+                        }
+                    });
+                }
+            })
+        });
+    </script>
 @endsection

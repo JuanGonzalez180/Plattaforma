@@ -41,14 +41,6 @@
     <dd class="col-sm-8">{{ $project->date_start }}</dd>
     <dt class="col-sm-4">Fecha final del proyecto:</dt>
     <dd class="col-sm-8">{{ $project->date_end }}</dd>
-    <dt class="col-sm-4">Estado:</dt>
-    <dd class="col-sm-8">
-        @if($project->status == 'especificaciones-tecnicas')
-            <span class="badge badge-warning">{{ $project->status }}</span>
-        @else
-            <span class="badge badge-danger">{{ $project->status }}</span>
-        @endif
-    </dd>
     <dt class="col-sm-4">Visible:</dt>
     @if($project->visible == 'Visible')
     <dd class="col-sm-8">
@@ -63,5 +55,26 @@
         </span>
     </dd>
     @endif
+    
+    <dd class="col-sm-8">
+        <hr>
+        <form id="project_form">
+            @csrf
+            <input type="hidden" id="id" value="{{$project->id}}" name="id"/>
+            <div class="form-row">
+                <div class="form-group col-md-8">
+                    <label for="status">Estado</label>
+                    <select name="status" id="status" class="form-control">
+                        @foreach($status as $value)
+                            <option value="{{ $value }}" {{ old('status', $value) == $project->status ? 'selected' : '' }} >{{ $value }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-md-8">
+                    <button type="submit" class="btn btn-success">Aceptar</button>
+                </div>
+            </div>
+        </form>
+    </dd>
 </dl>
 
