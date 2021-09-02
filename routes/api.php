@@ -159,6 +159,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/projects', ProjectsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('projects');
     Route::put('/projects/{project}/visible', [ProjectsController::class, 'changevisible'])->name('projectsvisible');
     Route::resource('/projects/files', ProjectsFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('projectsimages');
+    Route::get('/projects/all', [ProjectsController::class, 'all'])->name('project-list-all');
     /**
      * Products
      */
