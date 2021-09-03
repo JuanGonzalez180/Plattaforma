@@ -70,7 +70,7 @@ class CompanyTendersController extends ApiController
         $company->tenders = $tenders;
         
         foreach ( $company->tenders as $key => $tender) {
-            $user = $userTransform->transform($tender->user);
+            $user = $tender->user;
             unset( $tender->user );
             $tender->user = $user;
 
@@ -120,10 +120,13 @@ class CompanyTendersController extends ApiController
         foreach($tender->tendersVersion as $key => $version) {
             if($version->status == TendersVersions::LICITACION_CREATED)
                 unset($tender->tendersVersion[$key]);
-        };
+        }
         
-        if ( $company_status == TendersCompanies::STATUS_PARTICIPATING || $company_status == TendersCompanies::STATUS_PROCESS ){
-
+        if ( 
+            $company_status == TendersCompanies::STATUS_PARTICIPATING || 
+            $company_status == TendersCompanies::STATUS_PROCESS || 
+            $slug == $user->companyClass()->slug 
+        ){
             foreach( $tender->tendersVersion as $key => $version ){
                 $version->files;
             }
