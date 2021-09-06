@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebControllers\HomeController;
 use App\Http\Controllers\WebControllers\team\TeamController;
+use App\Http\Controllers\WebControllers\test\TestController;
 use App\Http\Controllers\WebControllers\blog\BlogController;
 use App\Http\Controllers\WebControllers\user\UsersController;
 use App\Http\Controllers\WebControllers\stripe\PlanController;
@@ -212,4 +213,9 @@ Route::group(['middleware' => 'auth'], function() {
         /*Route::resource('subscriptions', SubscriptionController::class)
                 ->names('subscription')
                 ->parameters(['subscription' => 'subscription']);*/
+
+        // tests
+        Route::resource('test', TestController::class, ['only' => ['index','edit','update','show','store']])
+                ->names('testing')
+                ->parameters(['test' => 'test']);
 });

@@ -161,6 +161,12 @@
                                         Planes Stripe
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('testing.index') }}">
+                                        <span data-feather="file"></span>
+                                        Test
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </nav>

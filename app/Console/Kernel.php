@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\TaskTenderClosed::class
+        Commands\TaskTenderClosed::class,
+        Commands\TaskDownloadImgProduct::class
     ];
 
     /**
@@ -25,6 +26,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('task:tender_closed')->everyMinute();
+        $schedule->command('task:download_img_product')->everyTenMinutes();
     }
 
     /**

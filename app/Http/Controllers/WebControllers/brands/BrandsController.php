@@ -62,11 +62,11 @@ class BrandsController extends Controller
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
 
+
         $this->validate( $request, $rules );
         $fields = $request->all();
 
         $fields['name']     = ucwords($request->name);
-        $fields['status']   = $request->status;
         $fields['user_id']  = auth()->user()->id;
         $brand = Brands::create( $fields );
 
