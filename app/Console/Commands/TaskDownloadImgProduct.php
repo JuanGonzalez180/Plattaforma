@@ -3,11 +3,12 @@
 namespace App\Console\Commands;
 
 use App\Models\Products;
+use App\Models\Category;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Schema\Blueprint;
 use TaylorNetwork\UsernameGenerator\Generator;
 
 class TaskDownloadImgProduct extends Command
@@ -45,45 +46,140 @@ class TaskDownloadImgProduct extends Command
      */
     public function handle()
     {
-        if(Schema::hasTable('temp_product_img')){
-
-            $product_img = DB::table('temp_product_img')
+        if(Schema::hasTable('temp_product_files'))
+        {
+            $product_img = DB::table('temp_product_files')
                 ->where('status','false')
-                ->take(450)
+                ->take(10)
                 ->get();
 
             foreach($product_img as $value)
             {
-                $url           = $value->img;
-                $product       = Products::find($value->product_id);
-            
-                $generator     = new Generator();
-                $imageName     = $generator->generate($product->name);
-                $imageName     = $imageName . '-' . uniqid().'.'.pathinfo($url, PATHINFO_EXTENSION);
+                $product    = Products::find($value->product_id);
 
-                $routeProducts = $this->routeProducts.$product->id.'/'.$imageName;
+                //category/categorias
+                if(!empty($value->categories))
+                    $this->addCategories($value->categories, $product);
 
-                $contents   = file_get_contents($url);
-                Storage::put($this->routeFile.$routeProducts , $contents);
+                //tags/Etiquetas
+                if(!empty($value->tags))
+                    $this->addTags($value->tags, $product);
 
-                $product->image()->create(['url' => $routeProducts]);
+                //files/Archivos
+                if(!empty($value->files))
+                    $this->addFiles($value->files, $product);
 
-                DB::table('temp_product_img')
+                //images/Galeria de imagenes
+                if(!empty($value->galery_img))
+                    $this->addImages($value->galery_img, $product);
+
+                //main_img/Imagen principal
+                if(!empty($value->main_img))
+                    $this->addMainImg($value->main_img, $product);
+
+                DB::table('temp_product_files')
                     ->where('id', $value->id)
                     ->update(['status' => 'true']);
-            };
-
-            //borra las filas que ya se ha gestionado
-            DB::table('temp_product_img')
-                ->where('status', 'true')
-                ->delete();
-
-
-            //si la tabla esta vacia la elimina
-            if(empty(DB::table('temp_product_img')->count())){
-                DB::unprepared( DB::raw( "DROP TABLE temp_product_img" ) );
             }
 
-        };
+        }
+     
+    }
+
+    public function stringToArray($string)
+    {
+        $array = explode(",", $string);
+        return $array;
+    }
+
+    public function addCategories($categories, $product)
+    {
+        $categories = array_unique($this->stringToArray($categories));
+
+        foreach($categories as $categoryId)
+        {
+            if(Category::where('id',$categoryId)->exists())
+                $product->productCategories()->attach($categoryId);
+        }
+    }
+
+    public function addTags($tags, $product)
+    {
+        $tags = array_unique($this->stringToArray($tags));
+
+        foreach($tags as $tag)
+        {
+            $product->tags()->create(['name' => ucfirst($tag)]);
+        }
+    }
+
+    public function addFiles($files, $product)
+    {
+        $files = array_unique($this->stringToArray($files));
+
+        foreach($files as $url)
+        {
+            if($this->url_exists($url))
+            {
+                $fileName = 'document'.'-'.rand().'-'.time().'.'.pathinfo($url, PATHINFO_EXTENSION);
+                $routeFile = $this->routeProducts.$product->id.'/documents/'.$fileName;
+
+                $contents   = file_get_contents($url);
+                Storage::put($this->routeFile.$routeFile, $contents);
+
+                $product->files()->create([ 'name' => $fileName, 'type'=> 'documents', 'url' => $routeFile]);
+            }
+        }
+    }
+
+    public function addImages($images, $product)
+    {
+        $images = array_unique($this->stringToArray($images));
+
+        foreach($images as $url)
+        {
+            if($this->url_exists($url))
+            {
+                $imageName = 'image'.'-'.rand().'-'.time().'.'.pathinfo($url, PATHINFO_EXTENSION);
+                $routeFile = $this->routeProducts.$product->id.'/images/'.$imageName;
+
+                $contents   = file_get_contents($url);
+                Storage::put($this->routeFile.$routeFile, $contents);
+
+                $product->files()->create([ 'name' => $imageName, 'type'=> 'images', 'url' => $routeFile]);
+            }
+        }
+    }
+
+    public function addMainImg($url, $product)
+    {
+        $allowed    = ['jpg','png','jpeg','gif'];
+
+        if($this->url_exists($url) && in_array(pathinfo($url, PATHINFO_EXTENSION), $allowed))
+        {
+            $generator     = new Generator();
+            $imageName     = $generator->generate($product->name);
+            $imageName     = $imageName . '-' . uniqid().'.'.pathinfo($url, PATHINFO_EXTENSION);
+    
+            $routeProducts = $this->routeProducts.$product->id.'/'.$imageName;
+    
+            $contents   = file_get_contents($url);
+            Storage::put($this->routeFile.$routeProducts , $contents);
+    
+            $product->image()->create(['url' => $routeProducts]);
+        }
+    }
+
+    public function url_exists($url)
+    {
+        $ch  = curl_init($url);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_exec($ch);
+
+        $code   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $status = ($code == 200) ? true : false;
+
+        curl_close($ch);
+        return $status;
     }
 }

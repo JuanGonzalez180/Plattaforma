@@ -167,6 +167,21 @@
                                         Test
                                     </a>
                                 </li>
+
+
+                                <li class="nav-item">
+                                    <a class="nav-link collapsed text-truncate" href="#upfalesubmenu" data-toggle="collapse" data-target="#upfalesubmenu"><span class="d-none d-sm-inline">Subir Archivos</span></a>
+                                    <div class="collapse" id="upfalesubmenu" aria-expanded="false">
+                                        <ul class="flex-column pl-2 nav">
+                                            <li class="nav-item">
+                                                <a class="nav-link py-0" href="{{ route('template-product-file.index') }}">
+                                                    <i class="fas fa-angle-right"></i>&nbsp;Productos - plantilla CSV
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+
                             </ul>
                         </div>
                     </nav>

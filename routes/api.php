@@ -32,6 +32,7 @@ use App\Http\Controllers\ApiControllers\projects\ProjectsFilesController;
 use App\Http\Controllers\ApiControllers\socialnetworks\SocialNetworksController;
 use App\Http\Controllers\ApiControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\ApiControllers\tenders\TendersController;
+use App\Http\Controllers\ApiControllers\uploadfile\csv\productfile\ProductFileController;
 use App\Http\Controllers\ApiControllers\tenders\tendersDocuments\TendersDocumentsController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesDocumentsController;
@@ -249,6 +250,10 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/company/{slug}/portfolios', [CompanyPortfoliosController::class, 'index'])->name('company-portfolios');
 
     Route::get('/company/{slug}/remarks', [CompanyRemarksController::class, 'index'])->name('company-remarks');
+
+    //subir archivos
+    /*csv*/
+    Route::post('uploadfile/csv/product/file', [ProductFileController::class, 'store'])->name('csv-product-file');
     
     /**
      * Search

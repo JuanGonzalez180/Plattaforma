@@ -183,6 +183,8 @@ return [
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         // Yajra
         Yajra\DataTables\DataTablesServiceProvider::class,
+        //image invention
+        Intervention\Image\ImageServiceProvider::class,
 
     ],
 
@@ -240,6 +242,8 @@ return [
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         //Yajra
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
+        //image invention
+        'Image' => Intervention\Image\Facades\Image::class,
 
     ],
 

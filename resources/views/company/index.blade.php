@@ -50,7 +50,7 @@
                 </td>
                 <td>{{$company->type_entity->name}}</td>
                 <td>
-                    @if($company && $company->status == 'Creado' )
+                    @if(($company && $company->status == 'Creado') && ($company->type_entity->type->name == 'Demanda'))
                     <form method="POST" action="{{ route( 'company.edit.status', $company->user ) }}" class="d-inline form-company-approve">
                         @csrf
                         <input type="hidden" name="id" value="{{$company->id}}"/>
@@ -63,6 +63,8 @@
                         <input type="hidden" name="status" value="Rechazado"/>
                         <button type="submit" class="btn btn-danger btn-sm" data-toggle="tooltip" title='Rechazar'><i class="far fa-thumbs-down"></i></button>
                     </form>
+                    @elseif(($company && $company->status == 'Creado') && ($company->type_entity->type->name == 'Oferta'))
+                        <span class="badge badge-warning"><i class="fas fa-circle"></i> {{$company->status}}</span>
                     @elseif($company && $company->status == 'Aprobado' )
                         <span class="badge badge-success"><i class="fas fa-check"></i> {{$company->status}}</span>
                     @else

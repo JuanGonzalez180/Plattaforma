@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\WebControllers\test;
 
+use Image;
 use App\Models\Brands;
 use App\Models\Products;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +19,7 @@ class TestController extends Controller
 {
     public $routeFile       = 'public/';
 
-    public $routeFileBD     = 'images/temp/';
+    public $routeFileBD     = 'temp/';
     public $routeProducts   = 'images/products/';
     
     public function index()
@@ -34,92 +36,180 @@ class TestController extends Controller
 
     public function createTemporaryTable()
     {
-        Schema::create('temp_product_img', function (Blueprint $table) {
+        Schema::create('temp_product_files', function (Blueprint $table) {
             $table->increments('id');
             $table->bigInteger('product_id')->unsigned();
-            $table->string('img', 1000);
+            $table->longText('categories');
+            $table->longText('tags');
+            $table->longText('main_img');
+            $table->longText('galery_img');
+            $table->longText('files');
             $table->string('status')->default('false');
-            //$table->temporary();
         });
+    }
+
+    public function url_exists($url)
+    {
+        $ch  = curl_init($url);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_exec($ch);
+
+        $code   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $status = ($code == 200) ? true : false;
+
+        curl_close($ch);
+        return $status;
+    }
+
+    public function stringToArray($string)
+    {
+        $array = explode(",", $string);
+        return $array;
+    }
+
+    public function addCategories($categories, $product)
+    {
+        $categories = array_unique($this->stringToArray($categories));
+
+        foreach($categories as $categoryId)
+        {
+            if(Category::where('id',$categoryId)->exists())
+                $product->productCategories()->attach($categoryId);
+        }
+    }
+
+    public function addTags($tags, $product)
+    {
+        $tags = array_unique($this->stringToArray($tags));
+
+        foreach($tags as $tag)
+        {
+            $product->tags()->create(['name' => ucfirst($tag)]);
+        }
+    }
+
+    public function addFiles($files, $product)
+    {
+        $files = array_unique($this->stringToArray($files));
+
+        foreach($files as $url)
+        {
+            if($this->url_exists($url))
+            {
+                $fileName = 'document'.'-'.rand().'-'.time().'.'.pathinfo($url, PATHINFO_EXTENSION);
+                $routeFile = $this->routeProducts.$product->id.'/documents/'.$fileName;
+
+                $contents   = file_get_contents($url);
+                Storage::put($this->routeFile.$routeFile, $contents);
+
+                $product->files()->create([ 'name' => $fileName, 'type'=> 'documents', 'url' => $routeFile]);
+            }
+        }
+    }
+
+    public function addImages($images, $product)
+    {
+        $images     = array_unique($this->stringToArray($images));
+        $allowed    = ['jpg','png','jpeg','gif'];
+
+        foreach($images as $url)
+        {
+            if($this->url_exists($url) && in_array(pathinfo($url, PATHINFO_EXTENSION), $allowed))
+            {
+                $imageName = 'image'.'-'.rand().'-'.time().'.'.pathinfo($url, PATHINFO_EXTENSION);
+                $routeFile = $this->routeProducts.$product->id.'/images/'.$imageName;
+
+                $contents   = file_get_contents($url);
+                Storage::put($this->routeFile.$routeFile, $contents);
+
+
+               
+
+                /*$img = Image::make($url);
+                $img->save($imageName, 20);*/
+
+                /*$img = new \Imagick();
+                $img->readImage($url);
+                $img->setImageCompression(imagick::COMPRESSION_JPEG);
+                $img->setImageCompressionQuality(90);
+                $img->stripImage();
+                $img->writeImage($this->routeFile.$this->routeProducts.$product->id.'/images/');*/
+
+                $product->files()->create([ 'name' => $imageName, 'type'=> 'images', 'url' => $routeFile]);
+            }
+        }
+    }
+
+    public function addMainImg($url, $product)
+    {
+        $allowed    = ['jpg','png','jpeg','gif'];
+
+        if($this->url_exists($url) && in_array(pathinfo($url, PATHINFO_EXTENSION), $allowed))
+        {
+            $generator     = new Generator();
+            $imageName     = $generator->generate($product->name);
+            $imageName     = $imageName . '-' . uniqid().'.'.pathinfo($url, PATHINFO_EXTENSION);
+    
+            $routeProducts = $this->routeProducts.$product->id.'/'.$imageName;
+    
+            $contents   = file_get_contents($url);
+            Storage::put($this->routeFile.$routeProducts , $contents);
+    
+            $product->image()->create(['url' => $routeProducts]);
+        }
     }
 
     public function store(Request $request)
     {
-        if(!Schema::hasTable('temp_product_img')){
-            $this->createTemporaryTable();
-        };
+        if(Schema::hasTable('temp_product_files'))
+        {
+            $product_img = DB::table('temp_product_files')
+                ->where('status','false')
+                ->take(100)
+                ->get();
 
-        $generator = new Generator();
-        if( $request->file_cvs ){
-            $fileName = uniqid().'.'.$request->file_cvs->extension();
-            $request->file_cvs->storeAs( $this->routeFile.$this->routeFileBD, $fileName);
+            foreach($product_img as $value)
+            {
+                $product    = Products::find($value->product_id);
 
-            $file_cvs = 'storage/'.$this->routeFileBD.$fileName;            
+                //category/categorias
+                if(!empty($value->categories))
+                    $this->addCategories($value->categories, $product);
+                    
+                //tags/Etiquetas
+                if(!empty($value->tags))
+                    $this->addTags($value->tags, $product);
+                    
+                //files/Archivos
+                if(!empty($value->files))
+                    $this->addFiles($value->files, $product);
 
-            $file_handle = fopen($file_cvs, 'r');
+                //images/Galeria de imagenes
+                if(!empty($value->galery_img))
+                    $this->addImages($value->galery_img, $product);
 
-            $lineNumber = 1;
+                //main_img/Imagen principal
+                if(!empty($value->main_img))
+                    $this->addMainImg($value->main_img, $product);
+                
 
-            while (($raw_string = fgets($file_handle)) !== false) {
+                DB::table('temp_product_files')
+                    ->where('id', $value->id)
+                    ->update(['status' => 'true']);
+            };
 
-                $row = str_getcsv($raw_string);
-                $this->createProduct($row);
+            //borra las filas que ya se ha gestionado
+            DB::table('temp_product_files')
+                ->where('status', 'true')
+                ->delete();
 
-                // Aumentar la línea actual
-                $lineNumber++;
+            //si la tabla esta vacia la elimina
+            if(empty(DB::table('temp_product_files')->count())){
+                DB::unprepared( DB::raw( "DROP TABLE temp_product_files" ) );
             }
 
-            fclose($file_handle);
-            die;
-        }
-        
-    }
+        }; 
 
-    public function createProduct($row)
-    {
-        $brand_id = $this->getBrandId($row[2]);
-
-        $product = Products::where(strtoupper('name'), strtoupper($row[1]))
-            ->where('brand_id',$brand_id);
-
-        if(!$product->exists())
-        {
-            $product = new Products;
-            $product->name        = ucfirst($row[1]);
-            $product->company_id  = 1;
-            $product->user_id     = 1;
-            $product->brand_id    = $brand_id;
-            $product->description = $row[3];
-            $product->type        = ucfirst($row[4]);
-            $product->status      = Products::PRODUCT_PUBLISH;
-            $product->save();
-
-            DB::table('temp_product_img')->insert([
-                'product_id' => $product->id,
-                'img'        => $row[5]
-            ]);
-
-        }
-    }
-
-    public function getBrandId($name)
-    {
-        $brand = Brands::where(strtoupper('name'), strtoupper($name));
-
-        if($brand->exists())
-        {
-            $brand = $brand->first();
-        }
-        else
-        {
-            $brand = new Brands;
-            $brand->user_id     = 1;
-            $brand->company_id  = 0;
-            $brand->name        = ucfirst($name);
-            $brand->save();
-        }
-
-        return $brand->id;
     }
 
 }

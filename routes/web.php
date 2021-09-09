@@ -24,6 +24,7 @@ use App\Http\Controllers\WebControllers\typesentity\TypesEntityController;
 use App\Http\Controllers\WebControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\WebControllers\socialnetworks\SocialNetworksController;
 use App\Http\Controllers\WebControllers\tendercompanies\TenderCompaniesController;
+use App\Http\Controllers\WebControllers\uploadfile\template\ProductFileController;
 use App\Http\Controllers\WebControllers\categoryservices\CategoryServicesController;
 
 /*
@@ -218,4 +219,7 @@ Route::group(['middleware' => 'auth'], function() {
         Route::resource('test', TestController::class, ['only' => ['index','edit','update','show','store']])
                 ->names('testing')
                 ->parameters(['test' => 'test']);
+
+        Route::resource('uploadfile/template/product/file', ProductFileController::class, ['only' => ['index','store']])
+                ->names('template-product-file');
 });
