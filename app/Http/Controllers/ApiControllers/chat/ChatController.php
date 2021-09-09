@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ApiControllers\chat;
 use JWTAuth;
 use App\Models\Chat;
 use App\Models\User;
+use App\Models\Tenders;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
@@ -51,20 +52,26 @@ class ChatController extends ApiController
         $rules = [
             'id' => 'required',
             'type' => 'required',
-            'company_id_receive' => 'required'
+            'company_id' => 'required'
         ];
 
         $this->validate( $request, $rules );
         
         $chatFields['chatsable_id'] = $request->id;
         if( $request->type == 'tenders' ){
+
             $chatFields['chatsable_type'] = Tenders::class;
+            $tender = Tenders::find($request->id);
+            if( !$tender ){
+                $tenderError = [ 'tender' => 'Error, no se ha encuentrado una licitación' ];
+                return $this->errorResponse( $tenderError, 500 );
+            }
+            $companySend = $tender->company_id;
+
             if($user->userType() == 'demanda'){
-                $companySend = $request->company;
-                $companyReceive = $user->companyId();
+                $companyReceive = $request->company_id;
             }elseif($user->userType() == 'oferta'){
-                $companySend = $user->companyId();
-                $companyReceive = $request->company;
+                $companyReceive = $user->companyId();
             }
         }
         $chatFields['user_id'] = $user->id;
@@ -74,7 +81,8 @@ class ChatController extends ApiController
         $chat = Chat::where('chatsable_id', $chatFields['chatsable_id'])
                     ->where('chatsable_type', $chatFields['chatsable_type'])
                     ->where('company_id', $chatFields['company_id'])
-                    ->where('company_id_receive', $chatFields['company_id_receive']);
+                    ->where('company_id_receive', $chatFields['company_id_receive'])
+                    ->first();
         
         if( !$chat ){
             // Iniciar Transacción
@@ -89,6 +97,8 @@ class ChatController extends ApiController
                 $userError = [ 'user' => 'Error, no se ha podido crear el chat entre las compañias' ];
                 return $this->errorResponse( $userError, 500 );
             }
+
+            DB::commit();
         }
 
         return $this->showOne($chat,201);

@@ -72,6 +72,8 @@ use App\Http\Controllers\ApiControllers\favorites\FavoritesController;
 // Notifications
 use App\Http\Controllers\ApiControllers\notifications\UsersTokensController;
 use App\Http\Controllers\ApiControllers\notifications\NotificationsController;
+// Chat
+use App\Http\Controllers\ApiControllers\chat\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -276,6 +278,9 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     // Notifications 
     Route::resource('/tokens', UsersTokensController::class, ['only' => ['store']])->names('tokens');
     Route::resource('/notifications', NotificationsController::class, ['only' => ['index', 'destroy']])->names('notifications');
+    
+    // Chat
+    Route::resource('/chats', ChatController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('chats');
 
 });
 // Route::post('/files', FilesController::class)->name('files');
