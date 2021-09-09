@@ -44,11 +44,37 @@ class TendersController extends ApiController
         $companyID = $user->companyId();
 
         if( $companyID && $user->userType() == 'demanda' ){
-            $tenders = Tenders::where('company_id', $companyID);
+            $tenders = Tenders::select('tenders.*')
+                                ->where('tenders.company_id', $companyID);
             if( $request->project ){
                 $tenders = $tenders->where('project_id', $request->project);
             }
-            $tenders = $tenders->get();
+            
+            // Filtrar por orden desc or asc
+            if( $request->orderby && $request->order ){
+                $tenders = $tenders->join('tenders_versions AS tversion', function($join) {
+                                        $join->on('tenders.id', '=', 'tversion.tenders_id');
+                                        $join->on('tversion.created_at', '=', DB::raw('(SELECT MAX(created_at) FROM tenders_versions WHERE tenders_id=tversion.tenders_id)'));
+                                    });
+                if( $request->orderby == 'date' ){
+                    $tenders = $tenders->orderBy('tversion.date', $request->order );
+                }elseif( $request->orderby == 'price' ){
+                    $tenders = $tenders->orderBy('tversion.price', $request->order );
+                }
+            }else{
+                $tenders = $tenders->orderBy('tenders.updated_at', 'desc');
+            }
+            
+            if( $request->filter ){
+                $tenders = $tenders->join('projects', function($join) use($request) {
+                    $join->on('tenders.project_id', '=', 'projects.id')
+                         ->where(strtolower('tenders.name'),'LIKE','%'.strtolower($request->filter).'%')
+                            ->orWhere(strtolower('projects.name'),'LIKE','%'.strtolower($request->filter).'%');
+                });
+            }
+
+            $tenders = $tenders->groupBy('tenders.id')
+                        ->get();
 
             foreach( $tenders as $key => $tender ){
                 $tender->user;

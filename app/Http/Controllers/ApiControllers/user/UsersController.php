@@ -58,7 +58,11 @@ class UsersController extends ApiController
                 $company = $user->team->company;
                 $user['type'] = $company->type_entity->type->slug;
             }
-
+            
+            $companyClass = $user->companyClass();
+            if( $companyClass ){
+                $user->slug = $companyClass->slug;
+            }
             $user->image;
         } catch (JWTException $e) {
             return $this->errorResponse( [ 'error' => ['could_not_create_token']], 500 );

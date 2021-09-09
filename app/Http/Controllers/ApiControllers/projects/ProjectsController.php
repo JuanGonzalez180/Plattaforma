@@ -32,7 +32,6 @@ class ProjectsController extends ApiController
         
         $companyID = $user->companyId();
 
-        // var_dump($user->userType());
         if( $companyID && $user->userType() == 'demanda' ){
             if( $user->isAdminFrontEnd() ){
                 // IS ADMIN
@@ -55,6 +54,29 @@ class ProjectsController extends ApiController
         }
         
         return [];
+    }
+
+    public function all()
+    {
+        $user = $this->validateUser();
+        $companyID = $user->companyId();
+        $projects = [];
+
+        if( $companyID && $user->userType() == 'demanda' ){
+            if( $user->isAdminFrontEnd() ){
+                // IS ADMIN
+                $projects = Projects::where('company_id', $companyID)
+                                    ->orderBy('id', 'desc')
+                                    ->get();
+            }else{
+                $projects = Projects::where('company_id', $companyID)
+                                        ->where('user_id', $user->id)
+                                        ->orderBy('id', 'desc')
+                                        ->get();
+            }
+        }
+
+        return $this->showAll($projects);
     }
 
     public function store(Request $request){

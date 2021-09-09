@@ -6,6 +6,7 @@ use App\Models\Blog;
 use App\Models\Image;
 use App\Models\Company;
 use App\Models\Team;
+use App\Models\Interests;
 use App\Models\Notifications;
 use App\Models\UsersToken;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -175,9 +176,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->morphOne(Image::class, 'imageable');
     }
 
-    // Relacion uno a uno polimorfica
+    // Relacion
     public function notifications(){
         return $this->hasMany(Notifications::class);
+    }
+
+    // Relacion
+    public function interests(){
+        return $this->hasMany(Interests::class);
     }
 
     //Nombre completo
