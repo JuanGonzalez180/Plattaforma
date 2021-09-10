@@ -142,4 +142,15 @@ class ProductFileController extends ApiController
         return $brand->id;
     }
 
+    public function downloadTemplate()
+    {
+        $routeFileTemplate   = 'template/product_csv/';
+        $fileName   = 'template_product_csv.xlsx';
+        $pathtoFile = $this->routeFile.$routeFileTemplate.$fileName;
+
+        
+
+        return response()->download($pathtoFile);
+    }
+
 }
