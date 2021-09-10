@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\WebControllers\uploadfile\template;
 
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -9,22 +10,28 @@ class ProductFileController extends Controller
 {
     public $routeFile           = 'public/';
     public $routeFileTemplate   = 'template/product_csv/';
-
+    public $nameFile = "template_product";
 
     public function index()
     {
-        return view('uploadfile.productfile.index');
+        $fileName = $this->nameFile . ".csv";
+        $existFile = false;
+        $routeFileFull = '/storage/' . $this->routeFileTemplate . $fileName;
+        if(Storage::disk('public')->exists( $this->routeFileTemplate . $fileName )){
+            $existFile = true;
+        }
+        return view('uploadfile.productfile.index', compact( 'fileName', 'existFile', 'routeFileFull' ) );
     }
 
     public function store(Request $request)
     {
         $rules = [
-            'template' => 'required|mimes:xlsx'
+            'template' => 'required|mimes:text/csv,txt'
         ];
 
         $this->validate( $request, $rules );
 
-        $fileName = 'template_product_csv'.'.'.$request->template->extension();
+        $fileName = $this->nameFile.'.'.$request->template->getClientOriginalExtension();
 
         $request->template->storeAs( $this->routeFile.$this->routeFileTemplate, $fileName);
 

@@ -20,6 +20,9 @@ class ProductFileController extends ApiController
     public $routeFileBD     = 'temp/';
     public $routeProducts   = 'images/products/';
 
+    public $routeFileTemplate   = 'template/product_csv/';
+    public $nameFile = "template_product";
+
     public function validateUser(){
         try {
             $this->user = JWTAuth::parseToken()->authenticate();
@@ -144,13 +147,10 @@ class ProductFileController extends ApiController
 
     public function downloadTemplate()
     {
-        $routeFileTemplate   = 'template/product_csv/';
-        $fileName   = 'template_product_csv.xlsx';
-        $pathtoFile = $this->routeFile.$routeFileTemplate.$fileName;
+        $fileName   = $this->nameFile.'.csv';
+        $pathtoFile = url( 'storage/' . $this->routeFileTemplate.$fileName );
 
-        
-
-        return response()->download($pathtoFile);
+        return $this->showOneData( ['url' => $pathtoFile, 'code' => 200 ], 200);
     }
 
 }
