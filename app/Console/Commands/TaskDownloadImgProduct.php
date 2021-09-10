@@ -56,7 +56,7 @@ class TaskDownloadImgProduct extends Command
             foreach($product_img as $value)
             {
                 $product    = Products::find($value->product_id);
-
+                
                 //files/Archivos
                 if(!empty($value->files))
                     $this->addFiles($value->files, $product);
@@ -147,7 +147,7 @@ class TaskDownloadImgProduct extends Command
     {
         $allowed    = ['jpg','png','jpeg','gif'];
 
-        if($this->url_exists($url) && in_array(pathinfo($url, PATHINFO_EXTENSION), $allowed))
+        if($this->url_exists($url) && in_array( strtolower(pathinfo($url, PATHINFO_EXTENSION)), $allowed))
         {
             $generator     = new Generator();
             $imageName     = $generator->generate($product->name);
