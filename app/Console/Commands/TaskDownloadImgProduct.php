@@ -50,20 +50,12 @@ class TaskDownloadImgProduct extends Command
         {
             $product_img = DB::table('temp_product_files')
                 ->where('status','false')
-                ->take(10)
+                ->take(100)
                 ->get();
 
             foreach($product_img as $value)
             {
                 $product    = Products::find($value->product_id);
-
-                //category/categorias
-                if(!empty($value->categories))
-                    $this->addCategories($value->categories, $product);
-
-                //tags/Etiquetas
-                if(!empty($value->tags))
-                    $this->addTags($value->tags, $product);
 
                 //files/Archivos
                 if(!empty($value->files))

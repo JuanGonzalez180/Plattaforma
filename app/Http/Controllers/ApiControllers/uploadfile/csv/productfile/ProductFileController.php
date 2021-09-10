@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ApiControllers\uploadfile\csv\productfile;
 
 use JWTAuth;
 use App\Models\Brands;
+use App\Models\Category;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,8 +37,6 @@ class ProductFileController extends ApiController
         Schema::create('temp_product_files', function (Blueprint $table) {
             $table->increments('id');
             $table->bigInteger('product_id')->unsigned();
-            $table->longText('categories');
-            $table->longText('tags');
             $table->longText('main_img');
             $table->longText('galery_img');
             $table->longText('files');
@@ -110,10 +109,16 @@ class ProductFileController extends ApiController
             $product->status      = $row[8];
             $product->save();
 
+            //category/categorias
+            if(!empty(str_replace($characters, "", $row[3])))
+            $this->addCategories(str_replace($characters, "", $row[3]), $product);
+
+            //tags/Etiquetas
+            if(!empty(trim(str_replace($characters, "", $row[4]))))
+                $this->addTags(trim(str_replace($characters, "", $row[4])), $product);
+
             DB::table('temp_product_files')->insert([
                 'product_id'    => $product->id,
-                'categories'    => str_replace($characters, "", $row[3]),
-                'tags'          => trim(str_replace($characters, "", $row[4])),
                 'main_img'      => $row[5],
                 'galery_img'    => trim(str_replace($characters, "", $row[6])),
                 'files'         => trim(str_replace($characters, "", $row[7]))
@@ -151,6 +156,33 @@ class ProductFileController extends ApiController
         $pathtoFile = url( 'storage/' . $this->routeFileTemplate.$fileName );
 
         return $this->showOneData( ['url' => $pathtoFile, 'code' => 200 ], 200);
+    }
+
+    public function addCategories($categories, $product)
+    {
+        $categories = array_unique($this->stringToArray($categories));
+
+        foreach($categories as $categoryId)
+        {
+            if(Category::where('id',$categoryId)->exists())
+                $product->productCategories()->attach($categoryId);
+        }
+    }
+
+    public function addTags($tags, $product)
+    {
+        $tags = array_unique($this->stringToArray($tags));
+
+        foreach($tags as $tag)
+        {
+            $product->tags()->create(['name' => ucfirst($tag)]);
+        }
+    }
+
+    public function stringToArray($string)
+    {
+        $array = explode(",", $string);
+        return $array;
     }
 
 }
