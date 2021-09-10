@@ -143,7 +143,6 @@ Route::get('/categoriesservices', CategoryServicesController::class)->name('cate
 
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('user',[UsersController::class, 'getAuthenticatedUser'])->name('user');
-
     /**
      * My Account
      */
@@ -255,7 +254,8 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     //subir archivos
     /*csv*/
-    Route::post('uploadfile/csv/product/file', [ProductFileController::class, 'store'])->name('csv-product-file');
+    Route::post('/uploadfile/csv/product/file', [ProductFileController::class, 'store'])->name('csv-product-file');
+    Route::get('/filedownload/csv/product/file', [ProductFileController::class, 'downloadTemplate'])->name('download-csv-product-file');
     
     /**
      * Search
