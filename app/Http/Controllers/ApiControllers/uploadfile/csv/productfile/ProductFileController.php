@@ -92,7 +92,6 @@ class ProductFileController extends ApiController
         $user       = $this->validateUser();
         $companyID  = $user->companyId();
         $brand_id   = (!empty($row[1])) ? $this->getBrandId($row[1]) : 1;
-        $characters = array("{", "}"); 
 
         $product = Products::where(strtoupper('name'), strtoupper($row[0]))
             ->where('brand_id',$brand_id);
@@ -110,18 +109,18 @@ class ProductFileController extends ApiController
             $product->save();
 
             //category/categorias
-            if(!empty(str_replace($characters, "", $row[3])))
-            $this->addCategories(str_replace($characters, "", $row[3]), $product);
+            if(!empty($row[3]))
+            $this->addCategories($row[3], $product);
 
             //tags/Etiquetas
-            if(!empty(trim(str_replace($characters, "", $row[4]))))
-                $this->addTags(trim(str_replace($characters, "", $row[4])), $product);
+            if(!empty(trim($row[4])))
+                $this->addTags(trim($row[4]), $product);
 
             DB::table('temp_product_files')->insert([
                 'product_id'    => $product->id,
                 'main_img'      => $row[5],
-                'galery_img'    => trim(str_replace($characters, "", $row[6])),
-                'files'         => trim(str_replace($characters, "", $row[7]))
+                'galery_img'    => trim($row[6]),
+                'files'         => trim($row[7])
             ]);
         }
     }
@@ -158,20 +157,35 @@ class ProductFileController extends ApiController
         return $this->showOneData( ['url' => $pathtoFile, 'code' => 200 ], 200);
     }
 
-    public function addCategories($categories, $product)
-    {
-        $categories = array_unique($this->stringToArray($categories));
+    /*{
+        $categories = array_unique($this->stringToArrayHashtag($categories));
 
         foreach($categories as $categoryId)
         {
             if(Category::where('id',$categoryId)->exists())
                 $product->productCategories()->attach($categoryId);
         }
+    }*/
+
+    public function addCategories($categories, $product)
+    {
+        $categories = array_unique($this->stringToArrayHashtag($categories));
+
+        foreach($categories as $categoryName)
+        {   
+            $category = Category::where(
+                $this->remove_accents(strtolower('name')),
+                $this->remove_accents(strtolower($categoryName))
+            )->first();
+
+            if($category)
+                $product->productCategories()->attach($category);
+        }
     }
 
     public function addTags($tags, $product)
     {
-        $tags = array_unique($this->stringToArray($tags));
+        $tags = array_unique($this->stringToArrayHashtag($tags));
 
         foreach($tags as $tag)
         {
@@ -179,10 +193,18 @@ class ProductFileController extends ApiController
         }
     }
 
-    public function stringToArray($string)
+    public function stringToArrayHashtag($string)
     {
-        $array = explode(",", $string);
+        $array = explode("#", $string);
         return $array;
+    }
+
+    function remove_accents($array)
+    {
+        $not_allowed    = array("á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","À","Ã","Ì","Ò","Ù","Ã™","Ã ","Ã¨","Ã¬","Ã²","Ã¹","ç","Ç","Ã¢","ê","Ã®","Ã´","Ã»","Ã‚","ÃŠ","ÃŽ","Ã”","Ã›","ü","Ã¶","Ã–","Ã¯","Ã¤","«","Ò","Ã","Ã„","Ã‹");
+        $allowed        = array("a","e","i","o","u","A","E","I","O","U","n","N","A","E","I","O","U","a","e","i","o","u","c","C","a","e","i","o","u","A","E","I","O","U","u","o","O","i","a","e","U","I","A","E");
+
+        return str_replace($not_allowed, $allowed ,$array);
     }
 
 }

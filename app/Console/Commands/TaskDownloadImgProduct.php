@@ -15,6 +15,8 @@ class TaskDownloadImgProduct extends Command
 {
     public $routeFile       = 'public/';
     public $routeProducts   = 'images/products/';
+
+    public $image_format    = ['jpg','png','jpeg'];
     /**
      * The name and signature of the console command.
      *
@@ -56,7 +58,16 @@ class TaskDownloadImgProduct extends Command
             foreach($product_img as $value)
             {
                 $product    = Products::find($value->product_id);
-                
+
+                if(!$product)
+                {
+                    DB::table('temp_product_files')
+                        ->where('id', $value->id)
+                        ->delete();
+
+                    continue;
+                }
+
                 //files/Archivos
                 if(!empty($value->files))
                     $this->addFiles($value->files, $product);
@@ -67,42 +78,19 @@ class TaskDownloadImgProduct extends Command
 
                 //main_img/Imagen principal
                 if(!empty($value->main_img))
-                    $this->addMainImg($value->main_img, $product);
+                    $this->addMainImg($value->main_img, $product); 
 
                 DB::table('temp_product_files')
                     ->where('id', $value->id)
-                    ->update(['status' => 'true']);
+                    ->update(['status' => 'true']);   
             }
-
         }
-     
     }
 
     public function stringToArray($string)
     {
-        $array = explode(",", $string);
+        $array = explode("#", $string);
         return $array;
-    }
-
-    public function addCategories($categories, $product)
-    {
-        $categories = array_unique($this->stringToArray($categories));
-
-        foreach($categories as $categoryId)
-        {
-            if(Category::where('id',$categoryId)->exists())
-                $product->productCategories()->attach($categoryId);
-        }
-    }
-
-    public function addTags($tags, $product)
-    {
-        $tags = array_unique($this->stringToArray($tags));
-
-        foreach($tags as $tag)
-        {
-            $product->tags()->create(['name' => ucfirst($tag)]);
-        }
     }
 
     public function addFiles($files, $product)
@@ -111,10 +99,12 @@ class TaskDownloadImgProduct extends Command
 
         foreach($files as $url)
         {
+            $file_format    = strtolower(pathinfo($url, PATHINFO_EXTENSION));
+            
             if($this->url_exists($url))
             {
-                $fileName = 'document'.'-'.rand().'-'.time().'.'.pathinfo($url, PATHINFO_EXTENSION);
-                $routeFile = $this->routeProducts.$product->id.'/documents/'.$fileName;
+                $fileName      = 'document'.'-'.rand().'-'.time().'.'.$file_format;
+                $routeFile     = $this->routeProducts.$product->id.'/documents/'.$fileName;
 
                 $contents   = file_get_contents($url);
                 Storage::put($this->routeFile.$routeFile, $contents);
@@ -130,9 +120,11 @@ class TaskDownloadImgProduct extends Command
 
         foreach($images as $url)
         {
-            if($this->url_exists($url))
+            $file_format = strtolower(pathinfo($url, PATHINFO_EXTENSION));
+
+            if($this->url_exists($url) && in_array( $file_format, $this->image_format))
             {
-                $imageName = 'image'.'-'.rand().'-'.time().'.'.pathinfo($url, PATHINFO_EXTENSION);
+                $imageName = 'image'.'-'.rand().'-'.time().'.'.$file_format;
                 $routeFile = $this->routeProducts.$product->id.'/images/'.$imageName;
 
                 $contents   = file_get_contents($url);
@@ -145,13 +137,13 @@ class TaskDownloadImgProduct extends Command
 
     public function addMainImg($url, $product)
     {
-        $allowed    = ['jpg','png','jpeg','gif'];
+        $file_format = strtolower(pathinfo($url, PATHINFO_EXTENSION));
 
-        if($this->url_exists($url) && in_array( strtolower(pathinfo($url, PATHINFO_EXTENSION)), $allowed))
+        if($this->url_exists($url) && in_array( $file_format, $this->image_format))
         {
             $generator     = new Generator();
             $imageName     = $generator->generate($product->name);
-            $imageName     = $imageName . '-' . uniqid().'.'.pathinfo($url, PATHINFO_EXTENSION);
+            $imageName     = $imageName . '-' . uniqid().'.'.$file_format;
     
             $routeProducts = $this->routeProducts.$product->id.'/'.$imageName;
     
