@@ -40,6 +40,8 @@ class CompanyTransformer extends TransformerAbstract
             'description'=> (string)$company->description,
             'slug'=> (string)$company->slug,
             'image'=> $company->image,
+            'created_at'=> (string)$company->created_at,
+            'updated_at'=> (string)$company->updated_at,
             'calification'=> $company->calification(),
             'coverpage'=> Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first()
         ];
