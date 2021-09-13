@@ -57,36 +57,32 @@ class TaskDownloadImgProduct extends Command
             {
                 $product    = Products::find($value->product_id);
 
-                if(!is_null($product))
+                if(!$product)
                 {
-                    //files/Archivos
-                    if(!empty($value->files))
-                        $this->addFiles($value->files, $product);
-    
-                    //images/Galeria de imagenes
-                    if(!empty($value->galery_img))
-                        $this->addImages($value->galery_img, $product);
-    
-                    //main_img/Imagen principal
-                    if(!empty($value->main_img))
-                        $this->addMainImg($value->main_img, $product);
-    
-                    DB::table('temp_product_files')
-                        ->where('id', $value->id)
-                        ->update(['status' => 'true']);
-                }
-                else
-                {
-                    //encaso de no existir o haber borrado el producto se borra la fila
                     DB::table('temp_product_files')
                         ->where('id', $value->id)
                         ->delete();
-                }
-                
-            }
 
+                    continue;
+                }
+
+                //files/Archivos
+                if(!empty($value->files))
+                    $this->addFiles($value->files, $product);
+
+                //images/Galeria de imagenes
+                if(!empty($value->galery_img))
+                    $this->addImages($value->galery_img, $product);
+
+                //main_img/Imagen principal
+                if(!empty($value->main_img))
+                    $this->addMainImg($value->main_img, $product); 
+
+                DB::table('temp_product_files')
+                    ->where('id', $value->id)
+                    ->update(['status' => 'true']);   
+            }
         }
-     
     }
 
     public function stringToArray($string)
@@ -124,7 +120,7 @@ class TaskDownloadImgProduct extends Command
         {
             if($this->url_exists($url))
             {
-                $fileName = 'document'.'-'.rand().'-'.time().'.'.pathinfo($url, PATHINFO_EXTENSION);
+                $fileName = 'document'.'-'.rand().'-'.time().'.'.strtolower(pathinfo($url, PATHINFO_EXTENSION));
                 $routeFile = $this->routeProducts.$product->id.'/documents/'.$fileName;
 
                 $contents   = file_get_contents($url);
@@ -143,7 +139,7 @@ class TaskDownloadImgProduct extends Command
         {
             if($this->url_exists($url))
             {
-                $imageName = 'image'.'-'.rand().'-'.time().'.'.pathinfo($url, PATHINFO_EXTENSION);
+                $imageName = 'image'.'-'.rand().'-'.time().'.'.strtolower(pathinfo($url, PATHINFO_EXTENSION));
                 $routeFile = $this->routeProducts.$product->id.'/images/'.$imageName;
 
                 $contents   = file_get_contents($url);
@@ -156,13 +152,13 @@ class TaskDownloadImgProduct extends Command
 
     public function addMainImg($url, $product)
     {
-        $allowed    = ['jpg','png','jpeg','gif'];
+        $allowed    = ['jpg','png','jpeg'];
 
         if($this->url_exists($url) && in_array( strtolower(pathinfo($url, PATHINFO_EXTENSION)), $allowed))
         {
             $generator     = new Generator();
             $imageName     = $generator->generate($product->name);
-            $imageName     = $imageName . '-' . uniqid().'.'.pathinfo($url, PATHINFO_EXTENSION);
+            $imageName     = $imageName . '-' . uniqid().'.'.strtolower(pathinfo($url, PATHINFO_EXTENSION));
     
             $routeProducts = $this->routeProducts.$product->id.'/'.$imageName;
     
