@@ -56,22 +56,33 @@ class TaskDownloadImgProduct extends Command
             foreach($product_img as $value)
             {
                 $product    = Products::find($value->product_id);
+
+                if(!is_null($product))
+                {
+                    //files/Archivos
+                    if(!empty($value->files))
+                        $this->addFiles($value->files, $product);
+    
+                    //images/Galeria de imagenes
+                    if(!empty($value->galery_img))
+                        $this->addImages($value->galery_img, $product);
+    
+                    //main_img/Imagen principal
+                    if(!empty($value->main_img))
+                        $this->addMainImg($value->main_img, $product);
+    
+                    DB::table('temp_product_files')
+                        ->where('id', $value->id)
+                        ->update(['status' => 'true']);
+                }
+                else
+                {
+                    //encaso de no existir o haber borrado el producto se borra la fila
+                    DB::table('temp_product_files')
+                        ->where('id', $value->id)
+                        ->delete();
+                }
                 
-                //files/Archivos
-                if(!empty($value->files))
-                    $this->addFiles($value->files, $product);
-
-                //images/Galeria de imagenes
-                if(!empty($value->galery_img))
-                    $this->addImages($value->galery_img, $product);
-
-                //main_img/Imagen principal
-                if(!empty($value->main_img))
-                    $this->addMainImg($value->main_img, $product);
-
-                DB::table('temp_product_files')
-                    ->where('id', $value->id)
-                    ->update(['status' => 'true']);
             }
 
         }
