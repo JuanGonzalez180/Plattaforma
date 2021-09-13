@@ -20,6 +20,8 @@ class TestController extends Controller
     public $routeFile       = 'public/';
     public $routeProducts   = 'images/products/';
 
+    public $image_format    = ['jpg','png','jpeg'];
+
     public function index()
     {
         return view('test.index');
@@ -126,7 +128,7 @@ class TestController extends Controller
 
         foreach($images as $url)
         {
-            if($this->url_exists($url))
+            if($this->url_exists($url) && in_array( strtolower(pathinfo($url, PATHINFO_EXTENSION)), $this->image_format))
             {
                 $imageName = 'image'.'-'.rand().'-'.time().'.'.strtolower(pathinfo($url, PATHINFO_EXTENSION));
                 $routeFile = $this->routeProducts.$product->id.'/images/'.$imageName;
@@ -141,9 +143,7 @@ class TestController extends Controller
 
     public function addMainImg($url, $product)
     {
-        $allowed    = ['jpg','png','jpeg'];
-
-        if($this->url_exists($url) && in_array( strtolower(pathinfo($url, PATHINFO_EXTENSION)), $allowed))
+        if($this->url_exists($url) && in_array( strtolower(pathinfo($url, PATHINFO_EXTENSION)), $this->image_format))
         {
             $generator     = new Generator();
             $imageName     = $generator->generate($product->name);

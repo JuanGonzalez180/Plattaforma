@@ -15,6 +15,8 @@ class TaskDownloadImgProduct extends Command
 {
     public $routeFile       = 'public/';
     public $routeProducts   = 'images/products/';
+
+    public $image_format    = ['jpg','png','jpeg'];
     /**
      * The name and signature of the console command.
      *
@@ -137,7 +139,7 @@ class TaskDownloadImgProduct extends Command
 
         foreach($images as $url)
         {
-            if($this->url_exists($url))
+            if($this->url_exists($url) && in_array( strtolower(pathinfo($url, PATHINFO_EXTENSION)), $this->image_format))
             {
                 $imageName = 'image'.'-'.rand().'-'.time().'.'.strtolower(pathinfo($url, PATHINFO_EXTENSION));
                 $routeFile = $this->routeProducts.$product->id.'/images/'.$imageName;
@@ -152,9 +154,7 @@ class TaskDownloadImgProduct extends Command
 
     public function addMainImg($url, $product)
     {
-        $allowed    = ['jpg','png','jpeg'];
-
-        if($this->url_exists($url) && in_array( strtolower(pathinfo($url, PATHINFO_EXTENSION)), $allowed))
+        if($this->url_exists($url) && in_array( strtolower(pathinfo($url, PATHINFO_EXTENSION)), $this->image_format))
         {
             $generator     = new Generator();
             $imageName     = $generator->generate($product->name);
