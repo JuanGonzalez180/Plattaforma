@@ -26,7 +26,7 @@ class ProductFileController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'template' => 'required|mimes:text/csv,txt'
+            'template' => 'required|mimes:csv,txt'
         ];
 
         $this->validate( $request, $rules );
