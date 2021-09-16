@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\products;
 
 use JWTAuth;
+use App\Models\Tags;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\Products;
@@ -263,9 +264,11 @@ class ProductsController extends ApiController
             Storage::disk('local')->delete( $this->routeFile . $product->image->url );
         }
 
+        //elimina las ctegorias relacionadas
         foreach( $product->productCategories as $key => $category ){
             $product->productCategories()->detach($category->id);
         }
+
         foreach( $product->productCategoryServices as $key => $category ){
             $product->productCategoryServices()->detach($category->id);
         }
@@ -275,6 +278,11 @@ class ProductsController extends ApiController
                 Storage::disk('local')->delete( $this->routeFile . $file->url );
                 $file->delete();
             }
+        }
+
+        //Elimina las etiquetas de los productos
+        foreach ($product->tags as $key => $tag) {
+            Tags::destroy($tag->id);
         }
 
         $product->delete();
