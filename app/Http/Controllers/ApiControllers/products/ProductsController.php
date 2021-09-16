@@ -261,6 +261,7 @@ class ProductsController extends ApiController
 
         if( $product->image ){
             Storage::disk('local')->delete( $this->routeFile . $product->image->url );
+            // $product->image->delete();
         }
 
         foreach( $product->productCategories as $key => $category ){
@@ -269,6 +270,8 @@ class ProductsController extends ApiController
         foreach( $product->productCategoryServices as $key => $category ){
             $product->productCategoryServices()->detach($category->id);
         }
+
+        // Eliminar Tags
 
         if( $product->files ){
             foreach ($product->files as $key => $file) {
