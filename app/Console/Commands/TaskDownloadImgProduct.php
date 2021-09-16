@@ -52,7 +52,7 @@ class TaskDownloadImgProduct extends Command
         {
             $product_img = DB::table('temp_product_files')
                 ->where('status','false')
-                ->take(100)
+                ->take(150)
                 ->get();
 
             foreach($product_img as $value)
