@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ApiControllers\portfolios;
 use JWTAuth;
 use App\Models\User;
 use App\Models\Portfolio;
+use Illuminate\Http\Image;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -148,6 +149,9 @@ class PortfoliosController extends ApiController
 
         if( $portfolio->image ){
             Storage::disk('local')->delete( $this->routeFile . $portfolio->image->url );
+            Image::where('imageable_id', $portfolio->id)
+                ->where('imageable_type',Portfolio::class)
+                ->delete();
         }
 
         if( $portfolio->files ){

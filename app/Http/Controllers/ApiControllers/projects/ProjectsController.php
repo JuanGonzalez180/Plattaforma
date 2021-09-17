@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ApiControllers\projects;
 
 use JWTAuth;
 use App\Models\User;
+use App\Models\Image;
 use App\Models\Company;
 use App\Models\Projects;
 use App\Models\MetaData;
@@ -297,8 +298,15 @@ class ProjectsController extends ApiController
 
         $project = Projects::findOrFail($id);
 
+        if($projects->tenders){
+            return $this->errorResponse( [ 'error' => ['No se ha podido eliminar el proyecto, porque tiene licitaciones']], 500 );
+        }
+
         if( $project->image ){
             Storage::disk('local')->delete( $this->routeFile . $project->image->url );
+            Image::where('imageable_id', $project->id)
+                ->where('imageable_type',Projects::class)
+                ->delete();
         }
 
         $project->address()->delete();

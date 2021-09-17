@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ApiControllers\blog;
 use JWTAuth;
 use App\Models\User;
 use App\Models\Blog;
+use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -155,6 +156,9 @@ class BlogController extends ApiController
 
         if( $blog->image ){
             Blog::disk('local')->delete( $this->routeFile . $blog->image->url );
+            Image::where('imageable_id', $blog->id)
+                ->where('imageable_type',Blog::class)
+                ->delete();
         }
 
         if( $blog->files ){

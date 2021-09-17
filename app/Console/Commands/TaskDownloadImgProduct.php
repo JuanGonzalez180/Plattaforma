@@ -107,7 +107,7 @@ class TaskDownloadImgProduct extends Command
                 $routeFile     = $this->routeProducts.$product->id.'/documents/'.$fileName;
 
                 $contents   = file_get_contents($url);
-                Storage::put($this->routeFile.$routeFile, $contents);
+                Storage::disk('local')->put($this->routeFile.$routeFile, $contents);
 
                 $product->files()->create([ 'name' => $fileName, 'type'=> 'documents', 'url' => $routeFile]);
             }
@@ -128,7 +128,8 @@ class TaskDownloadImgProduct extends Command
                 $routeFile = $this->routeProducts.$product->id.'/images/'.$imageName;
 
                 $contents   = file_get_contents($url);
-                Storage::put($this->routeFile.$routeFile, $contents);
+
+                Storage::disk('local')->put($this->routeFile.$routeFile, $contents);
 
                 $product->files()->create([ 'name' => $imageName, 'type'=> 'images', 'url' => $routeFile]);
             }
@@ -148,7 +149,7 @@ class TaskDownloadImgProduct extends Command
             $routeProducts = $this->routeProducts.$product->id.'/'.$imageName;
     
             $contents   = file_get_contents($url);
-            Storage::put($this->routeFile.$routeProducts , $contents);
+            Storage::disk('local')->put($this->routeFile.$routeProducts , $contents);
     
             $product->image()->create(['url' => $routeProducts]);
         }
