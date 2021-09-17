@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ApiControllers\products;
 use JWTAuth;
 use App\Models\Tags;
 use App\Models\User;
+use App\Models\Image;
 use App\Models\Company;
 use App\Models\Products;
 use Illuminate\Http\Request;
@@ -262,7 +263,9 @@ class ProductsController extends ApiController
 
         if( $product->image ){
             Storage::disk('local')->delete( $this->routeFile . $product->image->url );
-            // $product->image->delete();
+            Image::where('imageable_id', $product->id)
+                ->where('imageable_type',Products::class)
+                ->delete();
         }
 
         //elimina las ctegorias relacionadas
@@ -274,18 +277,15 @@ class ProductsController extends ApiController
             $product->productCategoryServices()->detach($category->id);
         }
 
-        // Eliminar Tags
+        //Elimina Etiquetas
+        if($product->tags)
+            Tags::destroy($product->tags);
 
         if( $product->files ){
             foreach ($product->files as $key => $file) {
                 Storage::disk('local')->delete( $this->routeFile . $file->url );
                 $file->delete();
             }
-        }
-
-        //Elimina las etiquetas de los productos
-        foreach ($product->tags as $key => $tag) {
-            Tags::destroy($tag->id);
         }
 
         $product->delete();
