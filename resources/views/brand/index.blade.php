@@ -38,7 +38,11 @@
                     <tr>
                         <th scope="row">{{ $loop->iteration }}</th>
                         <td>{{ $brand->name }}</td>
-                        <td>{{ $brand->company['name'] }}</td>
+                        <td>
+                            @if ($brand->company)
+                                {{ $brand->company['name'] }}
+                            @endif
+                        </td>
                         <td>
                             <a type="button" href="{{ route('brand.edit', $brand ) }}" class="btn btn-dark btn-sm"><i class="fas fa-pencil-alt"></i></a>
                             
