@@ -165,8 +165,21 @@ class CompanyController extends ApiController
         // Generar el correo de Verificación.
         Mail::to($user->email)->send(new CreatedAccount( $company, $user, $type['type']['slug'] ));
 
+        $user['status_company'] = $this->statusCompanyUser($user);
+
         // Aquí debe devolver el usuario con el TOKEN.
         return $this->showOne($user,201);
+    }
+
+    public function statusCompanyUser($user)
+    {
+        if( $user->isAdminFrontEnd() ){
+            $company = $user->company[0];
+        }elseif( $user->team ){
+            $company = $user->team->company;
+        }
+
+        return $company->companyStatusPayment();
     }
 
     /**
@@ -311,6 +324,26 @@ class CompanyController extends ApiController
         }
 
         return $this->showOneTransformNormal($company, 200);
+    }
+
+    
+
+    public function statusCompany()
+    {
+        $user = $this->validateUser();
+        if( $user->isAdminFrontEnd() ){
+            $company = $user->company[0];
+        }elseif( $user->team ){
+            $company = $user->team->company;
+        }
+
+        if($company->companyStatusPayment()){
+            return $this->showOneData( ['message' => 'true', 'code' => 200 ], 200);
+        }
+        else
+        {
+            return $this->showOneData( ['message' => 'false', 'code' => 200 ], 200);
+        }
     }
 
     /**

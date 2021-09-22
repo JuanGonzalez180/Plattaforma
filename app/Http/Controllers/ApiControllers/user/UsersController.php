@@ -46,11 +46,12 @@ class UsersController extends ApiController
 
                 if( $company->status !== Company::COMPANY_APPROVED && $company->type_entity->type->slug == 'demanda' ){
                     return $this->errorResponse( [ 'not_approved_a' => ['not_approved']], 500 );
-                }elseif( $company->status !== Company::COMPANY_APPROVED){
+                }/*elseif( $company->status !== Company::COMPANY_APPROVED){
                     $user['type'] = 'oferta';
                     return $this->errorResponse( [ 'not_approved_b' => ['not_approved']], 500 );
-                }
+                }*/
             }elseif( $user->team ){
+
                 if( $user->team->status == Team::TEAM_PENDING ) {
                     return $this->errorResponse( [ 'team_pending' => ['not_approved']], 500 );
                 }
@@ -67,7 +68,23 @@ class UsersController extends ApiController
         } catch (JWTException $e) {
             return $this->errorResponse( [ 'error' => ['could_not_create_token']], 500 );
         }
-        return response()->json(compact('token','user'));
+
+        $status = $this->statusCompany($user);
+
+
+
+        return response()->json(compact('token','user','status'));
+    }
+
+    public function statusCompany($user)
+    {
+        if( $user->isAdminFrontEnd() ){
+            $company = $user->company[0];
+        }elseif( $user->team ){
+            $company = $user->team->company;
+        }
+
+        return $company->companyStatusPayment();
     }
 
     public function getAuthenticatedUser()

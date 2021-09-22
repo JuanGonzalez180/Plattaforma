@@ -21,13 +21,13 @@ class Products extends Model
 {
     use HasFactory;
 
-    const PRODUCT_ERASER = 'Borrador';
-    const PRODUCT_PUBLISH = 'Publicado';
-    const USER_DEFAULT = 1;
+    const PRODUCT_ERASER    = 'Borrador';
+    const PRODUCT_PUBLISH   = 'Publicado';
+    const USER_DEFAULT      = 1;
 
-    const TYPE_PRODUCT = 'Producto';
-    const TYPE_SERVICE = 'Servicio';
-    const TYPE_BRAND = 'Marca';
+    const TYPE_PRODUCT  = 'Producto';
+    const TYPE_SERVICE  = 'Servicio';
+    const TYPE_BRAND    = 'Marca';
 
     public $transformer = ProductsTransformer::class;
 

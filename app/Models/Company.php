@@ -143,10 +143,13 @@ class Company extends Model
         $remarks = Remarks::select('remarks.*')
                 ->where('remarks.company_id', $this->id )
                 ->avg('calification');
-        if( $remarks ){
-            return $remarks;
-        }
-        return 0;
+
+        return ( $remarks ) ? $remarks : 0;
+    }
+
+    public function companyStatusPayment()
+    {
+        return (($this->type_company() == 'Oferta') && ($this->status == Company::COMPANY_APPROVED));
     }
 
     public function total(){

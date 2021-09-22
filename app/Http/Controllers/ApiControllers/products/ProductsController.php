@@ -77,6 +77,13 @@ class ProductsController extends ApiController
         ];
 
         $this->validate( $request, $rules );
+
+        //verifica el estado del usuario
+        if(!$this->statusCompanyUser($user))
+        {
+            $productError = [ 'product' => 'Error, El usuario debe pagar la suscripción' ];
+            return $this->errorResponse( $productError, 500 );
+        };
         
         // Iniciar Transacción
         DB::beginTransaction();
@@ -160,6 +167,17 @@ class ProductsController extends ApiController
         return $this->showOne($product,200);
     }
 
+    public function statusCompanyUser($user)
+    {
+        if( $user->isAdminFrontEnd() ){
+            $company = $user->company[0];
+        }elseif( $user->team ){
+            $company = $user->team->company;
+        }
+
+        return $company->companyStatusPayment();
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -178,6 +196,12 @@ class ProductsController extends ApiController
         ];
 
         $this->validate( $request, $rules );
+
+        if(!$this->statusCompanyUser($user))
+        {
+            $productError = [ 'product' => 'Error, El usuario debe pagar la suscripción' ];
+            return $this->errorResponse( $productError, 500 );
+        };
         
         // Datos
         $product = Products::findOrFail($id);
