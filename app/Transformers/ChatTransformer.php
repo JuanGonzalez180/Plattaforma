@@ -3,6 +3,7 @@
 namespace App\Transformers;
 
 use App\Models\Chat;
+use App\Transformers\UserTransformer;
 use League\Fractal\TransformerAbstract;
 
 class ChatTransformer extends TransformerAbstract
@@ -32,6 +33,8 @@ class ChatTransformer extends TransformerAbstract
      */
     public function transform(Chat $chat)
     {
+        $userTransform  = new UserTransformer();
+
         return [
             //
             'id' => (int)$chat->id,
@@ -40,6 +43,13 @@ class ChatTransformer extends TransformerAbstract
             'company_receive'=> (string)$chat->company_id_receive,
             'user_send'=> (string)$chat->user_id,
             'user_receive'=> (string)$chat->user_id_receive,
+            'notviewed'=> (int)$chat->notviewed,
+            'data'=> $chat->data,
+            'message'=> $chat->message,
+            'user'=> $userTransform->transform($chat->user),
+            'userReceive'=> $userTransform->transform($chat->userReceive),
+            'updated_at'=> $chat->updated_at,
+            'updated_at_new'=> $chat->updated_at_new
         ];
     }
 }
