@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ApiControllers\company\CompanyTenders;
 use JWTAuth;
 use App\Models\User;
 use App\Models\Tenders;
+use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Models\Notifications;
 use App\Models\TendersCompanies;
@@ -42,11 +43,29 @@ class CompanyTendersTransactController extends ApiController
 
         return $this->showAllPaginateSetTransformer($tendersCompanies, $transformer);
     }
+
+    public function statusCompanyUser($user)
+    {
+        if( $user->isAdminFrontEnd() ){
+            $company = $user->company[0];
+        }elseif( $user->team ){
+            $company = $user->team->company;
+        }
+
+        return $company->companyStatusPayment();
+    }
     
     //participar en licitación
     public function store($slug, int $id)
     {
         $user = $this->validateUser();
+
+        //verifica el estado del usuario
+        if(!$this->statusCompanyUser($user))
+        {
+            $queryError = [ 'querywall' => 'Error, El usuario debe pagar la suscripción' ];
+            return $this->errorResponse( $queryError, 500 );
+        }
 
         $tenderCompany = TendersCompanies::where('tender_id', $id)->where('company_id', $user->companyId());
         $name_company = $user->companyName();
@@ -57,7 +76,7 @@ class CompanyTendersTransactController extends ApiController
             return $this->errorResponse( $queryError, 500 );
         }
 
-        if( $tenderCompany->exists() ) {
+        if($tenderCompany->exists()){
             $tendersCompaniesError = [ 'tendersCompanies' => 'La compañia ya se encuestra participando en esta licitación' ];
             return $this->errorResponse( $tendersCompaniesError, 500 );
         }
