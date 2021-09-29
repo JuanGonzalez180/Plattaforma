@@ -8,11 +8,13 @@ use App\Models\Category;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Schema\Blueprint;
 use TaylorNetwork\UsernameGenerator\Generator;
 use App\Http\Controllers\ApiControllers\ApiController;
+use App\Imports\ProductsImport;
 
 class ProductFileController extends ApiController
 {
@@ -37,17 +39,17 @@ class ProductFileController extends ApiController
         Schema::create('temp_product_files', function (Blueprint $table) {
             $table->increments('id');
             $table->bigInteger('product_id')->unsigned();
-            $table->longText('main_img');
-            $table->longText('galery_img');
-            $table->longText('files');
-            $table->string('status')->default('false');
+            $table->longText('main_img')->nullable();
+            $table->longText('galery_img')->nullable();
+            $table->longText('files')->nullable();
+            $table->string('status')->default('false')->nullable();
         });
     }
 
     public function store(Request $request)
     {
         $rules = [
-            'file_csv' => 'required|mimes:csv,txt'
+            'file_csv' => 'required|mimes:csv,txt,xls,xlsx'
         ];
 
         $this->validate( $request, $rules );
@@ -58,40 +60,29 @@ class ProductFileController extends ApiController
 
         $generator = new Generator();
 
-        $fileName = uniqid().'.'.$request->file_csv->extension();
+        $fileName = uniqid().'.'.$request->file_csv->getClientOriginalExtension();
         $request->file_csv->storeAs( $this->routeFile.$this->routeFileBD, $fileName);
+        $file_cvs       = 'storage/'.$this->routeFileBD.$fileName;
 
-        $file_cvs       = 'storage/'.$this->routeFileBD.$fileName;   
-                 
-        $file_handle    = fopen($file_cvs, 'r');
-
-        $lineNumber = 1;
-        while (($raw_string = fgets($file_handle)) !== false)
-        {
-            if($lineNumber == 1)
-            {
-                $lineNumber++;
-                continue;
-            }
-            $row = str_getcsv($raw_string);
-            $this->createProduct($row);
-            // Aumentar la línea actual
-            $lineNumber++;
-        }
-
-        fclose($file_handle);
-
-        //elimina el archivo csv despues de haber sido leido
-        unlink($file_cvs);
-
-        return $this->showOneData( ['success' => 'se han cargado todos los productos correctamente', 'code' => 200 ], 200);
-    }
-
-    public function createProduct($row)
-    {
+        // print $file_cvs;
         $user       = $this->validateUser();
         $companyID  = $user->companyId();
-        $brand_id   = (!empty($row[1])) ? $this->getBrandId($row[1]) : 1;
+
+        $data = Excel::toArray(new ProductsImport, $file_cvs);
+        if( count($data) ){
+            foreach ($data[0] as $key => $row) {
+                if($key)
+                    $this->createProduct($row, $user, $companyID);
+            }
+        }
+        unlink($file_cvs);
+
+        return $this->showOneData( ['success' => 'se han cargado todos los productos correctamente'], 200);
+    }
+
+    public function createProduct($row, $user, $companyID)
+    {
+        $brand_id   = (!empty($row[1])) ? $this->getBrandId($row[1],$user, $companyID) : 1;
 
         $product = Products::where(strtoupper('name'), strtoupper($row[0]))
             ->where('brand_id',$brand_id);
@@ -125,11 +116,8 @@ class ProductFileController extends ApiController
         }
     }
 
-    public function getBrandId($name)
+    public function getBrandId($name, $user, $companyID)
     {
-        $user       = $this->validateUser();
-        $companyID  = $user->companyId();
-
         $brand = Brands::where(strtoupper('name'), strtoupper($name));
 
         if($brand->exists())
@@ -151,8 +139,9 @@ class ProductFileController extends ApiController
 
     public function downloadTemplate()
     {
-        $fileName   = $this->nameFile.'.csv';
-        $pathtoFile = url( 'storage/' . $this->routeFileTemplate.$fileName );
+        $fileName   = $this->nameFile.'.xlsx';
+        $nameNoCache = uniqid();
+        $pathtoFile = url( 'storage/' . $this->routeFileTemplate.$fileName . '?nocache=' . $nameNoCache );
 
         return $this->showOneData( ['url' => $pathtoFile, 'code' => 200 ], 200);
     }

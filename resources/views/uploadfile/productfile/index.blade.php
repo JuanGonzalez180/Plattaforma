@@ -9,7 +9,7 @@
     @include('partials.structure.open-main')
     <div class="row align-items-center">
         <div class="col">
-            <h1>Plantilla - Producto CSV</h1>
+            <h1>Plantilla - Producto Excel</h1>
         </div>
     </div>
     <hr>
@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Selecciona una archivo de formato csv</label><br>
+                    <label>Selecciona una archivo de formato xlsx</label><br>
                     @if(session()->get('success'))
                         <div class="alert alert-success">
                             {{ session()->get('success') }}

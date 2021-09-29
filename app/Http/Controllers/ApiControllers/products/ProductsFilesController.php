@@ -35,7 +35,7 @@ class ProductsFilesController extends ApiController
     public function index(Request $request)
     {
         $user = $this->validateUser();
-
+        
         $rules = [
             'id' => 'required'
         ];

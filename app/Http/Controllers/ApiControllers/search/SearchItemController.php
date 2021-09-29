@@ -15,6 +15,7 @@ use App\Models\TypesEntity;
 use Illuminate\Http\Request;
 use App\Models\CategoryTenders;
 use App\Models\TendersVersions;
+use App\Models\TendersCompanies;
 use App\Models\CategoryProducts;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
@@ -140,7 +141,7 @@ class SearchItemController extends ApiController
         }
 
         $tenders = $tenders->get();
-        $tenders = $this->addTagsTenders($tenders);
+        $tenders = $this->addAttributesTenders($tenders);
         
         return $this->showAllPaginate($tenders);
     }
@@ -163,13 +164,20 @@ class SearchItemController extends ApiController
     public function getAllTenders($filters)
     {
         $tenderLastVersionsPublish  = $this->getTendersLastVersionPublish();
-        $tenders                    = Tenders::WhereIn('id', $tenderLastVersionsPublish);
+        $tenders                    = Tenders::WhereIn('tenders.id', $tenderLastVersionsPublish);
 
         //filtro de fechas, recibe solo una fecha inicial o la inicial y la final.
         $tenders                    = $this->getTenderFiltegetTendersrByDate($tenders, $filters);
 
-        $tenders                    = $tenders->get();
-        $tenders                    = $this->addTagsTenders($tenders);
+        // $userCompanyId = $this->user->companyId();
+        // $tenders = $tenders->select("comp.status AS company_status")
+        //     ->leftjoin('tenders_companies AS comp', function($join) use($userCompanyId){
+        //         $join->on('tenders.id', '=', 'comp.tender_id');
+        //         $join->where('comp.company_id', '=', $userCompanyId);
+        //     });
+
+        $tenders = $tenders->get();
+        $tenders = $this->addAttributesTenders($tenders);
 
         return $this->showAllPaginate($tenders); 
     }
@@ -298,17 +306,25 @@ class SearchItemController extends ApiController
         };
 
         $tenders = $tenders->get();
-        $tenders = $this->addTagsTenders($tenders);
+        $tenders = $this->addAttributesTenders($tenders);
         // 
         
         return $this->showAllPaginate($tenders);
     }
     
-    public function addTagsTenders( $tenders ){
+    public function addAttributesTenders( $tenders ){
         foreach ( $tenders as $key => $tender) {
             $tendersPublish = $tender->tendersVersionLastPublish();
             if( $tendersPublish ){
                 $tender->tags = $tendersPublish->tags;
+            }
+            // Añadiendo Company Status
+            $tenderCompany = TendersCompanies::select("status")
+                                                        ->where('tender_id', '=', $tender->id )
+                                                        ->where('company_id', '=', $this->user->companyId())
+                                                        ->first();
+            if( $tenderCompany ){
+                $tender->company_status = $tenderCompany->status;
             }
         }
 
@@ -395,7 +411,7 @@ class SearchItemController extends ApiController
         $tenders         = $this->getTenderFiltegetTendersrByDate($tenders, $filters);
         $tenders         = $tenders->get();
 
-        $tenders = $this->addTagsTenders($tenders);
+        $tenders = $this->addAttributesTenders($tenders);
         
         return $this->showAllPaginate($tenders); 
     }
