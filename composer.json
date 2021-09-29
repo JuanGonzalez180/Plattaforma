@@ -19,6 +19,7 @@
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^3.2",
+        "maatwebsite/excel": "^3.1",
         "s-ichikawa/laravel-sendgrid-driver": "^3.0",
         "spatie/laravel-fractal": "^5.8",
         "taylornetwork/laravel-username-generator": "^2.5",

@@ -45,12 +45,7 @@ class ProjectsController extends ApiController
                                         ->orderBy('id', 'desc')
                                         ->get();
             }
-
-            foreach( $projects as $key => $project ){
-                $project->image;
-                $project->user;
-                $project->user['url'] = $project->user->image ? url( 'storage/' . $project->user->image->url ) : null;
-            }
+            
             return $this->showAllPaginate($projects);
         }
         

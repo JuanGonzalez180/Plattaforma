@@ -48,11 +48,6 @@ class ProductsController extends ApiController
                                         ->orderBy('id', 'desc')
                                         ->get();
             }
-            foreach( $products as $key => $product ){
-                $product->image;
-                $product->user;
-                $product->user['url'] = $product->user->image ? url( 'storage/' . $product->user->image->url ) : null;
-            }
 
             return $this->showAllPaginate($products);
         }

@@ -14,7 +14,7 @@ class ProductFileController extends Controller
 
     public function index()
     {
-        $fileName = $this->nameFile . ".csv";
+        $fileName = $this->nameFile . ".xlsx";
         $existFile = false;
         $routeFileFull = '/storage/' . $this->routeFileTemplate . $fileName;
         if(Storage::disk('public')->exists( $this->routeFileTemplate . $fileName )){
@@ -26,7 +26,7 @@ class ProductFileController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'template' => 'required|mimes:csv,txt'
+            'template' => 'required|mimes:xlsx'
         ];
 
         $this->validate( $request, $rules );
