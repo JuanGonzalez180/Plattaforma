@@ -72,7 +72,7 @@ class ProductController extends Controller
                 return $value->brand->name;
                 
             })
-            ->addColumn('actions', '<button>hola</button>')
+            ->addColumn('actions', 'product.datatables.action')
             ->rawColumns(['actions'])
             ->toJson();
     }
