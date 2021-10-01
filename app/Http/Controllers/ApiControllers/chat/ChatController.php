@@ -5,10 +5,12 @@ namespace App\Http\Controllers\ApiControllers\chat;
 use JWTAuth;
 use App\Models\Chat;
 use App\Models\User;
+use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Messages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Transformers\ChatTransformer;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class ChatController extends ApiController
@@ -43,24 +45,6 @@ class ChatController extends ApiController
                        ->orderBy('updated_at_new', 'desc')
                        ->get();
         
-        foreach( $chats as $key => $chat ){
-            if( $chat->chatsable_type == Tenders::class ){
-                $chat->data = Tenders::find($chat->chatsable_id);
-            }
-
-            $chat->user = User::find($chat->user_id);
-            $chat->userReceive = User::find($chat->user_id_receive);
-            
-            $chat->message = Messages::where( 'chat_id', $chat->id )
-                    ->orderBy('created_at', 'desc')
-                    ->first();
-            if( $chat->message && $chat->message->updated_at ){
-                // $chat->updated_at_new = $chat->message->updated_at;
-            }
-        }
-
-        // $chats->sortBy([ ['updated_at_new', 'desc'] ]);
-
         return $this->showAllPaginate($chats);
     }
 
@@ -112,12 +96,14 @@ class ChatController extends ApiController
                 return $this->errorResponse( $tenderError, 500 );
             }
             $companySend = $tender->company_id;
-            $userReceive = $tender->user_id;
-
+            
             if($user->userType() == 'demanda'){
-                $companyReceive = $request->company_id;
+                $company = Company::find($request->company_id);
+                $companyReceive = $company->id;
+                $userReceive = $company->user_id;
             }elseif($user->userType() == 'oferta'){
                 $companyReceive = $user->companyId();
+                $userReceive = $tender->user_id;
             }
         }
         $chatFields['user_id'] = $user->id;
@@ -129,7 +115,14 @@ class ChatController extends ApiController
                     ->where('chatsable_type', $chatFields['chatsable_type'])
                     ->where('company_id', $chatFields['company_id'])
                     ->where('company_id_receive', $chatFields['company_id_receive'])
-                    ->where('user_id_receive', $chatFields['user_id_receive'])
+                    ->where([
+                                ['user_id_receive', $chatFields['user_id_receive']],
+                                ['user_id', $chatFields['user_id']]
+                            ]) 
+                    ->orWhere([
+                                ['user_id_receive', $chatFields['user_id']], 
+                                ['user_id', $chatFields['user_id_receive']]
+                             ])
                     ->first();
         
         if( !$chat ){
@@ -148,7 +141,9 @@ class ChatController extends ApiController
 
             DB::commit();
         }
-
-        return $this->showOne($chat,201);
+        
+        // 
+        $chatTransform = new ChatTransformer();
+        return $this->showOneData( $chatTransform->transform($chat), 201);
     }
 }

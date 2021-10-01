@@ -27,32 +27,6 @@ class NotificationsController extends ApiController
         
         $notifications = $user->notifications
                               ->sortBy([ ['created_at', 'desc'] ]);
-        foreach ($notifications as $key => $notification) {
-            $notification->query_id = $notification->notificationsable_id;
-
-            if( 
-                $notification->type == Notifications::NOTIFICATION_TENDERCOMPANYNOPARTICIPATE && 
-                $notification->notificationsable_type == TendersCompanies::class
-            ){
-                // 
-                $tenderCompanies = TendersCompanies::find($notification->notificationsable_id);
-                if( $tenderCompanies ){
-                    $notification->query_id = $tenderCompanies->tender->project_id;
-                }else{
-                    $notification->query_id = '';
-                }
-            }elseif( 
-                $notification->type == Notifications::NOTIFICATION_TENDERCOMPANYPARTICIPATE && 
-                $notification->notificationsable_type == TendersCompanies::class
-            ){  
-                $tenderCompanies = TendersCompanies::find($notification->notificationsable_id);
-                if( $tenderCompanies ){
-                    $notification->query_id = $tenderCompanies->tender->project_id . '/' . $tenderCompanies->tender->id;
-                }else{
-                    $notification->query_id = '';
-                }
-            }
-        }
 
         return $this->showAllPaginate($notifications);
     }
