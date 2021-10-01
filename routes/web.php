@@ -149,6 +149,9 @@ Route::group(['middleware' => 'auth'], function() {
                 ->names('productos')
                 ->parameters(['product' => 'productos']);
 
+        Route::post('/company/products', [ProductController::class, 'getCompanyProducts'])
+                ->name('company.products');
+
         
         // Proyectos
         Route::resource('proyecto', ProjectController::class, ['only' => ['edit','show']])

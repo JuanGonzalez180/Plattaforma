@@ -195,5 +195,5 @@ class ProductFileController extends ApiController
 
         return str_replace($not_allowed, $allowed ,$array);
     }
-
+    
 }

@@ -37,6 +37,7 @@
                 <th scope="col">#</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Entidad</th>
+                <th scope="col">Fecha</th>
                 <th scope="col">Estado</th>
                 <th scope="col">Acciones</th>
             </tr>
@@ -49,6 +50,7 @@
                     {{$company->name}}
                 </td>
                 <td>{{$company->type_entity->name}}</td>
+                <td>{{$company->created_at->toFormattedDateString();}}</td>
                 <td>
                     @if(($company && $company->status == 'Creado') && ($company->type_entity->type->name == 'Demanda'))
                     <form method="POST" action="{{ route( 'company.edit.status', $company->user ) }}" class="d-inline form-company-approve">
