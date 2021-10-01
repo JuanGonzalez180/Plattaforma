@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Models\TendersCompanies;
 use App\Transformers\NotificationsTransformer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -40,6 +41,33 @@ class Notifications extends Model
     
     public function notificationsable(){
         return $this->morphTo();
+    }
+
+    public function queryId(){
+        $this->query_id = $this->notificationsable_id;
+        if( 
+            $this->type == Notifications::NOTIFICATION_TENDERCOMPANYNOPARTICIPATE && 
+            $this->notificationsable_type == TendersCompanies::class
+        ){
+            $tenderCompanies = TendersCompanies::find($this->notificationsable_id);
+            if( $tenderCompanies ){
+                $this->query_id = $tenderCompanies->tender->project_id;
+            }else{
+                $this->query_id = '';
+            }
+        }elseif( 
+            $this->type == Notifications::NOTIFICATION_TENDERCOMPANYPARTICIPATE && 
+            $this->notificationsable_type == TendersCompanies::class
+        ){  
+            $tenderCompanies = TendersCompanies::find($this->notificationsable_id);
+            if( $tenderCompanies ){
+                $this->query_id = $tenderCompanies->tender->project_id . '/' . $tenderCompanies->tender->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
+
+        return $this->query_id;
     }
 
     public $notifications = [

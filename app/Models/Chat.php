@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\Company;
+use App\Models\Tenders;
 use App\Models\Messages;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -58,5 +59,12 @@ class Chat extends Model
 
     public function messages(){
         return $this->hasMany(Messages::class);
+    }
+
+    public function chatData(){
+        if( $this->chatsable_type == Tenders::class ){
+            return Tenders::find($this->chatsable_id);
+        }
+        return [];
     }
 }

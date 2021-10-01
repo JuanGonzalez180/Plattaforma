@@ -37,7 +37,7 @@ class NotificationsTransformer extends TransformerAbstract
             'id' => (int)$notification->id,
             'user_id' => (int)$notification->user_id,
             'title'=> (string)$notification->title,
-            'query_id'=> (string)$notification->query_id,
+            'query_id'=> $notification->queryId(),
             'type'=> (string)$notification->type,
             'subtitle'=> (string)$notification->subtitle,
             'message'=> (string)$notification->message,
