@@ -103,12 +103,16 @@ class TaskDownloadImgProduct extends Command
                 $fileName      = 'document' . '-' . rand() . '-' . time() . '.' . $file_format;
                 $routeFile     = $this->routeProducts . $product->id . '/documents/' . $fileName;
 
+                DB::beginTransaction();
+
                 try {
                     $contents   = file_get_contents($url);
-                    $product->files()->create(['name' => $fileName, 'type' => 'documents', 'url' => $routeFile]);
                     Storage::disk('local')->put($this->routeFile . $routeFile, $contents);
+                    $product->files()->create(['name' => $fileName, 'type' => 'documents', 'url' => $routeFile]);
                 } catch (\Exception $e) {
+                    DB::rollBack();
                 }
+                DB::commit();
             }
         }
     }
@@ -124,12 +128,17 @@ class TaskDownloadImgProduct extends Command
                 $imageName = 'image' . '-' . rand() . '-' . time() . '.' . $file_format;
                 $routeFile = $this->routeProducts . $product->id . '/images/' . $imageName;
 
+                DB::beginTransaction();
+
                 try {
                     $contents   = file_get_contents($url);
-                    $product->files()->create(['name' => $imageName, 'type' => 'images', 'url' => $routeFile]);
                     Storage::disk('local')->put($this->routeFile . $routeFile, $contents);
+                    $product->files()->create(['name' => $imageName, 'type' => 'images', 'url' => $routeFile]);
                 } catch (\Exception $e) {
+                    DB::rollBack();
                 }
+
+                DB::commit();
             }
         }
     }
@@ -145,13 +154,16 @@ class TaskDownloadImgProduct extends Command
 
             $routeProducts = $this->routeProducts . $product->id . '/' . $imageName;
 
+            DB::beginTransaction();
 
             try {
                 $contents   = file_get_contents($url);
-                $product->image()->create(['url' => $routeProducts]);
                 Storage::disk('local')->put($this->routeFile . $routeProducts, $contents);
+                $product->image()->create(['url' => $routeProducts]);
             } catch (\Exception $e) {
+                DB::rollBack();
             }
+            DB::commit();
         }
     }
 
@@ -166,13 +178,5 @@ class TaskDownloadImgProduct extends Command
 
         curl_close($ch);
         return $status;
-    }
-
-    public function setImageCompressionQuality($imagePath, $quality)
-    {
-        $imagick = new \Imagick(realpath($imagePath));
-        $imagick->setImageCompressionQuality($quality);
-        header("Content-Type: image/jpg");
-        echo $imagick->getImageBlob();
     }
 }

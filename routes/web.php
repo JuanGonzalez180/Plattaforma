@@ -20,6 +20,7 @@ use App\Http\Controllers\WebControllers\stripe\SubscriptionController;
 use App\Http\Controllers\WebControllers\portfolio\PortfolioController;
 use App\Http\Controllers\WebControllers\stripe\ProductsStripeController;
 use App\Http\Controllers\WebControllers\typeproject\TypeProjectController;
+use App\Http\Controllers\WebControllers\scripts\UpdateFilesSizeController;
 use App\Http\Controllers\WebControllers\typesentity\TypesEntityController;
 use App\Http\Controllers\WebControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\WebControllers\socialnetworks\SocialNetworksController;
@@ -48,6 +49,10 @@ Route::get('/', function () {
 Auth::routes(['register' => false]);
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+//scripts
+Route::resource('script/update/filesize',  UpdateFilesSizeController::class, ['only' => ['index','store']])
+->names('zzz-update-file-size');
 
 
 Route::group(['middleware' => 'auth'], function() {
@@ -225,4 +230,7 @@ Route::group(['middleware' => 'auth'], function() {
 
         Route::resource('uploadfile/template/product/file', ProductFileController::class, ['only' => ['index','store']])
                 ->names('template-product-file');
+
+        
+                
 });

@@ -34,10 +34,10 @@ class CompanyPortfoliosController extends ApiController
                 ->where('status', Portfolio::PORTFOLIO_PUBLISH)
                 ->orderBy('updated_at', 'desc');
         
-        foreach ( $portfolios as $key => $portfolio) {
-            $portfolio->image;
-            $portfolio->files;
-        }
+        // foreach ( $portfolios as $key => $portfolio) {
+        //     $portfolio->image;
+        //     $portfolio->files;
+        // }
 
         $portfolios = $portfolios->get();
         

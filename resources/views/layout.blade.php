@@ -161,12 +161,12 @@
                                         Planes Stripe
                                     </a>
                                 </li>
-                                <!--<li class="nav-item">
+                                <li class="nav-item">
                                     <a class="nav-link" href="{{ route('testing.index') }}">
                                         <span data-feather="file"></span>
                                         Test
                                     </a>
-                                </li>-->
+                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link collapsed text-truncate" href="#upfalesubmenu" data-toggle="collapse" data-target="#upfalesubmenu"><span class="d-none d-sm-inline">Subir Archivos</span></a>
                                     <div class="collapse" id="upfalesubmenu" aria-expanded="false">

@@ -9,7 +9,6 @@ use App\Http\Controllers\ApiControllers\querywall\tenderQueryAnswerController;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosController;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosDocumentsController;
 use App\Http\Controllers\ApiControllers\brands\BrandsController;
-use App\Http\Controllers\ApiControllers\PruebasController;
 use App\Http\Controllers\ApiControllers\category\CategoryController;
 use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesController;
 use App\Http\Controllers\ApiControllers\company\CompanyController;
@@ -17,6 +16,7 @@ use App\Http\Controllers\ApiControllers\company\CompanyProjects\CompanyProjectsC
 use App\Http\Controllers\ApiControllers\company\CompanyTenders\CompanyTendersController;
 use App\Http\Controllers\ApiControllers\company\CompanyTenders\CompanyTendersTransactController;
 use App\Http\Controllers\ApiControllers\company\CompanyBlogs\CompanyBlogsController;
+use App\Http\Controllers\ApiControllers\company\CompanyFileSize\CompanyFileSizeController;
 use App\Http\Controllers\ApiControllers\company\CompanyProducts\CompanyProductsController;
 use App\Http\Controllers\ApiControllers\company\CompanyRemarks\CompanyRemarksController;
 use App\Http\Controllers\ApiControllers\company\CompanyTeams\CompanyTeamsController;
@@ -256,6 +256,8 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/company/{slug}/portfolios', [CompanyPortfoliosController::class, 'index'])->name('company-portfolios');
 
     Route::get('/company/{slug}/remarks', [CompanyRemarksController::class, 'index'])->name('company-remarks');
+
+    Route::get('/company/files/size', [CompanyFileSizeController::class, 'index'])->name('company-files-size');
 
     //subir archivos
     /*csv*/

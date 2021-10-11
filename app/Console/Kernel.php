@@ -29,6 +29,7 @@ class Kernel extends ConsoleKernel
         //$schedule->command('task:download_img_product')->everyTwoMinutes();
         //$schedule->command('task:download_img_product')->everyTenMinutes();
         $schedule->command('task:download_img_product')->everyFifteenMinutes();
+        // $schedule->command('task:download_img_product')->everyFiveMinutes();
     }
 
     /**
