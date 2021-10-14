@@ -69,12 +69,20 @@ class ProductFileController extends ApiController
         $companyID  = $user->companyId();
 
         $data = Excel::toArray(new ProductsImport, $file_cvs);
+
+
+
+        
         if( count($data) ){
             foreach ($data[0] as $key => $row) {
                 if($key)
                     $this->createProduct($row, $user, $companyID);
             }
         }
+
+
+
+
         unlink($file_cvs);
 
         return $this->showOneData( ['success' => 'se han cargado todos los productos correctamente'], 200);
@@ -195,5 +203,5 @@ class ProductFileController extends ApiController
 
         return str_replace($not_allowed, $allowed ,$array);
     }
-
+    
 }

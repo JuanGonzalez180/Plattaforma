@@ -146,6 +146,4 @@ class CompanyController extends Controller
             ->rawColumns(['actions','status','type_entity'])
             ->toJson();
     }
-
-
 }

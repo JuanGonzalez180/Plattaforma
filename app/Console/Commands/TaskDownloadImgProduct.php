@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Image;
 use App\Models\Products;
 use App\Models\Category;
 use Illuminate\Console\Command;
@@ -16,7 +17,7 @@ class TaskDownloadImgProduct extends Command
     public $routeFile       = 'public/';
     public $routeProducts   = 'images/products/';
 
-    public $image_format    = ['jpg','png','jpeg'];
+    public $image_format    = ['jpg', 'png', 'jpeg'];
     /**
      * The name and signature of the console command.
      *
@@ -48,19 +49,21 @@ class TaskDownloadImgProduct extends Command
      */
     public function handle()
     {
-        if(Schema::hasTable('temp_product_files'))
-        {
+        if (Schema::hasTable('temp_product_files')) {
             $product_img = DB::table('temp_product_files')
-                ->where('status','false')
-                ->take(150)
+                ->where('status', 'false')
+                ->take(80)
                 ->get();
 
-            foreach($product_img as $value)
-            {
+            foreach ($product_img as $value) {
+
+                DB::table('temp_product_files')
+                    ->where('id', $value->id)
+                    ->update(['status' => 'true']);
+
                 $product    = Products::find($value->product_id);
 
-                if(!$product)
-                {
+                if (!$product) {
                     DB::table('temp_product_files')
                         ->where('id', $value->id)
                         ->delete();
@@ -69,20 +72,16 @@ class TaskDownloadImgProduct extends Command
                 }
 
                 //files/Archivos
-                if(!empty($value->files))
+                if (!empty($value->files))
                     $this->addFiles($value->files, $product);
 
                 //images/Galeria de imagenes
-                if(!empty($value->galery_img))
+                if (!empty($value->galery_img))
                     $this->addImages($value->galery_img, $product);
 
                 //main_img/Imagen principal
-                if(!empty($value->main_img))
-                    $this->addMainImg($value->main_img, $product); 
-
-                DB::table('temp_product_files')
-                    ->where('id', $value->id)
-                    ->update(['status' => 'true']);   
+                if (!empty($value->main_img))
+                    $this->addMainImg($value->main_img, $product);
             }
         }
     }
@@ -97,19 +96,23 @@ class TaskDownloadImgProduct extends Command
     {
         $files = array_unique($this->stringToArray($files));
 
-        foreach($files as $url)
-        {
+        foreach ($files as $url) {
             $file_format    = strtolower(pathinfo($url, PATHINFO_EXTENSION));
-            
-            if($this->url_exists($url))
-            {
-                $fileName      = 'document'.'-'.rand().'-'.time().'.'.$file_format;
-                $routeFile     = $this->routeProducts.$product->id.'/documents/'.$fileName;
 
-                $contents   = file_get_contents($url);
-                Storage::disk('local')->put($this->routeFile.$routeFile, $contents);
+            if ($this->url_exists($url)) {
+                $fileName      = 'document' . '-' . rand() . '-' . time() . '.' . $file_format;
+                $routeFile     = $this->routeProducts . $product->id . '/documents/' . $fileName;
 
-                $product->files()->create([ 'name' => $fileName, 'type'=> 'documents', 'url' => $routeFile]);
+                DB::beginTransaction();
+
+                try {
+                    $contents   = file_get_contents($url);
+                    Storage::disk('local')->put($this->routeFile . $routeFile, $contents);
+                    $product->files()->create(['name' => $fileName, 'type' => 'documents', 'url' => $routeFile]);
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                }
+                DB::commit();
             }
         }
     }
@@ -118,20 +121,24 @@ class TaskDownloadImgProduct extends Command
     {
         $images = array_unique($this->stringToArray($images));
 
-        foreach($images as $url)
-        {
+        foreach ($images as $url) {
             $file_format = strtolower(pathinfo($url, PATHINFO_EXTENSION));
 
-            if($this->url_exists($url) && in_array( $file_format, $this->image_format))
-            {
-                $imageName = 'image'.'-'.rand().'-'.time().'.'.$file_format;
-                $routeFile = $this->routeProducts.$product->id.'/images/'.$imageName;
+            if ($this->url_exists($url) && in_array($file_format, $this->image_format)) {
+                $imageName = 'image' . '-' . rand() . '-' . time() . '.' . $file_format;
+                $routeFile = $this->routeProducts . $product->id . '/images/' . $imageName;
 
-                $contents   = file_get_contents($url);
+                DB::beginTransaction();
 
-                Storage::disk('local')->put($this->routeFile.$routeFile, $contents);
+                try {
+                    $contents   = file_get_contents($url);
+                    Storage::disk('local')->put($this->routeFile . $routeFile, $contents);
+                    $product->files()->create(['name' => $imageName, 'type' => 'images', 'url' => $routeFile]);
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                }
 
-                $product->files()->create([ 'name' => $imageName, 'type'=> 'images', 'url' => $routeFile]);
+                DB::commit();
             }
         }
     }
@@ -140,18 +147,23 @@ class TaskDownloadImgProduct extends Command
     {
         $file_format = strtolower(pathinfo($url, PATHINFO_EXTENSION));
 
-        if($this->url_exists($url) && in_array( $file_format, $this->image_format))
-        {
+        if ($this->url_exists($url) && in_array($file_format, $this->image_format)) {
             $generator     = new Generator();
             $imageName     = $generator->generate($product->name);
-            $imageName     = $imageName . '-' . uniqid().'.'.$file_format;
-    
-            $routeProducts = $this->routeProducts.$product->id.'/'.$imageName;
-    
-            $contents   = file_get_contents($url);
-            Storage::disk('local')->put($this->routeFile.$routeProducts , $contents);
-    
-            $product->image()->create(['url' => $routeProducts]);
+            $imageName     = $imageName . '-' . uniqid() . '.' . $file_format;
+
+            $routeProducts = $this->routeProducts . $product->id . '/' . $imageName;
+
+            DB::beginTransaction();
+
+            try {
+                $contents   = file_get_contents($url);
+                Storage::disk('local')->put($this->routeFile . $routeProducts, $contents);
+                $product->image()->create(['url' => $routeProducts]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+            }
+            DB::commit();
         }
     }
 

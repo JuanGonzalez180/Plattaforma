@@ -20,7 +20,10 @@ use App\Models\Addresses;
 use App\Models\Interests;
 use App\Models\TypesEntity;
 use App\Models\SocialNetworks;
+use App\Models\TendersVersions;
+use App\Models\TendersCompanies;
 use App\Models\CategoryService;
+use Illuminate\Support\Facades\DB;
 use App\Models\SocialNetworksRelation;
 use Illuminate\Database\Eloquent\Model;
 use App\Transformers\CompanyTransformer;
@@ -60,39 +63,48 @@ class Company extends Model
         'user_id',
     ];
 
-    public function type_entity(){
+    public function type_entity()
+    {
         return $this->belongsTo(TypesEntity::class);
     }
 
-    public function type_company(){
+    public function type_company()
+    {
         return $this->type_entity->type->name;
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function blogs(){
+    public function blogs()
+    {
         return $this->hasMany(Blog::class);
     }
 
-    public function portfolios(){
+    public function portfolios()
+    {
         return $this->hasMany(Portfolio::class);
     }
 
-    public function projects(){
+    public function projects()
+    {
         return $this->hasMany(Projects::class);
     }
 
-    public function tenders(){
+    public function tenders()
+    {
         return $this->hasMany(Tenders::class);
     }
 
-    public function products(){
+    public function products()
+    {
         return $this->hasMany(Products::class);
     }
 
-    public function metaDatos(){
+    public function metaDatos()
+    {
         return $this->hasMany(MetaData::class);
     }
 
@@ -101,50 +113,178 @@ class Company extends Model
     }*/
 
     //Relacion Muchos a Muchos
-    public function countries(){
+    public function countries()
+    {
         return $this->belongsToMany(Country::class);
     }
 
     //Relacion uno a mucho
-    public function teams(){
+    public function teams()
+    {
         return $this->hasMany(Team::class);
     }
 
     // Relacion uno a uno polimorfica
-    public function image(){
+    public function image()
+    {
         return $this->morphOne(Image::class, 'imageable');
     }
 
     // Relacion uno a uno polimorfica
-    public function address(){
+    public function address()
+    {
         return $this->morphOne(Addresses::class, 'addressable');
     }
 
     // Relacion uno a muchos polimorfica
-    public function socialnetworks(){
+    public function socialnetworks()
+    {
         return $this->morphMany(SocialNetworksRelation::class, 'socialable');
     }
 
-    public function companyCategoryServices(){
+    public function companyCategoryServices()
+    {
         return $this->belongsToMany(CategoryService::class);
     }
 
     // Relacion uno a muchos polimorfica
-    public function files(){
+    public function files()
+    {
         return $this->morphMany(Files::class, 'filesable');
     }
 
     // Relacion uno a muchos polimorfica
-    public function tags(){
+    public function tags()
+    {
         return $this->morphMany(Tags::class, 'tagsable');
     }
 
-    public function calification(){
+    public function calification()
+    {
         $remarks = Remarks::select('remarks.*')
-                ->where('remarks.company_id', $this->id )
-                ->avg('calification');
+            ->where('remarks.company_id', $this->id)
+            ->avg('calification');
 
-        return ( $remarks ) ? $remarks : 0;
+        return ($remarks) ? $remarks : 0;
+    }
+
+    public function fileSizeBlogs()
+    {
+        $files = Files::where('files.filesable_type', Blog::class)
+            ->whereNotNull('files.size')
+            ->join('blogs', 'blogs.id', '=', 'files.filesable_id')
+            ->join('companies', 'companies.id', '=', 'blogs.company_id')
+            ->where('companies.id', $this->id)
+            ->sum('files.size');
+
+        $images = DB::table('images')->where('images.imageable_type', Blog::class)
+            ->whereNotNull('images.size')
+            ->join('blogs', 'blogs.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'blogs.company_id')
+            ->where('companies.id', $this->id)
+            ->sum('images.size');
+
+
+        return $files + $images;
+    }
+
+    public function fileSizeBrands()
+    {
+        return DB::table('images')->where('images.imageable_type', Brands::class)
+            ->whereNotNull('images.size')
+            ->join('brands', 'brands.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'brands.company_id')
+            ->where('companies.id', $this->id)
+            ->sum('images.size');
+    }
+
+    public function fileSizePortfolio()
+    {
+        $files = Files::where('files.filesable_type', Portfolio::class)
+            ->whereNotNull('files.size')
+            ->join('portfolios', 'portfolios.id', '=', 'files.filesable_id')
+            ->join('companies', 'companies.id', '=', 'portfolios.company_id')
+            ->where('companies.id', $this->id)
+            ->sum('files.size');
+
+        $images = DB::table('images')->where('images.imageable_type', Portfolio::class)
+            ->whereNotNull('images.size')
+            ->join('portfolios', 'portfolios.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'portfolios.company_id')
+            ->where('companies.id', $this->id)
+            ->sum('images.size');
+
+        return $files + $images;
+    }
+
+    public function fileSizeProject()
+    {
+        $files = Files::where('files.filesable_type', projects::class)
+            ->whereNotNull('files.size')
+            ->join('projects', 'projects.id', '=', 'files.filesable_id')
+            ->join('companies', 'companies.id', '=', 'projects.company_id')
+            ->where('companies.id', $this->id)
+            ->sum('files.size');
+
+        $images = DB::table('images')->where('images.imageable_type', projects::class)
+            ->whereNotNull('images.size')
+            ->join('projects', 'projects.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'projects.company_id')
+            ->where('companies.id', $this->id)
+            ->sum('images.size');
+
+        return $files + $images;
+    }
+
+    public function fileSizeProduct()
+    {
+        $files = Files::where('files.filesable_type', Products::class)
+            ->whereNotNull('files.size')
+            ->join('products', 'products.id', '=', 'files.filesable_id')
+            ->join('companies', 'companies.id', '=', 'products.company_id')
+            ->where('companies.id', $this->id)
+            ->sum('files.size');
+
+        $images = DB::table('images')->where('images.imageable_type', Products::class)
+            ->whereNotNull('images.size')
+            ->join('products', 'products.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'products.company_id')
+            ->where('companies.id', $this->id)
+            ->sum('images.size');
+
+        return $files + $images;
+    }
+
+    public function fileSizeTender()
+    {
+        return Files::where('files.filesable_type', TendersVersions::class)
+            ->whereNotNull('files.size')
+            ->join('tenders_versions', 'tenders_versions.id', '=', 'files.filesable_id')
+            ->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
+            ->join('companies', 'companies.id', '=', 'tenders.company_id')
+            ->where('companies.id', $this->id)
+            ->sum('files.size');
+    }
+
+    public function fileSizeTenderCompany()
+    {
+        return Files::where('files.filesable_type', TendersCompanies::class)
+            ->whereNotNull('files.size')
+            ->join('tenders_companies', 'tenders_companies.id', '=', 'files.filesable_id')
+            ->where('tenders_companies.company_id', $this->id)
+            ->sum('files.size');
+    }
+
+    public function fileSizeTotal()
+    {
+        $blog            = $this->fileSizeBlogs();
+        $project         = $this->fileSizeProject();
+        $product         = $this->fileSizeProduct();
+        $portfolio       = $this->fileSizePortfolio();
+        $tenderVersion   = $this->fileSizeTender();
+        $tenderCompany   = $this->fileSizeTenderCompany();
+
+        return $blog + $portfolio + $project + $product + $tenderVersion + $tenderCompany;
     }
 
     public function companyStatusPayment()
@@ -152,56 +292,60 @@ class Company extends Model
         return (($this->type_company() == 'Oferta') && ($this->status == Company::COMPANY_APPROVED));
     }
 
-    public function total(){
+    public function total()
+    {
         $total = [];
-        
+
         $companySinTransform = Company::findOrFail($this->id);
 
         $total['team'] = Team::where('company_id', $companySinTransform->id)
-                                ->where('status', Team::TEAM_APPROVED)
-                                ->get()
-                                ->count();
+            ->where('status', Team::TEAM_APPROVED)
+            ->get()
+            ->count();
 
         $total['projects'] = $companySinTransform->projects
-                                ->where('visible', Projects::PROJECTS_VISIBLE)
-                                ->count();    
+            ->where('visible', Projects::PROJECTS_VISIBLE)
+            ->count();
 
         $total['tenders'] = $companySinTransform->tenders
-                                ->count();
-        
-        
+            ->count();
+
+
         $total['products'] = $companySinTransform->products
-                                ->where('status', Products::PRODUCT_PUBLISH)
-                                ->count();
-        
+            ->where('status', Products::PRODUCT_PUBLISH)
+            ->count();
+
         $total['blogs'] = $companySinTransform->blogs
-                                ->where('status', Blog::BLOG_PUBLISH)
-                                ->count();
+            ->where('status', Blog::BLOG_PUBLISH)
+            ->count();
 
         // $total['portfolio'] = count($companySinTransform->files);
         $total['portfolio'] = $companySinTransform->portfolios
-                                ->where('status', Portfolio::PORTFOLIO_PUBLISH)
-                                ->count();
-        
+            ->where('status', Portfolio::PORTFOLIO_PUBLISH)
+            ->count();
+
         $total['remarks'] = Remarks::select('remarks.*')
-                                ->where('remarks.company_id', $companySinTransform->id )
-                                ->count();
+            ->where('remarks.company_id', $companySinTransform->id)
+            ->count();
 
         return $total;
     }
 
     // Relacion uno a muchos polimorfica
-    public function remarks(){
+    public function remarks()
+    {
         return $this->morphMany(Remarks::class, 'remarksable');
     }
-    
+
     // Relacion uno a muchos polimorfica
-    public function interests(){
+    public function interests()
+    {
         return $this->morphMany(Interests::class, 'interestsable');
     }
 
     // relacion de uno a muchos 
-    public function brands(){
+    public function brands()
+    {
         return $this->hasMany(Brands::class);
     }
 }

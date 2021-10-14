@@ -20,12 +20,15 @@ use App\Http\Controllers\WebControllers\stripe\SubscriptionController;
 use App\Http\Controllers\WebControllers\portfolio\PortfolioController;
 use App\Http\Controllers\WebControllers\stripe\ProductsStripeController;
 use App\Http\Controllers\WebControllers\typeproject\TypeProjectController;
+use App\Http\Controllers\WebControllers\scripts\UpdateFilesSizeController;
 use App\Http\Controllers\WebControllers\typesentity\TypesEntityController;
 use App\Http\Controllers\WebControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\WebControllers\socialnetworks\SocialNetworksController;
 use App\Http\Controllers\WebControllers\tendercompanies\TenderCompaniesController;
 use App\Http\Controllers\WebControllers\uploadfile\template\ProductFileController;
 use App\Http\Controllers\WebControllers\categoryservices\CategoryServicesController;
+use App\Http\Controllers\WebControllers\publicity\advertisingplans\AdvertisingController;
+use App\Http\Controllers\WebControllers\publicity\imagesadvertisingplan\ImagesAdvertisingPlansController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +51,10 @@ Route::get('/', function () {
 Auth::routes(['register' => false]);
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+//scripts
+Route::resource('script/update/filesize',  UpdateFilesSizeController::class, ['only' => ['index','store']])
+->names('zzz-update-file-size');
 
 
 Route::group(['middleware' => 'auth'], function() {
@@ -149,6 +156,9 @@ Route::group(['middleware' => 'auth'], function() {
                 ->names('productos')
                 ->parameters(['product' => 'productos']);
 
+        Route::post('/company/products', [ProductController::class, 'getCompanyProducts'])
+                ->name('company.products');
+
         
         // Proyectos
         Route::resource('proyecto', ProjectController::class, ['only' => ['edit','show']])
@@ -215,6 +225,15 @@ Route::group(['middleware' => 'auth'], function() {
                 ->names('subscription')
                 ->parameters(['subscription' => 'subscription']);*/
 
+        //publicidad
+        Route::resource('publicity_plan', AdvertisingController::class, ['only' => ['index','edit','update','show','store','create', 'destroy']])
+                ->names('publicity_plan')
+
+                ->parameters(['img_publicity_plan' => 'img_publicity_plan']);
+        Route::resource('img_publicity_plan', ImagesAdvertisingPlansController::class, ['only' => ['index','edit','update','show','store','create', 'destroy']])
+                ->names('img_publicity_plan')
+                ->parameters(['img_publicity_plan' => 'img_publicity_plan']);
+
         // tests
         Route::resource('test', TestController::class, ['only' => ['index','edit','update','show','store']])
                 ->names('testing')
@@ -222,4 +241,7 @@ Route::group(['middleware' => 'auth'], function() {
 
         Route::resource('uploadfile/template/product/file', ProductFileController::class, ['only' => ['index','store']])
                 ->names('template-product-file');
+
+        
+                
 });

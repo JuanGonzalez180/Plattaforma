@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers\WebControllers\product;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use DataTables;
 use App\Models\Products;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class ProductController extends Controller
 {
-    public function index($id)
+    public function index($company_id)
     {
-        $products   = Products::where('company_id',$id)
-                ->orderBy('name','asc')
-                ->get();
-
-        return view('product.index', compact('products'));
+        return view('product.index', compact('company_id'));
     }
 
     public function show($id)
@@ -26,14 +23,14 @@ class ProductController extends Controller
             Products::PRODUCT_PUBLISH
         ];
 
-        return view('product.show', compact(['product','status']));
+        return view('product.show', compact(['product', 'status']));
     }
 
     public function edit($id)
     {
         $product    = Products::find($id);
 
-        return view('product.edit',compact('product'));
+        return view('product.edit', compact('product'));
     }
 
     public function update(Request $request)
@@ -53,5 +50,30 @@ class ProductController extends Controller
         };
 
         return response()->json(['message' => $message], 200);
+    }
+
+    public function getCompanyProducts(Request $request)
+    {
+
+        $company_id     = $request->company_id;
+        $products       = Products::where('company_id', $company_id)->orderBy('id', 'asc');
+
+        return DataTables::of($products)
+            ->editColumn('company_id', function (Products $value) {
+                return $value->company->name;
+            })
+            ->editColumn('user_id', function (Products $value) {
+                return $value->user->name;
+            })
+            ->editColumn('brand_id', function (Products $value) {
+                return $value->brand->name;
+            })
+            ->editColumn('status', function (Products $value) {
+                return $value->brand->name;
+                
+            })
+            ->addColumn('actions', 'product.datatables.action')
+            ->rawColumns(['actions'])
+            ->toJson();
     }
 }

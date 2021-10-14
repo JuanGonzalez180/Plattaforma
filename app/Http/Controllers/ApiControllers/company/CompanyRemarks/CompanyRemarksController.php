@@ -36,11 +36,11 @@ class CompanyRemarksController extends ApiController
                 ->where('remarks.company_id', $company->id )
                 ->orderBy('id', 'desc');
 
-        foreach ( $remarks as $key => $remark) {
-            $user = $userTransform->transform($remark->user);
-            unset( $remark->user );
-            $remark->user = $user;
-        }
+        // foreach ( $remarks as $key => $remark) {
+        //     $user = $userTransform->transform($remark->user);
+        //     unset( $remark->user );
+        //     $remark->user = $user;
+        // }
 
         $remarks = $remarks->get();
         

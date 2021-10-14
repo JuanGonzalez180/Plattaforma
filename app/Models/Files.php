@@ -17,7 +17,8 @@ class Files extends Model
     protected $fillable = [
         'name',
         'type',
-        'url'
+        'url',
+        'size'
     ];
 
     protected $hidden = [

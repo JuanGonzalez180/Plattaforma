@@ -94,6 +94,25 @@
                                     </div>
                                 </li>
 
+                                <li class="nav-item">
+                                    <a class="nav-link collapsed text-truncate" href="#publicitySubmenu" data-toggle="collapse" data-target="#publicitySubmenu"><span class="d-none d-sm-inline">Publicidad</span></a>
+                                    <div class="collapse" id="publicitySubmenu" aria-expanded="false">
+                                        <ul class="flex-column pl-2 nav">
+                                            <li class="nav-item">
+                                                <a class="nav-link py-0" href="{{ route('publicity_plan.index') }}">
+                                                    <i class="fas fa-angle-right"></i>&nbsp;Planes
+                                                </a>
+                                            </li>
+                                            <div class="dropdown-divider"></div>
+                                            <li class="nav-item">
+                                                <a class="nav-link py-0" href="{{ route('img_publicity_plan.index') }}">
+                                                    <i class="fas fa-angle-right"></i>&nbsp;Imagenes planes
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+
                                 <!--<li class="nav-item">
                                     <a class="nav-link" href="{{ route('companies.index') }}">
                                         <span data-feather="file"></span>
@@ -161,12 +180,12 @@
                                         Planes Stripe
                                     </a>
                                 </li>
-                                <!--<li class="nav-item">
+                                <li class="nav-item">
                                     <a class="nav-link" href="{{ route('testing.index') }}">
                                         <span data-feather="file"></span>
                                         Test
                                     </a>
-                                </li>-->
+                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link collapsed text-truncate" href="#upfalesubmenu" data-toggle="collapse" data-target="#upfalesubmenu"><span class="d-none d-sm-inline">Subir Archivos</span></a>
                                     <div class="collapse" id="upfalesubmenu" aria-expanded="false">
