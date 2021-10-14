@@ -14,11 +14,11 @@ class AddChangesToFilesAndImage extends Migration
     public function up()
     {
         Schema::table('files', function (Blueprint $table) {
-            $table->string('size')->nullable();
+            $table->string('size')->after('url')->nullable();
         });
 
         Schema::table('images', function (Blueprint $table) {
-            $table->string('size')->nullable();
+            $table->string('size')->after('imageable_type')->nullable();
         });
     }
 

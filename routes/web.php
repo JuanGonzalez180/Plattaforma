@@ -27,6 +27,8 @@ use App\Http\Controllers\WebControllers\socialnetworks\SocialNetworksController;
 use App\Http\Controllers\WebControllers\tendercompanies\TenderCompaniesController;
 use App\Http\Controllers\WebControllers\uploadfile\template\ProductFileController;
 use App\Http\Controllers\WebControllers\categoryservices\CategoryServicesController;
+use App\Http\Controllers\WebControllers\publicity\advertisingplans\AdvertisingController;
+use App\Http\Controllers\WebControllers\publicity\imagesadvertisingplan\ImagesAdvertisingPlansController;
 
 /*
 |--------------------------------------------------------------------------
@@ -222,6 +224,15 @@ Route::group(['middleware' => 'auth'], function() {
         /*Route::resource('subscriptions', SubscriptionController::class)
                 ->names('subscription')
                 ->parameters(['subscription' => 'subscription']);*/
+
+        //publicidad
+        Route::resource('publicity_plan', AdvertisingController::class, ['only' => ['index','edit','update','show','store','create', 'destroy']])
+                ->names('publicity_plan')
+
+                ->parameters(['img_publicity_plan' => 'img_publicity_plan']);
+        Route::resource('img_publicity_plan', ImagesAdvertisingPlansController::class, ['only' => ['index','edit','update','show','store','create', 'destroy']])
+                ->names('img_publicity_plan')
+                ->parameters(['img_publicity_plan' => 'img_publicity_plan']);
 
         // tests
         Route::resource('test', TestController::class, ['only' => ['index','edit','update','show','store']])

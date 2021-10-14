@@ -76,9 +76,7 @@ class BrandsController extends Controller
             $imageName = $imageName . '-' . uniqid() . '.' . $request->image->extension();
             $request->image->storeAs($this->routeFile . $this->routeFileBD, $imageName);
 
-            $size = round((filesize('storage/' . $this->routeFileBD . $imageName) / pow(1024, 2)), 5);
-
-            $brand->image()->create(['url' => $this->routeFileBD . $imageName, 'size' => $size]);
+            $brand->image()->create(['url' => $this->routeFileBD . $imageName]);
         }
 
         return redirect()->route('brand.index')->with('success', 'La Marca creada satisfactoriamente');
