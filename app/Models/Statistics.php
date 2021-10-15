@@ -9,6 +9,8 @@ class Statistics extends Model
 {
     use HasFactory;
 
+    const ACTION_CLICK  = 'Click';
+
     protected $fillable = [
         'statisticsable_type',
         'statisticsable_id',
