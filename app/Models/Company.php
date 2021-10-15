@@ -19,6 +19,7 @@ use App\Models\Portfolio;
 use App\Models\Addresses;
 use App\Models\Interests;
 use App\Models\TypesEntity;
+use App\Models\Advertisings;
 use App\Models\SocialNetworks;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
@@ -151,6 +152,11 @@ class Company extends Model
     public function files()
     {
         return $this->morphMany(Files::class, 'filesable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function advertisings(){
+        return $this->morphMany(Advertisings::class, 'advertisingable');
     }
 
     // Relacion uno a muchos polimorfica

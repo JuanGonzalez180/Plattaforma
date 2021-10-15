@@ -11,6 +11,7 @@ use App\Models\Company;
 use App\Models\Remarks;
 use App\Models\Category;
 use App\Models\Interests;
+use App\Models\Advertisings;
 use App\Models\Notifications;
 use App\Models\CategoryService;
 use App\Transformers\ProductsTransformer;
@@ -77,6 +78,11 @@ class Products extends Model
     // Relacion uno a muchos polimorfica
     public function files(){
         return $this->morphMany(Files::class, 'filesable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function advertisings(){
+        return $this->morphMany(Advertisings::class, 'advertisingable');
     }
 
     // Relacion uno a muchos polimorfica
