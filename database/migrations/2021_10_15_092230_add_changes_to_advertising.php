@@ -27,7 +27,8 @@ class AddChangesToAdvertising extends Migration
     public function down()
     {
         Schema::table('advertisings', function (Blueprint $table) {
-            //
+            $table->dropColumn('start_date');
+            $table->dropColumn('start_time');
         });
     }
 }
