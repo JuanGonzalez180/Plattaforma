@@ -25,24 +25,24 @@ class SearchProductsController extends ApiController
         return $this->user;
     }
 
-    public function __invoke()
+    public function __invoke(Request $request)
     {
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
-
         $companyID = $user->companyId();
-        if( $companyID && $user->userType() == 'demanda' ){
+        $name = $request->name;
+
+        if( $companyID ){
             // 
             // Filtros Búsquedas y demás
             $products = Products::where('status', Products::PRODUCT_PUBLISH)
-                                        ->orderBy('id', 'desc')
+                                        ->where('company_id', $companyID)
+                                        ->where( function($query) use ($name){
+                                            $query->where(strtolower('name'),'LIKE','%'.strtolower($name).'%');
+                                        })
+                                        ->orderBy('name', 'ASC')
                                         ->get();
 
-            foreach( $products as $key => $product ){
-                $product->user['url'] = $product->user->image ? url( 'storage/' . $product->user->image->url ) : null;
-                $product->company;
-                $product->company->image;
-            }
             return $this->showAllPaginate($products);
         }
         return [];

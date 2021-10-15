@@ -273,8 +273,8 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     /**
      * Search
      */
-    Route::get('/search/projects', SearchProjectsController::class)->name('search-projects');
-    Route::get('/search/products', SearchProductsController::class)->name('search-products');
+    Route::post('/search/projects', SearchProjectsController::class)->name('search-projects');
+    Route::post('/search/products', SearchProductsController::class)->name('search-products');
     Route::post('/search/brands', SearchBrandsController::class)->name('search-brands');
     Route::post('/search/tenders', SearchTendersController::class)->name('search-tenders');
     Route::post('/search/companies', SearchCompanyController::class)->name('search-companies');
