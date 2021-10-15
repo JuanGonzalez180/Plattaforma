@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers\ApiControllers\publicity\advertising;
 
-use App\Models\Company;
+use App\Http\Controllers\ApiControllers\ApiController;
+use App\Http\Controllers\Controller;
+use App\Models\Advertising;
 use App\Models\AdvertisingPlans;
+use App\Models\Company;
 use App\Models\Products;
 use App\Models\Projects;
-use App\Models\Tenders;
-use App\Models\Advertising;
 use App\Models\RegistrationPayments;
+use App\Models\Tenders;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\ApiControllers\ApiController;
+use Illuminate\Support\Facades\DB;
+use JWTAuth;
 
 class AdvertisingController extends ApiController
 {
@@ -60,7 +62,7 @@ class AdvertisingController extends ApiController
             'date' => 'required',
             'hour' => 'required',
             'name' => 'required',
-            'plan' => 'required|number',
+            'plan' => 'required|numeric',
         ];
 
         $this->validate($request, $rules);
@@ -118,7 +120,7 @@ class AdvertisingController extends ApiController
             $advertising = Advertising::create($advertisingFields);
         } catch (\Throwable $th) {
             DB::rollBack();
-            $advertisingError = ['advertising' => 'Error, no se ha podido crear el registro de la publicidad'];
+            $advertisingError = ['advertising' => 'Error, no se ha podido crear el registro de la publicidad' . json_encode($th) ];
             return $this->errorResponse($advertisingError, 500);
         }
         

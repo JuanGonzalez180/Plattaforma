@@ -79,7 +79,8 @@ use App\Http\Controllers\ApiControllers\chat\ChatController;
 // Messages
 use App\Http\Controllers\ApiControllers\messages\MessagesController;
 
-// AdvertisingPlans
+// Advertising
+use App\Http\Controllers\ApiControllers\publicity\advertising\AdvertisingController;
 use App\Http\Controllers\ApiControllers\publicity\advertisingplans\AdvertisingPlansController;
 
 
@@ -303,7 +304,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/messages', MessagesController::class, ['only' => ['index','store']])->names('messages');
 
     Route::get('/advertisings/plans', AdvertisingPlansController::class)->name('advertisings_plans');
-    
+    Route::resource('/advertisings', AdvertisingController::class, ['only' => ['store']])->names('advertisings');
 
 });
 // Route::post('/files', FilesController::class)->name('files');
