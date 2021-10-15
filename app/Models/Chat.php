@@ -8,7 +8,7 @@ use App\Models\Tenders;
 use App\Models\Messages;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-    use App\Transformers\ChatTransformer;
+use App\Transformers\ChatTransformer;
 
 class Chat extends Model
 {

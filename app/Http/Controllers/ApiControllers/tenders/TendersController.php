@@ -76,9 +76,9 @@ class TendersController extends ApiController
             $tenders = $tenders->groupBy('tenders.id')
                         ->get();
 
-            foreach( $tenders as $key => $tender ){
+            /*foreach( $tenders as $key => $tender ){
                 $tender->user;
-            }
+            }*/
 
             return $this->showAllPaginate($tenders);
         }
