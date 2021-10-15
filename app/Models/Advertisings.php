@@ -15,7 +15,6 @@ class Advertisings extends Model
     protected $fillable = [
         'advertisingable_id',
         'advertisingable_type',
-        'registration_payments_id',
         'plan_id',
         'name'
     ];
@@ -30,9 +29,5 @@ class Advertisings extends Model
 
     public function Plan(){
         return $this->belongsTo(AdvertisingPlans::class);
-    }
-
-    public function registrationPayments(){
-        return $this->belongsTo(RegistrationPayments::class);
     }
 }
