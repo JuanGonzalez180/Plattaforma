@@ -75,10 +75,10 @@ class ProductsController extends ApiController
         $this->validate($request, $rules);
 
         //verifica el estado del usuario
-        if (!$this->statusCompanyUser($user)) {
+        /*if (!$this->statusCompanyUser($user)) {
             $productError = ['product' => 'Error, El usuario debe pagar la suscripción'];
             return $this->errorResponse($productError, 500);
-        };
+        };*/
 
         // Iniciar Transacción
         DB::beginTransaction();
@@ -195,10 +195,10 @@ class ProductsController extends ApiController
 
         $this->validate($request, $rules);
 
-        if (!$this->statusCompanyUser($user)) {
+        /*if (!$this->statusCompanyUser($user)) {
             $productError = ['product' => 'Error, El usuario debe pagar la suscripción'];
             return $this->errorResponse($productError, 500);
-        };
+        };*/
 
         // Datos
         $product = Products::findOrFail($id);

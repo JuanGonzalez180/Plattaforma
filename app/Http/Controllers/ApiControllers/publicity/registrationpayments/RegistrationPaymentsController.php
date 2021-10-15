@@ -10,15 +10,6 @@ use App\Http\Controllers\ApiControllers\ApiController;
 
 class RegistrationPaymentsController extends ApiController
 {
-    public function validateUser()
-    {
-        try {
-            $this->user = JWTAuth::parseToken()->authenticate();
-        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-        }
-        return $this->user;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -47,10 +38,7 @@ class RegistrationPaymentsController extends ApiController
      */
     public function store(Request $request)
     {
-        // Validamos TOKEN del usuario
-        $user = $this->validateUser();
         
-        // 
     }
 
     /**
