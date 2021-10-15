@@ -115,14 +115,16 @@ class ChatController extends ApiController
                     ->where('chatsable_type', $chatFields['chatsable_type'])
                     ->where('company_id', $chatFields['company_id'])
                     ->where('company_id_receive', $chatFields['company_id_receive'])
-                    ->where([
-                                ['user_id_receive', $chatFields['user_id_receive']],
-                                ['user_id', $chatFields['user_id']]
-                            ]) 
-                    ->orWhere([
-                                ['user_id_receive', $chatFields['user_id']], 
-                                ['user_id', $chatFields['user_id_receive']]
-                             ])
+                    ->where(function($query) use($chatFields) {
+                        $query->where([
+                                    ['user_id_receive', $chatFields['user_id_receive']],
+                                    ['user_id', $chatFields['user_id']]
+                                ]) 
+                        ->orWhere([
+                                    ['user_id_receive', $chatFields['user_id']], 
+                                    ['user_id', $chatFields['user_id_receive']]
+                        ]);
+                    })
                     ->first();
         
         if( !$chat ){

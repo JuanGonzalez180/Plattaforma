@@ -48,6 +48,7 @@ use App\Http\Controllers\ApiControllers\search\SearchItemController;
 use App\Http\Controllers\ApiControllers\search\SearchLikeItemController;
 use App\Http\Controllers\ApiControllers\search\SearchParameterController;
 use App\Http\Controllers\ApiControllers\search\SearchBrandsController;
+use App\Http\Controllers\ApiControllers\search\SearchTendersController;
 use App\Http\Controllers\ApiControllers\search\SearchCompanyController;
 use App\Http\Controllers\ApiControllers\search\SearchProductsController;
 use App\Http\Controllers\ApiControllers\search\SearchProjectsController;
@@ -77,6 +78,11 @@ use App\Http\Controllers\ApiControllers\notifications\NotificationsController;
 use App\Http\Controllers\ApiControllers\chat\ChatController;
 // Messages
 use App\Http\Controllers\ApiControllers\messages\MessagesController;
+
+// AdvertisingPlans
+use App\Http\Controllers\ApiControllers\publicity\advertisingplans\AdvertisingPlansController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -267,9 +273,10 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     /**
      * Search
      */
-    Route::get('/search/projects', SearchProjectsController::class)->name('search-projects');
-    Route::get('/search/products', SearchProductsController::class)->name('search-products');
+    Route::post('/search/projects', SearchProjectsController::class)->name('search-projects');
+    Route::post('/search/products', SearchProductsController::class)->name('search-products');
     Route::post('/search/brands', SearchBrandsController::class)->name('search-brands');
+    Route::post('/search/tenders', SearchTendersController::class)->name('search-tenders');
     Route::post('/search/companies', SearchCompanyController::class)->name('search-companies');
     Route::resource('/search/items', SearchItemController::class, ['only' => ['index']])->names('search-items');
     Route::resource('/search/like/items', SearchLikeItemController::class, ['only' => ['index']])->names('search-like-items');
@@ -294,6 +301,9 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/chats/notread', [ChatController::class, 'notread'])->name('chats-notread');
     // Messages
     Route::resource('/messages', MessagesController::class, ['only' => ['index','store']])->names('messages');
+
+    Route::get('/advertisings/plans', AdvertisingPlansController::class)->name('advertisings_plans');
+    
 
 });
 // Route::post('/files', FilesController::class)->name('files');

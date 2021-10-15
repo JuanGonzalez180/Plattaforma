@@ -25,18 +25,24 @@ class SearchProjectsController extends ApiController
         return $this->user;
     }
 
-    public function __invoke()
+    public function __invoke(Request $request)
     {
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
-
         $companyID = $user->companyId();
-        if( $companyID && $user->userType() == 'oferta' ){
+        $name = $request->name;
+
+        if( $companyID ){
             // 
             // Filtros Búsquedas y demás
-            $projects = Projects::where('visible', Projects::PROJECTS_VISIBLE)
-                                        ->orderBy('id', 'desc')
-                                        ->get();
+            $projects = Projects::select('projects.*')
+                                ->where('company_id', $companyID)
+                                ->where('visible', Projects::PROJECTS_VISIBLE)
+                                ->where( function($query) use ($name){
+                                    $query->where(strtolower('name'),'LIKE','%'.strtolower($name).'%');
+                                })
+                                ->orderBy('name', 'ASC')
+                                ->get();
 
             return $this->showAllPaginate($projects);
         }
