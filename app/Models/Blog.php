@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\Files;
-use App\Models\Company;
 use App\Models\Image;
+use App\Models\Company;
 use App\Transformers\BlogTransformer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
