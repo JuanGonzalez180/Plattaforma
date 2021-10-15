@@ -30,4 +30,8 @@ class Advertisings extends Model
     public function Plan(){
         return $this->belongsTo(AdvertisingPlans::class);
     }
+
+    public function payments(){
+        return $this->morphMany(RegistrationPayments::class, 'paymentsable');
+    }
 }
