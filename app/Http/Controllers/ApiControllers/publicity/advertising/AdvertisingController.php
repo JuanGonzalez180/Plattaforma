@@ -4,7 +4,7 @@ namespace App\Http\Controllers\ApiControllers\publicity\advertising;
 
 use App\Http\Controllers\ApiControllers\ApiController;
 use App\Http\Controllers\Controller;
-use App\Models\Advertising;
+use App\Models\Advertisings;
 use App\Models\AdvertisingPlans;
 use App\Models\Company;
 use App\Models\Products;
@@ -33,17 +33,20 @@ class AdvertisingController extends ApiController
      */
     public function index()
     {
-        //
-    }
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $companyID = $user->companyId();
+        $advertisings = Advertisings::select("advertisings.*")
+                            ->join('registration_payments AS payments', function($join) {
+                                // $join->on('advertisings.id', '=', 'payments.tenders_id');
+                                // $join->on('advertisings.id', '=', 'payments.tenders_id');
+                                // where('company_id', $companyID)
+                            })
+                            ->orderBy('id', 'desc')
+                            ->get();
+        
+        return $this->showAllPaginate($advertisings);
     }
 
     /**
@@ -68,32 +71,33 @@ class AdvertisingController extends ApiController
         $this->validate($request, $rules);
 
         // Datos
+        $companyId = $user->companyId();
         $advertisingFields['advertisingable_id'] = $request['adv_id'];
 
         if( $request['adv_type'] == 'products' ){
             $advertisingFields['advertisingable_type'] = Products::class;
             $product = Products::findOrFail($request['adv_id']);
-            if( $product->company_id != $user->companyId() ){
+            if( $product->company_id != $companyId ){
                 $productError = ['advertising' => 'Error, el producto no pertenece ha la compañía'];
                 return $this->errorResponse($productError, 500);
             }
         }elseif( $request['adv_type'] == 'tenders' ){
             $advertisingFields['advertisingable_type'] = Tenders::class;
             $tender = Tenders::findOrFail($request['adv_id']);
-            if( $tender->company_id != $user->companyId() ){
+            if( $tender->company_id != $companyId ){
                 $tenderError = ['advertising' => 'Error, La licitación no pertenece ha la compañía'];
                 return $this->errorResponse($tenderError, 500);
             }
         }elseif( $request['adv_type'] == 'projects' ){
             $advertisingFields['advertisingable_type'] = Projects::class;
             $project = Projects::findOrFail($request['adv_id']);
-            if( $project->company_id != $user->companyId() ){
+            if( $project->company_id != $companyId ){
                 $projectError = ['advertising' => 'Error, El proyecto no pertenece ha la compañía'];
                 return $this->errorResponse($projectError, 500);
             }
         }elseif( $request['adv_type'] == 'company' ){
             $advertisingFields['advertisingable_type'] = Company::class;
-            $advertisingFields['advertisingable_id'] = $user->companyId();
+            $advertisingFields['advertisingable_id'] = $companyId;
         }
 
         if( $request['date'] && $request['hour']){
@@ -109,15 +113,18 @@ class AdvertisingController extends ApiController
 
         try {
             // Crear RegistroPago
+            $advertising = Advertisings::create($advertisingFields);
+
             $registerFields['price'] = $plan->price;
             $registerFields['type'] = RegistrationPayments::TYPE_STRIPE;
             $registerFields['reference_payments'] = '';
             $registerFields['status'] = RegistrationPayments::REGISTRATION_PENDING;
+            $registerFields['paymentsable_id'] = $advertising->id;
+            $registerFields['paymentsable_type'] = Advertisings::class;
+            $registerFields['company_id'] = $companyId;
 
             $registrationPayment = RegistrationPayments::create($registerFields);
-            $advertisingFields['registration_payments_id'] = $registrationPayment->id;
 
-            $advertising = Advertising::create($advertisingFields);
         } catch (\Throwable $th) {
             DB::rollBack();
             $advertisingError = ['advertising' => 'Error, no se ha podido crear el registro de la publicidad' . json_encode($th) ];
