@@ -39,9 +39,9 @@ class AdvertisingController extends ApiController
         $companyID = $user->companyId();
         $advertisings = Advertisings::select("advertisings.*")
                             ->join('registration_payments AS payments', function($join) {
-                                // $join->on('advertisings.id', '=', 'payments.tenders_id');
-                                // $join->on('advertisings.id', '=', 'payments.tenders_id');
-                                // where('company_id', $companyID)
+                                $join->on('advertisings.id', '=', 'payments.paymentsable_id');
+                                $join->on(Advertisings::class, '=', 'payments.paymentsable_type');
+                                $join->on($companyID, '=', 'payments.company_id');
                             })
                             ->orderBy('id', 'desc')
                             ->get();
