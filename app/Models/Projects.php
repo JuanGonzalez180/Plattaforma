@@ -12,6 +12,7 @@ use App\Models\MetaData;
 use App\Models\Addresses;
 use App\Models\Interests;
 use App\Models\TypeProject;
+use App\Models\Advertisings;
 use App\Models\Notifications;
 use App\Models\SocialNetworksRelation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -85,6 +86,11 @@ class Projects extends Model
     
     public function projectTypeProject(){
         return $this->belongsToMany(TypeProject::class);
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function advertisings(){
+        return $this->morphMany(Advertisings::class, 'advertisingable');
     }
 
     // Relacion uno a muchos polimorfica

@@ -9,6 +9,7 @@ use App\Models\Remarks;
 use App\Models\Projects;
 use App\Models\Interests;
 use App\Models\QueryWall;
+use App\Models\Advertisings;
 use App\Models\Notifications;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
@@ -58,6 +59,11 @@ class Tenders extends Model
 
     public function tendersVersion(){
         return $this->hasMany(TendersVersions::class);
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function advertisings(){
+        return $this->morphMany(Advertisings::class, 'advertisingable');
     }
 
     public function tendersVersionLast(){
