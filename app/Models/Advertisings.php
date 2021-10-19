@@ -19,7 +19,9 @@ class Advertisings extends Model
         'advertisingable_id',
         'advertisingable_type',
         'plan_id',
-        'name'
+        'name',
+        'start_date',
+        'star_time'
     ];
 
     public function files(){
