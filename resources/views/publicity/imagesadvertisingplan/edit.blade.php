@@ -7,10 +7,9 @@ Planes Stripe
 @section('content')
 @include('partials.structure.open-main')
 <h1>Editar imagen plan</h1>
-<form method="PUT" action="{{route('img_publicity_plan.update', $plan->id)}}" enctype="multipart/form-data">
+<form method="POST" action="{{route('img_publicity_plan.update', $plan->id)}}" enctype="multipart/form-data">
     <div class="form-row">
-        @csrf
-
+        @csrf @method("PATCH")
 
         @include('publicity.imagesadvertisingplan._form')
     </div>
