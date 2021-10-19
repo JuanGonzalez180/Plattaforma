@@ -37,15 +37,16 @@ class AdvertisingController extends ApiController
         $user = $this->validateUser();
 
         $companyID = $user->companyId();
+
         $advertisings = Advertisings::select("advertisings.*")
-                            ->join('registration_payments AS payments', function($join) {
-                                $join->on('advertisings.id', '=', 'payments.paymentsable_id');
-                                $join->on(Advertisings::class, '=', 'payments.paymentsable_type');
-                                $join->on($companyID, '=', 'payments.company_id');
+                            ->join('registration_payments AS payments', function($join) use($companyID) {
+                                $join->on('payments.paymentsable_id', '=', 'advertisings.id');
+                                $join->where('payments.paymentsable_type', Advertisings::class );
+                                $join->where('payments.company_id', '=', $companyID );
                             })
-                            ->orderBy('id', 'desc')
+                            ->orderBy('advertisings.id', 'desc')
                             ->get();
-        
+
         return $this->showAllPaginate($advertisings);
     }
 

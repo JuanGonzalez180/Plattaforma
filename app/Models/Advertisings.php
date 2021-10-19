@@ -3,14 +3,17 @@
 namespace App\Models;
 
 use App\Models\Files;
-use App\AdvertisingPlans;
-use App\RegistrationPayments;
+use App\Models\AdvertisingPlans;
+use App\Models\RegistrationPayments;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Transformers\AdvertisingsTransformer;
 
 class Advertisings extends Model
 {
     use HasFactory;
+
+    public $transformer = AdvertisingsTransformer::class;
 
     protected $fillable = [
         'advertisingable_id',
