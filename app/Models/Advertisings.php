@@ -21,7 +21,7 @@ class Advertisings extends Model
         'plan_id',
         'name',
         'start_date',
-        'star_time'
+        'start_time'
     ];
 
     public function files(){
