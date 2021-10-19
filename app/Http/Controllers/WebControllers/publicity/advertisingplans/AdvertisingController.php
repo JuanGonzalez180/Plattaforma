@@ -124,6 +124,8 @@ class AdvertisingController extends Controller
      */
     public function update(Request $request, $id)
     {
+        var_dump('hola');
+        die;
         $rules = [
             'name' => ['required', Rule::unique('advertising_plans')->ignore($id)],
             'description' => 'required',
@@ -151,9 +153,7 @@ class AdvertisingController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    {
-
-        
+    {   
         $plan = AdvertisingPlans::find($id);
         //elimina los planes publicidad con
         AdvertisingPlansImages::where('advertising_plans_id',$id)->delete();

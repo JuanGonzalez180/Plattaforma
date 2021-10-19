@@ -101,7 +101,14 @@ class ImagesAdvertisingPlansController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $plan = ImagesAdvertisingPlans::find($id);
+        $types  = [
+            ImagesAdvertisingPlans::DESK_TYPE,
+            ImagesAdvertisingPlans::TABLET_TYPE,
+            ImagesAdvertisingPlans::MOBILE_TYPE
+        ];
+
+        return view('publicity.imagesadvertisingplan.edit', compact('plan', 'types'));
     }
 
     /**
