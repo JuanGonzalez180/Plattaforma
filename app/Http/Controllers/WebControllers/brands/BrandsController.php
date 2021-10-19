@@ -62,7 +62,6 @@ class BrandsController extends Controller
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
 
-
         $this->validate($request, $rules);
         $fields = $request->all();
 
@@ -135,14 +134,12 @@ class BrandsController extends Controller
             $imageName  = $generator->generate($request->name);
             $imageName  = $imageName . '-' . uniqid() . '.' . $request->image->extension();
 
-            $size = round((filesize($request->image) / pow(1024, 2)), 5);
-
 
             if ($brand->image) {
                 Storage::disk('local')->delete($this->routeFile . $brand->image->url);
-                $brand->image()->update(['url' => $this->routeFileBD . $imageName, 'size' => $size]);
+                $brand->image()->update(['url' => $this->routeFileBD . $imageName]);
             } else {
-                $brand->image()->create(['url' => $this->routeFileBD . $imageName, 'size' => $size]);
+                $brand->image()->create(['url' => $this->routeFileBD . $imageName]);
             }
             $request->image->storeAs($this->routeFile . $this->routeFileBD, $imageName);
             $brand->save();
