@@ -101,8 +101,11 @@ class AdvertisingController extends ApiController
             $advertisingFields['advertisingable_id'] = $companyId;
         }
 
-        if( $request['date'] && $request['hour']){
-            $advertisingFields['date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day'])) . ' ' . $request['hour']['hour'] . ':' . $request['hour']['minute'];
+        if( $request['date'] ){
+            $tendersVersionFields['start_date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
+        }
+        if( $request['hour'] ){
+            $tendersVersionFields['start_time'] = $request['hour']['hour'] . ':' . $request['hour']['minute'];
         }
 
         $plan = AdvertisingPlans::findOrFail($request['plan']);
