@@ -30,7 +30,7 @@
     </div>
     <div class="form-group col-md-12">
         <label for="days_trials">Días de prueba:</label>
-        <input type="text" class="form-control" name="days" placeholder="Días de pruebas para este plan" value="{{ old( 'days_trials', $plan->days ) }}">
+        <input type="number" class="form-control" name="days" placeholder="Días de pruebas para este plan" value="{{ old( 'days_trials', $plan->days ) }}">
         @error('days')
         <span class="text-danger" role="alert">
             <small><b>{{ $message }}</b></small>
@@ -39,7 +39,7 @@
     </div>
     <div class="form-group col-md-12">
         <label for="price">Costo:</label>
-        <input type="text" class="form-control" name="price" placeholder="Ingrese el costo del plan" value="{{ old('price', $plan->price) }}">
+        <input type="number" class="form-control" name="price" placeholder="Ingrese el costo del plan" value="{{ old('price', $plan->price) }}">
         @error('price')
         <span class="text-danger" role="alert">
             <small><b>{{ $message }}</b></small>

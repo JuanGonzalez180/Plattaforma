@@ -54,7 +54,7 @@ class ImagesAdvertisingPlansController extends Controller
 
         $fields['name']     = ucwords($request->name);
         $fields['width']    = $request->width;
-        $fields['high']     = $request->width;
+        $fields['high']     = $request->high;
         $fields['type']     = $request->type;
 
 
