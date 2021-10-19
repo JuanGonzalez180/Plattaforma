@@ -228,8 +228,8 @@ Route::group(['middleware' => 'auth'], function() {
         //publicidad
         Route::resource('publicity_plan', AdvertisingController::class, ['only' => ['index','edit','update','show','store','create', 'destroy']])
                 ->names('publicity_plan')
-
                 ->parameters(['img_publicity_plan' => 'img_publicity_plan']);
+                
         Route::resource('img_publicity_plan', ImagesAdvertisingPlansController::class, ['only' => ['index','edit','update','show','store','create', 'destroy']])
                 ->names('img_publicity_plan')
                 ->parameters(['img_publicity_plan' => 'img_publicity_plan']);

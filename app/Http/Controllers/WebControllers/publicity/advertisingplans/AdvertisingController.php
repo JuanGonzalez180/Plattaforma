@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers\WebControllers\publicity\advertisingplans;
 
+use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\AdvertisingPlans;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\ImagesAdvertisingPlans;
+use App\Models\AdvertisingPlansImages;
+use Illuminate\Support\Facades\Storage;
 use TaylorNetwork\UsernameGenerator\Generator;
 
 class AdvertisingController extends Controller
@@ -32,7 +37,9 @@ class AdvertisingController extends Controller
     {
         $plan = new AdvertisingPlans();
         $type_ubications = [AdvertisingPlans::RECTANGLE_TYPE, AdvertisingPlans::SQUARE_TYPE];
-        return view('publicity.advertisingplans.create', compact('plan', 'type_ubications'));
+
+        $imagesPlans = ImagesAdvertisingPlans::all();
+        return view('publicity.advertisingplans.create', compact('plan', 'type_ubications', 'imagesPlans'));
     }
 
     /**
@@ -61,7 +68,17 @@ class AdvertisingController extends Controller
 
         $plan = AdvertisingPlans::create($fields);
 
+        if ($request->img_plan) {
+            foreach ($request->img_plan as $id_img_plan) {
+                AdvertisingPlansImages::create([
+                    'advertising_plans_id'          => $plan->id,
+                    'images_advertising_plans_id'   => $id_img_plan
+                ]);
+            }
+        }
+
         $generator = new Generator();
+
         if ($request->image) {
             $imageName = $generator->generate($request->name);
             $imageName = $imageName . '-' . uniqid() . '.' . $request->image->extension();
@@ -107,6 +124,8 @@ class AdvertisingController extends Controller
      */
     public function update(Request $request, $id)
     {
+        var_dump('hola');
+        die;
         $rules = [
             'name' => ['required', Rule::unique('advertising_plans')->ignore($id)],
             'description' => 'required',
@@ -134,8 +153,25 @@ class AdvertisingController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    {
+    {   
         $plan = AdvertisingPlans::find($id);
+        //elimina los planes publicidad con
+        AdvertisingPlansImages::where('advertising_plans_id',$id)->delete();
+        //elimina la imagen de muestra
+        if($plan->image){
+
+            if(Storage::disk('local')->exists($this->routeFile . $plan->image->url)){
+                Storage::disk('local')->delete($this->routeFile . $plan->image->url);
+                $plan->image->delete();
+            }
+
+            DB::table('images')->where('url',$plan->image->url)
+            ->where('imageable_id',$plan->image->imageable_id)
+            ->where('imageable_type',$plan->image->imageable_type)
+            ->where('size',$plan->image->size)
+            ->delete();
+        }
+
         $plan->delete();
 
         $plans = AdvertisingPlans::all();

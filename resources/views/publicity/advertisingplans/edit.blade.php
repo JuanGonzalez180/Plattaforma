@@ -9,8 +9,7 @@ Planes Stripe
 <h1>Editar plan publicidad</h1>
 <form method="POST" action="{{route('publicity_plan.update', $plan->id)}}" enctype="multipart/form-data">
     <div class="form-row">
-        @csrf
-
+        @csrf @method("PATCH")
 
         @include('publicity.advertisingplans._form')
     </div>
