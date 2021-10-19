@@ -9,7 +9,7 @@
 </div>
 <div class="form-group col-md-6">
     <label for="plan width">Ancho:</label>
-    <input type="text" class="form-control" name="width" placeholder="Ingrese el nombre del plan" value="{{ old('width', $plan->width) }}">
+    <input type="number" class="form-control" name="width" placeholder="Ingrese el nombre del plan" value="{{ old('width', $plan->width) }}">
     @error('width')
     <span class="text-danger" role="alert">
         <small><b>{{ $message }}</b></small>
@@ -18,7 +18,7 @@
 </div>
 <div class="form-group col-md-6">
     <label for="plan high">Alto:</label>
-    <input type="text" class="form-control" name="high" placeholder="Ingrese el nombre del plan" value="{{ old('high', $plan->high) }}">
+    <input type="number" class="form-control" name="high" placeholder="Ingrese el nombre del plan" value="{{ old('high', $plan->high) }}">
     @error('high')
     <span class="text-danger" role="alert">
         <small><b>{{ $message }}</b></small>
