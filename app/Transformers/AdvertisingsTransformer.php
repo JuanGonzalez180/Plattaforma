@@ -35,10 +35,14 @@ class AdvertisingsTransformer extends TransformerAbstract
         return [
             'id' => (int)$advertising->id,
             'name' => (string)$advertising->name,
-            'plan' => (int)$advertising->plan_id,
+            'plan' => $advertising->plan,
+            'payments' => $advertising->payments,
+            'plan_id' => (int)$advertising->plan_id,
             'action_id' => (int)$advertising->advertisingable_id,
             'action_type' => (string)$advertising->advertisingable_type,
-            'start' => (string)$advertising->start_time,
+            'status' => $advertising->status(),
+            'start_date' => (string)$advertising->start_date,
+            'start_time' => (string)$advertising->start_time,
             'created_at'=> (string)$advertising->created_at,
             'updated_at'=> (string)$advertising->updated_at
         ];
