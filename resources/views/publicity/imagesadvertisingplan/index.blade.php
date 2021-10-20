@@ -12,7 +12,7 @@ Imagenes planes
         <h3>Imagenes planes</h3>
     </div>
     <div class="col text-right">
-        <a type="button" class="btn btn-primary" href="{{ route('img_publicity_plan.create') }}"><span class="oi oi-plus" title="Nuevo" aria-hidden="true"></span> Crear Plan</a>
+        <a type="button" class="btn btn-primary" href="{{ route('img_publicity_plan.create') }}"><span class="oi oi-plus" title="Nuevo" aria-hidden="true"></span> Crear imagen del plan</a>
     </div>
 </div>
 @if(session()->get('success'))
