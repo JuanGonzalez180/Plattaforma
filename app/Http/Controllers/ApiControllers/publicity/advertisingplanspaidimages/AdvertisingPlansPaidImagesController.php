@@ -5,6 +5,8 @@ namespace App\Http\Controllers\ApiControllers\publicity\advertisingplanspaidimag
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\RegistrationPayments;
+use App\Models\Advertisings;
+use App\Models\AdvertisingPlansPaidImages;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class AdvertisingPlansPaidImagesController extends ApiController
@@ -59,7 +61,7 @@ class AdvertisingPlansPaidImagesController extends ApiController
      */
     public function edit($id)
     {
-        //
+       $advertisings = Advertisings::find($id); 
     }
 
     /**

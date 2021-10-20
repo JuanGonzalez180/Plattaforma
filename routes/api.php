@@ -81,6 +81,7 @@ use App\Http\Controllers\ApiControllers\messages\MessagesController;
 
 // Advertising
 use App\Http\Controllers\ApiControllers\publicity\advertising\AdvertisingController;
+use App\Http\Controllers\ApiControllers\publicity\advertisingplanspaidimages\AdvertisingPlansPaidImagesController;
 use App\Http\Controllers\ApiControllers\publicity\advertisingplans\AdvertisingPlansController;
 
 
@@ -303,8 +304,13 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     // Messages
     Route::resource('/messages', MessagesController::class, ['only' => ['index','store']])->names('messages');
 
+    Route::resource('advertisings/img', AdvertisingPlansPaidImagesController::class, ['only' => ['edit', 'update']])->names('advertisings_images');
     Route::get('/advertisings/plans', AdvertisingPlansController::class)->name('advertisings_plans');
     Route::resource('/advertisings', AdvertisingController::class, ['only' => ['index', 'store']])->names('advertisings');
+
+
+
+
 
 });
 // Route::post('/files', FilesController::class)->name('files');

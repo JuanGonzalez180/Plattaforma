@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use App\Models\Image;
+use App\Models\AdvertisingPlansImages;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Transformers\AdvertisingPlansTransformer;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AdvertisingPlans extends Model
 {
@@ -27,6 +28,10 @@ class AdvertisingPlans extends Model
     // Relacion uno a uno polimorfica
     public function image(){
         return $this->morphOne(Image::class, 'imageable');
+    }
+
+    public function advertisingPlansImages(){
+        return $this->hasMany(AdvertisingPlansImages::class);
     }
 
 }

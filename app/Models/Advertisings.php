@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Models\Files;
 use App\Models\AdvertisingPlans;
 use App\Models\RegistrationPayments;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\AdvertisingPlansPaidImages;
 use App\Transformers\AdvertisingsTransformer;
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Advertisings extends Model
 {
@@ -62,5 +63,10 @@ class Advertisings extends Model
 
     public function payments(){
         return $this->morphOne(RegistrationPayments::class, 'paymentsable');
+    }
+
+    public function advertisingPlansPaidImages()
+    {
+        return $this->hasMany(AdvertisingPlansPaidImages::class);
     }
 }

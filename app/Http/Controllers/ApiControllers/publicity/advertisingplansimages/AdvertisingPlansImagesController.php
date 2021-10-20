@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ApiControllers\publicity\advertisingplansimages;
 
+use App\Models\Advertisings;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\AdvertisingPlansImages;
@@ -59,7 +60,7 @@ class AdvertisingPlansImagesController extends ApiController
      */
     public function edit($id)
     {
-        //
+        
     }
 
     /**
