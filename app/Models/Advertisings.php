@@ -45,24 +45,22 @@ class Advertisings extends Model
         $status = Advertisings::STATUS_START;
         if( $this->start_date && $this->start_time  ){
             if( 
-                Carbon::now()->format('Y-m-d') >= $this->start_date &&
-                Carbon::now()->format('H:i') >= $this->start_time
+                Carbon::now()->format('Y-m-d H:i') >= $this->start_date . ' ' . $this->start_time
             ){
                 $status = Advertisings::STATUS_ACTIVE;
             }
 
             if( 
-                Carbon::now()->addDays($this->plan->days)->format('Y-m-d') <= $this->start_date && 
-                Carbon::now()->format('H:i') < $this->start_time
+                Carbon::now()->format('Y-m-d H:i') >= Carbon::parse($this->start_date . ' ' . $this->start_time)->addDays($this->plan->days)->format('Y-m-d H:i')
             ){
                 $status = Advertisings::STATUS_ENDING;
             }
         }
-
+        
         return $status;
     }
 
     public function payments(){
-        return $this->morphMany(RegistrationPayments::class, 'paymentsable');
+        return $this->morphOne(RegistrationPayments::class, 'paymentsable');
     }
 }

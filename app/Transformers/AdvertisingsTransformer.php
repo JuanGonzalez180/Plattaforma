@@ -36,6 +36,7 @@ class AdvertisingsTransformer extends TransformerAbstract
             'id' => (int)$advertising->id,
             'name' => (string)$advertising->name,
             'plan' => $advertising->plan,
+            'payments' => $advertising->payments,
             'plan_id' => (int)$advertising->plan_id,
             'action_id' => (int)$advertising->advertisingable_id,
             'action_type' => (string)$advertising->advertisingable_type,
