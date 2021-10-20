@@ -29,7 +29,7 @@
         @enderror
     </div>
     <div class="form-group col-md-12">
-        <label for="days_trials">Días de prueba:</label>
+        <label for="days_trials">Días de exposición:</label>
         <input type="number" class="form-control" name="days" placeholder="Días de pruebas para este plan" value="{{ old( 'days_trials', $plan->days ) }}">
         @error('days')
         <span class="text-danger" role="alert">

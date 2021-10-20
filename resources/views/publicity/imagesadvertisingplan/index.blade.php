@@ -20,6 +20,11 @@ Imagenes planes
     {{ session()->get('success') }}
 </div>
 @endif
+@if(session()->get('error'))
+<div class="alert alert-warning">
+    {{ session()->get('error') }}
+</div>
+@endif
 <br>
 @include('partials.session-status')
 

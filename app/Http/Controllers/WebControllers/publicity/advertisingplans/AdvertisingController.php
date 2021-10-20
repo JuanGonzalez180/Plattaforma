@@ -109,10 +109,13 @@ class AdvertisingController extends Controller
      */
     public function edit($id)
     {
-        $plan = AdvertisingPlans::find($id);
-        $type_ubications = [AdvertisingPlans::RECTANGLE_TYPE, AdvertisingPlans::SQUARE_TYPE];
+        $plan                   = AdvertisingPlans::find($id);
+        $imagesPlans            = ImagesAdvertisingPlans::all();
+        $type_ubications        = [AdvertisingPlans::RECTANGLE_TYPE, AdvertisingPlans::SQUARE_TYPE];
+        $imagesPlansRegister    =  AdvertisingPlansImages::where('advertising_plans_id', $id)
+            ->pluck('images_advertising_plans_id');
 
-        return view('publicity.advertisingplans.edit', compact('plan', 'type_ubications'));
+        return view('publicity.advertisingplans.edit', compact('plan', 'type_ubications', 'imagesPlans', 'imagesPlansRegister'));
     }
 
     /**
@@ -124,26 +127,51 @@ class AdvertisingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        var_dump('hola');
-        die;
         $rules = [
             'name' => ['required', Rule::unique('advertising_plans')->ignore($id)],
             'description' => 'required',
             'days' => 'required|numeric',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'price' => 'required|numeric'
         ];
 
         $this->validate($request, $rules);
 
-        $fields['name']         = ucwords($request->name);
-        $fields['description']  = $request->description;
-        $fields['days']         = $request->days;
-        $fields['price']        = $request->price;
+        $plan = AdvertisingPlans::find($id);
+        $plan->name         = $request->name;
+        $plan->description  = $request->description;
+        $plan->days         = $request->days;
+        $plan->price        = $request->price;
 
-        $plan = AdvertisingPlans::findOrFail($id);
-        $plan->update($fields);
+        $plan->save();
 
-        return redirect()->route('publicity_plan.index')->with('success', 'El plan se ha creado satisfactoriamente');
+        $generator = new Generator();
+        if ($request->image) {
+            $imageName  = $generator->generate($request->name);
+            $imageName  = $imageName . '-' . uniqid() . '.' . $request->image->extension();
+
+            if ($plan->image) {
+                Storage::disk('local')->delete($this->routeFile . $plan->image->url);
+                $plan->image()->update(['url' => $this->routeFileBD . $imageName]);
+            } else {
+                $plan->image()->create(['url' => $this->routeFileBD . $imageName]);
+            }
+            $request->image->storeAs($this->routeFile . $this->routeFileBD, $imageName);
+            $plan->save();
+        }
+
+        AdvertisingPlansImages::where('advertising_plans_id', $id)->delete();
+
+        if ($request->img_plan) {
+            foreach ($request->img_plan as $id_img_plan) {
+                AdvertisingPlansImages::create([
+                    'advertising_plans_id'          => $id,
+                    'images_advertising_plans_id'   => $id_img_plan
+                ]);
+            }
+        }
+
+        return redirect()->route('publicity_plan.index')->with('success', 'El plan se ha editado satisfactoriamente');
     }
 
     /**
@@ -153,28 +181,26 @@ class AdvertisingController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    {   
+    {
         $plan = AdvertisingPlans::find($id);
         //elimina los planes publicidad con
-        AdvertisingPlansImages::where('advertising_plans_id',$id)->delete();
+        AdvertisingPlansImages::where('advertising_plans_id', $id)->delete();
         //elimina la imagen de muestra
-        if($plan->image){
+        if ($plan->image) {
 
-            if(Storage::disk('local')->exists($this->routeFile . $plan->image->url)){
+            if (Storage::disk('local')->exists($this->routeFile . $plan->image->url)) {
                 Storage::disk('local')->delete($this->routeFile . $plan->image->url);
-                $plan->image->delete();
             }
 
-            DB::table('images')->where('url',$plan->image->url)
-            ->where('imageable_id',$plan->image->imageable_id)
-            ->where('imageable_type',$plan->image->imageable_type)
-            ->where('size',$plan->image->size)
-            ->delete();
+            DB::table('images')->where('url', $plan->image->url)
+                ->where('imageable_id', $plan->image->imageable_id)
+                ->where('imageable_type', $plan->image->imageable_type)
+                ->where('size', $plan->image->size)
+                ->delete();
         }
 
         $plan->delete();
 
-        $plans = AdvertisingPlans::all();
-        return view('publicity.advertisingplans.index', compact('plans'));
+        return redirect()->route('publicity_plan.index')->with('success', 'El plan se ha eliminado satisfactoriamente');
     }
 }
