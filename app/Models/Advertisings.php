@@ -8,12 +8,17 @@ use App\Models\RegistrationPayments;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Transformers\AdvertisingsTransformer;
+use Carbon\Carbon;
 
 class Advertisings extends Model
 {
     use HasFactory;
 
     public $transformer = AdvertisingsTransformer::class;
+
+    const STATUS_START = 'Sin iniciar';
+    const STATUS_ACTIVE = 'Activo';
+    const STATUS_ENDING = 'Terminado';
 
     protected $fillable = [
         'advertisingable_id',
@@ -34,6 +39,27 @@ class Advertisings extends Model
 
     public function Plan(){
         return $this->belongsTo(AdvertisingPlans::class);
+    }
+
+    public function status(){
+        $status = Advertisings::STATUS_START;
+        if( $this->start_date && $this->start_time  ){
+            if( 
+                Carbon::now()->format('Y-m-d') >= $this->start_date &&
+                Carbon::now()->format('H:i') >= $this->start_time
+            ){
+                $status = Advertisings::STATUS_ACTIVE;
+            }
+
+            if( 
+                Carbon::now()->addDays($this->plan->days)->format('Y-m-d') <= $this->start_date && 
+                Carbon::now()->format('H:i') < $this->start_time
+            ){
+                $status = Advertisings::STATUS_ENDING;
+            }
+        }
+
+        return $status;
     }
 
     public function payments(){

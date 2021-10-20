@@ -102,10 +102,10 @@ class AdvertisingController extends ApiController
         }
 
         if( $request['date'] ){
-            $tendersVersionFields['start_date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
+            $advertisingFields['start_date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
         }
         if( $request['hour'] ){
-            $tendersVersionFields['start_time'] = $request['hour']['hour'] . ':' . $request['hour']['minute'];
+            $advertisingFields['start_time'] = $request['hour']['hour'] . ':' . $request['hour']['minute'];
         }
 
         $plan = AdvertisingPlans::findOrFail($request['plan']);
