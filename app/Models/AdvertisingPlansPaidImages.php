@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Image;
+use App\Models\Advertisings;
+use App\Models\AdvertisingPlansImages;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -18,5 +20,13 @@ class AdvertisingPlansPaidImages extends Model
     // Relacion uno a uno polimorfica
     public function image(){
         return $this->morphOne(Image::class, 'imageable');
+    }
+
+    public function advertisings(){
+        return $this->belongsTo(Advertisings::class);
+    }
+
+    public function advertisingPlansImages(){
+        return $this->belongsTo(AdvertisingPlansImages::class);
     }
 }

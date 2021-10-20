@@ -2,88 +2,73 @@
 
 namespace App\Http\Controllers\ApiControllers\publicity\advertisingplanspaidimages;
 
+use JWTAuth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\RegistrationPayments;
 use App\Models\Advertisings;
 use App\Models\AdvertisingPlansPaidImages;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class AdvertisingPlansPaidImagesController extends ApiController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+    public $routeFile = 'public/';
+    public $routeAdvertisings = 'images/advertisings/';
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function validateUser()
     {
-        //
+        try {
+            $this->user = JWTAuth::parseToken()->authenticate();
+        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+        }
+        return $this->user;
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function edit($id)
     {
-       $advertisings = Advertisings::find($id); 
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+
+        $advertisings = Advertisings::find($id);
+        $advertisings->plan;
+        $advertisings->plan->advertisingPlansImages;
+        foreach ($advertisings->plan->advertisingPlansImages as $key => $image) {
+            $image->imagesAdvertisingPlans;
+        }
+        $advertisings->advertisingPlansPaidImages;
+        foreach ($advertisings->advertisingPlansPaidImages as $key => $image) {
+            $image->image;
+        }
+
+        return $this->showOne($advertisings,200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        //
-    }
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $advertisings = Advertisings::find($id);
+
+        foreach ($request->images as $key => $image) {
+            /*if ($image["image"]) {
+                $paidImage = $advertisings->advertisingPlansPaidImages()->create([
+                        'adver_plans_images_id' => $image["id"]
+                ]);
+
+                $png_url    = "advertising-" . $paidImage->id . "-" . time() . ".jpg";
+                $img        = $image["image"];
+                $img        = substr($img, strpos($img, ",") + 1);
+                $data       = base64_decode($img);
+
+                $routeFile = $this->routeAdvertisings . $advertisings->id . '/' . $png_url;
+                Storage::disk('local')->put($this->routeFile . $routeFile, $data);
+
+                $paidImage->image()->create(['url' => $routeFile]);
+            }*/
+        }
+
+        return $request;
     }
 }
