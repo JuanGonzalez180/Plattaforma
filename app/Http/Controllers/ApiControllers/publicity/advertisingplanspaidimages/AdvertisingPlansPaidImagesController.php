@@ -24,7 +24,7 @@ class AdvertisingPlansPaidImagesController extends ApiController
         }
         return $this->user;
     }
-    
+
     public function edit($id)
     {
         // Validamos TOKEN del usuario
@@ -41,7 +41,7 @@ class AdvertisingPlansPaidImagesController extends ApiController
             $image->image;
         }
 
-        return $this->showOne($advertisings,200);
+        return $this->showOne($advertisings, 200);
     }
 
     public function update(Request $request, $id)
@@ -50,6 +50,15 @@ class AdvertisingPlansPaidImagesController extends ApiController
         $user = $this->validateUser();
 
         $advertisings = Advertisings::find($id);
+
+        if (
+            !(in_array($advertisings->payments->type, [RegistrationPayments::REGISTRATION_PENDING, RegistrationPayments::REGISTRATION_REJECTED]))
+            ||
+            !($advertisings->status() == Advertisings::STATUS_START)
+        ) {
+            $queryError = ['advertisings' => 'Error, El usuario no puede editar la publicidad, debe pagar o el estado debe estar sin iniciar'];
+            return $this->errorResponse($queryError, 500);
+        }
 
         foreach ($request->images as $key => $image) {
             /*if ($image["image"]) {

@@ -30,7 +30,7 @@
     <label for="type">Tipo</label>
     <select name="type" id="type" class="form-control">
         @foreach($types as $type)
-        <option value="{{ $type }}" {{ old('status', $type) == $type ? 'selected' : '' }}>{{ $type }}</option>
+        <option value="{{ $type }}" {{ old('status', $plan->type) == $type ? 'selected' : '' }}>{{ $type }}</option>
         @endforeach
     </select>
 </div>
