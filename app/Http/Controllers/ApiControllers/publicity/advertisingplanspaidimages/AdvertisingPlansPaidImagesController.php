@@ -52,13 +52,16 @@ class AdvertisingPlansPaidImagesController extends ApiController
         $advertisings = Advertisings::find($id);
 
         if (
-            !(in_array($advertisings->payments->type, [RegistrationPayments::REGISTRATION_PENDING, RegistrationPayments::REGISTRATION_REJECTED]))
+            !(in_array($advertisings->payments->status, [RegistrationPayments::REGISTRATION_PENDING, RegistrationPayments::REGISTRATION_REJECTED]))
             ||
             !($advertisings->status() == Advertisings::STATUS_START)
         ) {
             $queryError = ['advertisings' => 'Error, El usuario no puede editar la publicidad, debe pagar o el estado debe estar sin iniciar'];
             return $this->errorResponse($queryError, 500);
         }
+
+        die;
+
 
         foreach ($request->images as $key => $image) {
             /*if ($image["image"]) {
