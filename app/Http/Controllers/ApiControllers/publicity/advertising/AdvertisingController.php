@@ -198,7 +198,7 @@ class AdvertisingController extends ApiController
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            $advertisingError = ['advertising' => 'Error, no se ha podido crear el registro de la publicidad' . json_encode($th) ];
+            $advertisingError = ['advertising' => 'Error, no se ha podido editar el registro de la publicidad' . json_encode($th) ];
             return $this->errorResponse($advertisingError, 500);
         }
 

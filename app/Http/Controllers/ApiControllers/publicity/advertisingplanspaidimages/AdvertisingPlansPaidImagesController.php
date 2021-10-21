@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\RegistrationPayments;
 use App\Models\Advertisings;
 use App\Models\AdvertisingPlansPaidImages;
+use App\Models\AdvertisingPlansImages;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -52,19 +53,27 @@ class AdvertisingPlansPaidImagesController extends ApiController
         $advertisings = Advertisings::find($id);
 
         if (
-            !(in_array($advertisings->payments->status, [RegistrationPayments::REGISTRATION_PENDING, RegistrationPayments::REGISTRATION_REJECTED]))
+            (in_array($advertisings->payments->status, [RegistrationPayments::REGISTRATION_PENDING, RegistrationPayments::REGISTRATION_REJECTED]))
             ||
-            !($advertisings->status() == Advertisings::STATUS_START)
+            ($advertisings->status() == Advertisings::STATUS_START)
         ) {
             $queryError = ['advertisings' => 'Error, El usuario no puede editar la publicidad, debe pagar o el estado debe estar sin iniciar'];
             return $this->errorResponse($queryError, 500);
         }
 
         foreach ($request->images as $key => $image) {
-            /*if ($image["image"]) {
-                $paidImage = $advertisings->advertisingPlansPaidImages()->create([
+            if ($image["image"]) {
+
+                $paidImage = $advertisings->advertisingPlansPaidImages->where('adver_plans_images_id', $image["id"]);
+
+                if( $paidImage->count() ){
+                    // $paidImage->first()->save();
+                    $paidImage = $paidImage->first();
+                } else {
+                    $paidImage = $advertisings->advertisingPlansPaidImages()->create([
                         'adver_plans_images_id' => $image["id"]
-                ]);
+                    ]);
+                }
 
                 $png_url    = "advertising-" . $paidImage->id . "-" . time() . ".jpg";
                 $img        = $image["image"];
@@ -72,11 +81,19 @@ class AdvertisingPlansPaidImagesController extends ApiController
                 $data       = base64_decode($img);
 
                 $routeFile = $this->routeAdvertisings . $advertisings->id . '/' . $png_url;
-                Storage::disk('local')->put($this->routeFile . $routeFile, $data);
 
-                $paidImage->image()->create(['url' => $routeFile]);
-            }*/
+                Storage::disk('local')->put($this->routeFile . $routeFile, $data);
+                if ($paidImage->image) {
+                    Storage::disk('local')->delete($this->routeFile . $paidImage->image->url);
+                    $paidImage->image()->update(['url' => $routeFile]);
+                } else {
+                    Storage::disk('local')->put($this->routeFile . $routeFile, $data);
+                    $paidImage->image()->create(['url' => $routeFile]);
+                }
+            }
         }
+
+
 
         return $request;
     }
