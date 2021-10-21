@@ -306,7 +306,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     Route::resource('advertisings/plans/images', AdvertisingPlansPaidImagesController::class, ['only' => ['edit', 'update']])->names('advertisings_images');
     Route::get('/advertisings/plans', AdvertisingPlansController::class)->name('advertisings_plans');
-    Route::resource('/advertisings', AdvertisingController::class, ['only' => ['index', 'store']])->names('advertisings');
+    Route::resource('/advertisings', AdvertisingController::class, ['only' => ['index', 'store', 'edit', 'update']])->names('advertisings');
 
 
 

@@ -140,17 +140,6 @@ class AdvertisingController extends ApiController
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
@@ -161,6 +150,19 @@ class AdvertisingController extends ApiController
         $user = $this->validateUser();
 
         $advertisings = Advertisings::find($id);
+        $advertisings->status = $advertisings->status();
+        if( $advertisings->advertisingable_type == Products::class ){
+            $advertisings->typeItem = Products::findOrFail($advertisings->advertisingable_id);
+            $advertisings->typeItem->image;
+        }elseif( $advertisings->advertisingable_type == Tenders::class ){
+            $advertisings->typeItem = Tenders::findOrFail($advertisings->advertisingable_id);
+        }elseif( $advertisings->advertisingable_type == Projects::class ){
+            $advertisings->typeItem = Projects::findOrFail($advertisings->advertisingable_id);
+            $advertisings->typeItem->image;
+        }elseif( $advertisings->advertisingable_type == Company::class ){
+            $advertisings->typeItem = Company::findOrFail($advertisings->advertisingable_id);
+            $advertisings->typeItem->image;
+        }
 
         return $this->showOne($advertisings, 200);
     }
