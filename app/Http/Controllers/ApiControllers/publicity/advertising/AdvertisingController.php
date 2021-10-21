@@ -158,7 +158,11 @@ class AdvertisingController extends ApiController
      */
     public function edit($id)
     {
-        //
+        $user = $this->validateUser();
+
+        $advertisings = Advertisings::find($id);
+
+        return $this->showOne($advertisings, 200);
     }
 
     /**
@@ -170,7 +174,35 @@ class AdvertisingController extends ApiController
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = $this->validateUser();
+        
+        $rules = [
+            'adv_type' => 'required',
+            'date' => 'required',
+            'hour' => 'required'
+        ];
+        
+        $this->validate($request, $rules);
+
+        // Iniciar Transacción
+        DB::beginTransaction();
+
+        try {
+            $advertisings = Advertisings::find($id);
+            $advertisings->start_date = $request->date;
+            $advertisings->start_time = $request->hour;
+            $advertisings->plan_id    = $request->adv_type;
+            $advertisings->save();
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $advertisingError = ['advertising' => 'Error, no se ha podido crear el registro de la publicidad' . json_encode($th) ];
+            return $this->errorResponse($advertisingError, 500);
+        }
+
+        DB::commit();
+
+        return $this->showOne($advertisings, 201);
     }
 
     /**

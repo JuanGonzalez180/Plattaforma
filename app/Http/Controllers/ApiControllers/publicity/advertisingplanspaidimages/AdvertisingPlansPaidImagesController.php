@@ -60,9 +60,6 @@ class AdvertisingPlansPaidImagesController extends ApiController
             return $this->errorResponse($queryError, 500);
         }
 
-        die;
-
-
         foreach ($request->images as $key => $image) {
             /*if ($image["image"]) {
                 $paidImage = $advertisings->advertisingPlansPaidImages()->create([
