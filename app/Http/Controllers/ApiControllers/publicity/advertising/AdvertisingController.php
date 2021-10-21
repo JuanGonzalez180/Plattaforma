@@ -161,6 +161,7 @@ class AdvertisingController extends ApiController
         $user = $this->validateUser();
 
         $advertisings = Advertisings::find($id);
+        
 
         return $this->showOne($advertisings, 200);
     }
@@ -196,7 +197,7 @@ class AdvertisingController extends ApiController
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            $advertisingError = ['advertising' => 'Error, no se ha podido crear el registro de la publicidad' . json_encode($th) ];
+            $advertisingError = ['advertising' => 'Error, no se ha podido editar el registro de la publicidad' . json_encode($th) ];
             return $this->errorResponse($advertisingError, 500);
         }
 
