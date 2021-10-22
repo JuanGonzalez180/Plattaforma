@@ -50,7 +50,7 @@ class Advertisings extends Model
         $status = Advertisings::STATUS_START;
         if ($this->start_date && $this->start_time) {
             if (
-                Carbon::now()->format('Y-m-d H:i') >= $this->start_date . ' ' . $this->start_time
+                Carbon::now()->format('Y-m-d H:i') >= Carbon::parse($this->start_date . ' ' . $this->start_time)->format('Y-m-d H:i')
             ) {
                 $status = Advertisings::STATUS_ACTIVE;
             }
