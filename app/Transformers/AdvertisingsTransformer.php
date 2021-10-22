@@ -33,14 +33,15 @@ class AdvertisingsTransformer extends TransformerAbstract
      */
     public function transform(Advertisings $advertising)
     {
-        $advertisingPlansPaidImagesTransformer = new AdvertisingPlansPaidImagesTransformer();
+        $transformer = $advertising->advertisingPlansPaidImages->first()->transformer;
+        $transformation = fractal(  $advertising->advertisingPlansPaidImages, new $transformer );
 
         return [
             'id' => (int)$advertising->id,
             'name' => (string)$advertising->name,
             'plan' => $advertising->plan,
-            // 'plan_paid_images' => $advertisingPlansPaidImagesTransformer->transform($advertising->advertisingPlansPaidImages),
-            'plan_paid_images' => $advertising->advertisingPlansPaidImages,
+            'plan_paid_images' => $transformation->toArray(),
+            // 'plan_paid_images' => $advertising->advertisingPlansPaidImages,
             'payments' => $advertising->payments,
             'plan_id' => (int)$advertising->plan_id,
             'action_id' => (int)$advertising->advertisingable_id,

@@ -27,13 +27,18 @@ class RandomAdvertisingsController extends ApiController
     public function __invoke(Request $request)
     {
         $advertisings = Advertisings::select('advertisings.*')
-        ->where(DB::raw("CONCAT(advertisings.start_date,'',advertisings.start_time)"),'<=',Carbon::now()->format('Y-m-d H:i'))
         ->join('registration_payments','registration_payments.paymentsable_id','=','advertisings.id')
+        ->join('advertising_plans','advertising_plans.id','=','advertisings.plan_id')
+        ->where(DB::raw("CONCAT(advertisings.start_date,'',advertisings.start_time)"),'<=',Carbon::now()->format('Y-m-d H:i'))
+        // ->where(DB::raw(Carbon::parse("CONCAT(advertisings.start_date,'',advertisings.start_time)")->addDays("advertising_plans.days")->format('Y-m-d H:i')),'<=',Carbon::now()->format('Y-m-d H:i'))
+        // ->where(DB::raw(Carbon::parse("CONCAT(advertisings.start_date,'',advertisings.start_time)")->addDays("advertising_plans.days")->format('Y-m-d H:i')),'<=',Carbon::now()->format('Y-m-d H:i'))
         ->where('registration_payments.paymentsable_type','=',Advertisings::class)
         ->whereIn('registration_payments.status',[RegistrationPayments::REGISTRATION_PENDING,RegistrationPayments::REGISTRATION_REJECTED])
         ->orderByRaw('rand()')
         ->take(10)
         ->get();
+
+        // Carbon::parse()->addDays("advertising_plans.days")->format('Y-m-d H:i');
 
         return $this->showAllPaginate($advertisings);
     }

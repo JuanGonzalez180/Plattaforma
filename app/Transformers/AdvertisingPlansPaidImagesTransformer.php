@@ -37,6 +37,7 @@ class AdvertisingPlansPaidImagesTransformer extends TransformerAbstract
             'id' => (int)$advertisingPlansPaidImages->id,
             'advertisings_id' => (int)$advertisingPlansPaidImages->advertisings_id,
             'adver_plans_images_id' => (int)$advertisingPlansPaidImages->adver_plans_images_id,
+            'image' => $advertisingPlansPaidImages->image,
             'created_at'=> (string)$advertisingPlansPaidImages->created_at,
             'updated_at'=> (string)$advertisingPlansPaidImages->updated_at
         ];
