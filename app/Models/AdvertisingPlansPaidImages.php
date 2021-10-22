@@ -6,11 +6,14 @@ use App\Models\Image;
 use App\Models\Advertisings;
 use App\Models\AdvertisingPlansImages;
 use Illuminate\Database\Eloquent\Model;
+use App\Transformers\AdvertisingPlansPaidImagesTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AdvertisingPlansPaidImages extends Model
 {
     use HasFactory;
+
+    public $transformer = AdvertisingPlansPaidImagesTransformer::class;
 
     protected $fillable = [
         'advertisings_id',

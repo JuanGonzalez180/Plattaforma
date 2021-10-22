@@ -2,7 +2,9 @@
 
 namespace App\Transformers;
 
+use App\Models\AdvertisingPlansPaidImages;
 use League\Fractal\TransformerAbstract;
+
 
 class AdvertisingPlansPaidImagesTransformer extends TransformerAbstract
 {
@@ -29,10 +31,14 @@ class AdvertisingPlansPaidImagesTransformer extends TransformerAbstract
      *
      * @return array
      */
-    public function transform()
+    public function transform(AdvertisingPlansPaidImages $advertisingPlansPaidImages)
     {
         return [
-            //
+            'id' => (int)$advertisingPlansPaidImages->id,
+            'advertisings_id' => (int)$advertisingPlansPaidImages->advertisings_id,
+            'adver_plans_images_id' => (int)$advertisingPlansPaidImages->adver_plans_images_id,
+            'created_at'=> (string)$advertisingPlansPaidImages->created_at,
+            'updated_at'=> (string)$advertisingPlansPaidImages->updated_at
         ];
     }
 }

@@ -52,6 +52,8 @@ use App\Http\Controllers\ApiControllers\search\SearchTendersController;
 use App\Http\Controllers\ApiControllers\search\SearchCompanyController;
 use App\Http\Controllers\ApiControllers\search\SearchProductsController;
 use App\Http\Controllers\ApiControllers\search\SearchProjectsController;
+// Random
+use App\Http\Controllers\ApiControllers\random\RandomAdvertisingsController;
 // Password
 use App\Http\Controllers\ApiControllers\password\ChangePasswordController;
 use App\Http\Controllers\ApiControllers\password\CodeValidationController;
@@ -282,6 +284,14 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('/search/companies', SearchCompanyController::class)->name('search-companies');
     Route::resource('/search/items', SearchItemController::class, ['only' => ['index']])->names('search-items');
     Route::resource('/search/like/items', SearchLikeItemController::class, ['only' => ['index']])->names('search-like-items');
+
+    /**
+     * Random
+     */
+    Route::post('/advertisings/random', RandomAdvertisingsController::class)->name('advertisings-random');
+
+
+
     
     // Route::resource('/search/items/parameters', SearchParameterController::class, ['only' => ['index']])->names('search-parameter');
     Route::get('/search/items/parameters', [SearchItemController::class, 'search'])->name('search-parameter');

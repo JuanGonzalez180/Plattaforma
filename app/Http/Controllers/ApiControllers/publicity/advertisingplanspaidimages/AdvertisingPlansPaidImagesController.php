@@ -89,8 +89,6 @@ class AdvertisingPlansPaidImagesController extends ApiController
             }
         }
 
-
-
         return $request;
     }
 }

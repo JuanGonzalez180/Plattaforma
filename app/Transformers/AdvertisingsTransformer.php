@@ -4,6 +4,7 @@ namespace App\Transformers;
 
 use App\Models\Advertisings;
 use League\Fractal\TransformerAbstract;
+use App\Transformers\AdvertisingPlansPaidImagesTransformer;
 
 class AdvertisingsTransformer extends TransformerAbstract
 {
@@ -32,10 +33,14 @@ class AdvertisingsTransformer extends TransformerAbstract
      */
     public function transform(Advertisings $advertising)
     {
+        $advertisingPlansPaidImagesTransformer = new AdvertisingPlansPaidImagesTransformer();
+
         return [
             'id' => (int)$advertising->id,
             'name' => (string)$advertising->name,
             'plan' => $advertising->plan,
+            // 'plan_paid_images' => $advertisingPlansPaidImagesTransformer->transform($advertising->advertisingPlansPaidImages),
+            'plan_paid_images' => $advertising->advertisingPlansPaidImages,
             'payments' => $advertising->payments,
             'plan_id' => (int)$advertising->plan_id,
             'action_id' => (int)$advertising->advertisingable_id,
