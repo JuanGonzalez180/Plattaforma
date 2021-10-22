@@ -179,7 +179,7 @@ class AdvertisingController extends ApiController
         $user = $this->validateUser();
         
         $rules = [
-            'adv_type' => 'required',
+            'name' => 'required',
             'date' => 'required',
             'hour' => 'required'
         ];
@@ -189,11 +189,19 @@ class AdvertisingController extends ApiController
         // Iniciar Transacción
         DB::beginTransaction();
 
+        if( $request['date'] ){
+            $advertisingFields['start_date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
+        }
+        if( $request['hour'] ){
+            $advertisingFields['start_time'] = $request['hour']['hour'] . ':' . $request['hour']['minute'];
+        }
+
         try {
             $advertisings = Advertisings::find($id);
-            $advertisings->start_date = $request->date;
-            $advertisings->start_time = $request->hour;
-            $advertisings->plan_id    = $request->adv_type;
+            $advertisings->name = $request->name;
+            $advertisings->start_date = $advertisingFields['start_date'];
+            $advertisings->start_time = $advertisingFields['start_time'];
+
             $advertisings->save();
 
         } catch (\Throwable $th) {

@@ -33,6 +33,7 @@ class AdvertisingPlansPaidImagesController extends ApiController
 
         $advertisings = Advertisings::find($id);
         $advertisings->plan;
+        $advertisings->status = $advertisings->status();
         $advertisings->plan->advertisingPlansImages;
         foreach ($advertisings->plan->advertisingPlansImages as $key => $image) {
             $image->imagesAdvertisingPlans;
