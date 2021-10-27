@@ -39,8 +39,8 @@
 
 <div class="form-group col-md-6">
     <label for="type_id">Estado</label>
-    <select name="type_id" id="type_id" class="form-control">
-        <option value="" selected>Estado</option>
+    <select name="status" id="status" class="form-control">
+        <option value="">Estado</option>
         @foreach ($status as $value)
             <option value="{{ $value }}" {{ old('status', $value) == $value ? 'selected' : '' }}>{{$value}}</option>
         @endforeach

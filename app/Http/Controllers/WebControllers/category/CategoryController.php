@@ -44,15 +44,22 @@ class CategoryController extends Controller
 
     public function getCategoryChilds(Request $request)
     {
-        $parent_id  = $request->parent_id;
-        $childs     = DB::select('call get_child_type_categoty("'.$parent_id.'")');
-        $ids        = array_column($childs, 'id');
 
         $category   = Category::select('id','name','parent_id','status');
 
-        $category = (count($ids) <= 0)
-            ? $category->where('id', $parent_id) ->orderBy('id','asc')
-            : $category->whereIn('id', $ids)->orderBy('id','asc');
+        if($request->parent_id != 'all'){
+            $parent_id  = $request->parent_id;
+            $childs     = DB::select('call get_child_type_categoty_admin("'.$parent_id.'")');
+            $ids        = array_column($childs, 'id');
+    
+            $category   = Category::select('id','name','parent_id','status');
+    
+            $category = (count($ids) <= 0)
+                ? $category->where('id', $parent_id)->orderBy('id','asc')
+                : $category->whereIn('id', $ids)->orderBy('id','asc');
+        }else{
+            $category = $category->orderBy('id','asc');
+        }
 
         return DataTables::of($category)
             ->editColumn('parent_id', function(Category $value){
@@ -87,6 +94,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+
         //
         $rules = [
             'name' => 'required',
@@ -98,6 +106,7 @@ class CategoryController extends Controller
 
 
         $fields = $request->all();
+
         $category = Category::create( $fields );
 
         $generator = new Generator();

@@ -36,14 +36,17 @@ class TypeProjectController extends Controller
     public function getTypeProyectChilds(Request $request)
     {
         $parent_id  = $request->parent_id;
-        $childs     = DB::select('call get_child_type_project("'.$parent_id.'")');
-        $ids        = array_column($childs, 'id');
-
         $category   = TypeProject::select('id','name','parent_id','status');
 
-        $category = (count($ids) <= 0)
-            ? $category->where('id', $parent_id) ->orderBy('id','asc')
-            : $category->whereIn('id', $ids)->orderBy('id','asc');
+        if ($parent_id != 'all') {
+            $childs     = DB::select('call get_child_type_project_admin("'.$parent_id.'")');
+            $ids        = array_column($childs, 'id');
+            $category = (count($ids) <= 0)
+                ? $category->where('id', $parent_id) ->orderBy('id','asc')
+                : $category->whereIn('id', $ids)->orderBy('id','asc');
+        } else {
+            $category   = $category->orderBy('id','asc');
+        }
 
         return DataTables::of($category)
             ->editColumn('parent_id', function(TypeProject $value){

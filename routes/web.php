@@ -28,6 +28,7 @@ use App\Http\Controllers\WebControllers\tendercompanies\TenderCompaniesControlle
 use App\Http\Controllers\WebControllers\uploadfile\template\ProductFileController;
 use App\Http\Controllers\WebControllers\categoryservices\CategoryServicesController;
 use App\Http\Controllers\WebControllers\publicity\advertisingplans\AdvertisingController;
+use App\Http\Controllers\WebControllers\publicity\manageadvertising\ManageAdvertisingController;
 use App\Http\Controllers\WebControllers\publicity\imagesadvertisingplan\ImagesAdvertisingPlansController;
 
 /*
@@ -42,7 +43,7 @@ use App\Http\Controllers\WebControllers\publicity\imagesadvertisingplan\ImagesAd
 */
 
 Route::get('/', function () {
-    return view('welcome');
+        return view('welcome');
 })->name('welcome');
 
 // Route::get('/usuarios', 'user\UserController')->name('usuarios');
@@ -53,27 +54,27 @@ Auth::routes(['register' => false]);
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 //scripts
-Route::resource('script/update/filesize',  UpdateFilesSizeController::class, ['only' => ['index','store']])
-->names('zzz-update-file-size');
+Route::resource('script/update/filesize',  UpdateFilesSizeController::class, ['only' => ['index', 'store']])
+        ->names('zzz-update-file-size');
 
 
-Route::group(['middleware' => 'auth'], function() {
+Route::group(['middleware' => 'auth'], function () {
         // Categorías
         Route::resource('categorias', CategoryController::class)
                 ->names('category')
                 ->parameters(['categorias' => 'category']);
-                
+
         Route::post('/category/childs', [CategoryController::class, 'getCategoryChilds'])
                 ->name('category.childs');
-        
+
         // Categorías servicios
         Route::resource('categorias_servicios', CategoryServicesController::class)
                 ->names('categoryservices')
                 ->parameters(['categorias_servicios' => 'categoryservices']);
-        
+
         Route::post('/categoryservices/childs', [CategoryServicesController::class, 'getCategoryServiceChilds'])
                 ->name('category.services.childs');
-        
+
         // Marcas
         Route::resource('brands', BrandsController::class)
                 ->names('brand')
@@ -84,7 +85,7 @@ Route::group(['middleware' => 'auth'], function() {
         // Muro de consultas
         Route::get('/querywall/{id}', [QueryWallController::class, 'index'])->name('query.class.id');
 
-        Route::post('/querywall/edit/visible',[QueryWallController::class, 'editVisible'])
+        Route::post('/querywall/edit/visible', [QueryWallController::class, 'editVisible'])
                 ->name('querywall.edit.visible');
 
         //reseñas
@@ -108,7 +109,7 @@ Route::group(['middleware' => 'auth'], function() {
                 ->names('companies')
                 ->parameters(['companias' => 'companies']);
 
-        Route::post('companies/edit/status',[CompanyController::class, 'editStatus'])
+        Route::post('companies/edit/status', [CompanyController::class, 'editStatus'])
                 ->name('company.edit.status');
 
         Route::post('/companias/type', [CompanyController::class, 'getTypeCompanies'])
@@ -117,51 +118,51 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('/company/{type}', [CompanyController::class, 'getCompanyType'])->name('companies-type');
 
         // Licitaciones
-        Route::resource('licitaciones', TenderController::class, ['only' => ['edit','show']])
+        Route::resource('licitaciones', TenderController::class, ['only' => ['edit', 'show']])
                 ->names('tender')
                 ->parameters(['licitaciones' => 'tender']);
 
         Route::get('/tender/{type}/{id}', [TenderController::class, 'index'])->name('tender-company-id');
 
-        Route::post('/tender/decline',[TenderController::class, 'updateStatusDecline'])
-        ->name('tender.decline');
+        Route::post('/tender/decline', [TenderController::class, 'updateStatusDecline'])
+                ->name('tender.decline');
 
         // Teams - Equipo 
         Route::get('/teams/company/{id}', [TeamController::class, 'index'])->name('teams-company-id');
 
-        Route::resource('teams', TeamController::class, ['only' => ['edit','show']])
+        Route::resource('teams', TeamController::class, ['only' => ['edit', 'show']])
                 ->names('team')
                 ->parameters(['teams' => 'team']);
 
-        Route::post('teams/edit/status',[TeamController::class, 'editStatus'])
+        Route::post('teams/edit/status', [TeamController::class, 'editStatus'])
                 ->name('teams.edit.status');
 
 
         // Compañias licitantes
         Route::get('/tendercompanies/{id}', [TenderCompaniesController::class, 'index'])->name('tender-companies-id');
-        
+
         Route::resource('tender/companies/detail', TenderCompaniesController::class, ['only' => ['show']])
-        ->names('tender-companies')
-        ->parameters(['tendercompanies' => 'tender']);
+                ->names('tender-companies')
+                ->parameters(['tendercompanies' => 'tender']);
 
         Route::PUT('/tendercompanies', [TenderCompaniesController::class, 'update'])->name('tender-companies-update');
-        
+
 
         // Productos/Servicios
         Route::get('/company/product/{id}', [ProductController::class, 'index'])->name('product-company-id');
 
         Route::PUT('/product', [ProductController::class, 'update'])->name('product-update');
-        
-        Route::resource('product', ProductController::class, ['only' => ['edit','show']])
+
+        Route::resource('product', ProductController::class, ['only' => ['edit', 'show']])
                 ->names('productos')
                 ->parameters(['product' => 'productos']);
 
         Route::post('/company/products', [ProductController::class, 'getCompanyProducts'])
                 ->name('company.products');
 
-        
+
         // Proyectos
-        Route::resource('proyecto', ProjectController::class, ['only' => ['edit','show']])
+        Route::resource('proyecto', ProjectController::class, ['only' => ['edit', 'show']])
                 ->names('project')
                 ->parameters(['proyecto' => 'project']);
 
@@ -169,7 +170,7 @@ Route::group(['middleware' => 'auth'], function() {
 
         Route::get('/project/company/{id}', [ProjectController::class, 'index'])->name('project-company-id');
 
-        Route::post('/project/edit/visible',[ProjectController::class, 'editVisible'])
+        Route::post('/project/edit/visible', [ProjectController::class, 'editVisible'])
                 ->name('project.edit.visible');
 
         // Contenido estatico
@@ -193,7 +194,7 @@ Route::group(['middleware' => 'auth'], function() {
                 ->parameters(['redessociales' => 'socialnetwork']);
 
         // Blogs
-        Route::resource('blog', BlogController::class, ['only' => ['edit','show']])
+        Route::resource('blog', BlogController::class, ['only' => ['edit', 'show']])
                 ->names('blog')
                 ->parameters(['blog' => 'blog']);
 
@@ -203,7 +204,7 @@ Route::group(['middleware' => 'auth'], function() {
                 ->name('blog.company.id');
 
         // portafolio
-        Route::resource('portfolio', PortfolioController::class, ['only' => ['edit','show']])
+        Route::resource('portfolio', PortfolioController::class, ['only' => ['edit', 'show']])
                 ->names('portfolio')
                 ->parameters(['portfolio' => 'portfolio']);
 
@@ -226,22 +227,26 @@ Route::group(['middleware' => 'auth'], function() {
                 ->parameters(['subscription' => 'subscription']);*/
 
         //publicidad
-        Route::resource('publicity_plan', AdvertisingController::class, ['only' => ['index','edit','update','show','store','create', 'destroy']])
+        Route::resource('publicity_plan', AdvertisingController::class, ['only' => ['index', 'edit', 'update', 'show', 'store', 'create', 'destroy']])
                 ->names('publicity_plan')
                 ->parameters(['img_publicity_plan' => 'img_publicity_plan']);
-                
-        Route::resource('img_publicity_plan', ImagesAdvertisingPlansController::class, ['only' => ['index','edit','update','show','store','create', 'destroy']])
+
+        Route::resource('img_publicity_plan', ImagesAdvertisingPlansController::class, ['only' => ['index', 'edit', 'update', 'show', 'store', 'create', 'destroy']])
                 ->names('img_publicity_plan')
                 ->parameters(['img_publicity_plan' => 'img_publicity_plan']);
 
+        Route::resource('manage_publicity_plan', ManageAdvertisingController::class, ['only' => ['index', 'edit', 'update', 'show', 'store', 'create', 'destroy']])
+                ->names('manage_publicity_plan')
+                ->parameters(['manage_publicity_plan' => 'manage_publicity_plan']);
+
+        Route::post('/manage_publicity_plan/company', [ManageAdvertisingController::class, 'getAdvertisingCompanies'])
+                ->name('manage_publicity_plan.company');
+
         // tests
-        Route::resource('test', TestController::class, ['only' => ['index','edit','update','show','store']])
+        Route::resource('test', TestController::class, ['only' => ['index', 'edit', 'update', 'show', 'store']])
                 ->names('testing')
                 ->parameters(['test' => 'test']);
 
-        Route::resource('uploadfile/template/product/file', ProductFileController::class, ['only' => ['index','store']])
+        Route::resource('uploadfile/template/product/file', ProductFileController::class, ['only' => ['index', 'store']])
                 ->names('template-product-file');
-
-        
-                
 });

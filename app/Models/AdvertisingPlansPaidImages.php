@@ -30,6 +30,6 @@ class AdvertisingPlansPaidImages extends Model
     }
 
     public function advertisingPlansImages(){
-        return $this->belongsTo(AdvertisingPlansImages::class);
+        return $this->belongsTo(AdvertisingPlansImages::class, 'adver_plans_images_id');
     }
 }
