@@ -92,7 +92,7 @@ class SearchParameterController extends ApiController
 
     public function getTendersLastVersionPublish()
     {
-        $tenders = TendersVersions::select(DB::raw('max(created_at), tenders_id'))
+        $tenders = TendersVersions::select(DB::raw('max(created_at)', 'tenders_id'))
             ->where('status',TendersVersions::LICITACION_PUBLISH)
             ->groupBy('tenders_id')
             ->pluck('tenders_id');

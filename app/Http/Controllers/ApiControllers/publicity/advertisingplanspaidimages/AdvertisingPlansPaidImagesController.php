@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\RegistrationPayments;
 use App\Models\Advertisings;
+use App\Models\AdvertisingPlans;
 use App\Models\AdvertisingPlansPaidImages;
 use App\Models\AdvertisingPlansImages;
 use Illuminate\Support\Facades\Storage;
@@ -24,6 +25,19 @@ class AdvertisingPlansPaidImagesController extends ApiController
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
         }
         return $this->user;
+    }
+
+    public function index(Request $request){
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+        
+        $planAdvertisings = AdvertisingPlans::find($request->id);
+        $planAdvertisings->advertisingPlansImages;
+        foreach ($planAdvertisings->advertisingPlansImages as $key => $image) {
+            $image->imagesAdvertisingPlans;
+        }
+
+        return $this->showOne($planAdvertisings, 200);
     }
 
     public function edit($id)
@@ -60,7 +74,6 @@ class AdvertisingPlansPaidImagesController extends ApiController
 
         foreach ($request->images as $key => $image) {
             if ($image["image"]) {
-
                 $paidImage = $advertisings->advertisingPlansPaidImages->where('adver_plans_images_id', $image["id"]);
 
                 if( $paidImage->count() ){

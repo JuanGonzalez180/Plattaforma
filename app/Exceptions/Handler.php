@@ -99,7 +99,7 @@ class Handler extends ExceptionHandler
                 
                 default:
                     if( !config('app.debug') ){
-                        return $this->errorResponse('Error con la una la base de datos.', 409);
+                        return $this->errorResponse('Error con una consulta en la base de datos.', 409);
                     }
                     break;
             }
