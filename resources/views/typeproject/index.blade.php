@@ -9,7 +9,7 @@ Tipos de Proyectos
 @include('partials.structure.open-main')
 <div class="row align-items-center">
     <div class="col">
-        <h1>Tipos de Proyectos</h1>
+        <h2>Tipos de Proyectos</h2>
     </div>
     <div class="col text-right">
         <a type="button" class="btn btn-primary btn-sm" href="{{ route('typeproject.create') }}"><i class="fas fa-plus"></i>&nbsp;Crear Tipo de Proyecto</a>

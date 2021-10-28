@@ -35,7 +35,7 @@ Publicidad
         @include('publicity.manageadvertising.show_detail.info')
     </div>
     <div class="tab-pane fade" id="advertising-plan" role="tabpanel" aria-labelledby="project-file-tab">
-        @include('publicity.manageadvertising.show_detail.plan')
+    @include('publicity.manageadvertising.show_detail.plan')
     </div>
     <div class="tab-pane fade" id="advertising-payment" role="tabpanel" aria-labelledby="project-file-tab">
         @include('publicity.manageadvertising.show_detail.payment')

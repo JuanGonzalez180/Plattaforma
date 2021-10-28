@@ -66,9 +66,13 @@ class CategoryServicesController extends Controller
     public function create()
     {
         //
-        $categoryOptions = CategoryService::get();
-        $category = new CategoryService;
-        return view('categoryservices.create', compact('category', 'categoryOptions'));
+        $categoryOptions    = CategoryService::get();
+        $category           = new CategoryService;
+        $status             = [CategoryService::CATEGORY_ERASER,CategoryService::CATEGORY_PUBLISH];
+
+
+
+        return view('categoryservices.create', compact('category', 'categoryOptions','status'));
     }
 
     /**
@@ -81,9 +85,10 @@ class CategoryServicesController extends Controller
     {
         //
         $rules = [
-            'name' => 'required',
-            'description' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'name'          => 'required',
+            'description'   => 'required',
+            'status'        => 'required',
+            'image'         => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
 
         $this->validate($request, $rules);
@@ -131,10 +136,11 @@ class CategoryServicesController extends Controller
     public function edit($id)
     {
         //
-        $category = CategoryService::findOrFail($id);
-        $category->icon = Image::where('imageable_id', $category->id)->where('imageable_type', $this->modelIcon)->first();
-        $categoryOptions = CategoryService::get();
-        return view('categoryservices.edit', compact('category', 'categoryOptions'));
+        $category           = CategoryService::findOrFail($id);
+        $category->icon     = Image::where('imageable_id', $category->id)->where('imageable_type', $this->modelIcon)->first();
+        $categoryOptions    = CategoryService::get();
+        $status             = [CategoryService::CATEGORY_ERASER,CategoryService::CATEGORY_PUBLISH];
+        return view('categoryservices.edit', compact('category', 'categoryOptions','status'));
     }
 
     /**
@@ -148,9 +154,10 @@ class CategoryServicesController extends Controller
     {
         //
         $rules = [
-            'name' => 'required',
-            'description' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'name'          => 'required',
+            'description'   => 'required',
+            'status'        => 'required',
+            'image'         => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
 
         $this->validate($request, $rules);

@@ -51,19 +51,35 @@ class ManageAdvertisingController extends Controller
         return DataTables::of($advertisingList)
             ->editColumn('name', function (Advertisings $value) {
                 $message = '<cite title="Source Title">'.$value->name.'</cite><br>';
-                $message = $message.'<span class="badge badge-primary">'.($value->type_publicity_detail())['type'].'</span> | <b>'.($value->type_publicity_detail())['name'].'</b>';
+                $message = $message.'<span class="badge badge-primary">'.($value->type_publicity_detail())['type'].'</span> | <b>'.($value->type_publicity_detail())['name'].'</b><br>';
                 return $message;
             })
             ->addColumn('plan', function (Advertisings $value) {
-                $text = '<b>Nombre: </b>' . $value->Plan->name . '<br>';
-                $text = $text . '<b>Dias: </b>' . $value->Plan->days . '<br>';
-                $text = $text . '<b>Precio: </b>$' . $value->Plan->price . '<br>';
+                $text = '<cite title="Source Title">'.$value->Plan->name.'</cite><br>';
+                $text = $text . '<b>Dias | </b>' . $value->Plan->days . '<br>';
+                $text = $text . '<b>Precio | </b><span class="badge badge-success">$' . $value->Plan->price . '</span><br>';
+
+                $status = '';
+                if($value->payments->status == RegistrationPayments::REGISTRATION_PENDING)
+                {
+                    $status = '<span class="badge badge-warning"><i class="far fa-clock"></i> '.RegistrationPayments::REGISTRATION_PENDING.'</span>';
+                }else if($value->payments->status == RegistrationPayments::REGISTRATION_APPROVED){
+                    $status = '<span class="badge badge-success"><i class="fas fa-check"></i> '.RegistrationPayments::REGISTRATION_APPROVED.'</span>';
+                }else if($value->payments->status == RegistrationPayments::REGISTRATION_REJECTED){
+                    $status = '<span class="badge badge-danger"><i class="fas fa-times"></i> '.RegistrationPayments::REGISTRATION_REJECTED.'</span>';
+                }
+
+                $text = $text . '<b>Estado de pago | </b>' . $status . '<br>';
                 return $text;
+            })
+            ->addColumn('status', function (Advertisings $value) {
+               
+                return '';
             })
             ->addColumn('action', function (Advertisings $value) {
                 return '<a type="button" href="'.route('manage_publicity_plan.show', $value->id ).'" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span></a>';
             })
-            ->rawColumns(['name','plan','action'])
+            ->rawColumns(['name','plan','status','action'])
             ->toJson();
     }
 

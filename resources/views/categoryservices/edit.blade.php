@@ -1,12 +1,13 @@
 @extends('layout')
 
 @section('title')
-    Editar Categoría para el Servicio
+    Editar Categoría del servicio
 @endsection
 
 @section('content')
     @include('partials.structure.open-main')
-        <h1>Editar Categoría</h1>
+        <h2>Editar Categoría del servicio</h2>
+        <hr>
         <form method="POST" action="{{ route('categoryservices.update', $category->id) }}" enctype="multipart/form-data">
             <div class="form-row">
                 @csrf @method('PATCH')

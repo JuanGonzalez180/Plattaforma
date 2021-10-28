@@ -97,9 +97,10 @@ class CategoryController extends Controller
 
         //
         $rules = [
-            'name' => 'required',
-            'description' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'name'          => 'required',
+            'description'   => 'required',
+            'status'        => 'required',
+            'image'         => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
 
         $this->validate( $request, $rules );
@@ -166,9 +167,10 @@ class CategoryController extends Controller
     {
         //
         $rules = [
-            'name' => 'required',
-            'description' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'name'          => 'required',
+            'description'   => 'required',
+            'status'        => 'required',
+            'image'         => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
 
         $this->validate( $request, $rules );

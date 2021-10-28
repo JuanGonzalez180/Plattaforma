@@ -68,8 +68,9 @@ class TypeProjectController extends Controller
     {
         //
         $typeProjectOptions = TypeProject::get();
-        $typeproject = new TypeProject;
-        return view('typeproject.create', compact('typeproject','typeProjectOptions'));
+        $typeproject        = new TypeProject;
+        $status             = [TypeProject::TYPEPROJECT_ERASER, TypeProject::TYPEPROJECT_PUBLISH];
+        return view('typeproject.create', compact('typeproject','typeProjectOptions', 'status'));
     }
 
     /**
@@ -82,9 +83,10 @@ class TypeProjectController extends Controller
     {
         //
         $rules = [
-            'name' => 'required',
-            'description' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'name'          => 'required',
+            'description'   => 'required',
+            'status'        => 'required',
+            'image'         => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
 
         $this->validate( $request, $rules );
@@ -131,10 +133,11 @@ class TypeProjectController extends Controller
     public function edit($id)
     {
         //
-        $typeproject = TypeProject::findOrFail($id);
-        $typeproject->icon = Image::where('imageable_id', $typeproject->id)->where('imageable_type', $this->modelIcon)->first();
+        $typeproject        = TypeProject::findOrFail($id);
+        $typeproject->icon  = Image::where('imageable_id', $typeproject->id)->where('imageable_type', $this->modelIcon)->first();
         $typeProjectOptions = TypeProject::get();
-        return view('typeproject.edit', compact('typeproject', 'typeProjectOptions'));
+        $status             = [TypeProject::TYPEPROJECT_ERASER, TypeProject::TYPEPROJECT_PUBLISH];
+        return view('typeproject.edit', compact('typeproject', 'typeProjectOptions', 'status'));
     }
 
     /**
@@ -149,6 +152,7 @@ class TypeProjectController extends Controller
         //
         $rules = [
             'name' => 'required',
+            'status' => 'required',
             'description' => 'required'
         ];
 
