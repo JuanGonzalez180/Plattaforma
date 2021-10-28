@@ -50,36 +50,51 @@ class ManageAdvertisingController extends Controller
 
         return DataTables::of($advertisingList)
             ->editColumn('name', function (Advertisings $value) {
-                $message = '<cite title="Source Title">'.$value->name.'</cite><br>';
-                $message = $message.'<span class="badge badge-primary">'.($value->type_publicity_detail())['type'].'</span> | <b>'.($value->type_publicity_detail())['name'].'</b><br>';
+                $message = '<cite title="Source Title">' . $value->name . '</cite><br>';
+                $message = $message . '<span class="badge badge-primary">' . ($value->type_publicity_detail())['type'] . '</span> | <b>' . ($value->type_publicity_detail())['name'] . '</b><br>';
                 return $message;
             })
             ->addColumn('plan', function (Advertisings $value) {
-                $text = '<cite title="Source Title">'.$value->Plan->name.'</cite><br>';
+                $text = '<cite title="Source Title">' . $value->Plan->name . '</cite><br>';
                 $text = $text . '<b>Dias | </b>' . $value->Plan->days . '<br>';
                 $text = $text . '<b>Precio | </b><span class="badge badge-success">$' . $value->Plan->price . '</span><br>';
 
                 $status = '';
-                if($value->payments->status == RegistrationPayments::REGISTRATION_PENDING)
-                {
-                    $status = '<span class="badge badge-warning"><i class="far fa-clock"></i> '.RegistrationPayments::REGISTRATION_PENDING.'</span>';
-                }else if($value->payments->status == RegistrationPayments::REGISTRATION_APPROVED){
-                    $status = '<span class="badge badge-success"><i class="fas fa-check"></i> '.RegistrationPayments::REGISTRATION_APPROVED.'</span>';
-                }else if($value->payments->status == RegistrationPayments::REGISTRATION_REJECTED){
-                    $status = '<span class="badge badge-danger"><i class="fas fa-times"></i> '.RegistrationPayments::REGISTRATION_REJECTED.'</span>';
+                if ($value->payments->status == RegistrationPayments::REGISTRATION_PENDING) {
+                    $status = '<span class="badge badge-warning"><i class="far fa-clock"></i> ' . RegistrationPayments::REGISTRATION_PENDING . '</span>';
+                } else if ($value->payments->status == RegistrationPayments::REGISTRATION_APPROVED) {
+                    $status = '<span class="badge badge-success"><i class="fas fa-check"></i> ' . RegistrationPayments::REGISTRATION_APPROVED . '</span>';
+                } else if ($value->payments->status == RegistrationPayments::REGISTRATION_REJECTED) {
+                    $status = '<span class="badge badge-danger"><i class="fas fa-times"></i> ' . RegistrationPayments::REGISTRATION_REJECTED . '</span>';
                 }
 
                 $text = $text . '<b>Estado de pago | </b>' . $status . '<br>';
                 return $text;
             })
             ->addColumn('status', function (Advertisings $value) {
-               
-                return '';
+
+                if ($value->payments->status == RegistrationPayments::REGISTRATION_PENDING) {
+                    $status = '<div class="alert alert-primary" role="alert">
+                                    <i class="fas fa-info-circle"></i>&nbsp; El pago sigue pendiente.
+                                </div>';
+                } else if ($value->payments->status == RegistrationPayments::REGISTRATION_REJECTED) {
+                    $status = '<div class="alert alert-danger" role="alert">
+                                    <i class="fas fa-times"></i>&nbsp; El pago ha sido rechazado
+                                </div>';
+                } else if ($value->payments->status == RegistrationPayments::REGISTRATION_APPROVED && $value->status == Advertisings::STATUS_ADMIN_CREATED) {
+                    $status = '<span class="badge bg-light text-dark"><i class="far fa-clock"></i> Revision</span>';
+                } else if ($value->payments->status == RegistrationPayments::REGISTRATION_APPROVED && $value->status == Advertisings::STATUS_ADMIN_APPROVED) {
+                    $status = '<span class="badge badge-success"><i class="fas fa-check"></i> Aprobada</span>';
+                } else if ($value->payments->status == RegistrationPayments::REGISTRATION_APPROVED && $value->status == Advertisings::STATUS_ADMIN_REJECTED) {
+                    $status = '<span class="badge badge-danger"><i class="fas fa-times"></i> Rechazada</span>';
+                }
+
+                return $status;
             })
             ->addColumn('action', function (Advertisings $value) {
-                return '<a type="button" href="'.route('manage_publicity_plan.show', $value->id ).'" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span></a>';
+                return '<a type="button" href="' . route('manage_publicity_plan.show', $value->id) . '" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span></a>';
             })
-            ->rawColumns(['name','plan','status','action'])
+            ->rawColumns(['name', 'plan', 'status', 'action'])
             ->toJson();
     }
 
@@ -112,9 +127,24 @@ class ManageAdvertisingController extends Controller
      */
     public function show($id)
     {
-        $advertising = Advertisings::find($id);
+        $advertising    = Advertisings::find($id);
 
-        return view('publicity.manageadvertising.show', compact('advertising'));
+        $status         = [
+            Advertisings::STATUS_ADMIN_CREATED,
+            Advertisings::STATUS_ADMIN_APPROVED,
+            Advertisings::STATUS_ADMIN_REJECTED
+        ];
+
+        $status_payment = [
+            RegistrationPayments::REGISTRATION_PENDING,
+            RegistrationPayments::REGISTRATION_APPROVED,
+            RegistrationPayments::REGISTRATION_REJECTED
+        ];
+
+        // $status_payment = RegistrationPayments::REGISTRATION_PENDING;
+
+
+        return view('publicity.manageadvertising.show', compact('advertising', 'status', 'status_payment'));
     }
 
     /**

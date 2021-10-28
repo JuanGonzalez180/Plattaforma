@@ -26,8 +26,15 @@ class RandomAdvertisingsController extends ApiController
 
     public function __invoke(Request $request)
     {
+        //filtrar por oferta y demanda (usuario logueado)
+        //type = debe terner encuenta si el  == 
+
+        // $AdvertisingPlans
+
+        // $request-> 
         
         $advertisings = Advertisings::select('advertisings.*')
+        ->where('advertisings.status','=',Advertisings::STATUS_ADMIN_APPROVED)
         ->join('registration_payments','registration_payments.paymentsable_id','=','advertisings.id')
         ->join('advertising_plans','advertising_plans.id','=','advertisings.plan_id')
         ->where( DB::raw("DATE_FORMAT(CONCAT(advertisings.start_date,' ',advertisings.start_time), '%Y-%m-%d %H:%i' )"),'<=', Carbon::now()->format('Y-m-d H:i'))
@@ -35,7 +42,7 @@ class RandomAdvertisingsController extends ApiController
         ->where('registration_payments.paymentsable_type','=',Advertisings::class)
         ->whereIn('registration_payments.status',[RegistrationPayments::REGISTRATION_APPROVED])
         ->orderByRaw('rand()')
-        ->take(10)
+        ->take(6)
         ->get();
 
         // Carbon::parse()->addDays("advertising_plans.days")->format('Y-m-d H:i');

@@ -39,7 +39,7 @@
 
             Swal.fire({
                 title: '¿Estas seguro?',
-                text: "Cambiar el estado de la compañia licitante ?",
+                text: "Cambiar el estado del blog?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',

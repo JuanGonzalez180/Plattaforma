@@ -104,7 +104,7 @@ class Advertisings extends Model
         return $name;
     }
 
-    public function status()
+    public function status_date()
     {
         $status = Advertisings::STATUS_START;
         if ($this->start_date && $this->start_time) {
