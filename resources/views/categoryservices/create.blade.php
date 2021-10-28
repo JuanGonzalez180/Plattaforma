@@ -1,12 +1,13 @@
 @extends('layout')
 
 @section('title')
-    Crear Categoría para el Servicio
+    Crear Categoría del Servicio
 @endsection
 
 @section('content')
     @include('partials.structure.open-main')
-        <h1>Crear Categoría</h1>
+        <h2>Crear Categoría del Servicio</h2>
+        <hr>
         <form method="POST" action="{{ route('categoryservices.store') }}" enctype="multipart/form-data">
             <div class="form-row">
                 @csrf

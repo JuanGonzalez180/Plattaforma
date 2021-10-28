@@ -11,6 +11,8 @@ class AdvertisingPlansImages extends Model
 {
     use HasFactory;
 
+    // protected $table = 'advertising_plans_images';
+
     protected $fillable = [
         'advertising_plans_id',
         'images_advertising_plans_id'

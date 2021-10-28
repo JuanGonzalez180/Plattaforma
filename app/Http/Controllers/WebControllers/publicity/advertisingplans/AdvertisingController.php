@@ -145,6 +145,9 @@ class AdvertisingController extends Controller
 
         $plan->save();
 
+        // var_dump($plan->id);
+        
+
         $generator = new Generator();
         if ($request->image) {
             $imageName  = $generator->generate($request->name);
@@ -160,18 +163,24 @@ class AdvertisingController extends Controller
             $plan->save();
         }
 
-        AdvertisingPlansImages::where('advertising_plans_id', $id)->delete();
+        $img_plan_request       = $request->img_plan;
+        $get_plans_images_id    = ($this->getPlansImagesID($plan->id))->toArray();
 
-        if ($request->img_plan) {
-            foreach ($request->img_plan as $id_img_plan) {
-                AdvertisingPlansImages::create([
-                    'advertising_plans_id'          => $id,
-                    'images_advertising_plans_id'   => $id_img_plan
-                ]);
-            }
+        foreach (array_diff($img_plan_request,$get_plans_images_id) as $value) {
+            AdvertisingPlansImages::create([
+                'advertising_plans_id'          => $plan->id,
+                'images_advertising_plans_id'   => $value
+            ]);
         }
 
         return redirect()->route('publicity_plan.index')->with('success', 'El plan se ha editado satisfactoriamente');
+    }
+
+    public function getPlansImagesID($plan_id){
+        $ids = AdvertisingPlansImages::where('advertising_plans_id',$plan_id)
+            ->pluck('images_advertising_plans_id');
+
+        return $ids;
     }
 
     /**

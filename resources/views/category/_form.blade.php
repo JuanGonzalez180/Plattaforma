@@ -39,12 +39,17 @@
 
 <div class="form-group col-md-6">
     <label for="type_id">Estado</label>
-    <select name="type_id" id="type_id" class="form-control">
-        <option value="" selected>Estado</option>
+    <select name="status" id="status" class="form-control">
+        <option value="">Estado</option>
         @foreach ($status as $value)
-            <option value="{{ $value }}" {{ old('status', $value) == $value ? 'selected' : '' }}>{{$value}}</option>
+            <option value="{{ $value }}" {{ old('status', $category->status) == $value ? 'selected' : '' }}>{{$value}}</option>
         @endforeach
     </select>
+    @error('status')
+        <span class="text-danger" role="alert">
+            <small><b>{{ $errors->getBag('default')->first('status') }}</b></small>
+        </span>
+    @enderror
 </div>
 
 <div class="col-md-12">

@@ -27,9 +27,11 @@ class RandomAdvertisingsController extends ApiController
 
     public function __invoke(Request $request)
     {
+        
         $advertisings = Advertisings::select('advertisings.*')
         ->join('registration_payments','registration_payments.paymentsable_id','=','advertisings.id')
         ->join('advertising_plans','advertising_plans.id','=','advertisings.plan_id')
+<<<<<<< HEAD
         ->where(DB::raw("CONCAT(advertisings.start_date,' ',advertisings.start_time)"),'<=',Carbon::now()->format('Y-m-d H:i'))
         // ->where(DB::raw(Carbon::now("CONCAT(advertisings.start_date,' ',advertisings.start_time)")->addDays("advertising_plans.days")->format('Y-m-d H:i')),'<=',Carbon::now()->format('Y-m-d H:i'))
         ->where(DB::raw(DateTime::createFromFormat("Y-m-d H:i","CONCAT(advertisings.start_date,' ',advertisings.start_time)")),'<=',Carbon::now()->format('Y-m-d H:i'))
@@ -38,6 +40,14 @@ class RandomAdvertisingsController extends ApiController
         ->whereIn('registration_payments.status',[RegistrationPayments::REGISTRATION_PENDING,RegistrationPayments::REGISTRATION_REJECTED])
         // ->orderByRaw('rand()')
         // ->take(10)
+=======
+        ->where( DB::raw("DATE_FORMAT(CONCAT(advertisings.start_date,' ',advertisings.start_time), '%Y-%m-%d %H:%i' )"),'<=', Carbon::now()->format('Y-m-d H:i'))
+        ->where( DB::raw("DATE_FORMAT(CONCAT(DATE_ADD(advertisings.start_date, INTERVAL +advertising_plans.days DAY),' ',advertisings.start_time), '%Y-%m-%d %H:%i' )") ,'>=', Carbon::now()->format('Y-m-d H:i'))
+        ->where('registration_payments.paymentsable_type','=',Advertisings::class)
+        ->whereIn('registration_payments.status',[RegistrationPayments::REGISTRATION_APPROVED])
+        ->orderByRaw('rand()')
+        ->take(10)
+>>>>>>> develop
         ->get();
 
         var_dump($advertisings);

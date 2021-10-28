@@ -44,7 +44,7 @@ class TendersController extends ApiController
         $companyID = $user->companyId();
 
         if( $companyID && $user->userType() == 'demanda' ){
-            $tenders = Tenders::select('tenders.*')
+            $tenders = Tenders::select('tenders.id', 'tenders.name', 'tenders.description', 'tenders.project_id', 'tenders.company_id', 'tenders.user_id', 'tenders.date_update', 'tenders.created_at', 'tenders.updated_at')
                                 ->where('tenders.company_id', $companyID);
             if( $request->project ){
                 $tenders = $tenders->where('project_id', $request->project);
@@ -73,12 +73,8 @@ class TendersController extends ApiController
                 });
             }
 
-            $tenders = $tenders->groupBy('tenders.id')
+            $tenders = $tenders->groupBy('tenders.id', 'tenders.name', 'tenders.description', 'tenders.project_id', 'tenders.company_id', 'tenders.user_id', 'tenders.date_update', 'tenders.created_at', 'tenders.updated_at')
                         ->get();
-
-            /*foreach( $tenders as $key => $tender ){
-                $tender->user;
-            }*/
 
             return $this->showAllPaginate($tenders);
         }

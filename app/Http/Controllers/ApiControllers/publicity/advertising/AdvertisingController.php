@@ -13,10 +13,13 @@ use App\Models\RegistrationPayments;
 use App\Models\Tenders;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use JWTAuth;
 
 class AdvertisingController extends ApiController
 {
+    public $routeFile = 'public/';
+    public $routeAdvertisings = 'images/advertisings/';
     public function validateUser()
     {
         try {
@@ -105,12 +108,17 @@ class AdvertisingController extends ApiController
             $advertisingFields['start_date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
         }
         if( $request['hour'] ){
-            $advertisingFields['start_time'] = $request['hour']['hour'] . ':' . $request['hour']['minute'];
+            // $advertisingFields['start_time'] = $request['hour']['hour'] . ':' . $request['hour']['minute'];
         }
 
         $plan = AdvertisingPlans::findOrFail($request['plan']);
         $advertisingFields['plan_id'] = $plan->id;
         $advertisingFields['name'] = $request['name'];
+
+        if(count($plan->advertisingPlansImages) !== count($request->images)){
+            $projectError = ['advertising' => 'Error, Debes subir la misma cantidad de imágenes'];
+            return $this->errorResponse($projectError, 500);
+        }
 
         // Iniciar Transacción
         DB::beginTransaction();
@@ -129,9 +137,39 @@ class AdvertisingController extends ApiController
 
             $registrationPayment = RegistrationPayments::create($registerFields);
 
+            // Subir imágenes
+            foreach ($request->images as $key => $image) {
+                if ($image["image"]) {
+                    // $paidImage = $advertising->advertisingPlansPaidImages->where('adver_plans_images_id', $image["id"]);
+                    // if( $paidImage->count() ){
+                        // $paidImage = $paidImage->first();
+                    // } else {
+                    // }
+                    $paidImage = $advertising->advertisingPlansPaidImages()->create([
+                        'adver_plans_images_id' => $image["id"]
+                    ]);
+    
+                    $png_url    = "advertising-" . $paidImage->id . "-" . time() . ".jpg";
+                    $img        = $image["image"];
+                    $img        = substr($img, strpos($img, ",") + 1);
+                    $data       = base64_decode($img);
+    
+                    $routeFile = $this->routeAdvertisings . $advertising->id . '/' . $png_url;
+    
+                    Storage::disk('local')->put($this->routeFile . $routeFile, $data);
+                    if ($paidImage->image) {
+                        Storage::disk('local')->delete($this->routeFile . $paidImage->image->url);
+                        $paidImage->image()->update(['url' => $routeFile]);
+                    } else {
+                        Storage::disk('local')->put($this->routeFile . $routeFile, $data);
+                        $paidImage->image()->create(['url' => $routeFile]);
+                    }
+                }
+            }
+
         } catch (\Throwable $th) {
             DB::rollBack();
-            $advertisingError = ['advertising' => 'Error, no se ha podido crear el registro de la publicidad' . json_encode($th) ];
+            $advertisingError = ['advertising' => 'Error, no se ha podido crear el registro de la publicidad' ];
             return $this->errorResponse($advertisingError, 500);
         }
         
@@ -193,14 +231,14 @@ class AdvertisingController extends ApiController
             $advertisingFields['start_date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
         }
         if( $request['hour'] ){
-            $advertisingFields['start_time'] = $request['hour']['hour'] . ':' . $request['hour']['minute'];
+            // $advertisingFields['start_time'] = $request['hour']['hour'] . ':' . $request['hour']['minute'];
         }
 
         try {
             $advertisings = Advertisings::find($id);
             $advertisings->name = $request->name;
             $advertisings->start_date = $advertisingFields['start_date'];
-            $advertisings->start_time = $advertisingFields['start_time'];
+            // $advertisings->start_time = $advertisingFields['start_time'];
 
             $advertisings->save();
 

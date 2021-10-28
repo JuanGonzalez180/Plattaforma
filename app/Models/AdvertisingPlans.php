@@ -14,8 +14,8 @@ class AdvertisingPlans extends Model
 
     public $transformer = AdvertisingPlansTransformer::class;
 
-    const RECTANGLE_TYPE   = 'Anuncio resultado de búsquedas';
-    const SQUARE_TYPE      = 'Anuncio barra lateral izquierda';
+    const RECTANGLE_TYPE   = 'Tipo_Busqueda';
+    const SQUARE_TYPE      = 'Tipo_Barra_Lateral';
 
     protected $fillable = [
         'name',

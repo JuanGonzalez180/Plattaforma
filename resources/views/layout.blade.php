@@ -99,6 +99,12 @@
                                     <div class="collapse" id="publicitySubmenu" aria-expanded="false">
                                         <ul class="flex-column pl-2 nav">
                                             <li class="nav-item">
+                                                <a class="nav-link py-0" href="{{ route('manage_publicity_plan.index') }}">
+                                                    <i class="fas fa-angle-right"></i>&nbsp;Gestionar publicidad
+                                                </a>
+                                            </li>
+                                            <div class="dropdown-divider"></div>
+                                            <li class="nav-item">
                                                 <a class="nav-link py-0" href="{{ route('publicity_plan.index') }}">
                                                     <i class="fas fa-angle-right"></i>&nbsp;Planes
                                                 </a>

@@ -24,6 +24,7 @@
         <div class="form-group col-md-6">
             <label for="parent_id">Categorias padre</label>
             <select name="parent_id" id="parent_id" class="form-control form-control-sm" onchange="getCategoryChilds(this.value);">
+                <option value="all">TODAS LAS CATEGORIAS DEL SERVICIO</option>
             @foreach($parents as $parent)
                 <option value="{{$parent->id}}">{{$parent->name}}</option>
             @endforeach

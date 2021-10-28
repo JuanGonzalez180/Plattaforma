@@ -36,14 +36,17 @@ class TypeProjectController extends Controller
     public function getTypeProyectChilds(Request $request)
     {
         $parent_id  = $request->parent_id;
-        $childs     = DB::select('call get_child_type_project("'.$parent_id.'")');
-        $ids        = array_column($childs, 'id');
-
         $category   = TypeProject::select('id','name','parent_id','status');
 
-        $category = (count($ids) <= 0)
-            ? $category->where('id', $parent_id) ->orderBy('id','asc')
-            : $category->whereIn('id', $ids)->orderBy('id','asc');
+        if ($parent_id != 'all') {
+            $childs     = DB::select('call get_child_type_project_admin("'.$parent_id.'")');
+            $ids        = array_column($childs, 'id');
+            $category = (count($ids) <= 0)
+                ? $category->where('id', $parent_id) ->orderBy('id','asc')
+                : $category->whereIn('id', $ids)->orderBy('id','asc');
+        } else {
+            $category   = $category->orderBy('id','asc');
+        }
 
         return DataTables::of($category)
             ->editColumn('parent_id', function(TypeProject $value){
@@ -65,8 +68,9 @@ class TypeProjectController extends Controller
     {
         //
         $typeProjectOptions = TypeProject::get();
-        $typeproject = new TypeProject;
-        return view('typeproject.create', compact('typeproject','typeProjectOptions'));
+        $typeproject        = new TypeProject;
+        $status             = [TypeProject::TYPEPROJECT_ERASER, TypeProject::TYPEPROJECT_PUBLISH];
+        return view('typeproject.create', compact('typeproject','typeProjectOptions', 'status'));
     }
 
     /**
@@ -79,9 +83,10 @@ class TypeProjectController extends Controller
     {
         //
         $rules = [
-            'name' => 'required',
-            'description' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'name'          => 'required',
+            'description'   => 'required',
+            'status'        => 'required',
+            'image'         => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
 
         $this->validate( $request, $rules );
@@ -128,10 +133,11 @@ class TypeProjectController extends Controller
     public function edit($id)
     {
         //
-        $typeproject = TypeProject::findOrFail($id);
-        $typeproject->icon = Image::where('imageable_id', $typeproject->id)->where('imageable_type', $this->modelIcon)->first();
+        $typeproject        = TypeProject::findOrFail($id);
+        $typeproject->icon  = Image::where('imageable_id', $typeproject->id)->where('imageable_type', $this->modelIcon)->first();
         $typeProjectOptions = TypeProject::get();
-        return view('typeproject.edit', compact('typeproject', 'typeProjectOptions'));
+        $status             = [TypeProject::TYPEPROJECT_ERASER, TypeProject::TYPEPROJECT_PUBLISH];
+        return view('typeproject.edit', compact('typeproject', 'typeProjectOptions', 'status'));
     }
 
     /**
@@ -146,6 +152,7 @@ class TypeProjectController extends Controller
         //
         $rules = [
             'name' => 'required',
+            'status' => 'required',
             'description' => 'required'
         ];
 
