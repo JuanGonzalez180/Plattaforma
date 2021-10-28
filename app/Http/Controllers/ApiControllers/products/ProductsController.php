@@ -31,7 +31,7 @@ class ProductsController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
@@ -41,14 +41,18 @@ class ProductsController extends ApiController
             if ($user->isAdminFrontEnd()) {
                 // Si es admin
                 $products = Products::where('company_id', $companyID)
-                    ->orderBy('id', 'desc')
-                    ->get();
+                    ->orderBy('id', 'desc');
             } else {
                 $products = Products::where('company_id', $companyID)
                     ->where('user_id', $user->id)
-                    ->orderBy('id', 'desc')
-                    ->get();
+                    ->orderBy('id', 'desc');
             }
+
+            if( $request->filter ){
+                $products = $products->where(strtolower('name'),'LIKE','%'.strtolower($request->filter).'%');
+            }
+
+            $products = $products->get();
 
             return $this->showAllPaginate($products);
         }
