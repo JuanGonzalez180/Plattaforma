@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\WebControllers\typesentity;
 
-use App\Http\Controllers\Controller;
+use DataTables;
 use App\Models\Type;
 use App\Models\TypesEntity;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class TypesEntityController extends Controller
 {
@@ -21,8 +22,10 @@ class TypesEntityController extends Controller
      */
     public function index()
     {
-        $typesEntity = TypesEntity::get();
-        return view('typesentity.index', compact('typesEntity'));
+        $typesEntity    = TypesEntity::get();
+        $types          = Type::orderBy('name', 'asc')->get();
+
+        return view('typesentity.index', compact('typesEntity', 'types'));
     }
 
     /**
@@ -36,7 +39,7 @@ class TypesEntityController extends Controller
         $typeEntity = new TypesEntity();
         return view('typesentity.create', compact('typeOptions', 'typeEntity'));
     }
-    
+
     /**
      * Store a newly created resource in storage.
      *
@@ -49,11 +52,11 @@ class TypesEntityController extends Controller
             'name' => ['required'],
             'type_id' => ['required'],
         ]);
-            
-        TypesEntity::create( $requestValidated );
+
+        TypesEntity::create($requestValidated);
         return redirect()->route('typesentity.index')->with([
             'status' => 'create',
-            'title' => __( $this->sectionTitle ),
+            'title' => __($this->sectionTitle),
         ]);
     }
 
@@ -67,7 +70,7 @@ class TypesEntityController extends Controller
     {
         $typeOptions    = Type::get();
         $status         = [TypesEntity::ENTITY_ERASER, TypesEntity::ENTITY_PUBLISH];
-        return view('typesentity.edit', compact('typeOptions', 'typeEntity','status'));
+        return view('typesentity.edit', compact('typeOptions', 'typeEntity', 'status'));
     }
 
     /**
@@ -90,10 +93,10 @@ class TypesEntityController extends Controller
         $typeEntity->status     = $requestValidated["status"];
 
         $typeEntity->save();
-        
+
         return redirect()->route('typesentity.index')->with([
             'status' => 'edit',
-            'title' => __( $this->sectionTitle ),
+            'title' => __($this->sectionTitle),
         ]);
     }
 
@@ -108,7 +111,43 @@ class TypesEntityController extends Controller
         $typeEntity->delete();
         return redirect()->route('typesentity.index')->with([
             'status' => 'delete',
-            'title' => __( $this->sectionTitle ),
+            'title' => __($this->sectionTitle),
         ]);
+    }
+
+    public function getTypeEntityType(Request $request)
+    {
+        $type       = $request->type_id;
+        $typeEntity = TypesEntity::select('types_entities.*');
+
+        if ($type != 'all') {
+            $typeEntity = $typeEntity->where('type_id', $type);
+        }
+
+        $typeEntity = $typeEntity->orderBy('updated_at', 'desc');
+
+        return DataTables::of($typeEntity)
+            ->addColumn('type', function (TypesEntity $value) {
+                return $value->type->renameType();
+            })
+            ->editColumn('status', function (TypesEntity $value) {
+                switch ($value->status) {
+                    case TypesEntity::ENTITY_ERASER:
+                        $status =  "<span class='badge badge-pill badge-light'><i class='fas fa-eraser'></i>  Borrador</span>";
+                        break;
+                    case TypesEntity::ENTITY_PUBLISH:
+                        $status =  "<span class='badge badge-success'><i class='fas fa-check'></i>  Publicado</span>";
+                        break;
+                    default:
+                        $status =  "Sin definir";
+                        break;
+                }
+                return $status;
+            })
+            ->addColumn('action', function (TypesEntity $value) {
+                return "<a type='button' href='".route( 'typesentity.edit', $value )."' class='btn btn-dark btn-sm'><i class='fas fa-pencil-alt'></i></a>";
+            })
+            ->rawColumns(['action', 'type', 'status'])
+            ->toJson();
     }
 }

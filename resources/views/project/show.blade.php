@@ -29,8 +29,6 @@
         </div>
     </div>
     @include('partials.structure.close-main')
-
-
     <script>
         $("#project_form").submit(function(e){
             e.preventDefault();
