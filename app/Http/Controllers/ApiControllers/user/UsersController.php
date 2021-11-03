@@ -45,13 +45,12 @@ class UsersController extends ApiController
                 $user['type'] = $company->type_entity->type->slug;
 
                 if( $company->status !== Company::COMPANY_APPROVED && $company->type_entity->type->slug == 'demanda' ){
-                    return $this->errorResponse( [ 'not_approved_a' => ['not_approved']], 500 );
-                }/*elseif( $company->status !== Company::COMPANY_APPROVED){
+                    return $this->errorResponse( [ 'not_approved' => [$company->status]], 500 );
+                }elseif( $company->status !== Company::COMPANY_APPROVED){
                     $user['type'] = 'oferta';
-                    return $this->errorResponse( [ 'not_approved_b' => ['not_approved']], 500 );
-                }*/
+                    return $this->errorResponse( [ 'not_approved' => [$company->status]], 500 );
+                }
             }elseif( $user->team ){
-
                 if( $user->team->status == Team::TEAM_PENDING ) {
                     return $this->errorResponse( [ 'team_pending' => ['not_approved']], 500 );
                 }
