@@ -26,15 +26,16 @@ use App\Http\Controllers\ApiControllers\ApiController;
 
 class CompanyController extends ApiController
 {
-    
-    public function validateUser(){
+
+    public function validateUser()
+    {
         try {
             $this->user = JWTAuth::parseToken()->authenticate();
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
         }
         return $this->user;
     }
-    
+
     /**
      * Handle the incoming request
      *
@@ -63,17 +64,18 @@ class CompanyController extends ApiController
             'password' => 'required|min:6|confirmed',
             'terms' => 'required',
             'type_entity_id' => 'required',
-            'web' => 'nullable|url'
+            // 'web' => 'nullable|url',
+            'phone' => 'required'
         ];
 
-        $this->validate( $request, $rules );
+        $this->validate($request, $rules);
 
         // Traer los tipos registrados
-        $type = TypesEntity::find( $request['type_entity_id'] );
+        $type = TypesEntity::find($request['type_entity_id']);
 
         //Verificar que este registrado y adicionar otras validaciones
         $errors = [];
-        
+
         /*if ( $type['type']['slug'] == 'demanda' ) {
 
             if ( !$request['nit'] )
@@ -84,32 +86,32 @@ class CompanyController extends ApiController
         }*/
 
         //Verificar si existen errores
-        if ( !empty( $errors ) )
-            return $this->errorResponse( $errors, 500 );
+        if (!empty($errors))
+            return $this->errorResponse($errors, 500);
 
         // Generar Username y Validar que no exista en BD
         // Armar username Parametro $userFields['username']
         $generator = new Generator();
         $userFields['username'] = false;
         $usernameCreated = $request['name'];
-        $i=0;
-        while( !$userFields['username'] ){
+        $i = 0;
+        while (!$userFields['username']) {
             // 1ra vez
-            $username = $generator->generate( $usernameCreated );
+            $username = $generator->generate($usernameCreated);
             $userExist = DB::table('users')->where('username', $username)->first();
-            if( $username && !$userExist ){
+            if ($username && !$userExist) {
                 $userFields['username'] = $username;
-            }elseif($i==0){
+            } elseif ($i == 0) {
                 // 2ra vez
                 $usernameCreated = $generator->usingEmail()->generate($request['email']);
-            }else{
-                $usernameCreated = $generator->generate( $request['name'].uniqid() );
+            } else {
+                $usernameCreated = $generator->generate($request['name'] . uniqid());
             }
             $i++;
         }
 
         $userFields['email'] = strtolower($request['email']);
-        $userFields['password'] = bcrypt( $request->password );
+        $userFields['password'] = bcrypt($request->password);
         $userFields['verified'] = User::USER_NO_VERIFIED;
         // $userFields['validated'] = User::USER_NO_VALIDATED;
         $userFields['verification_token'] = User::generateVerificationToken();
@@ -118,33 +120,33 @@ class CompanyController extends ApiController
         // Iniciar Transacción
         DB::beginTransaction();
         $errorUser = false;
-        try{
+        try {
             // Crear Usuario
-            $user = User::create( $userFields );
+            $user = User::create($userFields);
         } catch (\Throwable $th) {
             // Si existe algún error al momento de crear el usuario
             $errorUser = true;
             DB::rollBack();
-            $userError = [ 'user' => 'Error, no se ha podido crear el usuario o ya existe el nombre de la empresa' ];
-            return $this->errorResponse( $userError, 500 );
+            $userError = ['user' => 'Error, no se ha podido crear el usuario o ya existe el nombre de la empresa'];
+            return $this->errorResponse($userError, 500);
         }
-        
-        if( !$errorUser ){
+
+        if (!$errorUser) {
             $companyFields = [
-                'name' => $request['name'],
-                'type_entity_id' => $request['type_entity_id'],
-                'nit' => $request['nit'],
-                'country_code' => $request['country_code'],
-                'web' => $request['web'],
-                'user_id' => $user['id'],
-                'slug' => Str::slug($request['name']), 
+                'name'              => $request['name'],
+                'type_entity_id'    => $request['type_entity_id'],
+                'nit'               => $request['nit'],
+                'country_code'      => $request['country_code'],
+                'web'               => $request['web'],
+                'user_id'           => $user['id'],
+                'phone'             => $request['phone'],
+                'slug'              => Str::slug($request['name']),
             ];
-            
-            
+
             try {
                 // Crear la compañia
-                $company = Company::create( $companyFields );
-                
+                $company = Company::create($companyFields);
+
                 // Ingresar País en una Compañía
                 $company->countries()->attach($request['country_backend']);
 
@@ -152,30 +154,30 @@ class CompanyController extends ApiController
             } catch (\Throwable $th) {
                 // Si existe algún error al generar la compañía
                 DB::rollBack();
-                $companyError = [ 'company' => 'Error, no se ha podido crear la compañia' ];
+                $companyError = ['company' => 'Error, no se ha podido crear la compañia'];
 
-                if ( $th->getCode()==23000 && $th->errorInfo[1] == 1062 ) {
-                    $companyError = [ 'company' => 'Error, ya se encuentra registrada la compañia'];
+                if ($th->getCode() == 23000 && $th->errorInfo[1] == 1062) {
+                    $companyError = ['company' => 'Error, ya se encuentra registrada la compañia'];
                 }
 
-                return $this->errorResponse( $companyError, 500 );
+                return $this->errorResponse($companyError, 500);
             }
         }
-        
+
         // Generar el correo de Verificación.
-        Mail::to($user->email)->send(new CreatedAccount( $company, $user, $type['type']['slug'] ));
+        Mail::to($user->email)->send(new CreatedAccount($company, $user, $type['type']['slug']));
 
         $user['status_company'] = $this->statusCompanyUser($user);
 
         // Aquí debe devolver el usuario con el TOKEN.
-        return $this->showOne($user,201);
+        return $this->showOne($user, 201);
     }
 
     public function statusCompanyUser($user)
     {
-        if( $user->isAdminFrontEnd() ){
+        if ($user->isAdminFrontEnd()) {
             $company = $user->company[0];
-        }elseif( $user->team ){
+        } elseif ($user->team) {
             $company = $user->team->company;
         }
 
@@ -194,79 +196,79 @@ class CompanyController extends ApiController
         $user = $this->validateUser();
         // Compañía del usuario que está logueado
         $userCompanyId = $user->companyId();
-        
+
         $company = Company::where('slug', $slug)->first();
-        if( !$company ){
-            $companyError = [ 'company' => 'Error, no se ha encontrado ninguna compañia' ];
-            return $this->errorResponse( $companyError, 500 );
+        if (!$company) {
+            $companyError = ['company' => 'Error, no se ha encontrado ninguna compañia'];
+            return $this->errorResponse($companyError, 500);
         }
-        
+
         $userTransform = new UserTransformer();
         $tendersTransform = new TendersTransformer();
 
         // Banner
         $company->coverpage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
-        
+
         // 8 Integrantes del equipo
         $company->team = Team::where('company_id', $company->id)
-                                ->where('status', Team::TEAM_APPROVED)
-                                ->skip(0)->take(8)
-                                ->orderBy('id', 'desc')
-                                ->get();
-        
+            ->where('status', Team::TEAM_APPROVED)
+            ->skip(0)->take(8)
+            ->orderBy('id', 'desc')
+            ->get();
+
         // Traer Proyectos últimos 6
         $company->projects = $company->projects
-                        ->where('visible', Projects::PROJECTS_VISIBLE)
-                        ->skip(0)->take(6)
-                        ->sortBy([ ['updated_at', 'desc'] ]);
+            ->where('visible', Projects::PROJECTS_VISIBLE)
+            ->skip(0)->take(6)
+            ->sortBy([['updated_at', 'desc']]);
 
-        foreach ( $company->projects as $key => $project) {
+        foreach ($company->projects as $key => $project) {
             $user = $userTransform->transform($project->user);
-            unset( $project->user );
+            unset($project->user);
             $project->user = $user;
             $project->image;
         }
 
         // Traer Licitaciones últimas 6
         $company->tenders = Tenders::select('tenders.*', 'comp.status AS company_status')
-                        ->where('tenders.company_id', $company->id)
-                        ->join( 'projects', 'projects.id', '=', 'tenders.project_id' )
-                        ->where('projects.visible', Projects::PROJECTS_VISIBLE)
-                        ->leftjoin('tenders_companies AS comp', function($join) use($userCompanyId){
-                                $join->on('tenders.id', '=', 'comp.tender_id');
-                                $join->where('comp.company_id', '=', $userCompanyId);
-                            })
-                        ->skip(0)->take(6)
-                        ->orderBy('tenders.updated_at', 'desc')
-                        ->get();
-        
+            ->where('tenders.company_id', $company->id)
+            ->join('projects', 'projects.id', '=', 'tenders.project_id')
+            ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+            ->leftjoin('tenders_companies AS comp', function ($join) use ($userCompanyId) {
+                $join->on('tenders.id', '=', 'comp.tender_id');
+                $join->where('comp.company_id', '=', $userCompanyId);
+            })
+            ->skip(0)->take(6)
+            ->orderBy('tenders.updated_at', 'desc')
+            ->get();
+
         $tenders = [];
-        foreach ( $company->tenders as $key => $tender) {
+        foreach ($company->tenders as $key => $tender) {
             $user = $tender->user;
-            unset( $tender->user );
+            unset($tender->user);
             $tender->user = $user;
 
             $version = $tender->tendersVersionLastPublish();
-            if( $version ){
+            if ($version) {
                 $tender->tags = $version->tags;
             }
             $tender->project;
-            
+
             $tenders[] = $tendersTransform->transform($tender);
         }
-        unset( $company->tenders );
+        unset($company->tenders);
         $company->tenders = $tenders;
-        
+
 
         // Traer Productos últimos 6
         $company->products = $company->products
-                                ->where('status', Products::PRODUCT_PUBLISH)
-                                ->skip(0)->take(6)
-                                ->sortBy([ ['updated_at', 'desc'] ]);
+            ->where('status', Products::PRODUCT_PUBLISH)
+            ->skip(0)->take(6)
+            ->sortBy([['updated_at', 'desc']]);
 
-        foreach ( $company->products as $key => $product) {
+        foreach ($company->products as $key => $product) {
             $user = $userTransform->transform($product->user);
-            unset( $product->user );
+            unset($product->user);
             $product->user = $user;
             $product->tags;
             $product->image;
@@ -274,38 +276,38 @@ class CompanyController extends ApiController
 
         // Traer Publicaciones últimas 6
         $company->blogs = $company->blogs
-                                ->where('status', Blog::BLOG_PUBLISH)
-                                ->skip(0)->take(6)
-                                ->sortBy([ ['updated_at', 'desc'] ]);
+            ->where('status', Blog::BLOG_PUBLISH)
+            ->skip(0)->take(6)
+            ->sortBy([['updated_at', 'desc']]);
 
-        foreach ( $company->blogs as $key => $blog) {
+        foreach ($company->blogs as $key => $blog) {
             $user = $userTransform->transform($blog->user);
-            unset( $blog->user );
+            unset($blog->user);
             $blog->user = $user;
             $blog->image;
             $blog->files;
         }
-        
+
         // Traer Portafolios últimos 8
         $company->portfolios = $company->portfolios
-                                ->where('status', Portfolio::PORTFOLIO_PUBLISH)
-                                ->skip(0)->take(8)
-                                ->sortBy([ ['updated_at', 'desc'] ]);
+            ->where('status', Portfolio::PORTFOLIO_PUBLISH)
+            ->skip(0)->take(8)
+            ->sortBy([['updated_at', 'desc']]);
 
-        foreach ( $company->portfolios as $key => $portfolio) {
+        foreach ($company->portfolios as $key => $portfolio) {
             $portfolio->image;
             $portfolio->files;
         }
 
         // Calificaciones.
         $company->remarks = Remarks::select('remarks.*')
-                    ->where('remarks.company_id', $company->id )
-                    ->skip(0)->take(8)
-                    ->orderBy('id', 'desc')
-                    ->get();
-        foreach ( $company->remarks as $key => $remark) {
+            ->where('remarks.company_id', $company->id)
+            ->skip(0)->take(8)
+            ->orderBy('id', 'desc')
+            ->get();
+        foreach ($company->remarks as $key => $remark) {
             $user = $userTransform->transform($remark->user);
-            unset( $remark->user );
+            unset($remark->user);
             $remark->user = $user;
         }
 
@@ -316,33 +318,31 @@ class CompanyController extends ApiController
     {
         //
         $user = $this->validateUser();
-        
+
         $company = Company::where('slug', $slug)->first();
-        if( !$company ){
-            $companyError = [ 'company' => 'Error, no se ha encontrado ninguna compañia' ];
-            return $this->errorResponse( $companyError, 500 );
+        if (!$company) {
+            $companyError = ['company' => 'Error, no se ha encontrado ninguna compañia'];
+            return $this->errorResponse($companyError, 500);
         }
 
         return $this->showOneTransformNormal($company, 200);
     }
 
-    
+
 
     public function statusCompany()
     {
         $user = $this->validateUser();
-        if( $user->isAdminFrontEnd() ){
+        if ($user->isAdminFrontEnd()) {
             $company = $user->company[0];
-        }elseif( $user->team ){
+        } elseif ($user->team) {
             $company = $user->team->company;
         }
 
-        if($company->companyStatusPayment()){
-            return $this->showOneData( ['message' => 'true', 'code' => 200 ], 200);
-        }
-        else
-        {
-            return $this->showOneData( ['message' => 'false', 'code' => 200 ], 200);
+        if ($company->companyStatusPayment()) {
+            return $this->showOneData(['message' => 'true', 'code' => 200], 200);
+        } else {
+            return $this->showOneData(['message' => 'false', 'code' => 200], 200);
         }
     }
 

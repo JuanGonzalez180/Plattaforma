@@ -42,6 +42,10 @@ class Company extends Model
     const COMPANY_APPROVED  = 'Aprobado';
     const COMPANY_REJECTED  = 'Rechazado';
 
+    protected $casts = [
+        'phone' => 'array'
+    ];
+
     protected $fillable = [
         'name',
         'description',
@@ -49,8 +53,7 @@ class Company extends Model
         'nit',
         'country_code',
         'web',
-        'ext-phone',
-        'phone',
+        // 'phone',
         'status',
         'user_id',
         'slug'
