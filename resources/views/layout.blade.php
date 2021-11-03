@@ -95,6 +95,13 @@
                                 </li>
 
                                 <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('companies-projects') }}">
+                                        <span data-feather="file"></span>
+                                        Compañias Proyectos
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
                                     <a class="nav-link collapsed text-truncate" href="#publicitySubmenu" data-toggle="collapse" data-target="#publicitySubmenu"><span class="d-none d-sm-inline">Publicidad</span></a>
                                     <div class="collapse" id="publicitySubmenu" aria-expanded="false">
                                         <ul class="flex-column pl-2 nav">

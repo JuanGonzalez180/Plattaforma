@@ -11,6 +11,8 @@ use App\Http\Controllers\WebControllers\remark\RemarkController;
 use App\Http\Controllers\WebControllers\brands\BrandsController;
 use App\Http\Controllers\WebControllers\tender\TenderController;
 use App\Http\Controllers\WebControllers\company\CompanyController;
+use App\Http\Controllers\WebControllers\company\projects\CompanyProjectController;
+use App\Http\Controllers\WebControllers\company\providers\CompanyProvidersController;
 use App\Http\Controllers\WebControllers\project\ProjectController;
 use App\Http\Controllers\WebControllers\product\ProductController;
 use App\Http\Controllers\WebControllers\country\CountryController;
@@ -119,6 +121,9 @@ Route::group(['middleware' => 'auth'], function () {
                 ->name('companies.type');
 
         Route::get('/company/{type}', [CompanyController::class, 'getCompanyType'])->name('companies-type');
+        // ------------------------------------------------------------------------------------------------------------------
+        Route::get('/company/all/projects', [CompanyProjectController::class, 'index'])->name('companies-projects');
+        Route::get('/company/all/vendors', [CompanyProvidersController::class, 'index'])->name('companies-vendors');
 
         // Licitaciones
         Route::resource('licitaciones', TenderController::class, ['only' => ['edit', 'show']])

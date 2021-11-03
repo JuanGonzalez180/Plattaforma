@@ -53,7 +53,7 @@ class Company extends Model
         'nit',
         'country_code',
         'web',
-        // 'phone',
+        'phone',
         'status',
         'user_id',
         'slug'
