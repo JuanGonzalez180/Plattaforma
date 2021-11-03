@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 
 class CompanyProjectController extends Controller
 {
-    
+
     public function index()
     {
         $status = [
@@ -18,5 +18,9 @@ class CompanyProjectController extends Controller
         ];
 
         return view('company.projects.index', compact('status'));
+    }
+
+    public function getCompany()
+    {
     }
 }
