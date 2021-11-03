@@ -129,13 +129,13 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('countries.index') }}">
                                         <span data-feather="file"></span>
-                                        Paises
+                                        Países de operación
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('typesentity.index') }}">
                                         <span data-feather="file"></span>
-                                        Tipos de Entidad
+                                        Tipos de comunidad
                                     </a>
                                 </li>
                                 <li class="nav-item">

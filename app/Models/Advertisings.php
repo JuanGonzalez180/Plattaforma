@@ -26,7 +26,7 @@ class Advertisings extends Model
     const STATUS_ENDING = 'Terminado';
 
     const STATUS_ADMIN_CREATED  = 'Revisión';
-    const STATUS_ADMIN_APPROVED = 'Aprovado';
+    const STATUS_ADMIN_APPROVED = 'Aprobado';
     const STATUS_ADMIN_REJECTED = 'Rechazado';
 
     protected $fillable = [

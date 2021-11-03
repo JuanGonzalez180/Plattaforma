@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\WebControllers\publicity\manageadvertising;
 
 use DataTables;
+use Carbon\Carbon;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Models\Advertisings;
@@ -170,6 +171,28 @@ class ManageAdvertisingController extends Controller
         //
     }
 
+    public function update_status(Request $request)
+    {
+        $advertising = Advertisings::find($request->id);
+
+        $advertising->status        = $request->status;
+        $advertising->start_date    = Carbon::now()->format('Y-m-d');
+        $advertising->save();
+
+        if($advertising->status == Advertisings::STATUS_ADMIN_APPROVED)
+        {
+            $message = "La publicidad ha sido aprobada";
+            
+        }
+        else if($advertising->status == Advertisings::STATUS_ADMIN_APPROVED)
+        {
+            $message = "La publicidad ha sido Rechazada";
+
+        }
+
+        return response()->json(['message' => $message], 200);
+
+    }
     /**
      * Remove the specified resource from storage.
      *

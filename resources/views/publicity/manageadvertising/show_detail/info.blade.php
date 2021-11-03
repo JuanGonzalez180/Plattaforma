@@ -26,14 +26,22 @@
         </div>
 
         @elseif($advertising->payments->status == $status_payment[1] && $advertising->status == $status[0])
-        <form id="project_form">
+
+        <form id="advertising_form">
             @csrf
-            <input type="hidden" id="id" value="{{$advertising->id}}" name="id"/>
-            <select name="status" id="status" class="form-control">
-                @foreach ($status as $value)
-                <option value="{{ $value }}" {{ old('status', $advertising->status) == $value ? 'selected' : '' }}>{{$value}}</option>
-                @endforeach
-            </select>
+            <input type="hidden" id="id" value="{{$advertising->id}}" name="id" />
+            <div class="form-row">
+                <div class="form-group col-md-8">
+                    <select name="status" id="status" class="form-control">
+                        @foreach($status as $value)
+                        <option value="{{ $value }}" {{ old('status', $value) == $advertising->status ? 'selected' : '' }}>{{ $value }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-md-8">
+                    <button type="submit" class="btn btn-success">Aceptar</button>
+                </div>
+            </div>
         </form>
 
         @elseif($advertising->payments->status == $status_payment[1] && $advertising->status == $status[1])

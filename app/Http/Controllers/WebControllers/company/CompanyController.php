@@ -9,6 +9,7 @@ use App\Models\Addresses;
 use Illuminate\Http\Request;
 use App\Mail\ValidatedAccount;
 use Illuminate\Validation\Rule;
+use App\Mail\RejectedAccount;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 
@@ -108,6 +109,9 @@ class CompanyController extends Controller
         // Enviamos mensaje al correo del usuario
         if($request->status == Company::COMPANY_APPROVED)
             Mail::to($company->user->email)->send(new ValidatedAccount($company->user));
+
+        if($request->status == Company::COMPANY_REJECTED)
+            Mail::to($company->user->email)->send(new RejectedAccount($company->user));
 
         $type_company = ($company->type_company() == 'Oferta')? 'Oferta' : 'Demanda';
 

@@ -40,7 +40,26 @@ class Type extends Model
         ];
     }
 
-    public function typesEntity(){
+    public function renameType()
+    {
+        switch ($this->name)
+        {
+            case 'Demanda':
+                $name = 'Proyecto';
+                break;
+            case 'Oferta':
+                $name = 'Proveedores';
+                break;
+            default:
+                $name = "sin definir";
+                break;
+        }
+
+        return $name;
+    }
+
+    public function typesEntity()
+    {
         return $this->hasMany(TypesEntity::class);
     }
 }

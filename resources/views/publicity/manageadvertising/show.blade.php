@@ -35,7 +35,7 @@ Publicidad
         @include('publicity.manageadvertising.show_detail.info')
     </div>
     <div class="tab-pane fade" id="advertising-plan" role="tabpanel" aria-labelledby="project-file-tab">
-    @include('publicity.manageadvertising.show_detail.plan')
+        @include('publicity.manageadvertising.show_detail.plan')
     </div>
     <div class="tab-pane fade" id="advertising-payment" role="tabpanel" aria-labelledby="project-file-tab">
         @include('publicity.manageadvertising.show_detail.payment')
@@ -44,7 +44,50 @@ Publicidad
         @include('publicity.manageadvertising.show_detail.images')
     </div>
 </div>
-
-
 @include('partials.structure.close-main')
+<script>
+    $("#advertising_form").submit(function(e) {
+        e.preventDefault();
+        let id = $('#id').val();
+        let status = $('#status').val();
+        let _token = $("input[name=_token]").val();
+
+        Swal.fire({
+            title: '¿Estas seguro?',
+            text: "Cambiar el estado de la publicidad ?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '¡Si, Cambiar!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    url: "{{route('manage-advertising-status-update')}}",
+                    type: "PUT",
+                    data: {
+                        id: id,
+                        status: status,
+                        _token: _token
+                    },
+                    success: function(data) {
+                        Swal.fire(
+                            'Exito!',
+                            data['message'],
+                            'success',
+                        ).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload();
+                            }
+                        })
+                    }
+                });
+            }
+        })
+
+
+    });
+</script>
 @endsection

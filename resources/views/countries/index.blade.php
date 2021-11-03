@@ -8,7 +8,7 @@
     @include('partials.structure.open-main')
         <div class="row align-items-center">
             <div class="col">
-                <h1>Paises</h1>
+                <h1>Países de operación</h1>
             </div>
             <div class="col text-right">
                 <a type="button" class="btn btn-primary" href="{{ route('countries.create') }}"><span class="oi oi-plus" title="Nuevo" aria-hidden="true"></span> @lang('Create') @lang('Country')</a>

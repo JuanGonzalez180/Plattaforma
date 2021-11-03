@@ -34,4 +34,9 @@ class AdvertisingPlans extends Model
         return $this->hasMany(AdvertisingPlansImages::class);
     }
 
+    public function typeRectangle() 
+    {
+        
+    }
+
 }

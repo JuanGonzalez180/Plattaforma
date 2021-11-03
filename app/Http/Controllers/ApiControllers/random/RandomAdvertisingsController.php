@@ -32,12 +32,21 @@ class RandomAdvertisingsController extends ApiController
 
         // $AdvertisingPlans
 
-        // $request-> 
+        switch ($request->type_ubication)
+        {
+            case AdvertisingPlans::RECTANGLE_TYPE:
+                $type_ubication = AdvertisingPlans::RECTANGLE_TYPE;
+                break;
+            case AdvertisingPlans::SQUARE_TYPE:
+                $type_ubication = AdvertisingPlans::SQUARE_TYPE;
+                break;
+        }
         
         $advertisings = Advertisings::select('advertisings.*')
         ->where('advertisings.status','=',Advertisings::STATUS_ADMIN_APPROVED)
         ->join('registration_payments','registration_payments.paymentsable_id','=','advertisings.id')
         ->join('advertising_plans','advertising_plans.id','=','advertisings.plan_id')
+        ->where('advertising_plans.type_ubication','=',$type_ubication)
         ->where( DB::raw("DATE_FORMAT(CONCAT(advertisings.start_date,' ',advertisings.start_time), '%Y-%m-%d %H:%i' )"),'<=', Carbon::now()->format('Y-m-d H:i'))
         ->where( DB::raw("DATE_FORMAT(CONCAT(DATE_ADD(advertisings.start_date, INTERVAL +advertising_plans.days DAY),' ',advertisings.start_time), '%Y-%m-%d %H:%i' )") ,'>=', Carbon::now()->format('Y-m-d H:i'))
         ->where('registration_payments.paymentsable_type','=',Advertisings::class)
