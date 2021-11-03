@@ -59,6 +59,11 @@ class UsersController extends ApiController
                 $user['type'] = $company->type_entity->type->slug;
             }
             
+            $user->adminUser = $company->user;
+            if( $user->adminUser ){
+                $user->adminUser->url = (string)$user->adminUser->image ? url( 'storage/' . $user->adminUser->image->url ) : '';
+            }
+
             $companyClass = $user->companyClass();
             if( $companyClass ){
                 $user->slug = $companyClass->slug;
