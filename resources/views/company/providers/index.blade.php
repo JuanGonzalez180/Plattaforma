@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('title')
-Proyectos
+Proveedores
 @endsection
 
 
@@ -9,7 +9,7 @@ Proyectos
 @include('partials.structure.open-main')
 <div class="row align-items-center">
     <div class="col">
-        <h2>Compañia <span class="badge badge-secondary">Proyectos</span></h2>
+        <h2>Compañia <span class="badge badge-secondary">Proveedores</span></h2>
     </div>
 </div>
 <hr>
@@ -76,7 +76,7 @@ Proyectos
         table = $('#company_table').DataTable({
             "serverSide": true,
             "ajax": {
-                "url": "{{ route('companies-get-projects') }}",
+                "url": "{{ route('companies-get-providers') }}",
                 "type": "POST",
                 "headers": {
                     "X-CSRF-TOKEN": "{{ csrf_token() }}"

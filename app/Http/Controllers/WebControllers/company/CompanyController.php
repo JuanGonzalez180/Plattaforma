@@ -102,20 +102,28 @@ class CompanyController extends Controller
         $company = Company::find($request->id);
         // Cambiamos el estado de la compañia
         $company->status = $request->status;
+
         $company->save();
         // Enviamos mensaje al correo del usuario
-        if ($request->status == Company::COMPANY_APPROVED)
+        if ($request->status == Company::COMPANY_APPROVED){
             Mail::to($company->user->email)->send(new ValidatedAccount($company->user));
-
-        if ($request->status == Company::COMPANY_REJECTED)
+            $message = "La compañia se ha aprobado con exito y se ha enviado un correo de confirmación a dicha compañia (".$company->user->email.").";
+            
+        }
+        
+        if ($request->status == Company::COMPANY_REJECTED){
             Mail::to($company->user->email)->send(new RejectedAccount($company->user));
+            $message = "La compañia se ha rechazado y se ha enviado un correo de confirmación a dicha compañia.";
+        }
 
-        $type_company = ($company->type_company() == 'Oferta') ? 'Oferta' : 'Demanda';
+        // $type_company = ($company->type_company() == 'Oferta') ? 'Oferta' : 'Demanda';
 
-        return redirect()->route('companies-type', $type_company)->with([
-            'status'    => 'edit',
-            'title'     => 'La compañia'
-        ]);
+        // return redirect()->route('companies-type', $type_company)->with([
+        //     'status'    => 'edit',
+        //     'title'     => 'La compañia'
+        // ]);
+
+        return response()->json(['message' => $message], 200);
     }
 
     public function getTypeCompanies(Request $request)

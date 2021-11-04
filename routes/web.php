@@ -122,8 +122,11 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/company/{type}', [CompanyController::class, 'getCompanyType'])->name('companies-type');
         // ------------------------------------------------------------------------------------------------------------------
-        Route::get('/company/all/projects', [CompanyProjectController::class, 'index'])->name('companies-projects');
-        Route::get('/company/all/vendors', [CompanyProvidersController::class, 'index'])->name('companies-vendors');
+        Route::get('/company/all/projects', [CompanyProjectController::class, 'index'])->name('companies-all-projects');
+        Route::post('/company/get/projects', [CompanyProjectController::class, 'getCompany'])->name('companies-get-projects');
+
+        Route::get('/company/all/providers', [CompanyProvidersController::class, 'index'])->name('companies-all-providers');
+        Route::post('/company/get/providers', [CompanyProvidersController::class, 'getCompany'])->name('companies-get-providers');
 
         // Licitaciones
         Route::resource('licitaciones', TenderController::class, ['only' => ['edit', 'show']])
