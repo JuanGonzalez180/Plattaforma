@@ -9,7 +9,7 @@ Proyectos
 @include('partials.structure.open-main')
 <div class="row align-items-center">
     <div class="col">
-        <h2>Compañia <span class="badge badge-secondary">Proyectos</span></h2>
+        <h2>Comunidad <span class="badge badge-secondary">Proyectos</span></h2>
     </div>
 </div>
 <hr>
@@ -62,6 +62,7 @@ Proyectos
             <th>Nombre</th>
             <th>Entidad</th>
             <th>Fecha</th>
+            <th>active</th>
             <th>Estado</th>
             <th>Acciones</th>
         </tr>
@@ -96,6 +97,9 @@ Proyectos
                 },
                 {
                     data: 'date'
+                },
+                {
+                    data: 'active'
                 },
                 {
                     data: 'status'

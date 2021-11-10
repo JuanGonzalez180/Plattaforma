@@ -113,15 +113,8 @@ class CompanyController extends Controller
         
         if ($request->status == Company::COMPANY_REJECTED){
             Mail::to($company->user->email)->send(new RejectedAccount($company->user));
-            $message = "La compañia se ha rechazado y se ha enviado un correo de confirmación a dicha compañia.";
+            $message = "La compañia no ha sido aprobada y se ha enviado un correo de confirmación a dicha compañia (".$company->user->email.").";
         }
-
-        // $type_company = ($company->type_company() == 'Oferta') ? 'Oferta' : 'Demanda';
-
-        // return redirect()->route('companies-type', $type_company)->with([
-        //     'status'    => 'edit',
-        //     'title'     => 'La compañia'
-        // ]);
 
         return response()->json(['message' => $message], 200);
     }
@@ -177,13 +170,5 @@ class CompanyController extends Controller
         ];
 
         return view('company.projects.index', compact('status'));
-    }
-
-    public function getCompanyProjects()
-    {
-    }
-
-    public function getCompanyVendors()
-    {
     }
 }

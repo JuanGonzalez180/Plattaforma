@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\WebControllers\company\projects;
 
 use DataTables;
+use App\Models\Files;
+use App\Models\projects;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class CompanyProjectController extends Controller
@@ -23,11 +26,30 @@ class CompanyProjectController extends Controller
         return view('company.projects.index', compact('status', 'statusArrayCount'));
     }
 
+    public function prueba($id)
+    {
+        return Files::select('files.size')->where('files.filesable_type', projects::class)
+            ->whereNotNull('files.size')
+            ->join('projects', 'projects.id', '=', 'files.filesable_id')
+            ->join('companies', 'companies.id', '=', 'projects.company_id')
+            ->where('companies.id', 3)
+            ->sum('files.size');
+    }
+
     public function getCompany(Request $request)
     {
         $status     = $request->status;
 
+        // $companies  = Company::select('companies.*')
+        //     ->addSelect([
+        //         'active' =>
+        //         $this->prueba('companies.id')
+        //     ]);
+
+
+        // $companies  = Company::select('companies.*', DB::raw('('.$this->prueba('companies.id').') as active'));
         $companies  = Company::select('companies.*');
+
 
         if ($status != 'all')
             $companies  = $companies->where('companies.status', '=', $status);
@@ -67,6 +89,9 @@ class CompanyProjectController extends Controller
             })
             ->addColumn('date', function (Company $value) {
                 return $value->created_at->toFormattedDateString();
+            })
+            ->addColumn('active', function (Company $value) {
+                return $value->fileSizeTotal();
             })
             ->editColumn('status', function (Company $value) {
 

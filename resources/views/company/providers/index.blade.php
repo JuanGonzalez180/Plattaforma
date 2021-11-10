@@ -9,7 +9,7 @@ Proveedores
 @include('partials.structure.open-main')
 <div class="row align-items-center">
     <div class="col">
-        <h2>Compañia <span class="badge badge-secondary">Proveedores</span></h2>
+        <h2>Comunidad <span class="badge badge-secondary">Proveedores</span></h2>
     </div>
 </div>
 <hr>

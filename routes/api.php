@@ -241,6 +241,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      */
     Route::get('/company/status', [CompanyController::class, 'statusCompany'])->name('company-status');
     Route::get('/company/{slug}', [CompanyController::class, 'show'])->name('company-show');
+    Route::post('/company/item/update', [CompanyController::class, 'updateItem'])->name('company-item-update');
     
     Route::get('/company/{slug}/detail', [CompanyController::class, 'detail'])->name('company-detail');
     

@@ -16,10 +16,18 @@ Compañia
             <i class="fas fa-info-circle"></i>&nbsp;Información
         </a>
     </li>
+
     <li class="nav-item">
         <a class="nav-link" id="file-company-tab" data-toggle="pill" href="#file-company" role="tab" aria-controls="file-company" aria-selected="false">
             <i class="far fa-file-alt"></i>&nbsp;Archivos
             <span class="badge badge-light">{{count($company->files)}}</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" id="size-company-tab" data-toggle="pill" href="#size-company" role="tab" aria-controls="size-company" aria-selected="false">
+            <i class="fas fa-chart-pie"></i>&nbsp;Tamaño ocupado
+            <span class="badge badge-light"></span>
         </a>
     </li>
 
@@ -131,6 +139,73 @@ Compañia
         </div>
 
         @endif
+    </div>
+
+    <div class="tab-pane fade" id="size-company" role="tabpanel" aria-labelledby="size-company-tab">
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Cantidad de archivos</th>
+                    <th scope="col">Tamaño</th>
+                    <th scope="col">Detalle</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">Blogs</th>
+                    <td>{{$company->fileCountBlogs()}}</td>
+                    <td>{{ round(($company->fileSizeBlogs() / pow(1024, 3)), 3) }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-external-link-square-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Proyectos</th>
+                    <td>{{$company->fileCountProject()}}</td>
+                    <td>{{ round(($company->fileSizeProject() / pow(1024, 3)), 3) }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-external-link-square-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Productos</th>
+                    <td>{{$company->fileCountProduct()}}</td>
+                    <td>{{$company->fileSizeProduct()}}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-external-link-square-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Portafolio</th>
+                    <td>{{$company->fileCountPortfolio()}}</td>
+                    <td>{{$company->fileSizePortfolio()}}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-external-link-square-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Licitaciones</th>
+                    <td>{{$company->fileCountTender()}}</td>
+                    <td>{{$company->fileSizeTender()}}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-external-link-square-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
     </div>
 </div>
 
