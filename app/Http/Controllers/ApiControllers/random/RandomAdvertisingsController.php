@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\random;
 
 use JWTAuth;
+use DateTime;
 use App\Models\Advertisings;
 use App\Models\AdvertisingPlansPaidImages;
 use App\Models\AdvertisingPlans;
@@ -53,6 +54,8 @@ class RandomAdvertisingsController extends ApiController
         ->orderByRaw('rand()')
         ->take(6)
         ->get();
+
+        // Carbon::now()->addDays("advertising_plans.days")->format('Y-m-d H:i');
 
         return $this->showAllPaginate($advertisings);
     }

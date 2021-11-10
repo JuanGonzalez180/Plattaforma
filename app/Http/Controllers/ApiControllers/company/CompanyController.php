@@ -15,17 +15,20 @@ use App\Models\Tenders;
 use App\Models\TypesEntity;
 use App\Models\User;
 use App\Mail\CreatedAccount;
-use App\Transformers\UserTransformer;
-use App\Transformers\TendersTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str as Str;
+use Illuminate\Support\Facades\Mail;
+use App\Transformers\UserTransformer;
+use Illuminate\Support\Facades\Storage;
+use App\Transformers\TendersTransformer;
 use TaylorNetwork\UsernameGenerator\Generator;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class CompanyController extends ApiController
 {
+    public $routeFile       = 'public/';
+    public $routeCompanies  = 'images/company/';
 
     public function validateUser()
     {
@@ -367,5 +370,68 @@ class CompanyController extends ApiController
     public function destroy($id)
     {
         //
+    }
+
+    public function updateItem(Request $request)
+    {
+        $user       = $this->validateUser();
+        $company    = Company::findOrFail($user->company[0]->id);
+
+        if (isset($request->description)) {
+            $company['description'] = $request->description;
+
+            $company->save();
+
+            DB::beginTransaction();
+
+            try {
+                $company['description'] = $request->description;
+                $company->save();
+            } catch (\Exception $e) {
+                DB::rollBack();
+            }
+            DB::commit();
+        }
+
+        if (isset($request->image)) {
+
+            $png_url = "company-" . time() . ".jpg";
+            $img = $request->image;
+            $img = substr($img, strpos($img, ",") + 1);
+            $data = base64_decode($img);
+            $routeFile = $this->routeCompanies . $company->id . '/' . $png_url;
+
+            Storage::disk('local')->put($this->routeFile . $routeFile, $data);
+
+            if ($company->image) {
+                Storage::disk('local')->delete($this->routeFile . $company->image->url);
+                $company->image()->update(['url' => $routeFile]);
+            } else {
+                $company->image()->create(['url' => $routeFile]);
+            }
+
+            return $this->showOneTransformNormal($company, 200);
+        }
+
+        if (isset($request->imageCoverPage)) {
+
+            $png_url = "company-coverpage-" . time() . ".jpg";
+            $img = $request->imageCoverPage;
+            $img = substr($img, strpos($img, ",") + 1);
+            $data = base64_decode($img);
+
+            $routeFile = 'images/company/' . $company->id . '/' . $png_url;
+            Storage::disk('local')->put($this->routeFile . $routeFile, $data);
+
+            $imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
+            if (!$imageCoverPage) {
+                $imageCoverPage = Image::create(['url' => $routeFile, 'imageable_id' => $company->id, 'imageable_type' => 'App\Models\Company\CoverPage']);
+            } else {
+                Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->update(['url' => $routeFile]);
+                Storage::disk('local')->delete($this->routeFile . $imageCoverPage->url);
+            }
+        }
+
+        return $this->showOneTransformNormal($company, 200);
     }
 }

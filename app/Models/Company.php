@@ -35,12 +35,13 @@ class Company extends Model
 {
     use HasFactory;
 
-    public $transformer = CompanyTransformer::class;
-    public $transformerDetail = CompanyDetailTransformer::class;
+    public $transformer         = CompanyTransformer::class;
+    public $transformerDetail   = CompanyDetailTransformer::class;
 
     const COMPANY_CREATED   = 'Creado';
     const COMPANY_APPROVED  = 'Aprobado';
     const COMPANY_REJECTED  = 'Rechazado';
+    const COMPANY_BANNED    = 'Bloqueado';
 
     protected $casts = [
         'phone' => 'array'
@@ -53,7 +54,7 @@ class Company extends Model
         'nit',
         'country_code',
         'web',
-        // 'phone',
+        'phone',
         'status',
         'user_id',
         'slug'
@@ -68,6 +69,10 @@ class Company extends Model
         'status',
         'user_id',
     ];
+
+    public function prueba($size){
+        return $size;
+    }
 
     public function type_entity()
     {
@@ -179,6 +184,7 @@ class Company extends Model
         return ($remarks) ? $remarks : 0;
     }
 
+    //blogs
     public function fileSizeBlogs()
     {
         $files = Files::where('files.filesable_type', Blog::class)
@@ -199,6 +205,31 @@ class Company extends Model
         return $files + $images;
     }
 
+    public function fileCountBlogs()
+    {
+        $files = Files::where('files.filesable_type', Blog::class)
+            ->whereNotNull('files.size')
+            ->join('blogs', 'blogs.id', '=', 'files.filesable_id')
+            ->join('companies', 'companies.id', '=', 'blogs.company_id')
+            ->where('companies.id', $this->id)
+            ->count();
+
+        $images = DB::table('images')->where('images.imageable_type', Blog::class)
+            ->whereNotNull('images.size')
+            ->join('blogs', 'blogs.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'blogs.company_id')
+            ->where('companies.id', $this->id)
+            ->count();
+
+
+        return $files + $images;
+    }
+
+    public function fileDetailBlogs()
+    {
+        return [$this->fileSizeBlogs() , $this->fileCountBlogs];
+    }
+
     public function fileSizeBrands()
     {
         return DB::table('images')->where('images.imageable_type', Brands::class)
@@ -207,6 +238,16 @@ class Company extends Model
             ->join('companies', 'companies.id', '=', 'brands.company_id')
             ->where('companies.id', $this->id)
             ->sum('images.size');
+    }
+
+    public function fileCountBrands()
+    {
+        return DB::table('images')->where('images.imageable_type', Brands::class)
+            ->whereNotNull('images.size')
+            ->join('brands', 'brands.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'brands.company_id')
+            ->where('companies.id', $this->id)
+            ->count();
     }
 
     public function fileSizePortfolio()
@@ -224,6 +265,25 @@ class Company extends Model
             ->join('companies', 'companies.id', '=', 'portfolios.company_id')
             ->where('companies.id', $this->id)
             ->sum('images.size');
+
+        return $files + $images;
+    }
+
+    public function fileCountPortfolio()
+    {
+        $files = Files::where('files.filesable_type', Portfolio::class)
+            ->whereNotNull('files.size')
+            ->join('portfolios', 'portfolios.id', '=', 'files.filesable_id')
+            ->join('companies', 'companies.id', '=', 'portfolios.company_id')
+            ->where('companies.id', $this->id)
+            ->count();
+
+        $images = DB::table('images')->where('images.imageable_type', Portfolio::class)
+            ->whereNotNull('images.size')
+            ->join('portfolios', 'portfolios.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'portfolios.company_id')
+            ->where('companies.id', $this->id)
+            ->count();
 
         return $files + $images;
     }
@@ -247,6 +307,25 @@ class Company extends Model
         return $files + $images;
     }
 
+    public function fileCountProject()
+    {
+        $files = Files::where('files.filesable_type', projects::class)
+            ->whereNotNull('files.size')
+            ->join('projects', 'projects.id', '=', 'files.filesable_id')
+            ->join('companies', 'companies.id', '=', 'projects.company_id')
+            ->where('companies.id', $this->id)
+            ->count();
+
+        $images = DB::table('images')->where('images.imageable_type', projects::class)
+            ->whereNotNull('images.size')
+            ->join('projects', 'projects.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'projects.company_id')
+            ->where('companies.id', $this->id)
+            ->count();
+
+        return $files + $images;
+    }
+
     public function fileSizeProduct()
     {
         $files = Files::where('files.filesable_type', Products::class)
@@ -266,7 +345,38 @@ class Company extends Model
         return $files + $images;
     }
 
+    public function fileCountProduct()
+    {
+        $files = Files::where('files.filesable_type', Products::class)
+            ->whereNotNull('files.size')
+            ->join('products', 'products.id', '=', 'files.filesable_id')
+            ->join('companies', 'companies.id', '=', 'products.company_id')
+            ->where('companies.id', $this->id)
+            ->count();
+
+        $images = DB::table('images')->where('images.imageable_type', Products::class)
+            ->whereNotNull('images.size')
+            ->join('products', 'products.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'products.company_id')
+            ->where('companies.id', $this->id)
+            ->count();
+
+        return $files + $images;
+    }
+
     public function fileSizeTender()
+    {
+        return $this->fileSizeTenderVersion() + $this->fileSizeTenderCompany();
+
+    }
+
+    public function fileCountTender()
+    {
+        return $this->fileCountTenderVersion() + $this->fileCountTenderCompany();
+
+    }
+
+    public function fileSizeTenderVersion()
     {
         return Files::where('files.filesable_type', TendersVersions::class)
             ->whereNotNull('files.size')
@@ -277,6 +387,17 @@ class Company extends Model
             ->sum('files.size');
     }
 
+    public function fileCountTenderVersion()
+    {
+        return Files::where('files.filesable_type', TendersVersions::class)
+            ->whereNotNull('files.size')
+            ->join('tenders_versions', 'tenders_versions.id', '=', 'files.filesable_id')
+            ->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
+            ->join('companies', 'companies.id', '=', 'tenders.company_id')
+            ->where('companies.id', $this->id)
+            ->count();
+    }
+
     public function fileSizeTenderCompany()
     {
         return Files::where('files.filesable_type', TendersCompanies::class)
@@ -284,6 +405,15 @@ class Company extends Model
             ->join('tenders_companies', 'tenders_companies.id', '=', 'files.filesable_id')
             ->where('tenders_companies.company_id', $this->id)
             ->sum('files.size');
+    }
+
+    public function fileCountTenderCompany()
+    {
+        return Files::where('files.filesable_type', TendersCompanies::class)
+            ->whereNotNull('files.size')
+            ->join('tenders_companies', 'tenders_companies.id', '=', 'files.filesable_id')
+            ->where('tenders_companies.company_id', $this->id)
+            ->count();
     }
 
     public function fileSizeTotal()
@@ -296,6 +426,18 @@ class Company extends Model
         $tenderCompany   = $this->fileSizeTenderCompany();
 
         return $blog + $portfolio + $project + $product + $tenderVersion + $tenderCompany;
+    }
+
+    public function fileSizeTotalDetail()
+    {
+        $item['Blogs']          = [ $this->fileSizeBlogs(), $this->fileSizeBlogs() ];
+        $item['Marcas']         = [ $this->fileCountBrands(), $this->fileSizeBrands() ];
+        $item['Licitaciones']   = [ $this->fileCountTender(), $this->fileSizeTender() ];
+        $item['Productos']      = [ $this->fileCountProduct(), $this->fileSizeProduct() ];
+        $item['Portafolios']    = [ $this->fileCountPortfolio(), $this->fileSizePortfolio() ];
+        $item['Projectos']      = [ $this->fileSizeBlogs(), $this->fileSizeBlogs() ];
+
+        return $item;
     }
 
     public function companyStatusPayment()

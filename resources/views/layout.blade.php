@@ -80,14 +80,14 @@
                                     <div class="collapse" id="companySubmenu" aria-expanded="false">
                                         <ul class="flex-column pl-2 nav">
                                             <li class="nav-item">
-                                                <a class="nav-link py-0" href="{{ route('companies-type', 'Demanda') }}">
-                                                    <i class="fas fa-angle-right"></i>&nbsp;Demanda
+                                                <a class="nav-link py-0" href="{{ route('companies-all-projects') }}">
+                                                    <i class="fas fa-angle-right"></i>&nbsp;Proyectos
                                                 </a>
                                             </li>
                                             <div class="dropdown-divider"></div>
                                             <li class="nav-item">
-                                                <a class="nav-link py-0" href="{{ route('companies-type', 'Oferta') }}">
-                                                    <i class="fas fa-angle-right"></i>&nbsp;Oferta
+                                                <a class="nav-link py-0" href="{{ route('companies-all-providers') }}">
+                                                    <i class="fas fa-angle-right"></i>&nbsp;Proveedores
                                                 </a>
                                             </li>
                                         </ul>
