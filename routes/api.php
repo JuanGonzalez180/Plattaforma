@@ -85,7 +85,8 @@ use App\Http\Controllers\ApiControllers\messages\MessagesController;
 use App\Http\Controllers\ApiControllers\publicity\advertising\AdvertisingController;
 use App\Http\Controllers\ApiControllers\publicity\advertisingplanspaidimages\AdvertisingPlansPaidImagesController;
 use App\Http\Controllers\ApiControllers\publicity\advertisingplans\AdvertisingPlansController;
-
+// Company Changes
+use App\Http\Controllers\ApiControllers\company\CompanyChanges\CompanyChangesNameController;
 
 
 /*
@@ -167,6 +168,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/myaccount/myservices', AccountMyServicesController::class, ['only' => ['index','store']])->names('myservices');
     Route::resource('/myaccount/myteam', AccountMyTeamController::class, ['only' => ['index', 'store', 'update', 'destroy']])->names('myteam');
     Route::resource('/company/files', CompanyFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('companyimages');
+    Route::resource('/company/name', CompanyChangesNameController::class, ['only' => ['store']])->names('companychangename');
     /**
      * Projects
      */

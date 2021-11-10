@@ -212,15 +212,15 @@ class CompanyController extends ApiController
         // 8 Integrantes del equipo
         $company->team = Team::where('company_id', $company->id)
             ->where('status', Team::TEAM_APPROVED)
-            ->skip(0)->take(8)
             ->orderBy('id', 'desc')
+            ->skip(0)->take(8)
             ->get();
 
         // Traer Proyectos últimos 6
         $company->projects = $company->projects
             ->where('visible', Projects::PROJECTS_VISIBLE)
-            ->skip(0)->take(6)
-            ->sortBy([['updated_at', 'desc']]);
+            ->sortBy([['updated_at', 'desc']])
+            ->skip(0)->take(6);
 
         foreach ($company->projects as $key => $project) {
             $user = $userTransform->transform($project->user);
@@ -238,8 +238,8 @@ class CompanyController extends ApiController
                 $join->on('tenders.id', '=', 'comp.tender_id');
                 $join->where('comp.company_id', '=', $userCompanyId);
             })
-            ->skip(0)->take(6)
             ->orderBy('tenders.updated_at', 'desc')
+            ->skip(0)->take(6)
             ->get();
 
         $tenders = [];
@@ -263,8 +263,8 @@ class CompanyController extends ApiController
         // Traer Productos últimos 6
         $company->products = $company->products
             ->where('status', Products::PRODUCT_PUBLISH)
-            ->skip(0)->take(6)
-            ->sortBy([['updated_at', 'desc']]);
+            ->sortBy([['updated_at', 'desc']])
+            ->skip(0)->take(6);
 
         foreach ($company->products as $key => $product) {
             $user = $userTransform->transform($product->user);
@@ -277,8 +277,8 @@ class CompanyController extends ApiController
         // Traer Publicaciones últimas 6
         $company->blogs = $company->blogs
             ->where('status', Blog::BLOG_PUBLISH)
-            ->skip(0)->take(6)
-            ->sortBy([['updated_at', 'desc']]);
+            ->sortBy([['updated_at', 'desc']])
+            ->skip(0)->take(6);
 
         foreach ($company->blogs as $key => $blog) {
             $user = $userTransform->transform($blog->user);
@@ -291,8 +291,8 @@ class CompanyController extends ApiController
         // Traer Portafolios últimos 8
         $company->portfolios = $company->portfolios
             ->where('status', Portfolio::PORTFOLIO_PUBLISH)
-            ->skip(0)->take(8)
-            ->sortBy([['updated_at', 'desc']]);
+            ->sortBy([['updated_at', 'desc']])
+            ->skip(0)->take(8);
 
         foreach ($company->portfolios as $key => $portfolio) {
             $portfolio->image;
@@ -302,8 +302,8 @@ class CompanyController extends ApiController
         // Calificaciones.
         $company->remarks = Remarks::select('remarks.*')
             ->where('remarks.company_id', $company->id)
-            ->skip(0)->take(8)
             ->orderBy('id', 'desc')
+            ->skip(0)->take(8)
             ->get();
         foreach ($company->remarks as $key => $remark) {
             $user = $userTransform->transform($remark->user);
