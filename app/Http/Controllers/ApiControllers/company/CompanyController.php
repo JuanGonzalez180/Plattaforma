@@ -410,7 +410,6 @@ class CompanyController extends ApiController
                 $company->image()->create(['url' => $routeFile]);
             }
 
-            return $this->showOneTransformNormal($company, 200);
         }
 
         if (isset($request->imageCoverPage)) {
@@ -432,6 +431,9 @@ class CompanyController extends ApiController
             }
         }
 
-        return $this->showOneTransformNormal($company, 200);
+        $companyNew = Company::findOrFail($company->id);
+        $companyNew->imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
+        $companyNew->image;
+        return $this->showOne($companyNew,200);
     }
 }
