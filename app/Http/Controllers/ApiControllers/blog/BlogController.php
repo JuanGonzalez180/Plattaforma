@@ -53,9 +53,7 @@ class BlogController extends ApiController
         $companyID = $user->companyId();
 
         $rules = [
-            'name' => 'required',
-            'description' => 'required',
-            'description_short' => 'required'
+            'name' => 'required'
         ];
 
         $this->validate( $request, $rules );
@@ -64,7 +62,7 @@ class BlogController extends ApiController
         $blogFields['name'] = $request->name;
         $blogFields['description_short'] = $request->description_short;
         $blogFields['description'] = $request->description;
-        $blogFields['status'] = $request->status ?? Blog::BLOG_ERASER;
+        $blogFields['status'] = $request->status ?? Blog::BLOG_PUBLISH;
         $blogFields['user_id'] = $request['user'] ?? $user->id;
         $blogFields['company_id'] = $companyID;
         
@@ -110,9 +108,7 @@ class BlogController extends ApiController
         $user = $this->validateUser();
 
         $rules = [
-            'name' => ['required', Rule::unique('blogs')->ignore($id) ],
-            'description' => 'required',
-            'description_short' => 'required'
+            'name' => ['required', Rule::unique('blogs')->ignore($id) ]
         ];
 
         // var_dump($request)
@@ -125,7 +121,7 @@ class BlogController extends ApiController
         $blogFields['description_short'] = $request['description_short'];
         $blogFields['description'] = $request['description']; 
         $blogFields['user_id'] = $request['user'] ?? $user->id;
-        $blogFields['status'] = $request['status'] ?? Blog::BLOG_ERASER;
+        $blogFields['status'] = $request['status'] ?? Blog::BLOG_PUBLISH;
 
         if( $request->image ){
             $png_url = "blog-".time().".jpg";
