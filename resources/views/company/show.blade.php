@@ -34,9 +34,7 @@ Compañia
 </ul>
 <div class="tab-content" id="pills-tabContent">
     <div class="tab-pane fade show active" id="company-info" role="tabpanel" aria-labelledby="company-info-tab">
-
         <dlv class="row">
-
             @if($company->image)
             <dt class="col-sm-4">Imagen:</dt>
             <dd class="col-sm-8">
@@ -117,9 +115,7 @@ Compañia
                 @endforeach
             </dd>
             </dl>
-
     </div>
-
     <div class="tab-pane fade" id="file-company" role="tabpanel" aria-labelledby="file-company-tab">
         @if(count($company->files)>0)
         <div class="row">
@@ -140,7 +136,6 @@ Compañia
 
         @endif
     </div>
-
     <div class="tab-pane fade" id="size-company" role="tabpanel" aria-labelledby="size-company-tab">
 
         <table class="table table-hover">
@@ -208,6 +203,28 @@ Compañia
 
     </div>
 </div>
-
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 @include('partials.structure.close-main')
+<script>
+    
+</script>
 @endsection
