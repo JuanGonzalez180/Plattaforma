@@ -56,7 +56,7 @@ class CompanyController extends ApiController
      */
     public function store(Request $request)
     {
-        //
+
         $rules = [
             // Country https://restcountries.eu/
             'country_code' => 'required',

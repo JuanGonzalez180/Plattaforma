@@ -155,7 +155,8 @@ class CompanyController extends Controller
         $status = [
             Company::COMPANY_CREATED,
             Company::COMPANY_APPROVED,
-            Company::COMPANY_REJECTED
+            Company::COMPANY_REJECTED,
+            Company::COMPANY_BANNED
         ];
 
         return view('company.projects.index', compact('status'));

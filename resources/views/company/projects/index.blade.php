@@ -39,6 +39,7 @@ Proyectos
                         <th scope="col">Creado</th>
                         <th scope="col">Aprobado</th>
                         <th scope="col">Rechazado</th>
+                        <th scope="col">Bloqueado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,7 +63,7 @@ Proyectos
             <th>Nombre</th>
             <th>Entidad</th>
             <th>Fecha</th>
-            <th>active</th>
+            <th>Espacio</th>
             <th>Estado</th>
             <th>Acciones</th>
         </tr>
@@ -99,7 +100,7 @@ Proyectos
                     data: 'date'
                 },
                 {
-                    data: 'active'
+                    data: 'disc_space'
                 },
                 {
                     data: 'status'

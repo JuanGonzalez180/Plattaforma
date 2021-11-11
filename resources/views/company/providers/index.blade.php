@@ -39,6 +39,7 @@ Proveedores
                         <th scope="col">Creado</th>
                         <th scope="col">Aprobado</th>
                         <th scope="col">Rechazado</th>
+                        <th scope="col">Bloqueado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,6 +63,7 @@ Proveedores
             <th>Nombre</th>
             <th>Entidad</th>
             <th>Fecha</th>
+            <th>Espacio</th>
             <th>Estado</th>
             <th>Acciones</th>
         </tr>
@@ -96,6 +98,9 @@ Proveedores
                 },
                 {
                     data: 'date'
+                },
+                {
+                    data: 'disc_space'
                 },
                 {
                     data: 'status'

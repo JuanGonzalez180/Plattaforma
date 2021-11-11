@@ -18,7 +18,8 @@ class CompanyProjectController extends Controller
         $status = [
             Company::COMPANY_CREATED,
             Company::COMPANY_APPROVED,
-            Company::COMPANY_REJECTED
+            Company::COMPANY_REJECTED,
+            Company::COMPANY_BANNED,
         ];
 
         $statusArrayCount = $this->companyStatusCountArray($status);
@@ -90,8 +91,8 @@ class CompanyProjectController extends Controller
             ->addColumn('date', function (Company $value) {
                 return $value->created_at->toFormattedDateString();
             })
-            ->addColumn('active', function (Company $value) {
-                return $value->fileSizeTotal();
+            ->addColumn('disc_space', function (Company $value) {
+                return "<span class='badge badge-primary' style='width: 100%;'>" . $this->bitesToGigabite($value->fileSizeTotal()) . "&nbsp;GB</span>";
             })
             ->editColumn('status', function (Company $value) {
 
@@ -111,7 +112,7 @@ class CompanyProjectController extends Controller
 
                 return $status;
             })
-            ->rawColumns(['entity', 'action', 'status', 'date'])
+            ->rawColumns(['entity', 'action', 'disc_space', 'status', 'date'])
             ->toJson();
     }
 
@@ -142,5 +143,10 @@ class CompanyProjectController extends Controller
         $companies  = $companies->count();
 
         return $companies;
+    }
+
+    public function bitesToGigabite($file_size)
+    {
+        return round(($file_size / pow(1024, 3)), 3);
     }
 }

@@ -14,7 +14,8 @@ class CompanyProvidersController extends Controller
         $status = [
             Company::COMPANY_CREATED,
             Company::COMPANY_APPROVED,
-            Company::COMPANY_REJECTED
+            Company::COMPANY_REJECTED,
+            Company::COMPANY_BANNED
         ];
 
         $statusArrayCount = $this->companyStatusCountArray($status);
@@ -47,9 +48,9 @@ class CompanyProvidersController extends Controller
                 $action = $action . '<button id="btnGroupDrop1" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span></button>';
                 $action = $action . '<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">';
                 //Productos
-                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('product-company-id', $value->id ) . '">Productos <span class="badge badge-primary">' . count($value->products) . '</span></a>';
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('product-company-id', $value->id) . '">Productos <span class="badge badge-primary">' . count($value->products) . '</span></a>';
                 //Marcas
-                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('company-brand-id', $value->id ) . '">Marcas <span class="badge badge-primary">' . count($value->brands) . '</span></a>';
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('company-brand-id', $value->id) . '">Marcas <span class="badge badge-primary">' . count($value->brands) . '</span></a>';
                 //Equipo
                 $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('teams-company-id', $value->id) . '">Equipo <span class="badge badge-primary">' . count($value->teams) . '</span></a>';
                 //Blogs
@@ -66,6 +67,9 @@ class CompanyProvidersController extends Controller
             })
             ->addColumn('date', function (Company $value) {
                 return $value->created_at->toFormattedDateString();
+            })
+            ->addColumn('disc_space', function (Company $value) {
+                return "<span class='badge badge-primary' style='width: 100%;'>" . $this->bitesToGigabite($value->fileSizeTotal()) . "&nbsp;GB</span>";
             })
             ->editColumn('status', function (Company $value) {
 
@@ -85,7 +89,7 @@ class CompanyProvidersController extends Controller
 
                 return $status;
             })
-            ->rawColumns(['entity', 'action', 'status', 'date'])
+            ->rawColumns(['entity', 'action', 'disc_space', 'status', 'date'])
             ->toJson();
     }
 
@@ -117,5 +121,10 @@ class CompanyProvidersController extends Controller
         $companies  = $companies->count();
 
         return $companies;
+    }
+
+    public function bitesToGigabite($file_size)
+    {
+        return round(($file_size / pow(1024, 3)), 3);
     }
 }
