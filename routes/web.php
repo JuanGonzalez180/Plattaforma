@@ -12,6 +12,10 @@ use App\Http\Controllers\WebControllers\brands\BrandsController;
 use App\Http\Controllers\WebControllers\tender\TenderController;
 use App\Http\Controllers\WebControllers\company\CompanyController;
 use App\Http\Controllers\WebControllers\company\projects\CompanyProjectController;
+
+
+use App\Http\Controllers\WebControllers\company\CompanyFiles\CompanyFilesController;
+
 use App\Http\Controllers\WebControllers\company\providers\CompanyProvidersController;
 use App\Http\Controllers\WebControllers\project\ProjectController;
 use App\Http\Controllers\WebControllers\product\ProductController;
@@ -124,6 +128,8 @@ Route::group(['middleware' => 'auth'], function () {
         // ------------------------------------------------------------------------------------------------------------------
         Route::get('/company/all/projects', [CompanyProjectController::class, 'index'])->name('companies-all-projects');
         Route::post('/company/get/projects', [CompanyProjectController::class, 'getCompany'])->name('companies-get-projects');
+        
+        Route::post('/company/get/files', [CompanyFilesController::class, 'getFiles'])->name('companies-get-files');
 
         Route::get('/company/all/providers', [CompanyProvidersController::class, 'index'])->name('companies-all-providers');
         Route::post('/company/get/providers', [CompanyProvidersController::class, 'getCompany'])->name('companies-get-providers');

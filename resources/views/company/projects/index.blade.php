@@ -24,7 +24,7 @@ Proyectos
     <div class="row">
         <div class="col-sm">
             <label for="parent_id">Estado</label>
-            <select name="status" id="status" class="form-control form-control-sm" onchange="getCompany(this.value);">
+            <select name="status" id="status" class="form-control form-control-sm" onchange="getCompany();">
                 <option value="all">Todos</option>
                 @foreach($status as $value)
                 <option value="{{$value}}">{{$value}}</option>
@@ -32,6 +32,13 @@ Proyectos
             </select>
         </div>
         <div class="col-sm">
+            <label for="parent_id">Tamaño</label>
+            <select name="size" id="size" class="form-control form-control-sm" onchange="getCompany();">
+                <option value="desc">Mayor</option>
+                <option value="asc">Menor</option>
+            </select>
+        </div>
+        <!-- <div class="col-sm">
             <table class="table table-bordered" style="text-align: center">
                 <thead>
                     <tr>
@@ -50,7 +57,7 @@ Proyectos
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </div> -->
     </div>
 </div>
 <br>
@@ -77,6 +84,7 @@ Proyectos
     $(document).ready(function() {
         table = $('#company_table').DataTable({
             "serverSide": true,
+            "ordering": false,
             "ajax": {
                 "url": "{{ route('companies-get-projects') }}",
                 "type": "POST",
@@ -84,7 +92,8 @@ Proyectos
                     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 },
                 "data": function(d) {
-                    d.status = getStatus();
+                    d.status    = getStatus();
+                    d.size      = getSize();
                 }
             },
             "columns": [{
@@ -100,7 +109,7 @@ Proyectos
                     data: 'date'
                 },
                 {
-                    data: 'disc_space'
+                    data: 'size_company'
                 },
                 {
                     data: 'status'
@@ -129,8 +138,15 @@ Proyectos
     });
 
     function getStatus() {
-        var select = document.getElementById('status');
-        var value = select.options[select.selectedIndex].value;
+        var select  = document.getElementById('status');
+        var value   = select.options[select.selectedIndex].value;
+
+        return value;
+    }
+
+    function getSize() {
+        var select  = document.getElementById('size');
+        var value   = select.options[select.selectedIndex].value;
 
         return value;
     }

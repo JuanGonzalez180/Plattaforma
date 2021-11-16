@@ -25,8 +25,22 @@ class Files extends Model
         'filesable_id',
         'filesable_type',
     ];
-    
-    public function filesable(){
+
+    public function filesable()
+    {
         return $this->morphTo();
+    }
+
+    public function formatSize()
+    {
+        if (round(($this->size / pow(1024, 2)), 3) < '1') {
+            $file = $this->size . ' bites';
+        } else if (round(($this->size / pow(1024, 2)), 3) < '1024') {
+            $file = round(($this->size / pow(1024, 2)), 3) . ' MB';
+        } else if (round(($this->size / pow(1024, 2)), 3) >= '1024') {
+            $file = round(($this->size / pow(1024, 2)), 3) . ' GB';
+        }
+
+        return $file;
     }
 }

@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Image extends Model
 {
     use HasFactory;
-    
+
     protected $guarded = [];
-    
+
     protected $fillable = [
         'imageable_id',
         'imageable_type',
@@ -23,7 +23,21 @@ class Image extends Model
         'imageable_type',
     ];
 
-    public function imageable(){
+    public function imageable()
+    {
         return $this->morphTo();
+    }
+
+    public function formatSize()
+    {
+        if (round(($this->size / pow(1024, 2)), 3) < '1') {
+            $file = $this->size . ' bites';
+        } else if (round(($this->size / pow(1024, 2)), 3) < '1024') {
+            $file = round(($this->size / pow(1024, 2)), 3) . ' MB';
+        } else if (round(($this->size / pow(1024, 2)), 3) >= '1024') {
+            $file = round(($this->size / pow(1024, 2)), 3) . ' GB';
+        }
+
+        return $file;
     }
 }

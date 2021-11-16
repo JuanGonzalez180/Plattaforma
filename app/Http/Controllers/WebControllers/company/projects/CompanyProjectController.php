@@ -40,15 +40,8 @@ class CompanyProjectController extends Controller
     public function getCompany(Request $request)
     {
         $status     = $request->status;
+        $size       = $request->size;
 
-        // $companies  = Company::select('companies.*')
-        //     ->addSelect([
-        //         'active' =>
-        //         $this->prueba('companies.id')
-        //     ]);
-
-
-        // $companies  = Company::select('companies.*', DB::raw('('.$this->prueba('companies.id').') as active'));
         $companies  = Company::select('companies.*');
 
 
@@ -59,6 +52,15 @@ class CompanyProjectController extends Controller
             ->join('types', 'types.id', '=', 'types_entities.type_id')
             ->where('types.name', '=', 'demanda')
             ->orderBy('companies.updated_at', 'desc');
+
+        $companies  = $companies->get();
+
+        foreach ($companies as $company) {
+            $company['size_company'] = $company->fileSizeTotal();
+        }
+
+
+        $companies = collect($companies)->sortBy([['size_company', $size]]);
 
         return DataTables::of($companies)
             ->addColumn('entity', function (Company $value) {
@@ -91,8 +93,8 @@ class CompanyProjectController extends Controller
             ->addColumn('date', function (Company $value) {
                 return $value->created_at->toFormattedDateString();
             })
-            ->addColumn('disc_space', function (Company $value) {
-                return "<span class='badge badge-primary' style='width: 100%;'>" . $this->bitesToGigabite($value->fileSizeTotal()) . "&nbsp;GB</span>";
+            ->editColumn('size_company', function (Company $value) {
+                return "<span class='badge badge-primary' style='width: 100%;'>" . $this->formatSize($value->size_company) . "</span>";
             })
             ->editColumn('status', function (Company $value) {
 
@@ -112,7 +114,7 @@ class CompanyProjectController extends Controller
 
                 return $status;
             })
-            ->rawColumns(['entity', 'action', 'disc_space', 'status', 'date'])
+            ->rawColumns(['entity', 'action', 'size_company', 'status', 'date'])
             ->toJson();
     }
 
@@ -145,8 +147,16 @@ class CompanyProjectController extends Controller
         return $companies;
     }
 
-    public function bitesToGigabite($file_size)
+    public function formatSize($file_size)
     {
-        return round(($file_size / pow(1024, 3)), 3);
+        if (round(($file_size / pow(1024, 2)), 3) < '1') {
+            $file = $file_size . ' bites';
+        } else if (round(($file_size / pow(1024, 2)), 3) < '1024') {
+            $file = round(($file_size / pow(1024, 2)), 3) . ' MB';
+        } else if (round(($file_size / pow(1024, 2)), 3) >= '1024') {
+            $file = round(($file_size / pow(1024, 2)), 3) . ' GB';
+        }
+
+        return $file;
     }
 }

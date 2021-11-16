@@ -32,6 +32,13 @@ Proveedores
             </select>
         </div>
         <div class="col-sm">
+            <label for="parent_id">Tamaño</label>
+            <select name="size" id="size" class="form-control form-control-sm" onchange="getCompany();">
+                <option value="desc">Mayor</option>
+                <option value="asc">Menor</option>
+            </select>
+        </div>
+        <!-- <div class="col-sm">
             <table class="table table-bordered" style="text-align: center">
                 <thead>
                     <tr>
@@ -50,7 +57,7 @@ Proveedores
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </div> -->
     </div>
 </div>
 <br>
@@ -77,6 +84,7 @@ Proveedores
     $(document).ready(function() {
         table = $('#company_table').DataTable({
             "serverSide": true,
+            "ordering": false,
             "ajax": {
                 "url": "{{ route('companies-get-providers') }}",
                 "type": "POST",
@@ -84,7 +92,8 @@ Proveedores
                     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 },
                 "data": function(d) {
-                    d.status = getStatus();
+                    d.status    = getStatus();
+                    d.size      = getSize();
                 }
             },
             "columns": [{
@@ -100,7 +109,7 @@ Proveedores
                     data: 'date'
                 },
                 {
-                    data: 'disc_space'
+                    data: 'size_company'
                 },
                 {
                     data: 'status'
@@ -130,6 +139,13 @@ Proveedores
 
     function getStatus() {
         var select = document.getElementById('status');
+        var value = select.options[select.selectedIndex].value;
+
+        return value;
+    }
+
+    function getSize() {
+        var select = document.getElementById('size');
         var value = select.options[select.selectedIndex].value;
 
         return value;
