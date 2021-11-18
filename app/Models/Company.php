@@ -660,11 +660,11 @@ class Company extends Model
     public function formatSize($file_size)
     {
         if (round(($file_size / pow(1024, 2)), 3) < '1') {
-            $file = $file_size. ' bites';
-        } else if (round(($file_size / pow(1024, 2)), 3) < '1024') {
-            $file = round(($file_size / pow(1024, 2)), 3) . ' MB';
-        } else if (round(($file_size / pow(1024, 2)), 3) >= '1024') {
-            $file = round(($file_size / pow(1024, 2)), 3) . ' GB';
+            $file = round(($file_size*0.01), 1). ' KB';
+        } else if (round(($file_size / pow(1024, 2)), 1) < '1024') {
+            $file = round(($file_size / pow(1024, 2)), 1) . ' MB';
+        } else if (round(($file_size / pow(1024, 2)), 1) >= '1024') {
+            $file = round(($file_size / pow(1024, 2)), 1) . ' GB';
         }
 
         return $file;

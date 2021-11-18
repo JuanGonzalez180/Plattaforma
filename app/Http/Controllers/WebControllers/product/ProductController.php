@@ -58,6 +58,15 @@ class ProductController extends Controller
         $company_id     = $request->company_id;
         $products       = Products::where('company_id', $company_id)->orderBy('id', 'asc');
 
+        // $products       = $products->get();
+
+
+        // foreach ($products as $product) {
+        //     $product['size_product'] = $product->fileSizeProduct();
+        // }
+
+        // $products = collect($products);
+
         return DataTables::of($products)
             ->editColumn('company_id', function (Products $value) {
                 return $value->company->name;
@@ -68,12 +77,28 @@ class ProductController extends Controller
             ->editColumn('brand_id', function (Products $value) {
                 return $value->brand->name;
             })
-            ->editColumn('status', function (Products $value) {
-                return $value->brand->name;
-                
+            ->addColumn('size_product', function (Products $value) {
+                return "<span class='badge badge-primary' style='width: 100%;'>" . $this->formatSize($value->fileSizeProduct()) . "</span>";
+                // return $value->fileSizeProduct();
             })
             ->addColumn('actions', 'product.datatables.action')
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'size_product'])
+            ->orderColumn('size_product', function ($query, $order) {
+                $query->orderBy('status', 'asc');
+            })
             ->toJson();
+    }
+
+    public function formatSize($file_size)
+    {
+        if (round(($file_size / pow(1024, 2)), 3) < '1') {
+            $file = round(($file_size*0.00097426203), 1). ' KB';
+        } else if (round(($file_size / pow(1024, 2)), 1) < '1024') {
+            $file = round(($file_size / pow(1024, 2)), 1) . ' MB';
+        } else if (round(($file_size / pow(1024, 2)), 1) >= '1024') {
+            $file = round(($file_size / pow(1024, 2)), 1) . ' GB';
+        }
+
+        return $file;
     }
 }

@@ -31,6 +31,7 @@
                     <th scope="col">Usuario</th>
                     <th scope="col">Marca</th>
                     <th scope="col">Tipo</th>
+                    <th scope="col">Tamaño</th>
                     <th scope="col">Estado</th>
                     <th scope="col">Acciones</th>
                 </tr>
@@ -44,6 +45,7 @@
         $(document).ready(function(){      
             table = $('#product_table').DataTable( {
                 "serverSide": true,
+                "ordering": false,
                 "ajax": {
                     "url": "{{ route('company.products') }}",
                     "type": "POST",
@@ -61,6 +63,7 @@
                     {data: 'user_id'},
                     {data: 'brand_id'},
                     {data: 'type'},
+                    {data: 'size_product'},
                     {data: 'status'},
                     {data: 'actions'},
                 ],
