@@ -58,6 +58,13 @@
         @endif
     </dd>
 
+    @if($company->phone)
+    <dt class="col-sm-4">Telefono:</dt>
+    <dd class="col-sm-8">
+        <span class="badge badge-secondary">{{$company->phone['countryCode']}}</span> <b>{{$company->phone['dialCode']}}</b> {{$company->phone['number']}}
+    </dd>
+    @endif
+
     <dt class="col-sm-4">Pagina web:</dt>
     <dd class="col-sm-8">
         @if(is_null($company->web))
