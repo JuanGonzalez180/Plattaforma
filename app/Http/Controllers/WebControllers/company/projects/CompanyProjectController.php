@@ -15,26 +15,33 @@ class CompanyProjectController extends Controller
 
     public function index()
     {
-        $status = [
-            Company::COMPANY_CREATED,
-            Company::COMPANY_APPROVED,
-            Company::COMPANY_REJECTED,
-            Company::COMPANY_BANNED,
-        ];
+        $status = $this->getStatus();
 
-        $statusArrayCount = $this->companyStatusCountArray($status);
-
-        return view('company.projects.index', compact('status', 'statusArrayCount'));
+        return view('company.projects.index', compact('status'));
     }
 
-    public function prueba($id)
+    public function getStatus()
     {
-        return Files::select('files.size')->where('files.filesable_type', projects::class)
-            ->whereNotNull('files.size')
-            ->join('projects', 'projects.id', '=', 'files.filesable_id')
-            ->join('companies', 'companies.id', '=', 'projects.company_id')
-            ->where('companies.id', 3)
-            ->sum('files.size');
+        $status[Company::COMPANY_CREATED]   = 'Nueva';
+        $status[Company::COMPANY_APPROVED]  = Company::COMPANY_APPROVED;
+        $status[Company::COMPANY_REJECTED]  = Company::COMPANY_REJECTED;
+        $status[Company::COMPANY_BANNED]    = Company::COMPANY_BANNED;
+
+        return $status;
+    }
+
+    public function getCountStatus()
+    {
+        $status_count   = [];
+
+        $status = $this->getStatus();
+
+        foreach ($status as $key => $value) {
+            $status_count[] = $this->companyStatusCount($key);
+        }
+        $status_count[] = $this->companyStatusCount('all');
+
+        return response()->json($status_count, 200);
     }
 
     public function getCompany(Request $request)
@@ -78,8 +85,8 @@ class CompanyProjectController extends Controller
                 $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('tender-company-id', ['company', $value->id]) . '">Licitaciones <span class="badge badge-primary">' . count($value->tenders) . '</span></a>';
                 //Equipo
                 $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('teams-company-id', $value->id) . '">Equipo <span class="badge badge-primary">' . count($value->teams) . '</span></a>';
-                //Blogs
-                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('blog.company.id', $value->id) . '">Blogs <span class="badge badge-primary">' . count($value->blogs) . '</span></a>';
+                //Publicaciones
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('blog.company.id', $value->id) . '">Publicaciones <span class="badge badge-primary">' . count($value->blogs) . '</span></a>';
                 //Portafolio
                 $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('portfolio.company.id', $value->id) . '">Portafolio <span class="badge badge-primary">' . count($value->portfolios) . '</span></a>';
                 //  Reseñas
@@ -94,19 +101,19 @@ class CompanyProjectController extends Controller
                 return $value->created_at->toFormattedDateString();
             })
             ->editColumn('size_company', function (Company $value) {
-                return "<span class='badge badge-primary' style='width: 100%;'>" . $this->formatSize($value->size_company) . "</span>";
+                return "<span class='badge badge-primary item-full-width'>" . $this->formatSize($value->size_company) . "</span>";
             })
             ->editColumn('status', function (Company $value) {
 
                 switch ($value->status) {
                     case Company::COMPANY_CREATED:
-                        $status = '<button type="button" class="btn btn-info btn-sm" style="width: 100%;" onclick="editStatusCreated(' . $value->id . ')"><i class="fas fa-plus"></i>&nbsp;' . Company::COMPANY_CREATED . '</button>';
+                        $status = '<button type="button" class="btn btn-info btn-sm item-full-width" onclick="editStatusCreated(' . $value->id . ')"><i class="fas fa-plus"></i>&nbsp;Nueva</button>';
                         break;
                     case Company::COMPANY_APPROVED:
-                        $status = '<button type="button" class="btn btn-success btn-sm" style="width: 100%;"><i class="fas fa-check"></i>&nbsp;' . Company::COMPANY_APPROVED . '</button>';
+                        $status = '<button type="button" class="btn btn-success btn-sm item-full-width"><i class="fas fa-check"></i>&nbsp;' . Company::COMPANY_APPROVED . '</button>';
                         break;
                     case Company::COMPANY_REJECTED:
-                        $status = '<button type="button" class="btn btn-danger btn-sm" style="width: 100%;" onclick="editStatusRejected(' . $value->id . ')"><i class="fas fa-times"></i>&nbsp;' . Company::COMPANY_REJECTED . '</button>';
+                        $status = '<button type="button" class="btn btn-danger btn-sm item-full-width" onclick="editStatusRejected(' . $value->id . ')"><i class="fas fa-times"></i>&nbsp;' . Company::COMPANY_REJECTED . '</button>';
                         break;
                     default:
                         $status = 'Sin definir';
@@ -116,18 +123,6 @@ class CompanyProjectController extends Controller
             })
             ->rawColumns(['entity', 'action', 'size_company', 'status', 'date'])
             ->toJson();
-    }
-
-    public function companyStatusCountArray($status)
-    {
-        $status_count   = [];
-
-        $status_count[] = $this->companyStatusCount('all');
-        foreach ($status as $value) {
-            $status_count[] = $this->companyStatusCount($value);
-        }
-
-        return $status_count;
     }
 
     public function companyStatusCount($status)
@@ -150,7 +145,7 @@ class CompanyProjectController extends Controller
     public function formatSize($file_size)
     {
         if (round(($file_size / pow(1024, 2)), 3) < '1') {
-            $file = round(($file_size*0.00097426203), 1). ' KB';
+            $file = round(($file_size * 0.00097426203), 1) . ' KB';
         } else if (round(($file_size / pow(1024, 2)), 1) < '1024') {
             $file = round(($file_size / pow(1024, 2)), 1) . ' MB';
         } else if (round(($file_size / pow(1024, 2)), 1) >= '1024') {

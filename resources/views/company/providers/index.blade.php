@@ -9,7 +9,11 @@ Proveedores
 @include('partials.structure.open-main')
 <div class="row align-items-center">
     <div class="col">
-        <h2>Comunidad <span class="badge badge-secondary">Proveedores</span></h2>
+        <h4>Comunidad <span class="badge badge-secondary">Proveedores</span></h4>
+    </div>
+    <div class="col">
+        <table class="table table-sm table-bordered" style="text-align: center" id=table_status>
+        </table>
     </div>
 </div>
 <hr>
@@ -24,10 +28,10 @@ Proveedores
     <div class="row">
         <div class="col-sm">
             <label for="parent_id">Estado</label>
-            <select name="status" id="status" class="form-control form-control-sm" onchange="getCompany(this.value);">
+            <select name="status" id="status" class="form-control form-control-sm" onchange="getCompany();">
                 <option value="all">Todos</option>
-                @foreach($status as $value)
-                <option value="{{$value}}">{{$value}}</option>
+                @foreach($status as $key => $value)
+                <option value="{{$key}}">{{$value}}</option>
                 @endforeach
             </select>
         </div>
@@ -38,26 +42,6 @@ Proveedores
                 <option value="asc">Menor</option>
             </select>
         </div>
-        <!-- <div class="col-sm">
-            <table class="table table-bordered" style="text-align: center">
-                <thead>
-                    <tr>
-                        <th scope="col">Total</th>
-                        <th scope="col">Creado</th>
-                        <th scope="col">Aprobado</th>
-                        <th scope="col">Rechazado</th>
-                        <th scope="col">Bloqueado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        @foreach($statusArrayCount as $value)
-                        <td>{{$value}}</td>
-                        @endforeach
-                    </tr>
-                </tbody>
-            </table>
-        </div> -->
     </div>
 </div>
 <br>
@@ -80,11 +64,12 @@ Proveedores
 @include('partials.structure.close-main')
 <script>
     var table;
+    var table_status = document.getElementById('table_status');
 
     $(document).ready(function() {
         table = $('#company_table').DataTable({
             "serverSide": true,
-            "ordering": false,
+            // "ordering": false,
             "ajax": {
                 "url": "{{ route('companies-get-providers') }}",
                 "type": "POST",
@@ -92,8 +77,8 @@ Proveedores
                     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 },
                 "data": function(d) {
-                    d.status    = getStatus();
-                    d.size      = getSize();
+                    d.status = getStatus();
+                    d.size = getSize();
                 }
             },
             "columns": [{
@@ -135,6 +120,7 @@ Proveedores
                 }
             }
         });
+        getStatusCount();
     });
 
     function getStatus() {
@@ -142,6 +128,54 @@ Proveedores
         var value = select.options[select.selectedIndex].value;
 
         return value;
+    }
+
+    function getStatusCount() {
+        let _token = $("input[name=_token]").val();
+
+        $.ajax({
+            url: "{{route('companies-status-providers')}}",
+            type: "POST",
+            data: {
+                _token: _token
+            },
+            success: function(data) {
+                console.log(data);
+
+                let HTMLString = `
+                <thead>
+                    <tr>
+                        <th scope="col">Creado</th>
+                        <th scope="col">Aprobado</th>
+                        <th scope="col">Rechazado</th>
+                        <th scope="col">Bloqueado</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            ` + data[0] + `
+                        </td>
+                        <td>
+                            ` + data[1] + `
+                        </td>
+                        <td>
+                            ` + data[2] + `
+                        </td>
+                        <td>
+                            ` + data[3] + `
+                        </td>
+                        <td>
+                            ` + data[4] + `
+                        </td>
+                    </tr>
+                </tbody>
+                `;
+
+                table_status.innerHTML = HTMLString;
+            }
+        });
     }
 
     function getSize() {
@@ -153,10 +187,10 @@ Proveedores
 
     function getCompany() {
         table.ajax.reload();
+        getStatusCount();
     }
 
     function editStatusCreated(id) {
-
         Swal.fire({
             title: 'Desea cambiar el estado de la compañia?',
             icon: 'warning',
@@ -166,20 +200,15 @@ Proveedores
             denyButtonText: `Rechazar`,
             cancelButtonText: `Cancelar`,
         }).then((result) => {
-
             if (result.isConfirmed) {
-
                 editStatusUpdate(id, 'Aprobado');
-
             } else if (result.isDenied) {
-
                 editStatusUpdate(id, 'Rechazado');
             }
         })
     }
 
     function editStatusRejected(id) {
-
         Swal.fire({
             title: 'Desea cambiar el estado de la compañia?',
             icon: 'warning',
@@ -190,11 +219,8 @@ Proveedores
         }).then((result) => {
 
             if (result.isConfirmed) {
-
                 editStatusUpdate(id, 'Aprobado');
-
             } else if (result.isDenied) {
-
                 editStatusUpdate(id, 'Rechazado');
             }
         })
@@ -218,6 +244,7 @@ Proveedores
                     'success'
                 )
                 table.ajax.reload();
+                getStatusCount();
             }
         });
     }

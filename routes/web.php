@@ -32,6 +32,7 @@ use App\Http\Controllers\WebControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\WebControllers\socialnetworks\SocialNetworksController;
 use App\Http\Controllers\WebControllers\tendercompanies\TenderCompaniesController;
 use App\Http\Controllers\WebControllers\uploadfile\template\ProductFileController;
+use App\Http\Controllers\WebControllers\uploadfile\file\importCategoriesController;
 use App\Http\Controllers\WebControllers\categoryservices\CategoryServicesController;
 use App\Http\Controllers\WebControllers\publicity\advertisingplans\AdvertisingController;
 use App\Http\Controllers\WebControllers\publicity\manageadvertising\ManageAdvertisingController;
@@ -128,11 +129,13 @@ Route::group(['middleware' => 'auth'], function () {
         // ------------------------------------------------------------------------------------------------------------------
         Route::get('/company/all/projects', [CompanyProjectController::class, 'index'])->name('companies-all-projects');
         Route::post('/company/get/projects', [CompanyProjectController::class, 'getCompany'])->name('companies-get-projects');
+        Route::post('/company/get/projects/status', [CompanyProjectController::class, 'getCountStatus'])->name('companies-status-projects');
         
         Route::post('/company/get/files', [CompanyFilesController::class, 'getFiles'])->name('companies-get-files');
-
+        
         Route::get('/company/all/providers', [CompanyProvidersController::class, 'index'])->name('companies-all-providers');
         Route::post('/company/get/providers', [CompanyProvidersController::class, 'getCompany'])->name('companies-get-providers');
+        Route::post('/company/get/providers/status', [CompanyProvidersController::class, 'getCountStatus'])->name('companies-status-providers');
 
         // Licitaciones
         Route::resource('licitaciones', TenderController::class, ['only' => ['edit', 'show']])
@@ -267,4 +270,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::resource('uploadfile/template/product/file', ProductFileController::class, ['only' => ['index', 'store']])
                 ->names('template-product-file');
+
+        Route::resource('uploadfile/file/company', importCategoriesController::class, ['only' => ['index', 'store']])
+                ->names('file-company-txt');
 });

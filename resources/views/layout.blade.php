@@ -80,23 +80,19 @@
                     <ul class="nav flex-column">
 
                         <li class="nav-item">
-                            <a class="nav-link collapsed text-truncate" href="#companySubmenu" data-toggle="collapse" data-target="#companySubmenu"><span class="d-none d-sm-inline">Compañias</span></a>
-                            <div class="collapse" id="companySubmenu" aria-expanded="false">
-                                <ul class="flex-column pl-2 nav">
-                                    <li class="nav-item">
-                                        <a class="nav-link py-0" href="{{ route('companies-all-projects') }}">
-                                            <i class="fas fa-angle-right"></i>&nbsp;Proyectos
-                                        </a>
-                                    </li>
-                                    <div class="dropdown-divider"></div>
-                                    <li class="nav-item">
-                                        <a class="nav-link py-0" href="{{ route('companies-all-providers') }}">
-                                            <i class="fas fa-angle-right"></i>&nbsp;Proveedores
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
+                            <a class="nav-link" href="{{ route('companies-all-projects') }}">
+                                <span data-feather="file"></span>
+                                Comunidad Proyectos
+                            </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('companies-all-providers') }}">
+                                <span data-feather="file"></span>
+                                Comunidad Proveedores
+                            </a>
+                        </li>
+
+                        <div class="dropdown-divider"></div>
 
                         <li class="nav-item">
                             <a class="nav-link collapsed text-truncate" href="#publicitySubmenu" data-toggle="collapse" data-target="#publicitySubmenu"><span class="d-none d-sm-inline">Publicidad</span></a>
@@ -198,9 +194,16 @@
                                         </a>
                                     </li>
                                 </ul>
+                                <div class="dropdown-divider"></div>
+                                <ul class="flex-column pl-2 nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link py-0" href="{{ route('file-company-txt.index') }}">
+                                            <i class="fas fa-angle-right"></i>&nbsp;Importar - Categorias
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
                         </li>
-
 
                         <footer class="navbar-footer">
                             <div class="container">
