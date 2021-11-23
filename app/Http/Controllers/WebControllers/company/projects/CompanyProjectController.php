@@ -110,10 +110,13 @@ class CompanyProjectController extends Controller
                         $status = '<button type="button" class="btn btn-info btn-sm item-full-width" onclick="editStatusCreated(' . $value->id . ')"><i class="fas fa-plus"></i>&nbsp;Nueva</button>';
                         break;
                     case Company::COMPANY_APPROVED:
-                        $status = '<button type="button" class="btn btn-success btn-sm item-full-width"><i class="fas fa-check"></i>&nbsp;' . Company::COMPANY_APPROVED . '</button>';
+                        $status = '<button type="button" class="btn btn-success btn-sm item-full-width" onclick="editStatusLock(' . $value->id . ')"><i class="fas fa-check"></i>&nbsp;' . Company::COMPANY_APPROVED . '</button>';
                         break;
                     case Company::COMPANY_REJECTED:
                         $status = '<button type="button" class="btn btn-danger btn-sm item-full-width" onclick="editStatusRejected(' . $value->id . ')"><i class="fas fa-times"></i>&nbsp;' . Company::COMPANY_REJECTED . '</button>';
+                        break;
+                    case Company::COMPANY_BANNED:
+                        $status = '<button type="button" class="btn btn-dark btn-sm item-full-width" onclick="editStatusUnlock(' . $value->id . ')"><i class="fas fa-ban"></i>&nbsp;' . Company::COMPANY_BANNED . '</button>';
                         break;
                     default:
                         $status = 'Sin definir';

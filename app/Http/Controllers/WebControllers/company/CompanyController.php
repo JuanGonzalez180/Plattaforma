@@ -6,12 +6,14 @@ use DataTables;
 use App\Models\Type;
 use App\Models\Company;
 use App\Models\Addresses;
+use App\Mail\BannedAccount;
 use Illuminate\Http\Request;
+use App\Mail\UnbannedAccount;
+use App\Mail\RejectedAccount;
 use App\Mail\ValidatedAccount;
 use Illuminate\Validation\Rule;
-use App\Mail\RejectedAccount;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Controller;
 
 class CompanyController extends Controller
 {
@@ -100,20 +102,32 @@ class CompanyController extends Controller
     public function editStatus(Request $request)
     {
         $company = Company::find($request->id);
+        $initialState = $company->status;
+
         // Cambiamos el estado de la compañia
         $company->status = $request->status;
 
         $company->save();
         // Enviamos mensaje al correo del usuario
         if ($request->status == Company::COMPANY_APPROVED){
-            Mail::to($company->user->email)->send(new ValidatedAccount($company->user));
-            $message = "La compañia se ha aprobado con exito y se ha enviado un correo de confirmación a dicha compañia (".$company->user->email.").";
-            
+
+            if($initialState == Company::COMPANY_CREATED || $initialState == Company::COMPANY_REJECTED){
+                Mail::to($company->user->email)->send(new ValidatedAccount($company->user));
+                $message = "La compañia se ha aprobado con exito y se ha enviado un correo de confirmación(".$company->user->email.").";
+            }else if($initialState == Company::COMPANY_BANNED){
+                Mail::to('cris10x@hotmail.com')->send(new UnbannedAccount($company->user));
+                $message = "La compañia se desbloqueado y se ha enviado un correo de confirmación(".$company->user->email.").";
+            }
         }
         
         if ($request->status == Company::COMPANY_REJECTED){
             Mail::to($company->user->email)->send(new RejectedAccount($company->user));
-            $message = "La compañia no ha sido aprobada y se ha enviado un correo de confirmación a dicha compañia (".$company->user->email.").";
+            $message = "La compañia no ha sido aprobada y se ha enviado un correo de confirmación(".$company->user->email.").";
+        }
+
+        if ($request->status == Company::COMPANY_BANNED){
+            Mail::to($company->user->email)->send(new BannedAccount($company->user));
+            $message = "La compañia ha sido bloqueada y se ha enviado un correo de confirmación(".$company->user->email.").";
         }
 
         return response()->json(['message' => $message], 200);

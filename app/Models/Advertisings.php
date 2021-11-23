@@ -73,9 +73,9 @@ class Advertisings extends Model
                 $row['name'] = $project->name;
                 break;
             case Tenders::class:
-                $project = Tenders::find($this->advertisingable_id);
+                $tender = Tenders::find($this->advertisingable_id);
                 $row['type'] = 'Licitación';
-                $row['name'] = $project->name;
+                $row['name'] = $tender->name;
                 break;
         }
 

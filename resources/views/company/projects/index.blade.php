@@ -68,7 +68,7 @@ Proyectos
     $(document).ready(function() {
         table = $('#company_table').DataTable({
             "serverSide": true,
-            // "order": [[ 2, "desc" ]],
+            "ordering": false,
             "ajax": {
                 "url": "{{ route('companies-get-projects') }}",
                 "type": "POST",
@@ -221,6 +221,36 @@ Proyectos
                 editStatusUpdate(id, 'Aprobado');
             } else if (result.isDenied) {
                 editStatusUpdate(id, 'Rechazado');
+            }
+        })
+    }
+
+    function editStatusLock(id) {
+        Swal.fire({
+            title: 'Desea bloquear la compañia?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Bloquear',
+
+            cancelButtonText: `Cancelar`,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                editStatusUpdate(id, 'Bloqueado');
+            }
+        })
+    }
+
+    function editStatusUnlock(id) {
+        Swal.fire({
+            title: 'Desea desbloquear la compañia?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Desbloquear',
+
+            cancelButtonText: `Cancelar`,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                editStatusUpdate(id, 'Aprobado');
             }
         })
     }

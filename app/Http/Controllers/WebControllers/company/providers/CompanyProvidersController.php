@@ -110,6 +110,9 @@ class CompanyProvidersController extends Controller
                     case Company::COMPANY_REJECTED:
                         $status = '<button type="button" class="btn btn-danger btn-sm item-full-width" onclick="editStatusRejected(' . $value->id . ')"><i class="fas fa-times"></i>&nbsp;' . Company::COMPANY_REJECTED . '</button>';
                         break;
+                    case Company::COMPANY_BANNED:
+                        $status = '<button type="button" class="btn btn-dark btn-sm item-full-width" onclick="editStatusUnlock(' . $value->id . ')"><i class="fas fa-ban"></i>&nbsp;' . Company::COMPANY_BANNED . '</button>';
+                        break;
                     default:
                         $status = 'Sin definir';
                 }

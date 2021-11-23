@@ -2,14 +2,14 @@
 @extends('layout')
 
 @section('title')
-    Blogs
+Publicaciones
 @endsection
 
 @section('content')
     @include('partials.structure.open-main')
     <div class="row align-items-center">
         <div class="col">
-            <h1>Blogs</h1>
+            <h1>Publicaciones</h1>
         </div>
     </div>
     <hr>

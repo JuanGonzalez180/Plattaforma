@@ -4,17 +4,16 @@ namespace App\Mail;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class RejectedAccount extends Mailable
+class UnbannedAccount extends Mailable
 {
     use Queueable, SerializesModels;
-
-    public $subject = "Cuenta Rechazada";
+    
+    public $subject = "Cuenta Bloqueada";
     protected $user;
-
     /**
      * Create a new message instance.
      *
@@ -22,7 +21,6 @@ class RejectedAccount extends Mailable
      */
     public function __construct(User $user)
     {
-        //
         $this->user = $user;
     }
 
@@ -33,7 +31,7 @@ class RejectedAccount extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.account-rejected')
+        return $this->view('emails.account-unbanned')
             ->with([
                 'name' => $this->user->username,
             ]);
