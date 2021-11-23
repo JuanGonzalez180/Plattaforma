@@ -291,9 +291,10 @@ class ProjectsController extends ApiController
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
 
-        $project = Projects::findOrFail($id);
+        $project = Projects::find($id);
 
-        if($projects->tenders){
+
+        if(($project->tenders)->count() > 0){
             return $this->errorResponse( [ 'error' => ['No se ha podido eliminar el proyecto, porque tiene licitaciones']], 500 );
         }
 

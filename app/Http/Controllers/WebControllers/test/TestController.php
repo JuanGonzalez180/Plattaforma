@@ -5,6 +5,7 @@ namespace App\Http\Controllers\WebControllers\test;
 use Image;
 use App\Models\Brands;
 use App\Models\Products;
+use App\Models\User;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -37,43 +38,51 @@ class TestController extends Controller
    
     public function store()
     {
-        if(Schema::hasTable('temp_product_files'))
+        $users = User::get();
+        foreach($users as $user)
         {
-            $product_img = DB::table('temp_product_files')
-                ->where('status','false')
-                ->take(150)
-                ->get();
+            var_dump($user->email);
+            echo '<br>';
+        };
 
-            foreach($product_img as $value)
-            {
-                $product    = Products::find($value->product_id);
+        die;
+        // if(Schema::hasTable('temp_product_files'))
+        // {
+        //     $product_img = DB::table('temp_product_files')
+        //         ->where('status','false')
+        //         ->take(150)
+        //         ->get();
 
-                if(!$product)
-                {
-                    DB::table('temp_product_files')
-                        ->where('id', $value->id)
-                        ->delete();
+        //     foreach($product_img as $value)
+        //     {
+        //         $product    = Products::find($value->product_id);
 
-                    continue;
-                }
+        //         if(!$product)
+        //         {
+        //             DB::table('temp_product_files')
+        //                 ->where('id', $value->id)
+        //                 ->delete();
 
-                //files/Archivos
-                if(!empty($value->files))
-                    $this->addFiles($value->files, $product);
+        //             continue;
+        //         }
 
-                //images/Galeria de imagenes
-                if(!empty($value->galery_img))
-                    $this->addImages($value->galery_img, $product);
+        //         //files/Archivos
+        //         if(!empty($value->files))
+        //             $this->addFiles($value->files, $product);
 
-                //main_img/Imagen principal
-                if(!empty($value->main_img))
-                    $this->addMainImg($value->main_img, $product); 
+        //         //images/Galeria de imagenes
+        //         if(!empty($value->galery_img))
+        //             $this->addImages($value->galery_img, $product);
 
-                DB::table('temp_product_files')
-                    ->where('id', $value->id)
-                    ->update(['status' => 'true']);   
-            }
-        }
+        //         //main_img/Imagen principal
+        //         if(!empty($value->main_img))
+        //             $this->addMainImg($value->main_img, $product); 
+
+        //         DB::table('temp_product_files')
+        //             ->where('id', $value->id)
+        //             ->update(['status' => 'true']);   
+        //     }
+        // }
     }
 
     public function stringToArray($string)

@@ -53,7 +53,7 @@ class Projects extends Model
     }
 
     public function tenders(){
-        return $this->hasMany(Tenders::class);
+        return $this->hasMany(Tenders::class,'project_id','id');
     }
 
     public function company(){
