@@ -378,12 +378,7 @@ class CompanyController extends ApiController
         $company    = Company::findOrFail($user->company[0]->id);
 
         if (isset($request->description)) {
-            $company['description'] = $request->description;
-
-            $company->save();
-
             DB::beginTransaction();
-
             try {
                 $company['description'] = $request->description;
                 $company->save();
@@ -413,7 +408,6 @@ class CompanyController extends ApiController
         }
 
         if (isset($request->imageCoverPage)) {
-
             $png_url = "company-coverpage-" . time() . ".jpg";
             $img = $request->imageCoverPage;
             $img = substr($img, strpos($img, ",") + 1);
@@ -428,6 +422,21 @@ class CompanyController extends ApiController
             } else {
                 Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->update(['url' => $routeFile]);
                 Storage::disk('local')->delete($this->routeFile . $imageCoverPage->url);
+            }
+        }
+
+        if (isset($request->latitud) && isset($request->longitud)) {
+            if( !$company->address ){
+                $company->address()->create([
+                    'address' => '',
+                    'latitud' => $request->latitud,
+                    'longitud' => $request->longitud
+                ]);
+            }else{
+                $company->address()->update([
+                    'latitud' => $request->latitud,
+                    'longitud' => $request->longitud
+                ]);
             }
         }
 
