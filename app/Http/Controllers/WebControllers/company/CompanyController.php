@@ -115,7 +115,7 @@ class CompanyController extends Controller
                 Mail::to($company->user->email)->send(new ValidatedAccount($company->user));
                 $message = "La compañia se ha aprobado con exito y se ha enviado un correo de confirmación(".$company->user->email.").";
             }else if($initialState == Company::COMPANY_BANNED){
-                Mail::to('cris10x@hotmail.com')->send(new UnbannedAccount($company->user));
+                Mail::to($company->user->email)->send(new UnbannedAccount($company->user));
                 $message = "La compañia se desbloqueado y se ha enviado un correo de confirmación(".$company->user->email.").";
             }
         }
