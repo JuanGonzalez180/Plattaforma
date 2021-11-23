@@ -46,8 +46,26 @@
     <dt class="col-sm-4">Correo</dt>
     <dd class="col-sm-8">{{$company->user->email}}</dd>
 
-    <dt class="col-sm-4">Pais de la compañia:</dt>
+    <dt class="col-sm-4">Casa matriz:</dt>
     <dd class="col-sm-8">{{$company->country_code}}</dd>
+
+    <dt class="col-sm-4">Pais de operación</dt>
+    <dd class="col-sm-8">
+        @forelse ($company->countries as $country)
+        <div class="alert alert-secondary" role="alert">
+            <div class="row">
+                <div class="col">
+                    <b>Nombre:</b> {{$country->name}}
+                </div>
+                <div class="col">
+                    <b>Codigo:</b> {{$country->alpha2Code}}
+                </div>
+            </div>
+        </div>
+        @empty
+        <span class="badge badge-secondary">Sin pais de operación</span>
+        @endforelse
+    </dd>
 
     <dt class="col-sm-4">Dirección:</dt>
     <dd class="col-sm-8">
@@ -77,12 +95,5 @@
     <dt class="col-sm-4">Espacio ocupado:</dt>
     <dd class="col-sm-8">
         <span class="badge badge-secondary">{{$company->fileSizeTotal()}} GB</span>
-    </dd>
-
-    <dt class="col-sm-4">País principal en el que va a operar:</dt>
-    <dd class="col-sm-8">
-        @foreach($company->countries as $country)
-        {{$country->name}}
-        @endforeach
     </dd>
 </dlv>

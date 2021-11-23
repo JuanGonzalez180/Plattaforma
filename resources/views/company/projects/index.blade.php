@@ -144,7 +144,7 @@ Proyectos
                 let HTMLString = `
                 <thead>
                     <tr>
-                        <th scope="col">Creado</th>
+                        <th scope="col">Nueva</th>
                         <th scope="col">Aprobado</th>
                         <th scope="col">Rechazado</th>
                         <th scope="col">Bloqueado</th>
