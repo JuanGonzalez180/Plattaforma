@@ -84,7 +84,7 @@ class importCategoriesController extends Controller
                     Category::create([
                         'name'          => $lineBetter,
                         'description'   => $lineBetter,
-                        'parent_id'     => $grandFather,
+                        'parent_id'     => $father,
                         'status'        => Category::CATEGORY_PUBLISH
                     ]);
                 } else {
