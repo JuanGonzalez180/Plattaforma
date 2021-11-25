@@ -62,7 +62,10 @@
                             <span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                            <a class="dropdown-item" href="{{ route('tender-company-id', ['project',$project->id] ) }}">Licitaciones</a>
+                            <a class="dropdown-item d-flex justify-content-between align-items-center" href="{{ route('tender-company-id', ['project',$project->id] ) }}">
+                                Licitaciones
+                                <span class="badge badge-primary">{{count($project->tenders)}}</span>
+                            </a>
                             <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($project->remarks)<=0) disabled @endif" href="{{ route('remark.class.id', ['project',$project->id] ) }}">
                                 Reseñas
                                 <span class="badge badge-primary">{{count($project->remarks)}}</span>

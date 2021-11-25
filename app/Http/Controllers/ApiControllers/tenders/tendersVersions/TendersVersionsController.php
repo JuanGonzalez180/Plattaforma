@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\ApiControllers\tenders\tendersVersions;
 
+use File;
 use JWTAuth;
+use App\Models\Files;
 use Illuminate\Http\Request;
 use App\Models\TendersVersions;
 use Illuminate\Support\Facades\DB;

@@ -282,7 +282,7 @@ class Company extends Model
     public function fileSizePortfolio()
     {
         $files = Files::where('files.filesable_type', Portfolio::class)
-            ->whereNotNull('files.size')
+            // ->whereNotNull('files.size')
             ->join('portfolios', 'portfolios.id', '=', 'files.filesable_id')
             ->join('companies', 'companies.id', '=', 'portfolios.company_id')
             ->where('companies.id', $this->id)

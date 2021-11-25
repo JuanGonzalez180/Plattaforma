@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Files;
 use App\Models\Image;
@@ -14,10 +15,12 @@ use App\Models\Interests;
 use App\Models\TypeProject;
 use App\Models\Advertisings;
 use App\Models\Notifications;
+use App\Models\TendersVersions;
+use Illuminate\Support\Facades\DB;
 use App\Models\SocialNetworksRelation;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Transformers\ProjectsTransformer;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Projects extends Model
 {
@@ -54,6 +57,32 @@ class Projects extends Model
 
     public function tenders(){
         return $this->hasMany(Tenders::class,'project_id','id');
+    }
+
+    public function tendersEvents()
+    {
+        $tenders = $this->tenders;
+
+        $notification = [];
+
+        foreach ($tenders as $tender) {
+            $versionLast = $tender->tendersVersionLast();
+            if($versionLast->status == TendersVersions::LICITACION_PUBLISH){
+                $notification[] = [
+                    "type" => 'initial',
+                    "date" => $tender->created_at->format('Y-m-d'),
+                    "name" => $tender->name,
+                ];
+                $notification[] = [
+                    "type" => 'final',
+                    "date" => $versionLast->date,
+                    "name" => $tender->name,
+                ];
+            }
+        }
+
+        return collect($notification)->sortBy('date');
+
     }
 
     public function company(){

@@ -31,7 +31,7 @@ class BrandsController extends ApiController
         $companyId = $user->companyId();
 
         $brands = Brands::where('company_id', $companyId)
-            ->orderBy('name', 'ASC')
+            ->orderBy('created_at', 'DESC')
             ->get();
 
         return $this->showAllPaginate($brands);
@@ -42,7 +42,7 @@ class BrandsController extends ApiController
         $user = $this->validateUser();
         $companyId = $user->companyId();
 
-        $statusValue = Brands::BRAND_DISABLED;
+        $statusValue = Brands::BRAND_ENABLED;
         $rules = [
             'name' => 'required|unique:brands'
         ];
@@ -54,10 +54,10 @@ class BrandsController extends ApiController
 
         //Datos
         $brandFields = $request->all();
-        $brandFields['user_id'] = $user->id;
-        $brandFields['company_id'] = $companyId;
-        $brandFields['name'] = ucwords($request->name);
-        $brandFields['status'] = $statusValue;
+        $brandFields['user_id']     = $user->id;
+        $brandFields['company_id']  = $companyId;
+        $brandFields['name']        = ucwords($request->name);
+        $brandFields['status']      = $statusValue;
 
         try {
             //Crear Marca
