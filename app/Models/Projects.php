@@ -81,7 +81,9 @@ class Projects extends Model
             }
         }
 
-        return collect($notification)->sortBy('date');
+        $notification = collect($notification)->sortBy('date');
+
+        return array_values($notification->toArray());
 
     }
 
