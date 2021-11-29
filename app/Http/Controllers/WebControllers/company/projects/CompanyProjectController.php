@@ -100,11 +100,13 @@ class CompanyProjectController extends Controller
             ->addColumn('date', function (Company $value) {
                 return $value->created_at->toFormattedDateString();
             })
+            ->editColumn('name', function (Company $value) {
+                return $value->name . "<br><span class='badge badge-secondary'><i class='far fa-envelope'></i></span> <b>" . $value->user->email . "</b>";
+            })
             ->editColumn('size_company', function (Company $value) {
                 return "<span class='badge badge-primary item-full-width'>" . $this->formatSize($value->size_company) . "</span>";
             })
             ->editColumn('status', function (Company $value) {
-
                 switch ($value->status) {
                     case Company::COMPANY_CREATED:
                         $status = '<button type="button" class="btn btn-info btn-sm item-full-width" onclick="editStatusCreated(' . $value->id . ')"><i class="fas fa-plus"></i>&nbsp;Nueva</button>';
@@ -121,10 +123,9 @@ class CompanyProjectController extends Controller
                     default:
                         $status = 'Sin definir';
                 }
-
                 return $status;
             })
-            ->rawColumns(['entity', 'action', 'size_company', 'status', 'date'])
+            ->rawColumns(['name', 'entity', 'action', 'size_company', 'status', 'date'])
             ->toJson();
     }
 

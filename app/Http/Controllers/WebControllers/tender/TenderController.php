@@ -39,10 +39,11 @@ class TenderController extends Controller
         try{
             $tenderVersionLast->save();
             DB::commit();
-            // Informar por correo a los participantes que se ha declinado la licitación.
-            $companies  = $this->getCompanyTenders($id);
-            foreach ($companies as $company)
-                Mail::to('cris10x@hotmail.com')->send(new SendDeclinedTenderCompany($tender->name, $company->name));
+            //Informar por correo a los participantes que se ha declinado la licitación.
+            $tencompanies  = $tenderVersionLast->tenders->tenderCompanies;
+
+            foreach ($tencompanies as $tencompany)
+                Mail::to($tencompany->company->user->email)->send(new SendDeclinedTenderCompany($tenderVersionLast->tenders->name, $tencompany->company->name));
 
         } catch (\Throwable $th) {
             DB::rollBack();

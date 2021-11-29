@@ -13,6 +13,7 @@ use App\Models\TendersCompanies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
+use App\Rules\TenderDateValidate;
 
 class TendersController extends ApiController
 {
@@ -89,6 +90,7 @@ class TendersController extends ApiController
      */
     public function store(Request $request)
     {
+        $project = Projects::find($request['project']);
         //
         $user = $this->validateUser();
 
@@ -97,6 +99,10 @@ class TendersController extends ApiController
             'description' => 'required',
             'price' => 'required|numeric',
             'project' => 'required|numeric',
+            // 'date' => [
+            //     "required",
+            //     new TenderDateValidate()
+            // ],
             'date' => 'required',
             'hour' => 'required'
         ];

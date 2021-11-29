@@ -106,7 +106,6 @@ class TendersActionController extends ApiController
             $notificationsIds = [];
 
             foreach ($companies as $companyTender){
-                $user = $companyTender->user;
                 $company = $companyTender->company;
                 // Informar por correo a los participantes que se ha declinado la licitación.
                 Mail::to($company->user->email)->send(new SendDeclinedTenderCompany($tender->name, $company->name));
