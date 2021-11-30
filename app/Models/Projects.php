@@ -68,11 +68,6 @@ class Projects extends Model
         foreach ($tenders as $tender) {
             $versionLast = $tender->tendersVersionLast();
             if($versionLast->status == TendersVersions::LICITACION_PUBLISH){
-                // $notification[] = [
-                //     "type" => 'initial',
-                //     "date" => $tender->created_at->format('Y-m-d'),
-                //     "name" => $tender->name,
-                // ];
                 $notification[] = [
                     "tender_id" => $tender->id,
                     "date"      => $versionLast->date,

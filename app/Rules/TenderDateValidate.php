@@ -8,6 +8,17 @@ use Illuminate\Contracts\Validation\Rule;
 class TenderDateValidate implements Rule
 {
     /**
+     * Create a new rule instance.
+     *
+     * @return void
+     */
+    public function __construct(string $attribute, string $value)
+    {
+        $this->attribute            = Carbon::parse($attribute);
+        $this->value                = Carbon::parse($value);
+    }
+
+    /**
      * Determine if the validation rule passes.
      *
      * @param  string  $attribute
@@ -16,11 +27,7 @@ class TenderDateValidate implements Rule
      */
     public function passes($attribute, $value)
     {
-        // $date = new Carbon($value);
-        // $date2 = new Carbon('2021-12-12');
-
-        // return $date->lessThan($date2);
-        return true;
+        return ($attribute > $value);
     }
 
     /**

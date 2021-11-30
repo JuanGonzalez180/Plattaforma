@@ -45,29 +45,37 @@ class TaskTenderClosed extends Command
     {
         $tendersVersionLastPublish = DB::table('tenders_versions as a')
             ->select(DB::raw('max(a.created_at), a.tenders_id'))
-            ->where('a.status',TendersVersions::LICITACION_PUBLISH)
-            ->where('a.date',Carbon::now()->format('Y-m-d'))
-            ->where((function($query)
-            {
-                $query->select(DB::raw("COUNT(*) from `tenders_versions` as `b` 
-                    where (`b`.`status` = '".TendersVersions::LICITACION_FINISHED."' 
-                    or `b`.`status` = '".TendersVersions::LICITACION_CLOSED."') 
+            ->where('a.status', TendersVersions::LICITACION_PUBLISH)
+            ->where('a.date', Carbon::now()->format('Y-m-d'))
+            ->where((function ($query) {
+                // $query->select(
+                //     DB::raw("COUNT(*) from `tenders_versions` as `b` 
+                //     where (`b`.`status` = '" . TendersVersions::LICITACION_FINISHED . "' 
+                //     or `b`.`status` = '" . TendersVersions::LICITACION_CLOSED . "'
+                //     or `b`.`status` = '" . TendersVersions::LICITACION_CREATED . "'
+                //     or `b`.`status` = '" . TendersVersions::LICITACION_DECLINED . "'
+                //     ) 
+                //     and `b`.`tenders_id` = a.tenders_id")
+                // );
+
+                $query->select(
+                    DB::raw("COUNT(*) from `tenders_versions` as `b` 
+                    where `b`.`status` != '" . TendersVersions::LICITACION_PUBLISH . "'  
                     and `b`.`tenders_id` = a.tenders_id")
                 );
             }), '=', 0)
             ->groupBy('a.tenders_id')
             ->pluck('a.tenders_id');
 
-        $tenders = Tenders::whereIn('id',$tendersVersionLastPublish)->get();
+        $tenders = Tenders::whereIn('id', $tendersVersionLastPublish)->get();
 
-        foreach($tenders as $tender) {
+        foreach ($tenders as $tender) {
             $hourValidate   = ($tender->tendersVersionLast()->hour == Carbon::now()->format('H:i'));
 
-            if($hourValidate) {
+            if ($hourValidate) {
                 $tender->tendersVersionLast()->status = TendersVersions::LICITACION_CLOSED;
                 $tender->tendersVersionLast()->save();
             };
         }
-        
     }
 }
