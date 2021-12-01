@@ -14,7 +14,6 @@ use App\Models\TendersCompanies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
-use App\Rules\TenderDateValidate;
 
 class TendersController extends ApiController
 {
@@ -92,8 +91,6 @@ class TendersController extends ApiController
      */
     public function store(Request $request)
     {
-        $project = Projects::find($request['project']);
-        //
         $user = $this->validateUser();
 
         $rules = [
@@ -101,26 +98,19 @@ class TendersController extends ApiController
             'description' => 'required',
             'price' => 'required|numeric',
             'project' => 'required|numeric',
-            // 'date' => [
-            //     "required",
-            //     function ($attibute, $value, $fail) {
-            //         // $tenderDate   = Carbon::parse($value);
-            //         // $projectDate  = Carbon::parse($this->project->date_end);
-
-            //         if ($value < $thisproject->date_end) {
-            //             $fail('La fecha final de la licitacion debe ser menor a la fecha final del proyecto.');
-            //         }
-            //     }
-            // ],
-            // 'date' => [
-            //     "required",
-            //     new TenderDateValidate($project->date_end, $project->date_end)
-            // ],
             'date' => 'required',
             'hour' => 'required'
         ];
 
         $this->validate($request, $rules);
+
+        $project_date_end   = Carbon::parse(Projects::find($request['project'])->date_end);
+        $tender_date_end    = Carbon::parse(date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day'])));
+
+        if ($tender_date_end->greaterThan($project_date_end)) {
+            $tenderError = ['tender' => 'Error, La fecha de cierre de la licitacion debe ser menor a la fecha de cierre del proyecto'];
+            return $this->errorResponse($tenderError, 500);
+        }
 
         // Iniciar Transacción
         DB::beginTransaction();

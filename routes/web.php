@@ -26,7 +26,7 @@ use App\Http\Controllers\WebControllers\stripe\SubscriptionController;
 use App\Http\Controllers\WebControllers\portfolio\PortfolioController;
 use App\Http\Controllers\WebControllers\stripe\ProductsStripeController;
 use App\Http\Controllers\WebControllers\typeproject\TypeProjectController;
-use App\Http\Controllers\WebControllers\scripts\UpdateFilesSizeController;
+use App\Http\Controllers\WebControllers\scripts\ScriptFilesController;
 use App\Http\Controllers\WebControllers\typesentity\TypesEntityController;
 use App\Http\Controllers\WebControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\WebControllers\socialnetworks\SocialNetworksController;
@@ -61,8 +61,10 @@ Auth::routes(['register' => false]);
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 //scripts
-Route::resource('script/update/filesize',  UpdateFilesSizeController::class, ['only' => ['index', 'store']])
-        ->names('zzz-update-file-size');
+Route::get('script/update/filesize', [ScriptFilesController::class, 'updateSizeFiles']);
+
+Route::get('script/delete/filesize', [ScriptFilesController::class, 'deleteFileNotExist']);
+
 
 
 Route::group(['middleware' => 'auth'], function () {
@@ -130,9 +132,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/company/all/projects', [CompanyProjectController::class, 'index'])->name('companies-all-projects');
         Route::post('/company/get/projects', [CompanyProjectController::class, 'getCompany'])->name('companies-get-projects');
         Route::post('/company/get/projects/status', [CompanyProjectController::class, 'getCountStatus'])->name('companies-status-projects');
-        
+
         Route::post('/company/get/files', [CompanyFilesController::class, 'getFiles'])->name('companies-get-files');
-        
+
         Route::get('/company/all/providers', [CompanyProvidersController::class, 'index'])->name('companies-all-providers');
         Route::post('/company/get/providers', [CompanyProvidersController::class, 'getCompany'])->name('companies-get-providers');
         Route::post('/company/get/providers/status', [CompanyProvidersController::class, 'getCountStatus'])->name('companies-status-providers');
