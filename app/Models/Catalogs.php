@@ -5,17 +5,17 @@ namespace App\Models;
 use App\Models\Image;
 use App\Models\Files;
 use Illuminate\Database\Eloquent\Model;
-use App\Transformers\PortfoliosTransformer;
+use App\Transformers\CatalogTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Portfolio extends Model
+class Catalogs extends Model
 {
     use HasFactory;
 
-    const PORTFOLIO_ERASER  = 'Borrador';
-    const PORTFOLIO_PUBLISH = 'Publicado';
+    const CATALOG_ERASER  = 'Borrador';
+    const CATALOG_PUBLISH = 'Publicado';
 
-    public $transformer = PortfoliosTransformer::class;
+    public $transformer = CatalogTransformer::class;
 
     protected $fillable = [
         'name',
@@ -27,7 +27,7 @@ class Portfolio extends Model
     ];
 
     public function isPublish(){
-        return $this->status == Portfolio::PORTFOLIO_PUBLISH;
+        return $this->status == Catalogs::CATALOG_PUBLISH;
     }
 
     public function company(){

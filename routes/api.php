@@ -7,7 +7,9 @@ use App\Http\Controllers\ApiControllers\blog\BlogFilesController;
 use App\Http\Controllers\ApiControllers\querywall\tenderQueryQuestionController;
 use App\Http\Controllers\ApiControllers\querywall\tenderQueryAnswerController;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosController;
+use App\Http\Controllers\ApiControllers\catalogs\CatalogsControllers;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosDocumentsController;
+use App\Http\Controllers\ApiControllers\catalogs\CatalogsDocumentsControllers;
 use App\Http\Controllers\ApiControllers\brands\BrandsController;
 use App\Http\Controllers\ApiControllers\category\CategoryController;
 use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesController;
@@ -208,6 +210,11 @@ Route::group(['middleware' => ['jwt.verify']], function() {
      */
     Route::resource('/portfolios', PortfoliosController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('portfolios');
     Route::resource('/portfolios/documents', PortfoliosDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('portfoliosdocuments');
+    /**
+     * catalogs
+     */
+    Route::resource('/catalogs', CatalogsControllers::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('catalogs');
+    Route::resource('/catalogs/documents', CatalogsDocumentsControllers::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('catalogsdocuments');
     /**
      * Tenders_docuemnts
      */
