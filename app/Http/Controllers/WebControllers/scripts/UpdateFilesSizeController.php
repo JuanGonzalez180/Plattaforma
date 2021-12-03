@@ -41,7 +41,6 @@ class UpdateFilesSizeController extends Controller
 
     public function bitesToMegaBites($file_size)
     {
-        // return round((filesize($file_size) / pow(1024, 2)), 5);
         return filesize($file_size);
     }
 }

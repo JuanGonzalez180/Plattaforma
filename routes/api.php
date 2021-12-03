@@ -298,7 +298,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     
     // Route::resource('/search/items/parameters', SearchParameterController::class, ['only' => ['index']])->names('search-parameter');
-    Route::get('/search/items/parameters', [SearchItemController::class, 'search'])->name('search-parameter');
+    Route::post('/search/items/parameters', [SearchItemController::class, 'search'])->name('search-parameter');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 
     // Remarks
