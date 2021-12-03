@@ -31,17 +31,15 @@ class SearchItemController extends ApiController
         return $this->user;
     }
 
-    public function getAssignValue($value_one, $value_two)
+    public function getAssignValue($value_main, $value_one, $value_two)
     {
-        $value = NULL;
-
-        if (isset($value_one)) {
-            $value = $value_one;
-        } else if (isset($value_two)) {
-            $value = $value_two;
+        if (isset($value_two)) {
+            return $value_two;
+        }elseif (isset($value_one)) {
+            return $value_one;
         }
 
-        return $value;
+        return $value_main;
     }
 
     public function search(Request $request)
@@ -52,16 +50,19 @@ class SearchItemController extends ApiController
         $result = [];
 
         $category_product = $this->getAssignValue(
+            $request->categoryproduct,
             $request->category_product_one,
             $request->category_product_two
         );
 
         $type_project = $this->getAssignValue(
+            $request->typeproject,
             $request->type_project_one,
             $request->type_project_two
         );
 
         $category_tender = $this->getAssignValue(
+            $request->categorytender,
             $request->category_tender_one,
             $request->category_tender_two
         );
