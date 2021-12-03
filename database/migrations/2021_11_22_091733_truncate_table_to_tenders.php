@@ -18,8 +18,7 @@ class TruncateTableToTenders extends Migration
      */
     public function up()
     {
-        
-        Schema::table('tenders_versions', function (Blueprint $table) {
+        /*Schema::table('tenders_versions', function (Blueprint $table) {
             $table->dropForeign('tenders_versions_tender_id_foreign');
         });
 
@@ -56,7 +55,7 @@ class TruncateTableToTenders extends Migration
 
         Schema::table('proponents', function (Blueprint $table) {
             $table->foreign('licitacion_id')->references('id')->on('tenders');
-        });
+        });*/
     }
 
     /**
@@ -66,7 +65,7 @@ class TruncateTableToTenders extends Migration
      */
     public function down()
     {
-        Schema::table('tenders_versions', function (Blueprint $table) {
+        /*Schema::table('tenders_versions', function (Blueprint $table) {
             $table->dropForeign('tenders_versions_tender_id_foreign');
         });
 
@@ -103,6 +102,6 @@ class TruncateTableToTenders extends Migration
 
         Schema::table('proponents', function (Blueprint $table) {
             $table->foreign('licitacion_id')->references('id')->on('tenders');
-        });
+        });*/
     }
 }

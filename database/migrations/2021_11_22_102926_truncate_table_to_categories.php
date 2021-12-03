@@ -16,7 +16,7 @@ class TruncateTableToCategories extends Migration
      */
     public function up()
     {
-        Schema::table('category_products', function (Blueprint $table) {
+        /*Schema::table('category_products', function (Blueprint $table) {
             $table->dropForeign('category_products_category_id_foreign');
         });
         
@@ -35,7 +35,7 @@ class TruncateTableToCategories extends Migration
 
         Schema::table('category_tenders', function (Blueprint $table) {
             $table->foreign('category_id')->references('id')->on('categories');
-        });
+        });*/
     }
 
     /**
@@ -45,8 +45,8 @@ class TruncateTableToCategories extends Migration
      */
     public function down()
     {
-        Schema::table('categories', function (Blueprint $table) {
+        /*Schema::table('categories', function (Blueprint $table) {
             //
-        });
+        });*/
     }
 }

@@ -66,8 +66,8 @@ class CatalogsControllers extends ApiController
 
         $catalogFileds = $request->all();
         $catalogFileds['name'] = $request->name;
-        $catalogFileds['description_short'] = $request->description_short;
-        $catalogFileds['description'] = $request->description;
+        $catalogFileds['description_short'] = 'a';
+        $catalogFileds['description'] = 'a';
         $catalogFileds['status'] = $request->status ?? Catalogs::CATALOG_ERASER;
         $catalogFileds['user_id'] = $request['user'] ?? $user->id;
         $catalogFileds['company_id'] = $companyID;
