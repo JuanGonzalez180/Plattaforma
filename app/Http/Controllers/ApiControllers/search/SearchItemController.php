@@ -4,12 +4,15 @@ namespace App\Http\Controllers\ApiControllers\search;
 
 use JWTAuth;
 use Carbon\Carbon;
+use App\Models\Tags;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\Category;
+use App\Models\Catalogs;
 use App\Models\Tenders;
 use App\Models\Projects;
 use App\Models\Products;
+use Illuminate\Support\Arr;
 use App\Models\TypeProject;
 use App\Models\TypesEntity;
 use Illuminate\Http\Request;
@@ -35,7 +38,7 @@ class SearchItemController extends ApiController
     {
         if (isset($value_two)) {
             return $value_two;
-        }elseif (isset($value_one)) {
+        } elseif (isset($value_one)) {
             return $value_one;
         }
 
@@ -67,51 +70,52 @@ class SearchItemController extends ApiController
             $request->category_tender_two
         );
 
+        $search = !isset($request->search) ? null : $request->search;
+
         if ($type_user == 'demanda') {
             //cuando se busca por compañia
             if ($request->type_consult == 'company') {
-                // pero no el tipo de entidad, ni la categoria del producto.
+                // no ingresa el tipo de entidad, no ingresa la categoria del producto, no ingresa la busqueda
                 if (!isset($request->type_entity) && !isset($category_product)) {
-                    $result = $this->getCompanyAll(null, null, null, null);
+                    $result = $this->getCompanyAll(null, null, null, null, $search);
                 }
-                // ingresa el tipo de entidad, pero no la categoria del producto.
+                // ingresa el tipo de entidad, no ingresa la categoria del producto, no ingresa la busqueda
                 else if (isset($request->type_entity) && !isset($category_product)) {
-                    $result = $this->getCompanyAll($request->type_entity, null, null, null);
+                    $result = $this->getCompanyAll($request->type_entity, null, null, null, $search);
                 }
-                // ingresa el tipo de entidad, ingresa la categoria del producto.
+                // ingresa el tipo de entidad, ingresa la categoria del producto, no ingresa la busqueda
                 else if (isset($request->type_entity) && isset($category_product)) {
-                    $result = $this->getCompanyAll($request->type_entity, $category_product, null, null);
+                    $result = $this->getCompanyAll($request->type_entity, $category_product, null, null, $search);
                 }
             }
         } else if ($type_user == 'oferta') {
             //cuando se busca por compañia
             if ($request->type_consult == 'company') {
-                // no tiene tipo de entidad, no tiene tipo de proyecto, no tiene categoria de la licitacion
+                // no tiene tipo de entidad, no tiene tipo de proyecto, no tiene categoria de la licitacion, no ingresa la busqueda
                 if (!isset($request->type_entity) && !isset($type_project) && !isset($category_tender)) {
-                    $result = $this->getCompanyAll(null, null, null, null);
+                    $result = $this->getCompanyAll(null, null, null, null, $search);
                 }
-                //tiene tipo de entidad, no tiene tipo de proyecto, no tiene categoria de la licitacion
+                //tiene tipo de entidad, no tiene tipo de proyecto, no tiene categoria de la licitacion, no ingresa la busqueda
                 else if (isset($request->type_entity) && !isset($type_project) && !isset($category_tender)) {
-                    $result = $this->getCompanyAll($request->type_entity, null, null, null);
+                    $result = $this->getCompanyAll($request->type_entity, null, null, null, $search);
                 }
-                //tiene tipo de entidad, tiene tipo de proyecto, no tiene categoria de la licitacion
+                //tiene tipo de entidad, tiene tipo de proyecto, no tiene categoria de la licitacion, no ingresa la busqueda
                 else if (isset($request->type_entity) && isset($type_project) && !isset($category_tender)) {
-                    $result = $this->getCompanyAll($request->type_entity, null, $type_project, null);
+                    $result = $this->getCompanyAll($request->type_entity, null, $type_project, null, $search);
                 }
-                //tiene tipo de entidad, tiene tipo de proyecto, tiene categoria de la licitacion
+                //tiene tipo de entidad, tiene tipo de proyecto, tiene categoria de la licitacion, no ingresa la busqueda
                 else if (isset($request->type_entity) && isset($type_project) && isset($category_tender)) {
-                    $result = $this->getCompanyAll($request->type_entity, null, $type_project, $category_tender);
+                    $result = $this->getCompanyAll($request->type_entity, null, $type_project, $category_tender, $search);
                 }
             }
         }
 
-        return $result;
+        return $this->showAllPaginate($result);
     }
 
-    public function getCompanyAll($type_entity, $category_product, $type_project, $category_tender)
+    public function getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search)
     {
-        $user       = $this->validateUser();
-        $type_user  = $user->userType();
+        $type_user = ($this->validateUser())->userType();
 
         $companies = $this->getCompanyEnabled();
 
@@ -128,12 +132,40 @@ class SearchItemController extends ApiController
                 $companies = $this->getCompanyTypeProjects($companies, $type_project);
             }
             if (!is_null($category_tender)) {
-                $companies = $this->getCompanyCategoryTender($companies, $category_tender);
+                $companies = $this->getCompanyCatTender($companies, $category_tender);
             }
+        }
+
+        if (!is_null($search)) {
+            $companies = $this->getCompanySearchNameItem($companies, $search);
         }
 
         return Company::whereIn('id', $companies)
             ->get();
+    }
+
+    public function getCompanySearchNameItem($companies, $search)
+    {
+        $type_user = ($this->validateUser())->userType();
+
+        $companiesName          = $this->getCompanyName($companies, $search);
+        $companiesTags          = $this->getCompanyTags($companies, $search);
+        $companiesCatalogs      = $this->getCompanyCatalogs($companies, $search);
+
+        $companiesCategory      = ($type_user == 'demanda')
+            ? // si es demanda busca por la categoria del producto
+            $this->getCompanyCatProductSearch($companies, $search)
+            : //si es oferta busca por la categoria de la licitacion 
+            $this->getCompanyCatTenderSearch($companies, $search);
+
+        $companies = array_unique(Arr::collapse([
+            $companiesName,
+            $companiesTags,
+            $companiesCatalogs,
+            $companiesCategory
+        ]));
+
+        return $companies;
     }
 
     public function getCompanyEnabled()
@@ -147,6 +179,32 @@ class SearchItemController extends ApiController
             ->where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
             ->join('types', 'types.id', '=', 'types_entities.type_id')
             ->where('types.slug', $type)
+            ->pluck('companies.id');
+    }
+
+    public function getCompanyName($companies, $name)
+    {
+        return Company::whereIn('id', $companies)
+            ->where(strtolower('name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->pluck('id');
+    }
+
+    public function getCompanyTags($companies, $name)
+    {
+        return Tags::where('tags.tagsable_type', Company::class)
+            ->where(strtolower('tags.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->whereIn('tags.tagsable_id', $companies)
+            ->join('companies', 'companies.id', '=', 'tags.tagsable_id')
+            ->pluck('companies.id');
+    }
+
+    public function getCompanyCatalogs($companies, $name)
+    {
+        return Catalogs::whereIn('catalogs.company_id', $companies)
+            ->where(strtolower('catalogs.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->where('catalogs.status', Catalogs::CATALOG_PUBLISH)
+            ->join('companies', 'companies.id', '=', 'catalogs.company_id')
+            ->where('companies.status', Company::COMPANY_APPROVED)
             ->pluck('companies.id');
     }
 
@@ -201,17 +259,42 @@ class SearchItemController extends ApiController
             ->pluck('companies.id');
     }
 
-    public function getCompanyCategoryTender($companies, $category_tender)
+    public function getCompanyCatTender($companies, $category_tender)
     {
         $childs = $this->getChildCategory($category_tender);
 
         return Category::where('categories.status', Category::CATEGORY_PUBLISH)
             ->whereIn('categories.id', $childs)
-            ->join('category_tenders','category_tenders.category_id','=','categories.id')
-            ->join('tenders','tenders.id','=','category_tenders.tenders_id')
+            ->join('category_tenders', 'category_tenders.category_id', '=', 'categories.id')
+            ->join('tenders', 'tenders.id', '=', 'category_tenders.tenders_id')
             ->whereIn('tenders.id', $this->getTendersPublish())
-            ->join('companies','companies.id','=','tenders.company_id')
-            ->whereIn('companies.id',$companies)
+            ->join('companies', 'companies.id', '=', 'tenders.company_id')
+            ->whereIn('companies.id', $companies)
+            ->pluck('companies.id');
+    }
+
+    public function getCompanyCatProductSearch($companies, $search)
+    {
+        return Category::where('categories.status', Category::CATEGORY_PUBLISH)
+            ->where(strtolower('categories.name'), 'LIKE', '%' . strtolower($search) . '%')
+            ->join('category_products', 'category_products.category_id', '=', 'categories.id')
+            ->join('products', 'category_products.products_id', '=', 'products.id')
+            ->where('products.status', '=', Products::PRODUCT_PUBLISH)
+            ->join('companies', 'companies.id', '=', 'products.company_id')
+            ->where('companies.status', '=', Company::COMPANY_APPROVED)
+            ->whereIn('companies.id', $companies)
+            ->pluck('companies.id');
+    }
+
+    public function getCompanyCatTenderSearch($companies, $search)
+    {
+        return Category::where('categories.status', Category::CATEGORY_PUBLISH)
+            ->where(strtolower('categories.name'), 'LIKE', '%' . strtolower($search) . '%')
+            ->join('category_tenders', 'category_tenders.category_id', '=', 'categories.id')
+            ->join('tenders', 'tenders.id', '=', 'category_tenders.tenders_id')
+            ->whereIn('tenders.id', $this->getTendersPublish())
+            ->join('companies', 'companies.id', '=', 'tenders.company_id')
+            ->whereIn('companies.id', $companies)
             ->pluck('companies.id');
     }
 
