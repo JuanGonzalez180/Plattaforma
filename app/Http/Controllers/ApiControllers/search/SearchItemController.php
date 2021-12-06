@@ -141,6 +141,7 @@ class SearchItemController extends ApiController
         }
 
         return Company::whereIn('id', $companies)
+            ->orderBy('name', 'asc')
             ->get();
     }
 
