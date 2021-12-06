@@ -15,6 +15,7 @@ use App\Models\Tenders;
 use App\Models\MetaData;
 use App\Models\Products;
 use App\Models\Projects;
+use App\Models\Catalogs;
 use App\Models\Portfolio;
 use App\Models\Addresses;
 use App\Models\Interests;
@@ -93,6 +94,11 @@ class Company extends Model
     public function portfolios()
     {
         return $this->hasMany(Portfolio::class);
+    }
+
+    public function catalogs()
+    {
+        return $this->hasMany(Catalogs::class);
     }
 
     public function projects()

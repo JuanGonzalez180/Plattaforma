@@ -10,6 +10,7 @@ use App\Models\Remarks;
 use App\Models\Products;
 use App\Models\Projects;
 use App\Models\Portfolio;
+use App\Models\Catalogs;
 use App\Models\Team;
 use App\Models\Tenders;
 use App\Models\TypesEntity;
@@ -300,6 +301,17 @@ class CompanyController extends ApiController
         foreach ($company->portfolios as $key => $portfolio) {
             $portfolio->image;
             $portfolio->files;
+        }
+
+        // Traer Catalogos últimos 8
+        $company->catalogs = $company->catalogs
+            ->where('status', Catalogs::CATALOG_PUBLISH)
+            ->sortBy([['updated_at', 'desc']])
+            ->skip(0)->take(8);
+
+        foreach ($company->catalogs as $key => $catalog) {
+            $catalog->image;
+            $catalog->files;
         }
 
         // Calificaciones.
