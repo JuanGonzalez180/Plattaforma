@@ -17,7 +17,8 @@ class CatalogsControllers extends ApiController
     public $routeFile = 'public/';
     public $routeCatalog = 'images/catalogs/';
 
-    public function validateUser(){
+    public function validateUser()
+    {
         try {
             $this->user = JWTAuth::parseToken()->authenticate();
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
@@ -30,7 +31,7 @@ class CatalogsControllers extends ApiController
         $user = $this->validateUser();
         $companyId = $user->companyId();
 
-        $catalog = Catalogs::where('company_id','=',$companyId)
+        $catalog = Catalogs::where('company_id', '=', $companyId)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -62,41 +63,41 @@ class CatalogsControllers extends ApiController
             'name' => 'required'
         ];
 
-        $this->validate( $request, $rules );
+        $this->validate($request, $rules);
 
         $catalogFileds = $request->all();
         $catalogFileds['name'] = $request->name;
-        $catalogFileds['description_short'] = 'a';
-        $catalogFileds['description'] = 'a';
+        $catalogFileds['description_short'] = $request->description_short;
+        $catalogFileds['description'] = $request->description;
         $catalogFileds['status'] = $request->status ?? Catalogs::CATALOG_ERASER;
         $catalogFileds['user_id'] = $request['user'] ?? $user->id;
         $catalogFileds['company_id'] = $companyID;
-        
-        try{
-            $catalog = Catalogs::create( $catalogFileds );
-        }catch(\Throwable $th){
+
+        try {
+            $catalog = Catalogs::create($catalogFileds);
+        } catch (\Throwable $th) {
             $erroCatalog = true;
             DB::rollBack();
-            $catalogError = [ 'catalog' => 'Error, no se ha podido crear el catalogo' ];
-            return $this->errorResponse( $catalogError, 500 );
+            $catalogError = ['catalog' => 'Error, no se ha podido crear el catalogo'];
+            return $this->errorResponse($catalogError, 500);
         }
 
-        if($catalog){
-            if( $request->image ){
-                $png_url = "catalog-".time().".jpg";
+        if ($catalog) {
+            if ($request->image) {
+                $png_url = "catalog-" . time() . ".jpg";
                 $img = $request->image;
-                $img = substr($img, strpos($img, ",")+1);
+                $img = substr($img, strpos($img, ",") + 1);
                 $data = base64_decode($img);
-                
-                $routeFile = $this->routeCatalog.$catalog->id.'/'.$png_url;
-                Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
+
+                $routeFile = $this->routeCatalog . $catalog->id . '/' . $png_url;
+                Storage::disk('local')->put($this->routeFile . $routeFile, $data);
                 $catalog->image()->create(['url' => $routeFile]);
             }
         }
 
         DB::commit();
 
-        return $this->showOne($catalog,201);
+        return $this->showOne($catalog, 201);
     }
 
     /**
@@ -125,7 +126,7 @@ class CatalogsControllers extends ApiController
         $catalog->user;
         $catalog->user->image;
 
-        return $this->showOne($catalog,200);
+        return $this->showOne($catalog, 200);
     }
 
     /**
@@ -140,42 +141,42 @@ class CatalogsControllers extends ApiController
         $user = $this->validateUser();
 
         $rules = [
-            'name' => ['required', Rule::unique('catalogs')->ignore($id) ]
+            'name' => ['required', Rule::unique('catalogs')->ignore($id)]
         ];
 
         // var_dump($request);
-        
-        $this->validate( $request, $rules );
+
+        $this->validate($request, $rules);
 
         $catalog = Catalogs::findOrFail($id);
 
         //Datos
         $catalogFileds['name'] = $request['name'];
         $catalogFileds['description_short'] = $request['description_short'];
-        $catalogFileds['description'] = $request['description']; 
+        $catalogFileds['description'] = $request['description'];
         $catalogFileds['user_id'] = $request['user'] ?? $user->id;
         $catalogFileds['status'] = $request['status'] ?? Catalogs::CATALOG_ERASER;
 
-        if( $request->image ){
-            $png_url = "catalog-".time().".jpg";
+        if ($request->image) {
+            $png_url = "catalog-" . time() . ".jpg";
             $img = $request->image;
-            $img = substr($img, strpos($img, ",")+1);
+            $img = substr($img, strpos($img, ",") + 1);
             $data = base64_decode($img);
-            $routeFile = $this->routeCatalog.$catalog->id.'/'.$png_url;
-            
-            Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
+            $routeFile = $this->routeCatalog . $catalog->id . '/' . $png_url;
 
-            if( $catalog->image ){
-                Storage::disk('local')->delete( $this->routeFile . $catalog->image->url );
-                $catalog->image()->update(['url' => $routeFile ]);
-            }else{
+            Storage::disk('local')->put($this->routeFile . $routeFile, $data);
+
+            if ($catalog->image) {
+                Storage::disk('local')->delete($this->routeFile . $catalog->image->url);
+                $catalog->image()->update(['url' => $routeFile]);
+            } else {
                 $catalog->image()->create(['url' => $routeFile]);
             }
         }
 
-        $catalog->update( $catalogFileds );
+        $catalog->update($catalogFileds);
 
-        return $this->showOne($catalog,200);
+        return $this->showOne($catalog, 200);
     }
 
     /**
@@ -188,22 +189,22 @@ class CatalogsControllers extends ApiController
     {
         $catalog = Catalogs::findOrFail($id);
 
-        if( $catalog->image ){
-            Storage::disk('local')->delete( $this->routeFile . $catalog->image->url );
+        if ($catalog->image) {
+            Storage::disk('local')->delete($this->routeFile . $catalog->image->url);
             Image::where('imageable_id', $catalog->id)
-                ->where('imageable_type',Catalogs::class)
+                ->where('imageable_type', Catalogs::class)
                 ->delete();
         }
 
-        if( $catalog->files ){
+        if ($catalog->files) {
             foreach ($catalog->files as $key => $file) {
-                Storage::disk('local')->delete( $this->routeFile . $file->url );
+                Storage::disk('local')->delete($this->routeFile . $file->url);
                 $file->delete();
             }
         }
 
         $catalog->delete();
 
-        return $this->showOneData( ['success' => 'Se ha eliminado correctamente el catalogo', 'code' => 200 ], 200);
+        return $this->showOneData(['success' => 'Se ha eliminado correctamente el catalogo', 'code' => 200], 200);
     }
 }
