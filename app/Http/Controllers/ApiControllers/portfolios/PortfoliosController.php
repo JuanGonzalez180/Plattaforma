@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\ApiControllers\portfolios;
 
 use JWTAuth;
+use App\Models\Image;
 use App\Models\User;
 use App\Models\Portfolio;
-use Illuminate\Http\Image;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
