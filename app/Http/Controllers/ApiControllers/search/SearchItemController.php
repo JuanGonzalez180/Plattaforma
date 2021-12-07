@@ -319,25 +319,22 @@ class SearchItemController extends ApiController
         $date_start = (!is_null($date['date_start'])) ? $date['date_start'] : null;
         $date_end   = (!is_null($date['date_end'])) ? $date['date_end'] : null;
 
-        $tenders = TendersVersions::whereIn('tenders_versions.id', $this->getTendersPublishVersion());
+        $tendersCompanies = TendersVersions::whereIn('tenders_versions.id', $this->getTendersPublishVersion());
 
-        // if(!is_null($date_start) && is_null($date_end))
-        // {
+        if (!is_null($date_start) && is_null($date_end)) {
+            $tendersCompanies = $tendersCompanies->whereDate('tenders_versions.date', '>=', $date_start);
+        } else if (!is_null($date_start) && !is_null($date_end)) {
+            $tendersCompanies = $tendersCompanies->whereBetween('tenders_versions.date', [$date_start, $date_end]);
+        } else if (is_null($date_start) && !is_null($date_end)) {
+            $tendersCompanies = $tendersCompanies->whereDate('tenders_versions.date', '<=', $date_end);
+        }
 
-        // }else if(!is_null($date_start) && !is_null($date_end))
-        // {
-        //     $tenders = $tenders->whereBetween('tenders_versions.', [$date_start, $date_end]);
 
-        // }else if(is_null($date_start) && !is_null($date_end))
-        // {
-
-        // }
-
-        return $tenders->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
+        $tendersCompanies = $tendersCompanies->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
             ->whereIn('tenders.id', $tenders)
             ->pluck('tenders.id');
 
-        return $tenders;
+        return $tendersCompanies;
     }
 
     public function getCompaniesTenderCategories($companies, $category_tender, $date)
