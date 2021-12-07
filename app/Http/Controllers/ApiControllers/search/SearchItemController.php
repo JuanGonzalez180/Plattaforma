@@ -336,6 +336,8 @@ class SearchItemController extends ApiController
         return $tenders->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
             ->whereIn('tenders.id', $tenders)
             ->pluck('tenders.id');
+
+        return $tenders;
     }
 
     public function getCompaniesTenderCategories($companies, $category_tender, $date)
