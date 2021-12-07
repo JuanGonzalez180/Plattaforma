@@ -45,7 +45,18 @@ class SearchItemController extends ApiController
         return $value_main;
     }
 
-    public function search(Request $request)
+    public function getAssignDate($date_start, $date_end)
+    {
+        $date = null;
+        if (isset($date_start) || isset($date_end)) {
+            $date['date_start'] = !isset($date_start) ? null : $date_start;
+            $date['date_end']   = !isset($date_end) ? null : $date_end;
+        };
+
+        return $date;
+    }
+
+    public function __invoke(Request $request)
     {
         $user       = $this->validateUser();
         $type_user  = $user->userType();
@@ -70,50 +81,22 @@ class SearchItemController extends ApiController
             $request->category_tender_two
         );
 
+        $date = $this->getAssignDate($request->date_start, $request->date_end);
+
+
         $search = !isset($request->search) ? null : $request->search;
 
-        if ($type_user == 'demanda') {
-            //cuando se busca por compañia
-            if ($request->type_consult == 'company') {
-                // no ingresa el tipo de entidad, no ingresa la categoria del producto, no ingresa la busqueda
-                if (!isset($request->type_entity) && !isset($category_product)) {
-                    $result = $this->getCompanyAll(null, null, null, null, $search);
-                }
-                // ingresa el tipo de entidad, no ingresa la categoria del producto, no ingresa la busqueda
-                else if (isset($request->type_entity) && !isset($category_product)) {
-                    $result = $this->getCompanyAll($request->type_entity, null, null, null, $search);
-                }
-                // ingresa el tipo de entidad, ingresa la categoria del producto, no ingresa la busqueda
-                else if (isset($request->type_entity) && isset($category_product)) {
-                    $result = $this->getCompanyAll($request->type_entity, $category_product, null, null, $search);
-                }
-            }
-        } else if ($type_user == 'oferta') {
-            //cuando se busca por compañia
-            if ($request->type_consult == 'company') {
-                // no tiene tipo de entidad, no tiene tipo de proyecto, no tiene categoria de la licitacion, no ingresa la busqueda
-                if (!isset($request->type_entity) && !isset($type_project) && !isset($category_tender)) {
-                    $result = $this->getCompanyAll(null, null, null, null, $search);
-                }
-                //tiene tipo de entidad, no tiene tipo de proyecto, no tiene categoria de la licitacion, no ingresa la busqueda
-                else if (isset($request->type_entity) && !isset($type_project) && !isset($category_tender)) {
-                    $result = $this->getCompanyAll($request->type_entity, null, null, null, $search);
-                }
-                //tiene tipo de entidad, tiene tipo de proyecto, no tiene categoria de la licitacion, no ingresa la busqueda
-                else if (isset($request->type_entity) && isset($type_project) && !isset($category_tender)) {
-                    $result = $this->getCompanyAll($request->type_entity, null, $type_project, null, $search);
-                }
-                //tiene tipo de entidad, tiene tipo de proyecto, tiene categoria de la licitacion, no ingresa la busqueda
-                else if (isset($request->type_entity) && isset($type_project) && isset($category_tender)) {
-                    $result = $this->getCompanyAll($request->type_entity, null, $type_project, $category_tender, $search);
-                }
-            }
+        $type_entity = !isset($request->type_entity) ? null : $request->type_entity;
+
+
+        if ($request->type_consult == 'company') {
+            $result = $this->getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date);
         }
 
         return $this->showAllPaginate($result);
     }
 
-    public function getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search)
+    public function getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date)
     {
         $type_user = ($this->validateUser())->userType();
 
@@ -132,7 +115,7 @@ class SearchItemController extends ApiController
                 $companies = $this->getCompanyTypeProjects($companies, $type_project);
             }
             if (!is_null($category_tender)) {
-                $companies = $this->getCompanyCatTender($companies, $category_tender);
+                $companies = $this->getCompaniesTenderCategories($companies, $category_tender, $date);
             }
         }
 
@@ -260,7 +243,7 @@ class SearchItemController extends ApiController
             ->pluck('companies.id');
     }
 
-    public function getCompanyCatTender($companies, $category_tender)
+    public function getTenderCategory($companies, $category_tender)
     {
         $childs = $this->getChildCategory($category_tender);
 
@@ -271,7 +254,7 @@ class SearchItemController extends ApiController
             ->whereIn('tenders.id', $this->getTendersPublish())
             ->join('companies', 'companies.id', '=', 'tenders.company_id')
             ->whereIn('companies.id', $companies)
-            ->pluck('companies.id');
+            ->pluck('tenders.id');
     }
 
     public function getCompanyCatProductSearch($companies, $search)
@@ -327,6 +310,67 @@ class SearchItemController extends ApiController
             }), '=', 0)
             ->groupBy('a.tenders_id')
             ->pluck('a.tenders_id');
+
+        return $tenders;
+    }
+
+    public function getTenderVersionDate($tenders, $date)
+    {
+        $date_start = (!is_null($date['date_start'])) ? $date['date_start'] : null;
+        $date_end   = (!is_null($date['date_end'])) ? $date['date_end'] : null;
+
+        $tenders = TendersVersions::whereIn('tenders_versions.id', $this->getTendersPublishVersion());
+
+        // if(!is_null($date_start) && is_null($date_end))
+        // {
+
+        // }else if(!is_null($date_start) && !is_null($date_end))
+        // {
+        //     $tenders = $tenders->whereBetween('tenders_versions.', [$date_start, $date_end]);
+
+        // }else if(is_null($date_start) && !is_null($date_end))
+        // {
+
+        // }
+
+        return $tenders->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
+            ->whereIn('tenders.id', $tenders)
+            ->pluck('tenders.id');
+    }
+
+    public function getCompaniesTenderCategories($companies, $category_tender, $date)
+    {
+        $tenders = $this->getTenderCategory($companies, $category_tender);
+
+        if (!is_null($date)) {
+            $tenders = $this->getTenderVersionDate($tenders, $date);
+        }
+
+        return Tenders::whereIn('tenders.id', $tenders)
+            ->join('companies', 'companies.id', '=', 'tenders.company_id')
+            ->pluck('companies.id');
+    }
+
+    public function getTendersPublishVersion()
+    {
+
+        $tenders = DB::table('tenders_versions as a')
+            ->select(
+                DB::raw('max(a.created_at), a.tenders_id'),
+                DB::raw("(SELECT `c`.id from `tenders_versions` as `c` 
+                where `c`.`status` = '" . TendersVersions::LICITACION_PUBLISH . "'  
+                and `c`.`tenders_id` = a.tenders_id ORDER BY `c`.id DESC LIMIT 1) AS version_id")
+            )
+            ->where('a.status', TendersVersions::LICITACION_PUBLISH)
+            ->where((function ($query) {
+                $query->select(
+                    DB::raw("COUNT(*) from `tenders_versions` as `b` 
+                    where `b`.`status` != '" . TendersVersions::LICITACION_PUBLISH . "'  
+                    and `b`.`tenders_id` = a.tenders_id")
+                );
+            }), '=', 0)
+            ->groupBy('a.tenders_id')
+            ->pluck('version_id');
 
         return $tenders;
     }
