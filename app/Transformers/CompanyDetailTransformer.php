@@ -44,7 +44,7 @@ class CompanyDetailTransformer extends TransformerAbstract
             'coverpage'=> $company->coverpage,
             'address'=> $company->address,
             'portfolio'=> $company->portfolios,
-            'catalog'=> $company->catalogs,
+            'catalogs'=> $company->catalogs,
             'services'=> $company->companyCategoryServices,
             'tags'=> $company->tags,
             'team'=> $teamTransform->transformNoDetail($company->team),
