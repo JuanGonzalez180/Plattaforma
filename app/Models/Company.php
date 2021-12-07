@@ -638,6 +638,10 @@ class Company extends Model
             ->where('status', Portfolio::PORTFOLIO_PUBLISH)
             ->count();
 
+        $total['catalog'] = $companySinTransform->catalogs
+            ->where('status', Catalogs::CATALOG_PUBLISH)
+            ->count();
+
         $total['remarks'] = Remarks::select('remarks.*')
             ->where('remarks.company_id', $companySinTransform->id)
             ->count();
