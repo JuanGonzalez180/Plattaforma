@@ -151,7 +151,7 @@ class SearchItemController extends ApiController
 
     public function getProductAll($type_entity, $category_product)
     {
-        $products = $this->getCompanyEnabled();
+        $products = $this->getProductEnabled();
 
         if (!is_null($type_entity)) {
             $products = $this->getProductsTypeEntity($products, $type_entity);
