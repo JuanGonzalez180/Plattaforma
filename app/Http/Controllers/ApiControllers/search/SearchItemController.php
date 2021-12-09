@@ -98,7 +98,7 @@ class SearchItemController extends ApiController
                 $result = $this->getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date);
                 break;
             case 'products':
-                $result = $this->getProductAll();
+                $result = $this->getProductAll($type_entity, $category_product);
                 break;
             case 'catalogs':
                 $result = $this->getCatalogAll();
@@ -121,7 +121,7 @@ class SearchItemController extends ApiController
         $companies = $this->getCompanyEnabled();
 
         if (!is_null($type_entity)) {
-            $companies = $this->getCompanyTypeEntity($type_entity);
+            $companies = $this->getCompanyTypeEntity($companies, $type_entity);
         }
 
         if ($type_user == 'demanda') {
@@ -133,7 +133,10 @@ class SearchItemController extends ApiController
                 $companies = $this->getCompanyTypeProjects($companies, $type_project);
             }
             if (!is_null($category_tender)) {
-                $companies = $this->getCompaniesTenderCategories($companies, $category_tender, $date);
+                $companies = $this->getCompaniesTenderCategories($companies, $category_tender);
+            }
+            if (!is_null($date)) {
+                $companies = $this->getCompaniesTenderDate($companies, $date);
             }
         }
 
@@ -146,9 +149,21 @@ class SearchItemController extends ApiController
             ->get();
     }
 
-    public function getProductAll()
+    public function getProductAll($type_entity, $category_product)
     {
         $products = $this->getCompanyEnabled();
+
+        if (!is_null($type_entity)) {
+            $products = $this->getProductsTypeEntity($products, $type_entity);
+        }
+
+        if (!is_null($category_product)) {
+            $products = $this->getProductsCatProduct($products, $category_product);
+        }
+
+        return Products::whereIn('id', $products)
+            ->orderBy('name', 'asc')
+            ->get();
     }
 
     public function getCatalogAll()
@@ -175,7 +190,11 @@ class SearchItemController extends ApiController
         }
 
         if (!is_null($category_tender)) {
-            $projects = $this->getProjectsTenderCategories($projects, $category_tender, $date);
+            $projects = $this->getProjectsTenderCategories($projects, $category_tender);
+        }
+
+        if (!is_null($date)) {
+            $projects = $this->getProjectsTenderDate($projects, $date);
         }
 
         if (!is_null($search)) {
@@ -317,12 +336,24 @@ class SearchItemController extends ApiController
             ->pluck('companies.id');
     }
 
-    public function getCompanyTypeEntity($type_entity)
+    public function getProductsTypeEntity($products, $type_entity)
     {
         return TypesEntity::where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
             ->where('types_entities.id', '=', $type_entity)
             ->join('companies', 'companies.type_entity_id', '=', 'types_entities.id')
-            ->whereIn('companies.id', $this->getCompanyEnabled())
+            ->where('companies.status', '=', Company::COMPANY_APPROVED)
+            ->join('products', 'products.company_id', '=', 'companies.id')
+            ->whereIn('products.id', $products)
+            ->where('products.status', Products::PRODUCT_PUBLISH)
+            ->pluck('products.id');
+    }
+
+    public function getCompanyTypeEntity($companies, $type_entity)
+    {
+        return TypesEntity::where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
+            ->where('types_entities.id', '=', $type_entity)
+            ->join('companies', 'companies.type_entity_id', '=', 'types_entities.id')
+            ->whereIn('companies.id', $companies)
             ->pluck('companies.id');
     }
 
@@ -401,6 +432,21 @@ class SearchItemController extends ApiController
             ->where('companies.status', '=', Company::COMPANY_APPROVED)
             ->whereIn('companies.id', $companiesTypeEntity)
             ->pluck('companies.id');
+    }
+
+    public function getProductsCatProduct($products, $category_product)
+    {
+        $childs = $this->getChildCategory($category_product);
+
+        return Category::where('categories.status', Category::CATEGORY_PUBLISH)
+            ->whereIn('categories.id', $childs)
+            ->join('category_products', 'category_products.category_id', '=', 'categories.id')
+            ->join('products', 'category_products.products_id', '=', 'products.id')
+            ->whereIn('products.id', $products)
+            ->where('products.status', '=', Products::PRODUCT_PUBLISH)
+            ->join('companies', 'companies.id', '=', 'products.company_id')
+            ->where('companies.status', '=', Company::COMPANY_APPROVED)
+            ->pluck('products.id');
     }
 
     public function getChildCategory($category_product)
@@ -539,7 +585,7 @@ class SearchItemController extends ApiController
         return $tenders;
     }
 
-    public function getTenderVersionDate($tenders, $date)
+    public function getCompaniesTenderDate($companies, $date)
     {
         $date_start = (!is_null($date['date_start'])) ? $date['date_start'] : null;
         $date_end   = (!is_null($date['date_end'])) ? $date['date_end'] : null;
@@ -556,32 +602,51 @@ class SearchItemController extends ApiController
 
 
         $tendersCompanies = $tendersCompanies->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
-            ->whereIn('tenders.id', $tenders)
-            ->pluck('tenders.id');
+            ->join('companies','companies.id','=','tenders.company_id')
+            ->whereIn('companies.id', $companies)
+            ->pluck('companies.id');
 
         return $tendersCompanies;
     }
 
-    public function getCompaniesTenderCategories($companies, $category_tender, $date)
+    public function getProjectsTenderDate($projects_id, $date)
+    {
+        $date_start = (!is_null($date['date_start'])) ? $date['date_start'] : null;
+        $date_end   = (!is_null($date['date_end'])) ? $date['date_end'] : null;
+
+        $projects = TendersVersions::whereIn('tenders_versions.id', $this->getTendersPublishVersion());
+
+        if (!is_null($date_start) && is_null($date_end)) {
+            $projects = $projects->whereDate('tenders_versions.date', '>=', $date_start);
+        } else if (!is_null($date_start) && !is_null($date_end)) {
+            $projects = $projects->whereBetween('tenders_versions.date', [$date_start, $date_end]);
+        } else if (is_null($date_start) && !is_null($date_end)) {
+            $projects = $projects->whereDate('tenders_versions.date', '<=', $date_end);
+        }
+
+        $projects = $projects->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
+            ->join('companies','companies.id','=','tenders.company_id')
+            ->where('companies.status', Company::COMPANY_APPROVED)
+            ->join('projects','projects.company_id','=','companies.id')
+            ->whereIn('projects.id', $projects_id)
+            ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+            ->pluck('projects.id');
+
+        return $projects;
+    }
+
+    public function getCompaniesTenderCategories($companies, $category_tender)
     {
         $tenders = $this->getTenderCategory($companies, $category_tender);
-
-        if (!is_null($date)) {
-            $tenders = $this->getTenderVersionDate($tenders, $date);
-        }
 
         return Tenders::whereIn('tenders.id', $tenders)
             ->join('companies', 'companies.id', '=', 'tenders.company_id')
             ->pluck('companies.id');
     }
 
-    public function getProjectsTenderCategories($projects, $category_tender, $date)
+    public function getProjectsTenderCategories($projects, $category_tender)
     {
         $tenders = $this->getProjectsTendesCategory($projects, $category_tender);
-
-        if (!is_null($date)) {
-            $tenders = $this->getTenderVersionDate($tenders, $date);
-        }
 
         return Projects::where('projects.visible', '=', Projects::PROJECTS_VISIBLE)
             ->join('tenders', 'tenders.project_id', '=', 'projects.id')
