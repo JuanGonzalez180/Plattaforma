@@ -29,6 +29,11 @@ class Projects extends Model
     const PROJECTS_ERASER   = 'Borrador';
     const PROJECTS_PUBLISH  = 'Publicado';
 
+    //STATUS
+    const TECHNICAL_SPECIFICATIONS      = 'especificaciones-tecnicas';
+    const IN_CONSTRUCTION               = 'en-construccion';
+    
+    //VISIBLE
     const PROJECTS_VISIBLE      = 'Visible';
     const PROJECTS_VISIBLE_NO   = 'No-Visible';
 
