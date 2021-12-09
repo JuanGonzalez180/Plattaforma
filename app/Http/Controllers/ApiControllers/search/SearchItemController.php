@@ -88,21 +88,25 @@ class SearchItemController extends ApiController
 
         $type_entity = !isset($request->type_entity) ? null : $request->type_entity;
 
+        if (!isset($request->type_consult)){
+            return [];
+        }
+
         //se empieza a enviar los parametros de busqueda
         switch ($request->type_consult) {
-            case 'company':
+            case 'companies':
                 $result = $this->getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date);
                 break;
-            case 'product':
+            case 'products':
                 $result = $this->getProductAll();
                 break;
-            case 'catalog':
+            case 'catalogs':
                 $result = $this->getCatalogAll();
                 break;
-            case 'tender':
+            case 'tenders':
                 $result = $this->getTenderAll();
                 break;
-            case 'project':
+            case 'projects':
                 $result = $this->getProjectAll($type_entity, $type_project, $category_tender, $search, $date);
                 break;
         }
@@ -144,9 +148,7 @@ class SearchItemController extends ApiController
 
     public function getProductAll()
     {
-        $type_user = ($this->validateUser())->userType();
-
-        $companies = $this->getCompanyEnabled();
+        $products = $this->getCompanyEnabled();
     }
 
     public function getCatalogAll()
@@ -172,15 +174,9 @@ class SearchItemController extends ApiController
             $projects = $this->getProjectsTenderCategories($projects, $category_tender, $date);
         }
 
-        // if (!is_null($search)) {
-        //     // $companies = $this->getCompanySearchNameItem($companies, $search);
-        // } else {
-        //     $projects = Projects::where('projects.visible','=',Projects::PROJECTS_VISIBLE)
-        //         ->join('companies', 'companies.id', '=', 'projects.company_id')
-        //         ->whereIn('companies.id',$companies)
-        //         ->where('companies.status', Company::COMPANY_APPROVED)
-        //         ->pluck('projects.id');
-        // }
+        if (!is_null($search)) {
+            $projects = $this->getProjectsSearchNameItem($projects, $search);
+        }
 
         return Projects::whereIn('id', $projects)
             ->orderBy('name', 'asc')
@@ -211,6 +207,21 @@ class SearchItemController extends ApiController
         return $companies;
     }
 
+    public function getProjectsSearchNameItem($projects, $search)
+    {
+        $projectName                = $this->getProjectsName($projects, $search);
+        // $projectCompaniesTags       = $this->getProjectsCompanyTags($projects, $search);
+        $projectCompaniesName       = $this->getProjectsCompanyName($projects, $search);
+
+        $projects = array_unique(Arr::collapse([
+            $projectName,
+            // $projectCompaniesTags,
+            $projectCompaniesName
+        ]));
+
+        return $projects;
+    }
+
     public function getCompanyEnabled()
     {
         $user = $this->validateUser();
@@ -225,6 +236,12 @@ class SearchItemController extends ApiController
             ->pluck('companies.id');
     }
 
+    public function getProductEnabled()
+    {
+        return Products::where('products.status', Products::PRODUCT_PUBLISH)
+            ->pluck('products.id');
+    }
+
     public function getProjectEnabled()
     {
         $user = $this->validateUser();
@@ -232,7 +249,7 @@ class SearchItemController extends ApiController
         $type = ($user->userType() == 'demanda') ? 'oferta' : 'demanda';
 
         return Projects::where('projects.visible', Projects::PROJECTS_VISIBLE)
-            ->join('companies','companies.id','=','projects.company_id')
+            ->join('companies', 'companies.id', '=', 'projects.company_id')
             ->join('types_entities', 'types_entities.id', '=', 'companies.type_entity_id')
             ->where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
             ->join('types', 'types.id', '=', 'types_entities.type_id')
@@ -247,6 +264,22 @@ class SearchItemController extends ApiController
             ->pluck('id');
     }
 
+    public function getProjectsName($projects, $name)
+    {
+        return Projects::whereIn('id', $projects)
+            ->where(strtolower('name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->pluck('id');
+    }
+
+    public function getProjectsCompanyName($projects, $name)
+    {
+        return Projects::whereIn('projects.id', $projects)
+            ->join('companies', 'companies.id', '=', 'projects.company_id')
+            ->where(strtolower('companies.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->where('companies.status', '=', Company::COMPANY_APPROVED)
+            ->pluck('projects.id');
+    }
+
     public function getCompanyTags($companies, $name)
     {
         return Tags::where('tags.tagsable_type', Company::class)
@@ -254,6 +287,17 @@ class SearchItemController extends ApiController
             ->whereIn('tags.tagsable_id', $companies)
             ->join('companies', 'companies.id', '=', 'tags.tagsable_id')
             ->pluck('companies.id');
+    }
+
+    public function getProjectsCompanyTags($projects, $name)
+    {
+        return Tags::where('tags.tagsable_type', Company::class)
+            ->where(strtolower('tags.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->join('companies', 'companies.id', '=', 'tags.tagsable_id')
+            ->where('companies.status', Company::COMPANY_APPROVED)
+            ->join('projects', 'projects.id', '=', 'companies.company_id')
+            ->whereIn('projects.id', $projects)
+            ->pluck('projects.id');
     }
 
     public function getCompanyCatalogs($companies, $name)
@@ -505,7 +549,7 @@ class SearchItemController extends ApiController
             $tenders = $this->getTenderVersionDate($tenders, $date);
         }
 
-        return Projects::join('tenders','tenders.project_id','=','projects.id')
+        return Projects::join('tenders', 'tenders.project_id', '=', 'projects.id')
             ->whereIn('tenders.id', $tenders)
             ->pluck('projects.id');
     }
