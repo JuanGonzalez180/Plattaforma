@@ -98,7 +98,7 @@ class SearchItemController extends ApiController
                 $result = $this->getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date);
                 break;
             case 'products':
-                $result = $this->getProductAll($type_entity, $category_product);
+                $result = $this->getProductAll($type_entity, $category_product, $search);
                 break;
             case 'catalogs':
                 $result = $this->getCatalogAll();
@@ -149,7 +149,7 @@ class SearchItemController extends ApiController
             ->get();
     }
 
-    public function getProductAll($type_entity, $category_product)
+    public function getProductAll($type_entity, $category_product, $search)
     {
         $products = $this->getProductEnabled();
 
@@ -159,6 +159,10 @@ class SearchItemController extends ApiController
 
         if (!is_null($category_product)) {
             $products = $this->getProductsCatProduct($products, $category_product);
+        }
+
+        if (!is_null($search)) {
+            $products = $this->getProductsSearchNameItem($products, $search);
         }
 
         return Products::whereIn('id', $products)
@@ -204,6 +208,21 @@ class SearchItemController extends ApiController
         return Projects::whereIn('id', $projects)
             ->orderBy('name', 'asc')
             ->get();
+    }
+
+    public function getProductsSearchNameItem($products, $search)
+    {
+        $productCompanyName     = $this->getProductCompanyName($products, $search);
+        $productName            = $this->getProductName($products, $search);
+        $productTags            = $this->getProductTags($products, $search);
+
+        $products = array_unique(Arr::collapse([
+            $productCompanyName,
+            $productName,
+            $productTags
+        ]));
+
+        return $products;
     }
 
     public function getCompanySearchNameItem($companies, $search)
@@ -278,6 +297,32 @@ class SearchItemController extends ApiController
             ->join('types', 'types.id', '=', 'types_entities.type_id')
             ->where('types.slug', $type)
             ->pluck('projects.id');
+    }
+
+    public function getProductCompanyName($products, $name)
+    {
+        return Company::where(strtolower('companies.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->where('companies.status', Company::COMPANY_APPROVED)
+            ->join('products', 'products.company_id', '=', 'companies.id')
+            ->where('products.status', Products::PRODUCT_PUBLISH)
+            ->whereIn('products.id', $products)
+            ->pluck('products.id');
+    }
+
+    public function getProductName($products, $name)
+    {
+        return Products::whereIn('products.id', $products)
+            ->where(strtolower('products.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->pluck('products.id');
+    }
+
+    public function getProductTags($products, $name)
+    {
+        return Tags::where('tags.tagsable_type', Products::class)
+            ->where(strtolower('tags.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->whereIn('tags.tagsable_id', $products)
+            ->join('products', 'products.id', '=', 'tags.tagsable_id')
+            ->pluck('products.id');
     }
 
     public function getCompanyName($companies, $name)
@@ -602,7 +647,7 @@ class SearchItemController extends ApiController
 
 
         $tendersCompanies = $tendersCompanies->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
-            ->join('companies','companies.id','=','tenders.company_id')
+            ->join('companies', 'companies.id', '=', 'tenders.company_id')
             ->whereIn('companies.id', $companies)
             ->pluck('companies.id');
 
@@ -625,9 +670,9 @@ class SearchItemController extends ApiController
         }
 
         $projects = $projects->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
-            ->join('companies','companies.id','=','tenders.company_id')
+            ->join('companies', 'companies.id', '=', 'tenders.company_id')
             ->where('companies.status', Company::COMPANY_APPROVED)
-            ->join('projects','projects.company_id','=','companies.id')
+            ->join('projects', 'projects.company_id', '=', 'companies.id')
             ->whereIn('projects.id', $projects_id)
             ->where('projects.visible', Projects::PROJECTS_VISIBLE)
             ->pluck('projects.id');
