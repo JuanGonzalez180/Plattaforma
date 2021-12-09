@@ -34,6 +34,9 @@ class CompanyFilesController extends Controller
             case 'portfolios':
                 $files  = $files->fileListPortfolio();
                 break;
+            case 'catalogs':
+                $files  = $files->fileListCatalog();
+                break;
             case 'all':
                 $files  = $files->fileListTotal();
                 break;

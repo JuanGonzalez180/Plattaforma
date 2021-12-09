@@ -271,6 +271,44 @@ class Company extends Model
             ->count();
     }
 
+    public function fileCountCatalogs()
+    {
+        $files = Files::where('files.filesable_type', Catalogs::class)
+            ->whereNotNull('files.size')
+            ->join('catalogs', 'catalogs.id', '=', 'files.filesable_id')
+            ->join('companies', 'companies.id', '=', 'catalogs.company_id')
+            ->where('companies.id', $this->id)
+            ->count();
+
+        $images = DB::table('images')->where('images.imageable_type', Catalogs::class)
+            ->whereNotNull('images.size')
+            ->join('catalogs', 'catalogs.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'catalogs.company_id')
+            ->where('companies.id', $this->id)
+            ->count();
+
+        return $files + $images;
+    }
+
+    public function fileSizeCatalogs()
+    {
+        $files = Files::where('files.filesable_type', Catalogs::class)
+            // ->whereNotNull('files.size')
+            ->join('catalogs', 'catalogs.id', '=', 'files.filesable_id')
+            ->join('companies', 'companies.id', '=', 'catalogs.company_id')
+            ->where('companies.id', $this->id)
+            ->sum('files.size');
+
+        $images = DB::table('images')->where('images.imageable_type', Catalogs::class)
+            ->whereNotNull('images.size')
+            ->join('catalogs', 'catalogs.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'catalogs.company_id')
+            ->where('companies.id', $this->id)
+            ->sum('images.size');
+
+        return $files + $images;
+    }
+
     public function fileListBrands()
     {
         $files =  DB::table('images')->select('images.url', 'images.size', 'images.updated_at')
@@ -339,6 +377,30 @@ class Company extends Model
             ->whereNotNull('images.size')
             ->join('portfolios', 'portfolios.id', '=', 'images.imageable_id')
             ->join('companies', 'companies.id', '=', 'portfolios.company_id')
+            ->where('companies.id', $this->id)
+            ->get();
+
+        $files = $images->merge($files);
+
+        return $files->sortBy([['updated_at', 'desc']]);
+    }
+
+    public function fileListCatalog()
+    {
+        $files = Files::select('files.url', 'files.size', 'files.updated_at')
+            ->where('files.filesable_type', Catalogs::class)
+            ->whereNotNull('files.size')
+            ->join('catalogs', 'catalogs.id', '=', 'files.filesable_id')
+            ->join('companies', 'companies.id', '=', 'catalogs.company_id')
+            ->where('companies.id', $this->id)
+            ->get();
+
+        $images = DB::table('images')
+            ->select('images.url', 'images.size', 'images.updated_at')
+            ->where('images.imageable_type', Catalogs::class)
+            ->whereNotNull('images.size')
+            ->join('catalogs', 'catalogs.id', '=', 'images.imageable_id')
+            ->join('companies', 'companies.id', '=', 'catalogs.company_id')
             ->where('companies.id', $this->id)
             ->get();
 
@@ -551,11 +613,11 @@ class Company extends Model
     public function fileListTotal()
     {
         $files = $this->fileListBrands()
-        ->merge($this->fileListBlogs())
-        ->merge($this->fileListProject())
-        ->merge($this->fileListProduct())
-        ->merge($this->fileListPortfolio())
-        ->merge($this->fileListTender());
+            ->merge($this->fileListBlogs())
+            ->merge($this->fileListProject())
+            ->merge($this->fileListProduct())
+            ->merge($this->fileListPortfolio())
+            ->merge($this->fileListTender());
 
         return $files->sortBy([['updated_at', 'desc']]);
     }
@@ -580,23 +642,20 @@ class Company extends Model
         $product         = $this->fileCountProduct();
         $portfolio       = $this->fileCountPortfolio();
         $tender          = $this->fileCountTender();
+        $catalog         = $this->fileCountCatalogs();
 
-        return $brands + $blog + $project + $product + $portfolio + $tender;
+        return $brands + $blog + $project + $product + $portfolio + $tender + $catalog;
     }
 
     public function fileSizeTotalDetail()
     {
-        if ($this->type_company() == 'Demanda') {
-        }
-
-        if ($this->type_company() == 'Oferta') {
-        }
         $item['Blogs']          = [$this->fileSizeBlogs(), $this->fileSizeBlogs()];
         $item['Marcas']         = [$this->fileCountBrands(), $this->fileSizeBrands()];
         $item['Licitaciones']   = [$this->fileCountTender(), $this->fileSizeTender()];
         $item['Productos']      = [$this->fileCountProduct(), $this->fileSizeProduct()];
         $item['Portafolios']    = [$this->fileCountPortfolio(), $this->fileSizePortfolio()];
-        $item['Projectos']      = [$this->fileSizeBlogs(), $this->fileSizeBlogs()];
+        $item['Projectos']      = [$this->fileCountProject(), $this->fileSizeProject()];
+        $item['Catalogos']      = [$this->fileCountCatalogs(), $this->fileSizeCatalogs()];
 
         return $item;
     }
@@ -633,7 +692,6 @@ class Company extends Model
             ->where('status', Blog::BLOG_PUBLISH)
             ->count();
 
-        // $total['portfolio'] = count($companySinTransform->files);
         $total['portfolio'] = $companySinTransform->portfolios
             ->where('status', Portfolio::PORTFOLIO_PUBLISH)
             ->count();
@@ -670,7 +728,7 @@ class Company extends Model
     public function formatSize($file_size)
     {
         if (round(($file_size / pow(1024, 2)), 3) < '1') {
-            $file = round(($file_size*0.01), 1). ' KB';
+            $file = round(($file_size * 0.01), 1) . ' KB';
         } else if (round(($file_size / pow(1024, 2)), 1) < '1024') {
             $file = round(($file_size / pow(1024, 2)), 1) . ' MB';
         } else if (round(($file_size / pow(1024, 2)), 1) >= '1024') {

@@ -91,9 +91,4 @@
         {{$company->web}}
         @endif
     </dd>
-
-    <dt class="col-sm-4">Espacio ocupado:</dt>
-    <dd class="col-sm-8">
-        <span class="badge badge-secondary">{{$company->fileSizeTotal()}} GB</span>
-    </dd>
 </dlv>

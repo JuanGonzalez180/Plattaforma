@@ -95,11 +95,21 @@ Compañia
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">Portafolio</th>
+                    <th scope="row">Portafolios</th>
                     <td>{{$company->fileCountPortfolio()}}</td>
                     <td><span class="badge badge-primary">{{$company->formatSize($company->fileSizePortfolio())}}</span></td>
                     <td>
                         <button type="button" class="btn btn-primary" onclick="fileModalEvent('portfolios')">
+                            <i class="fas fa-external-link-square-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Catalogos</th>
+                    <td>{{$company->fileCountCatalogs()}}</td>
+                    <td><span class="badge badge-primary">{{$company->formatSize($company->fileSizeCatalogs())}}</span></td>
+                    <td>
+                        <button type="button" class="btn btn-primary" onclick="fileModalEvent('catalogs')">
                             <i class="fas fa-external-link-square-alt"></i>
                         </button>
                     </td>
