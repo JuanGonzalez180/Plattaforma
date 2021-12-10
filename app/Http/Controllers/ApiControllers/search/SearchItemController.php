@@ -281,11 +281,13 @@ class SearchItemController extends ApiController
     public function getProjectsSearchNameItem($projects, $search)
     {
         $projectName                = $this->getProjectsName($projects, $search);
+        $projectDescription         = $this->getProjectsDescription($projects, $search);
         $projectCompaniesTags       = $this->getProjectsCompanyTags($projects, $search);
         $projectCompaniesName       = $this->getProjectsCompanyName($projects, $search);
 
         $projects = array_unique(Arr::collapse([
             $projectName,
+            $projectDescription,
             $projectCompaniesTags,
             $projectCompaniesName
         ]));
@@ -403,7 +405,15 @@ class SearchItemController extends ApiController
     {
         return Projects::whereIn('id', $projects)
             ->where(strtolower('name'), 'LIKE', '%' . strtolower($name) . '%')
-            ->where('status', '=', Projects::PROJECTS_VISIBLE)
+            ->where('visible', '=', Projects::PROJECTS_VISIBLE)
+            ->pluck('id');
+    }
+
+    public function getProjectsDescription($projects, $name)
+    {
+        return Projects::whereIn('id', $projects)
+            ->where(strtolower('description'), 'LIKE', '%' . strtolower($name) . '%')
+            ->where('visible', '=', Projects::PROJECTS_VISIBLE)
             ->pluck('id');
     }
 
