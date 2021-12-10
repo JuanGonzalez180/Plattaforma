@@ -313,8 +313,13 @@ class SearchItemController extends ApiController
 
     public function getCatalogEnabled()
     {
-        return Company::where('companies.status', Company::COMPANY_APPROVED)
-            ->join('catalogs','catalogs.company_id','=','companies.id')
+        // return Company::where('companies.status', Company::COMPANY_APPROVED)
+        //     ->join('catalogs','catalogs.company_id','=','companies.id')
+        //     ->where('catalogs.status', Catalogs::CATALOG_PUBLISH)
+        //     ->join('files', 'files.filesable_id', '=', 'catalogs.id')
+        //     ->where('files.filesable_type', Catalogs::class)
+        //     ->pluck('catalogs.id');
+        return Company::join('catalogs','catalogs.company_id','=','companies.id')
             ->where('catalogs.status', Catalogs::CATALOG_PUBLISH)
             ->join('files', 'files.filesable_id', '=', 'catalogs.id')
             ->where('files.filesable_type', Catalogs::class)
@@ -355,8 +360,8 @@ class SearchItemController extends ApiController
 
     public function getCatalogCompanyName($catalogs, $name)
     {
-        return Company::where('companies.status', Company::COMPANY_APPROVED)
-            ->where(strtolower('companies.name'), 'LIKE', '%' . strtolower($name) . '%')
+        return Company::where(strtolower('companies.name'), 'LIKE', '%' . strtolower($name) . '%')
+            // ->where('companies.status', Company::COMPANY_APPROVED)
             ->join('catalogs','catalogs.company_id','=','companies.id')
             ->whereIn('catalogs.id', $catalogs)
             ->pluck('catalogs.id');
@@ -439,7 +444,7 @@ class SearchItemController extends ApiController
         return TypesEntity::where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
             ->where('types_entities.id', '=', $type_entity)
             ->join('companies', 'companies.type_entity_id', '=', 'types_entities.id')
-            ->where('companies.status', '=', Company::COMPANY_APPROVED)
+            // ->where('companies.status', '=', Company::COMPANY_APPROVED)
             ->join('catalogs', 'catalogs.company_id', '=', 'companies.id')
             ->whereIn('catalogs.id', $catalogs)
             ->pluck('catalogs.id');
