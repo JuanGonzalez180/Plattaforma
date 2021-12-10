@@ -257,6 +257,7 @@ class SearchItemController extends ApiController
         $type_user = ($this->validateUser())->userType();
 
         $companiesName          = $this->getCompanyName($companies, $search);
+        $companiesDescription   = $this->getCompanyDescription($companies, $search);
         $companiesTags          = $this->getCompanyTags($companies, $search);
         $companiesCatalogs      = $this->getCompanyCatalogs($companies, $search);
 
@@ -268,6 +269,7 @@ class SearchItemController extends ApiController
 
         $companies = array_unique(Arr::collapse([
             $companiesName,
+            $companiesDescription,
             $companiesTags,
             $companiesCatalogs,
             $companiesCategory
@@ -387,6 +389,13 @@ class SearchItemController extends ApiController
     {
         return Company::whereIn('id', $companies)
             ->where(strtolower('name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->pluck('id');
+    }
+
+    public function getCompanyDescription($companies, $name)
+    {
+        return Company::whereIn('id', $companies)
+            ->where(strtolower('description'), 'LIKE', '%' . strtolower($name) . '%')
             ->pluck('id');
     }
 
