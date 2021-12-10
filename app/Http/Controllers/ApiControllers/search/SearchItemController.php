@@ -6,6 +6,7 @@ use JWTAuth;
 use Carbon\Carbon;
 use App\Models\Tags;
 use App\Models\User;
+use App\Models\Files;
 use App\Models\Company;
 use App\Models\Category;
 use App\Models\Catalogs;
@@ -101,7 +102,7 @@ class SearchItemController extends ApiController
                 $result = $this->getProductAll($type_entity, $category_product, $search);
                 break;
             case 'catalogs':
-                $result = $this->getCatalogAll();
+                $result = $this->getCatalogAll($type_entity, $search);
                 break;
             case 'tenders':
                 $result = $this->getTenderAll();
@@ -170,8 +171,21 @@ class SearchItemController extends ApiController
             ->get();
     }
 
-    public function getCatalogAll()
+    public function getCatalogAll($type_entity, $search)
     {
+        $catalogs = $this->getCatalogEnabled();
+
+        if (!is_null($type_entity)) {
+            $catalogs = $this->getCatalogTypeEntity($catalogs, $type_entity);
+        }
+
+        if (!is_null($search)) {
+            $catalogs = $this->getCatalogsSearchNameItem($catalogs, $search);
+        }
+
+        return Catalogs::whereIn('id', $catalogs)
+            ->orderBy('name', 'asc')
+            ->get();
     }
 
     public function getTenderAll()
@@ -223,6 +237,19 @@ class SearchItemController extends ApiController
         ]));
 
         return $products;
+    }
+
+    public function getCatalogsSearchNameItem($catalogs, $search)
+    {
+        $catalogName            = $this->getCatalogName($catalogs, $search);
+        $catalogCompanyName     = $this->getCatalogCompanyName($catalogs, $search);
+
+        $catalogs = array_unique(Arr::collapse([
+            $catalogName,
+            $catalogCompanyName
+        ]));
+
+        return $catalogs;
     }
 
     public function getCompanySearchNameItem($companies, $search)
@@ -284,6 +311,16 @@ class SearchItemController extends ApiController
             ->pluck('products.id');
     }
 
+    public function getCatalogEnabled()
+    {
+        return Company::where('companies.status', Company::COMPANY_APPROVED)
+            ->join('catalogs','catalogs.company_id','=','companies.id')
+            ->where('catalogs.status', Catalogs::CATALOG_PUBLISH)
+            ->join('files', 'files.filesable_id', '=', 'catalogs.id')
+            ->where('files.filesable_type', Catalogs::class)
+            ->pluck('catalogs.id');
+    }
+
     public function getProjectEnabled()
     {
         $user = $this->validateUser();
@@ -307,6 +344,22 @@ class SearchItemController extends ApiController
             ->where('products.status', Products::PRODUCT_PUBLISH)
             ->whereIn('products.id', $products)
             ->pluck('products.id');
+    }
+
+    public function getCatalogName($catalogs, $name)
+    {
+        return Catalogs::whereIn('catalogs.id', $catalogs)
+            ->where(strtolower('catalogs.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->pluck('catalogs.id');
+    }
+
+    public function getCatalogCompanyName($catalogs, $name)
+    {
+        return Company::where('companies.status', Company::COMPANY_APPROVED)
+            ->where(strtolower('companies.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->join('catalogs','catalogs.company_id','=','companies.id')
+            ->whereIn('catalogs.id', $catalogs)
+            ->pluck('catalogs.id');
     }
 
     public function getProductName($products, $name)
@@ -379,6 +432,17 @@ class SearchItemController extends ApiController
             ->join('companies', 'companies.id', '=', 'catalogs.company_id')
             ->where('companies.status', Company::COMPANY_APPROVED)
             ->pluck('companies.id');
+    }
+
+    public function getCatalogTypeEntity($catalogs, $type_entity)
+    {
+        return TypesEntity::where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
+            ->where('types_entities.id', '=', $type_entity)
+            ->join('companies', 'companies.type_entity_id', '=', 'types_entities.id')
+            ->where('companies.status', '=', Company::COMPANY_APPROVED)
+            ->join('catalogs', 'catalogs.company_id', '=', 'companies.id')
+            ->whereIn('catalogs.id', $catalogs)
+            ->pluck('catalogs.id');
     }
 
     public function getProductsTypeEntity($products, $type_entity)
