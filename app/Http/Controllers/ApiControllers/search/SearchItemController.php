@@ -105,7 +105,7 @@ class SearchItemController extends ApiController
                 $result = $this->getCatalogAll($type_entity, $search);
                 break;
             case 'tenders':
-                $result = $this->getTenderAll($type_entity, $type_project, $category_tender, $search, $date);
+                $result = $this->getTenderAll($status, $type_entity, $type_project, $category_tender, $search, $date);
                 break;
             case 'projects':
                 $result = $this->getProjectAll($status, $type_entity, $type_project, $category_tender, $search, $date);
@@ -188,9 +188,13 @@ class SearchItemController extends ApiController
             ->get();
     }
 
-    public function getTenderAll($type_entity, $type_project, $category_tender, $search, $date)
+    public function getTenderAll($status, $type_entity, $type_project, $category_tender, $search, $date)
     {
         $tenders = $this->getTenderEnabled();
+
+        if (!is_null($status)) {
+            $tenders = $this->getTendersStatus($tenders, $status);
+        }
 
         if (!is_null($type_entity)) {
             $tenders = $this->getTendersTypeEntity($tenders, $type_entity);
@@ -507,7 +511,7 @@ class SearchItemController extends ApiController
             ->join('tenders_versions', 'tenders_versions.tenders_id', '=', 'tenders.id')
             ->whereIn('tenders_versions.id', $this->getTendersPublishVersion())
             ->join('tags', 'tags.tagsable_id', '=', 'tenders_versions.id')
-            ->where('tags.tagsable_type','=', 'App\Models\TendersVersions')
+            ->where('tags.tagsable_type', '=', 'App\Models\TendersVersions')
             ->where(strtolower('tags.name'), 'LIKE', '%' . strtolower($name) . '%')
             ->pluck('tenders.id');
     }
@@ -604,6 +608,20 @@ class SearchItemController extends ApiController
         return Projects::whereIn('id', $projects)
             ->where('projects.status', '=', $status)
             ->pluck('id');
+    }
+
+    public function getTendersStatus($tenders, $status)
+    {
+        if ($status == Projects::TECHNICAL_SPECIFICATIONS) {
+            $status = Projects::TECHNICAL_SPECIFICATIONS;
+        } else if ($status == Projects::IN_CONSTRUCTION) {
+            $status = Projects::IN_CONSTRUCTION;
+        }
+
+        return Projects::where('projects.status', '=', $status)
+            ->join('tenders', 'tenders.project_id', '=', 'projects.id')
+            ->whereIn('tenders.id', $tenders)
+            ->pluck('tenders.id');
     }
 
     public function getProjectsTypeEntity($projects, $type_entity)
