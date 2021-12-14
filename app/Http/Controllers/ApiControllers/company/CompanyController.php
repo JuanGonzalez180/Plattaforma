@@ -196,12 +196,12 @@ class CompanyController extends ApiController
      */
     public function show($slug)
     {
-        //
         $user = $this->validateUser();
         // Compañía del usuario que está logueado
         $userCompanyId = $user->companyId();
 
         $company = Company::where('slug', $slug)->first();
+
         if (!$company) {
             $companyError = ['company' => 'Error, no se ha encontrado ninguna compañia'];
             return $this->errorResponse($companyError, 500);
@@ -220,12 +220,96 @@ class CompanyController extends ApiController
             ->skip(0)->take(8)
             ->get();
 
-        // Traer Proyectos últimos 6
-        $company->projects = $company->projects
-            ->where('visible', Projects::PROJECTS_VISIBLE)
-            ->sortBy([['updated_at', 'desc']])
-            ->skip(0)->take(6);
 
+        if ($userCompanyId == $company->id) {
+            // Traer Proyectos últimos 6
+            $company->projects = $company->projects
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take(6);
+
+            // Traer Licitaciones últimas 6
+            $company->tenders = Tenders::select('tenders.*', 'comp.status AS company_status')
+                ->where('tenders.company_id', $company->id)
+                ->join('projects', 'projects.id', '=', 'tenders.project_id')
+                // ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+                ->leftjoin('tenders_companies AS comp', function ($join) use ($userCompanyId) {
+                    $join->on('tenders.id', '=', 'comp.tender_id');
+                    $join->where('comp.company_id', '=', $userCompanyId);
+                })
+                ->orderBy('tenders.updated_at', 'desc')
+                ->skip(0)->take(6)
+                ->get();
+
+            // Traer Productos últimos 6
+            $company->products = $company->products
+                // ->where('status', Products::PRODUCT_PUBLISH)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take(6);
+
+            // Traer Publicaciones últimas 6
+            $company->blogs = $company->blogs
+                // ->where('status', Blog::BLOG_PUBLISH)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take(6);
+
+            // Traer Portafolios últimos 8
+            $company->portfolios = $company->portfolios
+                // ->where('status', Portfolio::PORTFOLIO_PUBLISH)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take(8);
+
+            // Traer Catalogos últimos 8
+            $company->catalogs = $company->catalogs
+                // ->where('status', Catalogs::CATALOG_PUBLISH)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take(8);
+        } else {
+            // Traer Proyectos últimos 6
+            $company->projects = $company->projects
+                ->where('visible', Projects::PROJECTS_VISIBLE)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take(6);
+
+            // Traer Licitaciones últimas 6
+            $company->tenders = Tenders::select('tenders.*', 'comp.status AS company_status')
+                ->where('tenders.company_id', $company->id)
+                ->join('projects', 'projects.id', '=', 'tenders.project_id')
+                ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+                ->leftjoin('tenders_companies AS comp', function ($join) use ($userCompanyId) {
+                    $join->on('tenders.id', '=', 'comp.tender_id');
+                    $join->where('comp.company_id', '=', $userCompanyId);
+                })
+                ->orderBy('tenders.updated_at', 'desc')
+                ->skip(0)->take(6)
+                ->get();
+
+            // Traer Productos últimos 6
+            $company->products = $company->products
+                ->where('status', Products::PRODUCT_PUBLISH)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take(6);
+
+            // Traer Publicaciones últimas 6
+            $company->blogs = $company->blogs
+                ->where('status', Blog::BLOG_PUBLISH)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take(6);
+
+            // Traer Portafolios últimos 8
+            $company->portfolios = $company->portfolios
+                ->where('status', Portfolio::PORTFOLIO_PUBLISH)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take(8);
+
+            // Traer Catalogos últimos 8
+            $company->catalogs = $company->catalogs
+                ->where('status', Catalogs::CATALOG_PUBLISH)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take(8);
+                
+        }
+
+        // Recorre los proyectos
         foreach ($company->projects as $key => $project) {
             $user = $userTransform->transform($project->user);
             unset($project->user);
@@ -233,19 +317,7 @@ class CompanyController extends ApiController
             $project->image;
         }
 
-        // Traer Licitaciones últimas 6
-        $company->tenders = Tenders::select('tenders.*', 'comp.status AS company_status')
-            ->where('tenders.company_id', $company->id)
-            ->join('projects', 'projects.id', '=', 'tenders.project_id')
-            ->where('projects.visible', Projects::PROJECTS_VISIBLE)
-            ->leftjoin('tenders_companies AS comp', function ($join) use ($userCompanyId) {
-                $join->on('tenders.id', '=', 'comp.tender_id');
-                $join->where('comp.company_id', '=', $userCompanyId);
-            })
-            ->orderBy('tenders.updated_at', 'desc')
-            ->skip(0)->take(6)
-            ->get();
-
+        // Recorre las licitaciones
         $tenders = [];
         foreach ($company->tenders as $key => $tender) {
             $user = $tender->user;
@@ -263,13 +335,7 @@ class CompanyController extends ApiController
         unset($company->tenders);
         $company->tenders = $tenders;
 
-
-        // Traer Productos últimos 6
-        $company->products = $company->products
-            ->where('status', Products::PRODUCT_PUBLISH)
-            ->sortBy([['updated_at', 'desc']])
-            ->skip(0)->take(6);
-
+        //recorre los productos
         foreach ($company->products as $key => $product) {
             $user = $userTransform->transform($product->user);
             unset($product->user);
@@ -278,12 +344,7 @@ class CompanyController extends ApiController
             $product->image;
         }
 
-        // Traer Publicaciones últimas 6
-        $company->blogs = $company->blogs
-            ->where('status', Blog::BLOG_PUBLISH)
-            ->sortBy([['updated_at', 'desc']])
-            ->skip(0)->take(6);
-
+        //recorre las publicaciones
         foreach ($company->blogs as $key => $blog) {
             $user = $userTransform->transform($blog->user);
             unset($blog->user);
@@ -292,23 +353,13 @@ class CompanyController extends ApiController
             $blog->files;
         }
 
-        // Traer Portafolios últimos 8
-        $company->portfolios = $company->portfolios
-            ->where('status', Portfolio::PORTFOLIO_PUBLISH)
-            ->sortBy([['updated_at', 'desc']])
-            ->skip(0)->take(8);
-
+        //recorre los portafolios
         foreach ($company->portfolios as $key => $portfolio) {
             $portfolio->image;
             $portfolio->files;
         }
 
-        // Traer Catalogos últimos 8
-        $company->catalogs = $company->catalogs
-            ->where('status', Catalogs::CATALOG_PUBLISH)
-            ->sortBy([['updated_at', 'desc']])
-            ->skip(0)->take(8);
-
+        //recorre los catalogos
         foreach ($company->catalogs as $key => $catalog) {
             $catalog->image;
             $catalog->files;
@@ -416,7 +467,6 @@ class CompanyController extends ApiController
             } else {
                 $company->image()->create(['url' => $routeFile]);
             }
-
         }
 
         if (isset($request->imageCoverPage)) {
@@ -438,13 +488,13 @@ class CompanyController extends ApiController
         }
 
         if (isset($request->latitud) && isset($request->longitud)) {
-            if( !$company->address ){
+            if (!$company->address) {
                 $company->address()->create([
                     'address' => '',
                     'latitud' => $request->latitud,
                     'longitud' => $request->longitud
                 ]);
-            }else{
+            } else {
                 $company->address()->update([
                     'latitud' => $request->latitud,
                     'longitud' => $request->longitud
@@ -455,6 +505,6 @@ class CompanyController extends ApiController
         $companyNew = Company::findOrFail($company->id);
         $companyNew->imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
         $companyNew->image;
-        return $this->showOne($companyNew,200);
+        return $this->showOne($companyNew, 200);
     }
 }
