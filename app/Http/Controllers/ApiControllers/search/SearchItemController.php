@@ -505,8 +505,9 @@ class SearchItemController extends ApiController
     {
         return Tenders::whereIn('tenders.id', $tenders)
             ->join('tenders_versions', 'tenders_versions.tenders_id', '=', 'tenders.id')
+            ->whereIn('tenders_versions.id', $this->getTendersPublishVersion())
             ->join('tags', 'tags.tagsable_id', '=', 'tenders_versions.id')
-            ->where('tags.tagsable_type','=', TendersVersions::class)
+            ->where('tags.tagsable_type','=', 'App\Models\TendersVersions')
             ->where(strtolower('tags.name'), 'LIKE', '%' . strtolower($name) . '%')
             ->pluck('tenders.id');
     }
