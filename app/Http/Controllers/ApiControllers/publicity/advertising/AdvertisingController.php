@@ -188,7 +188,7 @@ class AdvertisingController extends ApiController
         $user = $this->validateUser();
 
         $advertisings = Advertisings::find($id);
-        $advertisings->status = $advertisings->status();
+        $advertisings->status = $advertisings->status_date();
         if( $advertisings->advertisingable_type == Products::class ){
             $advertisings->typeItem = Products::findOrFail($advertisings->advertisingable_id);
             $advertisings->typeItem->image;
