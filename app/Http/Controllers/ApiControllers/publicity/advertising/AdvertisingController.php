@@ -206,6 +206,7 @@ class AdvertisingController extends ApiController
 
         foreach($advertisings->advertisingPlansPaidImages as $value){
             $value->image;
+            $value->advertisingPlansImages->imagesAdvertisingPlans;
         }
 
         return $this->showOne($advertisings, 200);
