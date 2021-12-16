@@ -138,11 +138,11 @@ class AdvertisingController extends Controller
         $this->validate($request, $rules);
 
         $plan = AdvertisingPlans::find($id);
-        $plan->name         = $request->name;
-        $plan->description  = $request->description;
-        $plan->type_ubication  = $request->type_ubication;
-        $plan->days         = $request->days;
-        $plan->price        = $request->price;
+        $plan->name             = $request->name;
+        $plan->description      = $request->description;
+        $plan->type_ubication   = $request->type_ubication;
+        $plan->days             = $request->days;
+        $plan->price            = $request->price;
 
         $plan->save();
 
