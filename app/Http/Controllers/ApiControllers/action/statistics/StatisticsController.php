@@ -2,12 +2,23 @@
 
 namespace App\Http\Controllers\ApiControllers\action\statistics;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use JWTAuth;
 use App\Models\Statistics;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\ApiControllers\ApiController;
 
-class StatisticsController extends Controller
+class StatisticsController extends ApiController
 {
+    public function validateUser()
+    {
+        try {
+            $this->user = JWTAuth::parseToken()->authenticate();
+        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+        }
+        return $this->user;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -38,7 +49,30 @@ class StatisticsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'statisticsable_type'   => 'required',
+            'statisticsable_id'     => 'required',
+            'action'                => 'required',
+        ];
+
+        $this->validate( $request, $rules );
+
+        // Iniciar Transacción
+        DB::beginTransaction();
+
+        $fields = $request->all();
+
+        try {
+            $statistic = Statistics::create($fields);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $statisticsError = ['catalog' => 'Error, no se ha podido crear el catalogo'];
+            return $this->errorResponse($statisticsError, 500);
+        }
+
+        DB::commit();
+
+        return $this->showOne($statistic, 201);
     }
 
     /**

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiControllers\blog\BlogController;
+use App\Http\Controllers\ApiControllers\action\statistics\StatisticsController;
 use App\Http\Controllers\ApiControllers\blog\BlogFilesController;
 use App\Http\Controllers\ApiControllers\querywall\tenderQueryQuestionController;
 use App\Http\Controllers\ApiControllers\querywall\tenderQueryAnswerController;
@@ -180,6 +181,10 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::put('/projects/{project}/visible', [ProjectsController::class, 'changevisible'])->name('projectsvisible');
     Route::resource('/projects/files', ProjectsFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('projectsimages');
     Route::get('/projects/all', [ProjectsController::class, 'all'])->name('project-list-all');
+    /**
+     * Products
+     */
+    Route::resource('/statistics', StatisticsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('statistics');
     /**
      * Products
      */
