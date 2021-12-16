@@ -202,6 +202,9 @@ class AdvertisingController extends ApiController
             $advertisings->typeItem->image;
         }
 
+        $advertisings->payments;
+        $advertisings->plan;
+
         $advertisings->advertisingPlansPaidImages;
 
         foreach($advertisings->advertisingPlansPaidImages as $value){
