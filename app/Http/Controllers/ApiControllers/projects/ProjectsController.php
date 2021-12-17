@@ -80,6 +80,7 @@ class ProjectsController extends ApiController
 
         $rules = [
             'name' => 'required',
+            'description' => 'min:0|max:255',
             'type' => 'required',
             'status' => 'required',
         ];
@@ -185,6 +186,7 @@ class ProjectsController extends ApiController
 
         $rules = [
             'name' => 'required',
+            'description' => 'min:0|max:255',
             'type' => 'required',
             'status' => 'required',
         ];
