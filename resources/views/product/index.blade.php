@@ -11,9 +11,6 @@
             <div class="col">
                 <h1>Productos</h1>
             </div>
-            <div class="col text-right">
-                <a type="button" class="btn btn-primary btn-sm" href="{{ route('category.create') }}"><i class="fas fa-plus"></i>&nbsp;Crear Categoría</a>
-            </div>
         </div>
         <hr>
         @if(session()->get('success'))
@@ -21,7 +18,6 @@
                 {{ session()->get('success') }}
             </div>
         @endif
-
         <table id="product_table" class="table table-striped table-bordered" style="width:100%">
             <thead>
                 <tr>

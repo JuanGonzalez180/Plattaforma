@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Tags;
 use App\Models\Image;
 use App\Models\Files;
 use Illuminate\Database\Eloquent\Model;
@@ -46,5 +47,11 @@ class Catalogs extends Model
     // Relacion uno a muchos polimorfica
     public function files(){
         return $this->morphMany(Files::class, 'filesable');
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function tags()
+    {
+        return $this->morphMany(Tags::class, 'tagsable');
     }
 }

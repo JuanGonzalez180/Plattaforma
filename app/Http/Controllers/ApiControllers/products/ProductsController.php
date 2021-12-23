@@ -4,9 +4,7 @@ namespace App\Http\Controllers\ApiControllers\products;
 
 use JWTAuth;
 use App\Models\Tags;
-use App\Models\User;
 use App\Models\Image;
-use App\Models\Company;
 use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

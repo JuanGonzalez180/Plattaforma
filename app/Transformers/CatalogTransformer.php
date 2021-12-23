@@ -48,6 +48,7 @@ class CatalogTransformer extends TransformerAbstract
             'image'=> $catalog->image,
             'files'=> $catalog->files,
             'user'=> $userTransform->transform($catalog->user),
+            'tags'=> $catalog->tags,
             'created_at'=> (string)$catalog->created_at,
             'updated_at'=> (string)$catalog->updated_at
         ];

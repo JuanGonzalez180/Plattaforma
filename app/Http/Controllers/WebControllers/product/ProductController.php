@@ -56,7 +56,7 @@ class ProductController extends Controller
     {
 
         $company_id     = $request->company_id;
-        $products       = Products::where('company_id', $company_id)->orderBy('id', 'asc');
+        $products       = Products::where('company_id', $company_id)->orderBy('id', 'desc');
 
         // $products       = $products->get();
 

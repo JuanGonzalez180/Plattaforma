@@ -26,7 +26,8 @@ class ProductFileController extends ApiController
     public $routeFileTemplate   = 'template/product_csv/';
     public $nameFile = "template_product";
 
-    public function validateUser(){
+    public function validateUser()
+    {
         try {
             $this->user = JWTAuth::parseToken()->authenticate();
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
@@ -52,17 +53,15 @@ class ProductFileController extends ApiController
             'file_csv' => 'required|mimes:csv,txt,xls,xlsx'
         ];
 
-        $this->validate( $request, $rules );
+        $this->validate($request, $rules);
 
-        if(!Schema::hasTable('temp_product_files')){
+        if (!Schema::hasTable('temp_product_files')) {
             $this->createTemporaryTable();
         };
 
-        $generator = new Generator();
-
-        $fileName = uniqid().'.'.$request->file_csv->getClientOriginalExtension();
-        $request->file_csv->storeAs( $this->routeFile.$this->routeFileBD, $fileName);
-        $file_cvs       = 'storage/'.$this->routeFileBD.$fileName;
+        $fileName = uniqid() . '.' . $request->file_csv->getClientOriginalExtension();
+        $request->file_csv->storeAs($this->routeFile . $this->routeFileBD, $fileName);
+        $file_cvs       = 'storage/' . $this->routeFileBD . $fileName;
 
         // print $file_cvs;
         $user       = $this->validateUser();
@@ -70,27 +69,26 @@ class ProductFileController extends ApiController
 
         $data = Excel::toArray(new ProductsImport, $file_cvs);
 
-        if( count($data) ){
+        if (count($data)) {
             foreach ($data[0] as $key => $row) {
-                if($key)
+                if ($key)
                     $this->createProduct($row, $user, $companyID);
             }
         }
 
         unlink($file_cvs);
 
-        return $this->showOneData( ['success' => 'se han cargado todos los productos correctamente'], 200);
+        return $this->showOneData(['success' => 'se han cargado todos los productos correctamente'], 200);
     }
 
     public function createProduct($row, $user, $companyID)
     {
-        $brand_id   = (!empty($row[1])) ? $this->getBrandId($row[1],$user, $companyID) : 1;
+        $brand_id   = (!empty($row[1])) ? $this->getBrandId($row[1], $user, $companyID) : 1;
 
         $product = Products::where(strtoupper('name'), strtoupper($row[0]))
-            ->where('brand_id',$brand_id);
+            ->where('brand_id', $brand_id);
 
-        if(!$product->exists())
-        {
+        if (!$product->exists()) {
             $product = new Products;
             $product->name        = ucfirst($row[0]);
             $product->company_id  = $companyID;
@@ -102,11 +100,11 @@ class ProductFileController extends ApiController
             $product->save();
 
             //category/categorias
-            if(!empty($row[3]))
-            $this->addCategories($row[3], $product);
+            if (!empty($row[3]))
+                $this->addCategories($row[3], $product);
 
             //tags/Etiquetas
-            if(!empty(trim($row[4])))
+            if (!empty(trim($row[4])))
                 $this->addTags(trim($row[4]), $product);
 
             DB::table('temp_product_files')->insert([
@@ -122,12 +120,9 @@ class ProductFileController extends ApiController
     {
         $brand = Brands::where(strtoupper('name'), strtoupper($name));
 
-        if($brand->exists())
-        {
+        if ($brand->exists()) {
             $brand = $brand->first();
-        }
-        else
-        {
+        } else {
             $brand = new Brands;
             $brand->user_id     = $user->id;
             $brand->company_id  = $companyID;
@@ -141,11 +136,11 @@ class ProductFileController extends ApiController
 
     public function downloadTemplate()
     {
-        $fileName   = $this->nameFile.'.xlsx';
+        $fileName   = $this->nameFile . '.xlsx';
         $nameNoCache = uniqid();
-        $pathtoFile = url( 'storage/' . $this->routeFileTemplate.$fileName . '?nocache=' . $nameNoCache );
+        $pathtoFile = url('storage/' . $this->routeFileTemplate . $fileName . '?nocache=' . $nameNoCache);
 
-        return $this->showOneData( ['url' => $pathtoFile, 'code' => 200 ], 200);
+        return $this->showOneData(['url' => $pathtoFile, 'code' => 200], 200);
     }
 
     /*{
@@ -162,15 +157,20 @@ class ProductFileController extends ApiController
     {
         $categories = array_unique($this->stringToArrayHashtag($categories));
 
-        foreach($categories as $categoryName)
-        {   
-            $category = Category::where(
-                $this->remove_accents(strtolower('name')),
-                $this->remove_accents(strtolower($categoryName))
-            )->first();
+        foreach ($categories as $id) {
+            $category = Category::where('id', $id)->first();
 
-            if($category)
-                $product->productCategories()->attach($category);
+            if ($category) {
+
+
+                $childs = DB::select('call get_child_type_categoty("' . $category . '")');
+
+                // foreach ($childs as $value) {
+                //     if ($value->id <= $category) {
+                //         // $product->productCategories()->attach($value->id);
+                //     };
+                // }
+            }
         }
     }
 
@@ -178,8 +178,7 @@ class ProductFileController extends ApiController
     {
         $tags = array_unique($this->stringToArrayHashtag($tags));
 
-        foreach($tags as $tag)
-        {
+        foreach ($tags as $tag) {
             $product->tags()->create(['name' => ucfirst($tag)]);
         }
     }
@@ -192,10 +191,9 @@ class ProductFileController extends ApiController
 
     function remove_accents($array)
     {
-        $not_allowed    = array("á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","À","Ã","Ì","Ò","Ù","Ã™","Ã ","Ã¨","Ã¬","Ã²","Ã¹","ç","Ç","Ã¢","ê","Ã®","Ã´","Ã»","Ã‚","ÃŠ","ÃŽ","Ã”","Ã›","ü","Ã¶","Ã–","Ã¯","Ã¤","«","Ò","Ã","Ã„","Ã‹");
-        $allowed        = array("a","e","i","o","u","A","E","I","O","U","n","N","A","E","I","O","U","a","e","i","o","u","c","C","a","e","i","o","u","A","E","I","O","U","u","o","O","i","a","e","U","I","A","E");
+        $not_allowed    = array("á", "é", "í", "ó", "ú", "Á", "É", "Í", "Ó", "Ú", "ñ", "À", "Ã", "Ì", "Ò", "Ù", "Ã™", "Ã ", "Ã¨", "Ã¬", "Ã²", "Ã¹", "ç", "Ç", "Ã¢", "ê", "Ã®", "Ã´", "Ã»", "Ã‚", "ÃŠ", "ÃŽ", "Ã”", "Ã›", "ü", "Ã¶", "Ã–", "Ã¯", "Ã¤", "«", "Ò", "Ã", "Ã„", "Ã‹");
+        $allowed        = array("a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "n", "N", "A", "E", "I", "O", "U", "a", "e", "i", "o", "u", "c", "C", "a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "u", "o", "O", "i", "a", "e", "U", "I", "A", "E");
 
-        return str_replace($not_allowed, $allowed ,$array);
+        return str_replace($not_allowed, $allowed, $array);
     }
-    
 }

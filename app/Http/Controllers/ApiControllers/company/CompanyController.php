@@ -158,7 +158,7 @@ class CompanyController extends ApiController
         }
 
         if( !$errorCompany ){
-            DB::commit();
+            // DB::commit();
 
             try {
                 // Generar el correo de Verificación.

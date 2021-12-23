@@ -93,6 +93,12 @@ class CatalogsControllers extends ApiController
                 Storage::disk('local')->put($this->routeFile . $routeFile, $data);
                 $catalog->image()->create(['url' => $routeFile]);
             }
+
+            if ($request->tags) {
+                foreach ($request->tags as $key => $tag) {
+                    $catalog->tags()->create(['name' => $tag['displayValue']]);
+                }
+            }
         }
 
         DB::commit();
@@ -174,7 +180,16 @@ class CatalogsControllers extends ApiController
             }
         }
 
+        if ($request->tags) {
+            foreach ($request->tags as $key => $tag) {
+                $catalog->tags()->create(['name' => $tag['displayValue']]);
+            }
+        }
+
+
         $catalog->update($catalogFileds);
+
+        
 
         return $this->showOne($catalog, 200);
     }
