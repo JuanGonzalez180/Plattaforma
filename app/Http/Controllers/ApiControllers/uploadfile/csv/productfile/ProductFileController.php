@@ -143,16 +143,6 @@ class ProductFileController extends ApiController
         return $this->showOneData(['url' => $pathtoFile, 'code' => 200], 200);
     }
 
-    /*{
-        $categories = array_unique($this->stringToArrayHashtag($categories));
-
-        foreach($categories as $categoryId)
-        {
-            if(Category::where('id',$categoryId)->exists())
-                $product->productCategories()->attach($categoryId);
-        }
-    }*/
-
     public function addCategories($categories, $product)
     {
         $categories = array_unique($this->stringToArrayHashtag($categories));
@@ -163,7 +153,7 @@ class ProductFileController extends ApiController
             if ($category) {
 
 
-                $childs = DB::select('call get_child_type_categoty("' . $category . '")');
+                // $childs = DB::select('call get_child_type_categoty("' . $category . '")');
 
                 // foreach ($childs as $value) {
                 //     if ($value->id <= $category) {

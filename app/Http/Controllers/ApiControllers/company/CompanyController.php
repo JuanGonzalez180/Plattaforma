@@ -157,13 +157,14 @@ class CompanyController extends ApiController
             return $this->errorResponse($userError, 500);
         }
 
-        if( !$errorCompany ){
+        if (!$errorCompany) {
             // DB::commit();
 
             try {
                 // Generar el correo de Verificación.
                 Mail::to($user->email)->send(new CreatedAccount($company, $user, $type['type']['slug']));
-            } catch (\Throwable $th) {}
+            } catch (\Throwable $th) {
+            }
         }
 
         $user['status_company'] = $this->statusCompanyUser($user);
@@ -208,15 +209,17 @@ class CompanyController extends ApiController
         // Banner
         $company->coverpage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
 
-        // 8 Integrantes del equipo
-        $company->team = Team::where('company_id', $company->id)
-            ->where('status', Team::TEAM_APPROVED)
-            ->orderBy('id', 'desc')
-            ->skip(0)->take(8)
-            ->get();
+
 
 
         if ($userCompanyId == $company->id) {
+
+            // 8 Integrantes del equipo
+            $company->team = Team::where('company_id', $company->id)
+                ->orderBy('id', 'desc')
+                ->skip(0)->take(8)
+                ->get();
+
             // Traer Proyectos últimos 6
             $company->projects = $company->projects
                 ->sortBy([['updated_at', 'desc']])
@@ -259,6 +262,14 @@ class CompanyController extends ApiController
                 ->sortBy([['updated_at', 'desc']])
                 ->skip(0)->take(8);
         } else {
+
+            // 8 Integrantes del equipo
+            $company->team = Team::where('company_id', $company->id)
+                ->where('status', Team::TEAM_APPROVED)
+                ->orderBy('id', 'desc')
+                ->skip(0)->take(8)
+                ->get();
+
             // Traer Proyectos últimos 6
             $company->projects = $company->projects
                 ->where('visible', Projects::PROJECTS_VISIBLE)
