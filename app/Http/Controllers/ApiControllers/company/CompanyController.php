@@ -80,15 +80,6 @@ class CompanyController extends ApiController
         //Verificar que este registrado y adicionar otras validaciones
         $errors = [];
 
-        /*if ( $type['type']['slug'] == 'demanda' ) {
-
-            if ( !$request['nit'] )
-                $errors['nit'] = ['El campo nit es obligatorio'];
-
-            if ( !$request['web'] )
-                $errors['web'] = ['El campo web es obligatorio'];
-        }*/
-
         //Verificar si existen errores
         if (!empty($errors))
             return $this->errorResponse($errors, 500);
@@ -123,20 +114,11 @@ class CompanyController extends ApiController
 
         // Iniciar Transacción
         DB::beginTransaction();
-        $errorUser = false;
+        $errorCompany = false;
         try {
             // Crear Usuario
             $user = User::create($userFields);
-            DB::commit();
-        } catch (\Throwable $th) {
-            // Si existe algún error al momento de crear el usuario
-            $errorUser = true;
-            DB::rollBack();
-            $userError = ['user' => 'Error, no se ha podido crear el usuario o ya existe el nombre de la empresa'];
-            return $this->errorResponse($userError, 500);
-        }
 
-        if (!$errorUser) {
             $companyFields = [
                 'name'              => $request['name'],
                 'type_entity_id'    => $request['type_entity_id'],
@@ -154,16 +136,10 @@ class CompanyController extends ApiController
 
                 // Ingresar País en una Compañía
                 $company->countries()->attach($request['country_backend']);
-
-                // Generar el correo de Verificación.
-                Mail::to($user->email)->send(new CreatedAccount($company, $user, $type['type']['slug']));
-
-                DB::commit();
             } catch (\Throwable $th) {
                 // Si existe algún error al generar la compañía
+                $errorCompany = true;
                 DB::rollBack();
-
-                // $user->delete();
 
                 $companyError = ['company' => 'Error, no se ha podido crear la compañia'];
 
@@ -171,6 +147,24 @@ class CompanyController extends ApiController
                     $companyError = ['company' => 'Error, ya se encuentra registrada la compañia'];
                 }
 
+                return $this->errorResponse($companyError, 500);
+            }
+        } catch (\Throwable $th) {
+            // Si existe algún error al momento de crear el usuario
+            $errorCompany = true;
+            DB::rollBack();
+            $userError = ['user' => 'Error, no se ha podido crear el usuario o ya existe el nombre de la empresa'];
+            return $this->errorResponse($userError, 500);
+        }
+
+        if( !$errorCompany ){
+            DB::commit();
+
+            try {
+                // Generar el correo de Verificación.
+                Mail::to($user->email)->send(new CreatedAccount($company, $user, $type['type']['slug']));
+            } catch (\Throwable $th) {
+                $companyError = ['company' => json_encode($th) ];
                 return $this->errorResponse($companyError, 500);
             }
         }
