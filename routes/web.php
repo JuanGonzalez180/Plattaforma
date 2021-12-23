@@ -16,9 +16,12 @@ use App\Http\Controllers\WebControllers\company\projects\CompanyProjectControlle
 
 use App\Http\Controllers\WebControllers\company\CompanyFiles\CompanyFilesController;
 
+use App\Http\Controllers\WebControllers\exportfile\xls\CategoriesFileController;
+
 use App\Http\Controllers\WebControllers\company\providers\CompanyProvidersController;
 use App\Http\Controllers\WebControllers\project\ProjectController;
 use App\Http\Controllers\WebControllers\product\ProductController;
+use App\Http\Controllers\WebControllers\catalog\CatalogsController;
 use App\Http\Controllers\WebControllers\country\CountryController;
 use App\Http\Controllers\WebControllers\category\CategoryController;
 use App\Http\Controllers\WebControllers\querywall\QueryWallController;
@@ -182,6 +185,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/company/products', [ProductController::class, 'getCompanyProducts'])
                 ->name('company.products');
 
+        //catalogs
+        Route::get('/company/catalog/{id}', [CatalogsController::class, 'index'])->name('catalog.company.id');
+
+        Route::post('/company/catalogs', [CatalogsController::class, 'getCompanyCatalogs'])
+                ->name('company.catalogs');
 
         // Proyectos
         Route::resource('proyecto', ProjectController::class, ['only' => ['edit', 'show']])
@@ -270,8 +278,13 @@ Route::group(['middleware' => 'auth'], function () {
                 ->names('testing')
                 ->parameters(['test' => 'test']);
 
+        //UPLOAD FILES
         Route::resource('uploadfile/template/product/file', ProductFileController::class, ['only' => ['index', 'store']])
                 ->names('template-product-file');
+        //EXPORT FILES
+        Route::get('/categories/list/file/xlsx', function(){
+                return (new CategoriesFileController)->export()->download('categorias.xlsx');
+        })->name('cotegory-export');
 
         Route::resource('uploadfile/file/company', importCategoriesController::class, ['only' => ['index', 'store']])
                 ->names('file-company-txt');

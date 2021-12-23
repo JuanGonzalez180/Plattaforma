@@ -70,18 +70,12 @@ class ProductFileController extends ApiController
 
         $data = Excel::toArray(new ProductsImport, $file_cvs);
 
-
-
-        
         if( count($data) ){
             foreach ($data[0] as $key => $row) {
                 if($key)
                     $this->createProduct($row, $user, $companyID);
             }
         }
-
-
-
 
         unlink($file_cvs);
 
@@ -104,7 +98,7 @@ class ProductFileController extends ApiController
             $product->brand_id    = $brand_id;
             $product->description = $row[2];
             $product->type        = Products::TYPE_PRODUCT;
-            $product->status      = $row[8];
+            $product->status      = Products::PRODUCT_PUBLISH;
             $product->save();
 
             //category/categorias

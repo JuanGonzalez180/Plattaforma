@@ -28,6 +28,7 @@ use App\Http\Controllers\ApiControllers\company\CompanyCatalogs\CompanyCatalogsC
 use App\Http\Controllers\ApiControllers\company\CompanyFiles\CompanyFilesController;
 use App\Http\Controllers\ApiControllers\country\CountryController;
 use App\Http\Controllers\ApiControllers\files\FilesController;
+use App\Http\Controllers\WebControllers\exportfile\xls\CategoriesFileController;
 use App\Http\Controllers\ApiControllers\products\ProductsController;
 use App\Http\Controllers\ApiControllers\products\ProductsDocumentsController;
 use App\Http\Controllers\ApiControllers\products\ProductsFilesController;
@@ -108,6 +109,7 @@ use App\Http\Controllers\ApiControllers\company\CompanyChanges\CompanyChangesNam
 /*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });*/
+
 /**
  * TypesEntity
  */
@@ -161,8 +163,8 @@ Route::get('/typesprojects', TypeProjectController::class)->name('typesprojects'
 Route::get('/categories', CategoryController::class)->name('categories');
 Route::get('/categoriesservices', CategoryServicesController::class)->name('categoriesservices');
 
-Route::group(['middleware' => ['jwt.verify']], function() {
-    Route::post('user',[UsersController::class, 'getAuthenticatedUser'])->name('user');
+Route::group(['middleware' => ['jwt.verify']], function () {
+    Route::post('user', [UsersController::class, 'getAuthenticatedUser'])->name('user');
     /**
      * My Account
      */
@@ -170,36 +172,36 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::resource('/myaccount/accountedit', AccountEditController::class, ['only' => ['store']])->names('accountedit');
     Route::get('/myaccount/mycompany', AccountMyCompanyController::class)->name('mycompany');
     Route::resource('/myaccount/mycompany', AccountMyCompanyController::class, ['only' => ['store']])->names('mycompany');
-    Route::resource('/myaccount/myservices', AccountMyServicesController::class, ['only' => ['index','store']])->names('myservices');
+    Route::resource('/myaccount/myservices', AccountMyServicesController::class, ['only' => ['index', 'store']])->names('myservices');
     Route::resource('/myaccount/myteam', AccountMyTeamController::class, ['only' => ['index', 'store', 'update', 'destroy']])->names('myteam');
-    Route::resource('/company/files', CompanyFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('companyimages');
+    Route::resource('/company/files', CompanyFilesController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('companyimages');
     Route::resource('/company/name', CompanyChangesNameController::class, ['only' => ['store']])->names('companychangename');
     /**
      * Projects
      */
-    Route::resource('/projects', ProjectsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('projects');
+    Route::resource('/projects', ProjectsController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('projects');
     Route::put('/projects/{project}/visible', [ProjectsController::class, 'changevisible'])->name('projectsvisible');
-    Route::resource('/projects/files', ProjectsFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('projectsimages');
+    Route::resource('/projects/files', ProjectsFilesController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('projectsimages');
     Route::get('/projects/all', [ProjectsController::class, 'all'])->name('project-list-all');
     /**
      * Products
      */
-    Route::resource('/statistics', StatisticsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('statistics');
+    Route::resource('/statistics', StatisticsController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('statistics');
     /**
      * Products
      */
-    Route::resource('/products', ProductsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('products');
-    Route::resource('/products/files', ProductsFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('productsimages');
-    Route::resource('/products/documents', ProductsDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('productsdocuments');
+    Route::resource('/products', ProductsController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('products');
+    Route::resource('/products/files', ProductsFilesController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('productsimages');
+    Route::resource('/products/documents', ProductsDocumentsController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('productsdocuments');
     /**
      * brands
      */
-    Route::resource('/brands', BrandsController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('brands');
+    Route::resource('/brands', BrandsController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('brands');
     /**
      * blogs
      */
-    Route::resource('/blogs/files', BlogFilesController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('blogsimages');
-    Route::resource('/blogs', BlogController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('blogs');
+    Route::resource('/blogs/files', BlogFilesController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('blogsimages');
+    Route::resource('/blogs', BlogController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('blogs');
     /**
      * pruebas
      */
@@ -207,63 +209,63 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     /**
      * Query_wall
      */
-    Route::resource('/querywall/tenders/question', tenderQueryQuestionController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('querywalltendersQuestions');
-    Route::resource('/querywall/tenders/answer', tenderQueryAnswerController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('querywalltendersAnswer');
+    Route::resource('/querywall/tenders/question', tenderQueryQuestionController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('querywalltendersQuestions');
+    Route::resource('/querywall/tenders/answer', tenderQueryAnswerController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('querywalltendersAnswer');
     Route::put('/querywall/{id}/visible', [tenderQueryAnswerController::class, 'changevisible'])->name('querywallvisible');
 
     /**
      * portfolios
      */
-    Route::resource('/portfolios', PortfoliosController::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('portfolios');
-    Route::resource('/portfolios/documents', PortfoliosDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('portfoliosdocuments');
+    Route::resource('/portfolios', PortfoliosController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('portfolios');
+    Route::resource('/portfolios/documents', PortfoliosDocumentsController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('portfoliosdocuments');
     /**
      * catalogs
      */
-    Route::resource('/catalogs', CatalogsControllers::class, ['only' => ['index','show','store', 'edit', 'update', 'destroy']])->names('catalogs');
-    Route::resource('/catalogs/documents', CatalogsDocumentsControllers::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('catalogsdocuments');
+    Route::resource('/catalogs', CatalogsControllers::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('catalogs');
+    Route::resource('/catalogs/documents', CatalogsDocumentsControllers::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('catalogsdocuments');
     /**
      * Tenders_docuemnts
      */
-    Route::resource('/tenders/documents', TendersDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('tendersdocuments');
+    Route::resource('/tenders/documents', TendersDocumentsController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('tendersdocuments');
     /**
      * Tenders_companies_docuemnts
      */
-    Route::resource('/tenders/companies/documents', TendersCompaniesDocumentsController::class, ['only' => ['index','store', 'edit', 'update', 'destroy']])->names('tenderscompaniesdocuments');
+    Route::resource('/tenders/companies/documents', TendersCompaniesDocumentsController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('tenderscompaniesdocuments');
     /**
      * Tenders_vesion
      */
-    Route::resource('/tenders/version', TendersVersionsController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tendersVersions');
+    Route::resource('/tenders/version', TendersVersionsController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('tendersVersions');
     /**
      * Tenders_companies
      */
-    Route::resource('/tenders/companies', TendersCompaniesController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tendersCompanies');
+    Route::resource('/tenders/companies', TendersCompaniesController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('tendersCompanies');
     Route::get('/tenders/all/companies', [TendersCompaniesListController::class, 'indexTendersCompanies'])->name('company-tender-list');
     Route::get('/tenders/companies/selected/winner', [TendersCompaniesActionController::class, 'SelectedWinner'])->name('company-company-selected-winner');
     Route::get('/tenders/companies/selected/more/winner', [TendersCompaniesActionController::class, 'SelectedMoreWinner'])->name('company-company-selected-more--winner');
 
     /**
      * Tenders_action
-     */    
+     */
     Route::put('/tenders/action/{id}/update/user', [TendersActionController::class, 'updateTenderUser'])->name('company-tender-update-user');
     Route::put('/tenders/action/{id}/closed/status', [TendersActionController::class, 'updateStatusClosed'])->name('company-tender-update-status-closed');
     Route::put('/tenders/action/{id}/declined/status', [TendersActionController::class, 'updateStatusDeclined'])->name('company-tender-update-status-declined');
     /**
      * Tenders
      */
-    Route::resource('/tenders', TendersController::class, ['only' => ['index','store', 'show', 'edit', 'update', 'destroy']])->names('tenders');
-    
+    Route::resource('/tenders', TendersController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('tenders');
+
     /**
      * Company
      */
     Route::get('/company/status', [CompanyController::class, 'statusCompany'])->name('company-status');
     Route::get('/company/{slug}', [CompanyController::class, 'show'])->name('company-show');
     Route::post('/company/item/update', [CompanyController::class, 'updateItem'])->name('company-item-update');
-    
+
     Route::get('/company/{slug}/detail', [CompanyController::class, 'detail'])->name('company-detail');
-    
+
     Route::get('/company/{slug}/projects', [CompanyProjectsController::class, 'index'])->name('company-projects');
     Route::get('/company/{slug}/project/{id}', [CompanyProjectsController::class, 'show'])->name('company-detail-project');
-    
+
     Route::get('/company/{slug}/tenders', [CompanyTendersController::class, 'index'])->name('company-tenders');
     Route::get('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'show'])->name('company-tender-detail');
     Route::get('/company/tenders/{id}/edit', [CompanyTendersController::class, 'edit'])->name('company-tender-edit');
@@ -272,13 +274,13 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     //participar en licitación
     Route::post('/company/{slug}/tenders/{id}/send/participate', [CompanyTendersTransactController::class, 'store'])->name('company-send-participate');
     Route::post('/company/tenders/select/participate', [CompanyTendersTransactController::class, 'postComparate'])->name('company-select-participate');
-    
+
     Route::get('/company/{slug}/blogs', [CompanyBlogsController::class, 'index'])->name('company-blogs');
     Route::get('/company/{slug}/blogs/{id}', [CompanyBlogsController::class, 'show'])->name('company-detail-blogs');
-    
+
     Route::get('/company/{slug}/products', [CompanyProductsController::class, 'index'])->name('company-products');
     Route::get('/company/{slug}/products/{id}', [CompanyProductsController::class, 'show'])->name('company-detail-products');
-    
+
     Route::get('/company/{slug}/teams', [CompanyTeamsController::class, 'index'])->name('company-teams');
     Route::get('/company/{slug}/portfolios', [CompanyPortfoliosController::class, 'index'])->name('company-portfolios');
     Route::get('/company/{slug}/catalogs', [CompanyCatalogsController::class, 'index'])->name('company-catalog');
@@ -291,7 +293,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     /*csv*/
     Route::post('/uploadfile/csv/product/file', [ProductFileController::class, 'store'])->name('csv-product-file');
     Route::get('/filedownload/csv/product/file', [ProductFileController::class, 'downloadTemplate'])->name('download-csv-product-file');
-    
+
     /**
      * Search
      */
@@ -311,32 +313,36 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
 
 
-    
+
     // Route::resource('/search/items/parameters', SearchParameterController::class, ['only' => ['index']])->names('search-parameter');
     Route::post('/search/items/parameters', SearchItemController::class)->name('search-parameter');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 
     // Remarks
-    Route::resource('/remarks', RemarksController::class, ['only' => ['index', 'store','edit','update','destroy']])->names('remarks');
-    
+    Route::resource('/remarks', RemarksController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('remarks');
+
     // Interests or Favorites
-    Route::resource('/interests', InterestsController::class, ['only' => ['index', 'store','destroy']])->names('interests');
-    Route::resource('/favorites', FavoritesController::class, ['only' => ['index', 'store','edit','update','destroy']])->names('favorites');
+    Route::resource('/interests', InterestsController::class, ['only' => ['index', 'store', 'destroy']])->names('interests');
+    Route::resource('/favorites', FavoritesController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('favorites');
 
     // Notifications 
     Route::resource('/tokens', UsersTokensController::class, ['only' => ['store']])->names('tokens');
     Route::resource('/notifications', NotificationsController::class, ['only' => ['index', 'destroy']])->names('notifications');
-    
+
     // Chat
-    Route::resource('/chats', ChatController::class, ['only' => ['index','store']])->names('chats');
+    Route::resource('/chats', ChatController::class, ['only' => ['index', 'store']])->names('chats');
     Route::get('/chats/notread', [ChatController::class, 'notread'])->name('chats-notread');
     // Messages
-    Route::resource('/messages', MessagesController::class, ['only' => ['index','store']])->names('messages');
+    Route::resource('/messages', MessagesController::class, ['only' => ['index', 'store']])->names('messages');
 
     Route::resource('advertisings/plans/images', AdvertisingPlansPaidImagesController::class, ['only' => ['index', 'edit', 'update']])->names('advertisings_images');
     Route::get('/advertisings/plans', AdvertisingPlansController::class)->name('advertisings_plans');
     Route::resource('/advertisings', AdvertisingController::class, ['only' => ['index', 'store', 'edit', 'update']])->names('advertisings');
 
+    //EXPORT FILES
+    Route::get('/categories/list/file/xlsx', function () {
+        return (new CategoriesFileController)->export()->download('categorias.xlsx');
+    })->name('cotegory-export-api');
 });
 // Route::post('/files', FilesController::class)->name('files');
 

@@ -72,7 +72,7 @@ class AccountMyCompanyController extends ApiController
                 'name' => ['required', 'regex:/^[a-zA-Z\s]*$/'],
                 'nit' => 'nullable',
                 'country_code' => 'required',
-                'web' => 'nullable|url',
+                // 'web' => 'nullable|url',
                 // 'country_backend' => 'required',
             ];
             $this->validate( $request, $rules );

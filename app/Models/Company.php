@@ -683,7 +683,6 @@ class Company extends Model
         $total['tenders'] = $companySinTransform->tenders
             ->count();
 
-
         $total['products'] = $companySinTransform->products
             ->where('status', Products::PRODUCT_PUBLISH)
             ->count();

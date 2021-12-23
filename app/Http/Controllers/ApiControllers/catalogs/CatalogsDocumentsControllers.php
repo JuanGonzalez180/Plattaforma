@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
+use Imagick;
+
 
 class CatalogsDocumentsControllers extends ApiController
 {
@@ -18,7 +20,8 @@ class CatalogsDocumentsControllers extends ApiController
     public $routeCatalog = 'images/catalogs/';
     public $allowed = ['pdf'];
 
-    public function validateUser(){
+    public function validateUser()
+    {
         try {
             $this->user = JWTAuth::parseToken()->authenticate();
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
@@ -26,7 +29,8 @@ class CatalogsDocumentsControllers extends ApiController
         return $this->user;
     }
 
-    public function filesType( $catalog ){
+    public function filesType($catalog)
+    {
         $files = Files::where('filesable_id', $catalog->id)
             ->where('type', 'documents')
             ->where('filesable_type', Catalogs::class)
@@ -42,10 +46,10 @@ class CatalogsDocumentsControllers extends ApiController
         $rules = [
             'id' => 'required'
         ];
-        $this->validate( $request, $rules );
-        
+        $this->validate($request, $rules);
+
         $catalog = Catalogs::findOrFail($request->id);
-        return $this->showAll($this->filesType( $catalog ),200);
+        return $this->showAll($this->filesType($catalog), 200);
     }
 
     /**
@@ -64,32 +68,33 @@ class CatalogsDocumentsControllers extends ApiController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $user = $this->validateUser();
 
         $rules = [
             'id' => 'required'
         ];
-        $this->validate( $request, $rules );
+        $this->validate($request, $rules);
 
         $catalog = Catalogs::findOrFail($request->id);
 
-        if( $request->hasFile('files') ) {
+        if ($request->hasFile('files')) {
             $completeFileName = $request->file('files')->getClientOriginalName();
             $fileNameOnly = pathinfo($completeFileName, PATHINFO_FILENAME);
             $extension = strtolower($request->file('files')->getClientOriginalExtension());
 
-            if( in_array( $extension, $this->allowed ) ){
+            if (in_array($extension, $this->allowed)) {
                 $fileInServer = 'document' . '-' . rand() . '-' . time() . '.' . $extension;
-                $routeFile = $this->routeCatalog.$catalog->id.'/documents/';
-                $request->file('files')->storeAs( $this->routeFile . $routeFile, $fileInServer);
-                $catalog->files()->create([ 'name' => $fileInServer, 'type'=> 'documents', 'url' => $routeFile.$fileInServer]);
-            }else{
-                return $this->errorResponse( [ 'error' => ['El tipo de archivo no es válido']], 500 );
+                $routeFile = $this->routeCatalog . $catalog->id . '/documents/';
+                $request->file('files')->storeAs($this->routeFile . $routeFile, $fileInServer);
+                $catalog->files()->create(['name' => $fileInServer, 'type' => 'documents', 'url' => $routeFile . $fileInServer]);
+            } else {
+                return $this->errorResponse(['error' => ['El tipo de archivo no es válido']], 500);
             }
         }
 
-        return $this->showAll($this->filesType( $catalog ),200);
+        return $this->showAll($this->filesType($catalog), 200);
     }
 
     /**
@@ -132,8 +137,8 @@ class CatalogsDocumentsControllers extends ApiController
             // 'product' => 'required',
         ];
 
-        $this->validate( $request, $rules );
-        
+        $this->validate($request, $rules);
+
         // Datos
         $fileCatalog = Files::where('id', $fileId)
             ->where('filesable_type', Catalogs::class)
@@ -144,25 +149,25 @@ class CatalogsDocumentsControllers extends ApiController
         $tmp = explode('.', $fileCatalog->name);
         $extension = end($tmp);
 
-        $routeFile = $this->routeCatalog.$catalog->id.'/documents/';
+        $routeFile = $this->routeCatalog . $catalog->id . '/documents/';
         $file['name'] = preg_replace("/[^A-Za-z0-9]/", '', $request['name']) . "." . $extension;
         $file['url'] = $routeFile . $file['name'];
-        
-        if( Storage::disk('local')->exists( $this->routeFile . $routeFile . $file['name']) ){
-            $userError = [ 'name' => ['Error, el nombre de archivo ya existe'] ];
-            return $this->errorResponse( $userError, 500 );
+
+        if (Storage::disk('local')->exists($this->routeFile . $routeFile . $file['name'])) {
+            $userError = ['name' => ['Error, el nombre de archivo ya existe']];
+            return $this->errorResponse($userError, 500);
         }
 
-        if( Storage::disk('local')->exists( $this->routeFile . $routeFile . $fileCatalog->name ) ){
-            if(Storage::move(
-                $this->routeFile . $routeFile . $fileCatalog->name, 
-                $this->routeFile . $routeFile . $file['name'])
-            ){
-                $fileCatalog->update( $file );
+        if (Storage::disk('local')->exists($this->routeFile . $routeFile . $fileCatalog->name)) {
+            if (Storage::move(
+                $this->routeFile . $routeFile . $fileCatalog->name,
+                $this->routeFile . $routeFile . $file['name']
+            )) {
+                $fileCatalog->update($file);
             }
         }
 
-        return $this->showAll($this->filesType( $catalog ),200);
+        return $this->showAll($this->filesType($catalog), 200);
     }
 
     /**
@@ -171,23 +176,24 @@ class CatalogsDocumentsControllers extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, int $fileId){
+    public function destroy(Request $request, int $fileId)
+    {
         $user = $this->validateUser();
-        
+
         $rules = [
             'id' => 'required'
         ];
-        $this->validate( $request, $rules );
+        $this->validate($request, $rules);
 
         $catalog = Catalogs::findOrFail($request->id);
-        
+
         $fileCatalog = Files::where('id', $fileId)->where('filesable_type', Catalogs::class)->first();
         // Eliminar archivo de los datos
-        Storage::disk('local')->delete( $this->routeFile . $fileCatalog->url );
+        Storage::disk('local')->delete($this->routeFile . $fileCatalog->url);
         // Eliminar archivo de la BD
         $fileCatalog->delete();
 
         // return $this->showOneData( ['success' => 'Se ha eliminado el archivo correctamente', 'code' => 200 ], 200);
-        return $this->showAll($this->filesType( $catalog ),200);
+        return $this->showAll($this->filesType($catalog), 200);
     }
 }

@@ -88,7 +88,9 @@ class CompanyProjectController extends Controller
                 //Publicaciones
                 $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('blog.company.id', $value->id) . '">Publicaciones <span class="badge badge-primary">' . count($value->blogs) . '</span></a>';
                 //Portafolio
-                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('portfolio.company.id', $value->id) . '">Portafolio <span class="badge badge-primary">' . count($value->portfolios) . '</span></a>';
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('portfolio.company.id', $value->id) . '">Portafolios <span class="badge badge-primary">' . count($value->portfolios) . '</span></a>';
+                //Catalogo
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('catalog.company.id', $value->id) . '">Catalogos <span class="badge badge-primary">' . count($value->catalogs) . '</span></a>';
                 //  Reseñas
                 $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('remark.class.id', ['company', $value->id]) . '">Reseñas <span class="badge badge-primary">' . count($value->remarks) . '</span></a>';
                 $action = $action . '</div>';

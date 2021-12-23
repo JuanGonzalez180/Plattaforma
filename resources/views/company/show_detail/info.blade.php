@@ -83,6 +83,14 @@
     </dd>
     @endif
 
+    @if(count($company->tags)>0)
+    <dt class="col-sm-4">Etiquetas:</dt>
+    <dd class="col-sm-8">
+    @foreach($company->tags as $tag)
+        <span class="badge badge-primary">{{$tag->name}}</span>
+    @endforeach
+    @endif
+
     <dt class="col-sm-4">Pagina web:</dt>
     <dd class="col-sm-8">
         @if(is_null($company->web))

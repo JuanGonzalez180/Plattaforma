@@ -4,19 +4,19 @@ namespace App\Http\Controllers\ApiControllers\company;
 
 use JWTAuth;
 use App\Models\Blog;
-use App\Models\Company;
+use App\Models\Team;
+use App\Models\User;
 use App\Models\Image;
+use App\Models\Company;
+use App\Models\Tenders;
 use App\Models\Remarks;
 use App\Models\Products;
 use App\Models\Projects;
-use App\Models\Portfolio;
 use App\Models\Catalogs;
-use App\Models\Team;
-use App\Models\Tenders;
+use App\Models\Portfolio;
 use App\Models\TypesEntity;
-use App\Models\User;
-use App\Mail\CreatedAccount;
 use Illuminate\Http\Request;
+use App\Mail\CreatedAccount;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str as Str;
 use Illuminate\Support\Facades\Mail;
@@ -127,6 +127,7 @@ class CompanyController extends ApiController
         try {
             // Crear Usuario
             $user = User::create($userFields);
+            DB::commit();
         } catch (\Throwable $th) {
             // Si existe algún error al momento de crear el usuario
             $errorUser = true;
@@ -154,10 +155,16 @@ class CompanyController extends ApiController
                 // Ingresar País en una Compañía
                 $company->countries()->attach($request['country_backend']);
 
+                // Generar el correo de Verificación.
+                Mail::to($user->email)->send(new CreatedAccount($company, $user, $type['type']['slug']));
+
                 DB::commit();
             } catch (\Throwable $th) {
                 // Si existe algún error al generar la compañía
                 DB::rollBack();
+
+                // $user->delete();
+
                 $companyError = ['company' => 'Error, no se ha podido crear la compañia'];
 
                 if ($th->getCode() == 23000 && $th->errorInfo[1] == 1062) {
@@ -167,9 +174,6 @@ class CompanyController extends ApiController
                 return $this->errorResponse($companyError, 500);
             }
         }
-
-        // Generar el correo de Verificación.
-        Mail::to($user->email)->send(new CreatedAccount($company, $user, $type['type']['slug']));
 
         $user['status_company'] = $this->statusCompanyUser($user);
 
@@ -306,7 +310,6 @@ class CompanyController extends ApiController
                 ->where('status', Catalogs::CATALOG_PUBLISH)
                 ->sortBy([['updated_at', 'desc']])
                 ->skip(0)->take(8);
-                
         }
 
         // Recorre los proyectos
@@ -382,9 +385,6 @@ class CompanyController extends ApiController
 
     public function detail($slug)
     {
-        //
-        $user = $this->validateUser();
-
         $company = Company::where('slug', $slug)->first();
         if (!$company) {
             $companyError = ['company' => 'Error, no se ha encontrado ninguna compañia'];
@@ -393,8 +393,6 @@ class CompanyController extends ApiController
 
         return $this->showOneTransformNormal($company, 200);
     }
-
-
 
     public function statusCompany()
     {
