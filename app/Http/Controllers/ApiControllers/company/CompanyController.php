@@ -163,10 +163,7 @@ class CompanyController extends ApiController
             try {
                 // Generar el correo de Verificación.
                 Mail::to($user->email)->send(new CreatedAccount($company, $user, $type['type']['slug']));
-            } catch (\Throwable $th) {
-                $companyError = ['company' => json_encode($th) ];
-                return $this->errorResponse($companyError, 500);
-            }
+            } catch (\Throwable $th) {}
         }
 
         $user['status_company'] = $this->statusCompanyUser($user);
