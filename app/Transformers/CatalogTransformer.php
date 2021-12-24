@@ -35,8 +35,7 @@ class CatalogTransformer extends TransformerAbstract
     public function transform(Catalogs $catalog)
     {
         $userTransform = new UserTransformer();
-        $companyTransform = new CompanyTransformer();
-
+        
         return [
             'id' => (int)$catalog->id,
             'name' => (string)$catalog->name,

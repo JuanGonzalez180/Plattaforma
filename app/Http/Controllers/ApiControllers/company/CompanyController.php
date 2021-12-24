@@ -210,15 +210,14 @@ class CompanyController extends ApiController
         $company->coverpage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
 
 
-
+        // 8 Integrantes del equipo
+        $company->team = Team::where('company_id', $company->id)
+            ->where('status', Team::TEAM_APPROVED)
+            ->orderBy('id', 'desc')
+            ->skip(0)->take(8)
+            ->get();
 
         if ($userCompanyId == $company->id) {
-
-            // 8 Integrantes del equipo
-            $company->team = Team::where('company_id', $company->id)
-                ->orderBy('id', 'desc')
-                ->skip(0)->take(8)
-                ->get();
 
             // Traer Proyectos últimos 6
             $company->projects = $company->projects
@@ -262,14 +261,6 @@ class CompanyController extends ApiController
                 ->sortBy([['updated_at', 'desc']])
                 ->skip(0)->take(8);
         } else {
-
-            // 8 Integrantes del equipo
-            $company->team = Team::where('company_id', $company->id)
-                ->where('status', Team::TEAM_APPROVED)
-                ->orderBy('id', 'desc')
-                ->skip(0)->take(8)
-                ->get();
-
             // Traer Proyectos últimos 6
             $company->projects = $company->projects
                 ->where('visible', Projects::PROJECTS_VISIBLE)

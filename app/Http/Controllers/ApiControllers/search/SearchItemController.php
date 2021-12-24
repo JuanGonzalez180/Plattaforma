@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ApiControllers\search;
 use JWTAuth;
 use Carbon\Carbon;
 use App\Models\Tags;
+use App\Models\Brands;
 use App\Models\User;
 use App\Models\Files;
 use App\Models\Company;
@@ -285,10 +286,13 @@ class SearchItemController extends ApiController
     {
         $type_user = ($this->validateUser())->userType();
 
-        $companiesName          = $this->getCompanyName($companies, $search);
-        $companiesDescription   = $this->getCompanyDescription($companies, $search);
-        $companiesTags          = $this->getCompanyTags($companies, $search);
-        $companiesCatalogs      = $this->getCompanyCatalogs($companies, $search);
+        $companiesName              = $this->getCompanyName($companies, $search);
+        //$companiesDescription       = $this->getCompanyDescription($companies, $search);
+        $companiesTags              = $this->getCompanyTags($companies, $search);
+        $companiesCatalogs          = $this->getCompanyCatalogs($companies, $search);
+        $companiesCatalogsTags      = $this->getCompanyCatalogsTags($companies, $search);
+        $companiesBrandProducts     = $this->getCompanyBrandProducts($companies, $search);
+
 
         $companiesCategory      = ($type_user == 'demanda')
             ? // si es demanda busca por la categoria del producto
@@ -298,9 +302,11 @@ class SearchItemController extends ApiController
 
         $companies = array_unique(Arr::collapse([
             $companiesName,
-            $companiesDescription,
+            //$companiesDescription,
             $companiesTags,
             $companiesCatalogs,
+            $companiesBrandProducts,
+            $companiesCatalogsTags,
             $companiesCategory
         ]));
 
@@ -565,6 +571,18 @@ class SearchItemController extends ApiController
             ->pluck('companies.id');
     }
 
+    public function getCompanyCatalogsTags($companies, $name)
+    {
+        return Tags::where('tags.tagsable_type', Catalogs::class)
+            ->where(strtolower('tags.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->join('catalogs', 'catalogs.id', '=', 'tags.tagsable_id')
+            ->whereIn('catalogs.company_id', $companies)
+            ->where('catalogs.status', Catalogs::CATALOG_PUBLISH)
+            ->join('companies', 'companies.id', '=', 'catalogs.company_id')
+            ->where('companies.status', Company::COMPANY_APPROVED)
+            ->pluck('companies.id');
+    }
+
     public function getCatalogTypeEntity($catalogs, $type_entity)
     {
         return TypesEntity::where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
@@ -804,6 +822,18 @@ class SearchItemController extends ApiController
             ->join('projects', 'projects.id', '=', 'tenders.project_id')
             ->whereIn('projects.id', $projects)
             ->pluck('tenders.id');
+    }
+
+    public function getCompanyBrandProducts($companies, $search)
+    {
+        return Brands::where(strtolower('brands.name'), 'LIKE', '%' . strtolower($search) . '%')
+            // ->where('brans.status', '=', Company::BRAND_ENABLED)
+            ->join('products', 'products.brand_id', '=', 'brands.id')
+            ->where('products.status', '=', Products::PRODUCT_PUBLISH)
+            ->join('companies', 'companies.id', '=', 'products.company_id')
+            ->where('companies.status', '=', Company::COMPANY_APPROVED)
+            ->whereIn('companies.id', $companies)
+            ->pluck('companies.id');
     }
 
     public function getCompanyCatProductSearch($companies, $search)

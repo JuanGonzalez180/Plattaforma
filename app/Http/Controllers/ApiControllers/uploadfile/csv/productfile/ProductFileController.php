@@ -147,19 +147,11 @@ class ProductFileController extends ApiController
     {
         $categories = array_unique($this->stringToArrayHashtag($categories));
 
-        foreach ($categories as $id) {
+        foreach ($categories as $id)
+        {
             $category = Category::where('id', $id)->first();
-
             if ($category) {
-
-
-                // $childs = DB::select('call get_child_type_categoty("' . $category . '")');
-
-                // foreach ($childs as $value) {
-                //     if ($value->id <= $category) {
-                //         // $product->productCategories()->attach($value->id);
-                //     };
-                // }
+                $product->productCategories()->attach($id);
             }
         }
     }

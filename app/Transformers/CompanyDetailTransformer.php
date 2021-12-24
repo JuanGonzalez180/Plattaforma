@@ -5,6 +5,7 @@ namespace App\Transformers;
 use App\Models\Company;
 use League\Fractal\TransformerAbstract;
 use App\Transformers\TeamTransformer;
+use App\Transformers\UserTransformer;
 
 class CompanyDetailTransformer extends TransformerAbstract
 {
@@ -33,7 +34,12 @@ class CompanyDetailTransformer extends TransformerAbstract
      */
     public function transform(Company $company)
     {
-        $teamTransform = new TeamTransformer();
+        $teamTransform      = new TeamTransformer();
+        $userTransform      = new UserTransformer();
+
+        $users['admin'] = $userTransform->transform($company->user);
+        $users['teams'] = $teamTransform->transformNoDetail($company->team);
+
         return [
             //
             'id' => (int)$company->id,
@@ -48,6 +54,7 @@ class CompanyDetailTransformer extends TransformerAbstract
             'services'=> $company->companyCategoryServices,
             'tags'=> $company->tags,
             'team'=> $teamTransform->transformNoDetail($company->team),
+            'teams'=> $users,
             'projects'=> $company->projects,
             'tenders'=> $company->tenders,
             'products'=> $company->products,
