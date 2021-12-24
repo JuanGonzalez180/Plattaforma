@@ -191,6 +191,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/company/catalogs', [CatalogsController::class, 'getCompanyCatalogs'])
                 ->name('company.catalogs');
 
+        Route::resource('catalogs', CatalogsController::class, ['only' => ['edit', 'show']])
+                ->names('catalog.detail')
+                ->parameters(['catalog' => 'catalogs']);
+
         // Proyectos
         Route::resource('proyecto', ProjectController::class, ['only' => ['edit', 'show']])
                 ->names('project')
@@ -282,7 +286,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('uploadfile/template/product/file', ProductFileController::class, ['only' => ['index', 'store']])
                 ->names('template-product-file');
         //EXPORT FILES
-        Route::get('/categories/list/file/xlsx', function(){
+        Route::get('/categories/list/file/xlsx', function () {
                 return (new CategoriesFileController)->export()->download('categorias.xlsx');
         })->name('cotegory-export');
 

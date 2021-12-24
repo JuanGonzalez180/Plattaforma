@@ -48,7 +48,8 @@ class CatalogsController extends Controller
      */
     public function show($id)
     {
-        //
+        $catalog = Catalogs::find($id);
+        return view('catalog.show', compact('catalog'));
     }
 
     /**
