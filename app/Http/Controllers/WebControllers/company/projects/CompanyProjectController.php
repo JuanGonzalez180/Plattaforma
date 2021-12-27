@@ -62,10 +62,9 @@ class CompanyProjectController extends Controller
 
         $companies  = $companies->get();
 
-        foreach ($companies as $company) {
-            $company['size_company'] = $company->fileSizeTotal();
-        }
-
+        $companies->map(function ($item, $key) {
+            return $item->size_company = $item->fileSizeTotal();
+        });
 
         $companies = collect($companies)->sortBy([['size_company', $size]]);
 
@@ -79,6 +78,14 @@ class CompanyProjectController extends Controller
                 $action = $action . '<div class="btn-group" role="group">';
                 $action = $action . '<button id="btnGroupDrop1" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span></button>';
                 $action = $action . '<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">';
+                
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href=""><p class="text-danger"><i class="fas fa-trash-alt"></i>&nbsp;<b>Eliminar Compañia</b></p></a>';
+
+
+
+
+
+
                 //proyectos
                 $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('project-company-id', $value->id) . '">Proyectos <span class="badge badge-primary">' . count($value->projects) . '</span></a>';
                 //Licitaciones

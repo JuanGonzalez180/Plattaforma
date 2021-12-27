@@ -37,6 +37,7 @@ use App\Http\Controllers\WebControllers\tendercompanies\TenderCompaniesControlle
 use App\Http\Controllers\WebControllers\uploadfile\template\ProductFileController;
 use App\Http\Controllers\WebControllers\uploadfile\file\importCategoriesController;
 use App\Http\Controllers\WebControllers\categoryservices\CategoryServicesController;
+use App\Http\Controllers\WebControllers\company\CompanyDelete\CompanyDeleteController;
 use App\Http\Controllers\WebControllers\publicity\advertisingplans\AdvertisingController;
 use App\Http\Controllers\WebControllers\publicity\manageadvertising\ManageAdvertisingController;
 use App\Http\Controllers\WebControllers\publicity\imagesadvertisingplan\ImagesAdvertisingPlansController;
@@ -131,6 +132,8 @@ Route::group(['middleware' => 'auth'], function () {
                 ->name('companies.type');
 
         Route::get('/company/{type}', [CompanyController::class, 'getCompanyType'])->name('companies-type');
+
+        Route::get('/company/delete/{id}', CompanyDeleteController::class)->name('company-delete');
         // ------------------------------------------------------------------------------------------------------------------
         Route::get('/company/all/projects', [CompanyProjectController::class, 'index'])->name('companies-all-projects');
         Route::post('/company/get/projects', [CompanyProjectController::class, 'getCompany'])->name('companies-get-projects');

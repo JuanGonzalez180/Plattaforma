@@ -57,10 +57,10 @@ class CompanyProvidersController extends Controller
 
         $companies  = $companies->get();
 
-        foreach ($companies as $company) {
-            $company['size_company'] = $company->fileSizeTotal();
-        }
 
+        $companies->map(function ($item, $key) {
+            return $item->size_company = $item->fileSizeTotal();
+        });
 
         $companies = collect($companies)->sortBy([['size_company', $size]]);
 

@@ -94,6 +94,8 @@ use App\Http\Controllers\ApiControllers\publicity\advertisingplans\AdvertisingPl
 // Company Changes
 use App\Http\Controllers\ApiControllers\company\CompanyChanges\CompanyChangesNameController;
 
+use App\Http\Controllers\ApiControllers\company\CompanyDelete\CompanyDeleteController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -271,6 +273,9 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('/company/tenders/{id}/edit', [CompanyTendersController::class, 'edit'])->name('company-tender-edit');
     Route::put('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'update'])->name('company-tender-update');
     Route::delete('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'destroy'])->name('company-tender-destroy');
+
+    Route::get('/company/delete/{id}', CompanyDeleteController::class)->name('company-delete-all');
+
     //participar en licitación
     Route::post('/company/{slug}/tenders/{id}/send/participate', [CompanyTendersTransactController::class, 'store'])->name('company-send-participate');
     Route::post('/company/tenders/select/participate', [CompanyTendersTransactController::class, 'postComparate'])->name('company-select-participate');

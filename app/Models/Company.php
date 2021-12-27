@@ -121,6 +121,10 @@ class Company extends Model
         return $this->hasMany(MetaData::class);
     }
 
+    public function cover_Page(){
+        return Image::where('imageable_id', $this->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
+    }
+
     // public function socialNetworks(){
     //     return $this->belongsToMany(SocialNetworks::class);
     // }

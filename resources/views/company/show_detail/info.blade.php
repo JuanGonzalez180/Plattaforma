@@ -1,9 +1,21 @@
 <dlv class="row">
+   
+
+
+    @if($company->cover_Page())
+    <dt class="col-sm-4">Portada de la compañia:</dt>
+    <dd class="col-sm-8">
+        <a href="{{ url('storage/' . $company->cover_Page()->url ) }}" target="_blank">
+            <img src="{{ url('storage/' . $company->cover_Page()->url ) }}" alt="preview image" class="rounded float-left" style="width: 100%;">
+        </a>
+    </dd>
+    @endif
+    
     @if($company->image)
-    <dt class="col-sm-4">Imagen:</dt>
+    <dt class="col-sm-4">Logo de la compañia:</dt>
     <dd class="col-sm-8">
         <a href="{{ url('storage/' . $company->image->url ) }}" target="_blank">
-            <img src="{{ url('storage/' . $company->image->url ) }}" alt="preview image" class="rounded float-left" style="width: 150px;">
+            <img src="{{ url('storage/' . $company->image->url ) }}" alt="preview image" class="rounded-circle float-left" style="width: 150px;">
         </a>
     </dd>
     @endif
