@@ -151,7 +151,7 @@ class BlogController extends ApiController
         $blog = Blog::findOrFail($id);
 
         if( $blog->image ){
-            Blog::disk('local')->delete( $this->routeFile . $blog->image->url );
+            Storage::disk('local')->delete( $this->routeFile . $blog->image->url );
             Image::where('imageable_id', $blog->id)
                 ->where('imageable_type',Blog::class)
                 ->delete();
