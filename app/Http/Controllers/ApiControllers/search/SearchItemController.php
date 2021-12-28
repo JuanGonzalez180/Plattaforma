@@ -256,13 +256,19 @@ class SearchItemController extends ApiController
 
     public function getProductsSearchNameItem($products, $search)
     {
+        //busca por el producto por el nombre de la compañia
         $productCompanyName     = $this->getProductCompanyName($products, $search);
+        //busca por el nombre del producto
         $productName            = $this->getProductName($products, $search);
+        //busca por el codigo del producto
+        $productCode            = $this->getProductCode($products, $search);
+        //busca por el nombre de las etiquetas del producto
         $productTags            = $this->getProductTags($products, $search);
 
         $products = array_unique(Arr::collapse([
             $productCompanyName,
             $productName,
+            $productCode,
             $productTags
         ]));
 
@@ -456,6 +462,13 @@ class SearchItemController extends ApiController
     {
         return Products::whereIn('products.id', $products)
             ->where(strtolower('products.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->pluck('products.id');
+    }
+
+    public function getProductCode($products, $name)
+    {
+        return Products::whereIn('products.id', $products)
+            ->where(strtolower('products.code'), 'LIKE', '%' . strtolower($name) . '%')
             ->pluck('products.id');
     }
 

@@ -85,23 +85,24 @@ class ProductFileController extends ApiController
     {
         $brand_id   = (!empty($row[1])) ? $this->getBrandId($row[1], $user, $companyID) : 1;
 
-        $product = Products::where(strtoupper('name'), strtoupper($row[0]))
-            ->where('brand_id', $brand_id);
+        // $product = Products::where(strtoupper('name'), strtoupper($row[0]))
+        //     ->where('brand_id', $brand_id);
 
-        if (!$product->exists()) {
+        // if (!$product->exists()) {
             $product = new Products;
             $product->name        = ucfirst($row[0]);
+            $product->code        = ucfirst($row[2]);
             $product->company_id  = $companyID;
             $product->user_id     = $user->id;
             $product->brand_id    = $brand_id;
-            $product->description = $row[2];
+            $product->description = $row[3];
             $product->type        = Products::TYPE_PRODUCT;
             $product->status      = Products::PRODUCT_PUBLISH;
             $product->save();
 
             //category/categorias
-            if (!empty($row[3]))
-                $this->addCategories($row[3], $product);
+            // if (!empty($row[3]))
+                // $this->addCategories($row[3], $product);
 
             //tags/Etiquetas
             if (!empty(trim($row[4])))
@@ -113,7 +114,7 @@ class ProductFileController extends ApiController
                 'galery_img'    => trim($row[6]),
                 'files'         => trim($row[7])
             ]);
-        }
+        // }
     }
 
     public function getBrandId($name, $user, $companyID)
@@ -169,13 +170,5 @@ class ProductFileController extends ApiController
     {
         $array = explode("#", $string);
         return $array;
-    }
-
-    function remove_accents($array)
-    {
-        $not_allowed    = array("á", "é", "í", "ó", "ú", "Á", "É", "Í", "Ó", "Ú", "ñ", "À", "Ã", "Ì", "Ò", "Ù", "Ã™", "Ã ", "Ã¨", "Ã¬", "Ã²", "Ã¹", "ç", "Ç", "Ã¢", "ê", "Ã®", "Ã´", "Ã»", "Ã‚", "ÃŠ", "ÃŽ", "Ã”", "Ã›", "ü", "Ã¶", "Ã–", "Ã¯", "Ã¤", "«", "Ò", "Ã", "Ã„", "Ã‹");
-        $allowed        = array("a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "n", "N", "A", "E", "I", "O", "U", "a", "e", "i", "o", "u", "c", "C", "a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "u", "o", "O", "i", "a", "e", "U", "I", "A", "E");
-
-        return str_replace($not_allowed, $allowed, $array);
     }
 }
