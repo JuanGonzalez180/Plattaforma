@@ -359,6 +359,7 @@ class CompanyController extends ApiController
         foreach ($company->catalogs as $key => $catalog) {
             $catalog->image;
             $catalog->files;
+            $catalog->tags;
         }
 
         // Calificaciones.
