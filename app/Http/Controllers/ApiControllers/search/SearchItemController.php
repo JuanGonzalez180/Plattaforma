@@ -273,13 +273,24 @@ class SearchItemController extends ApiController
     {
         $catalogName            = $this->getCatalogName($catalogs, $search);
         $catalogCompanyName     = $this->getCatalogCompanyName($catalogs, $search);
+        $catalogCompanyTag      = $this->getCatalogTag($catalogs, $search);
 
         $catalogs = array_unique(Arr::collapse([
             $catalogName,
-            $catalogCompanyName
+            $catalogCompanyName,
+            $catalogCompanyTag
         ]));
 
         return $catalogs;
+    }
+
+    public function getCatalogTag($catalogs, $search)
+    {
+        return Tags::where('tags.tagsable_type', Catalogs::class)
+            ->where(strtolower('tags.name'), 'LIKE', '%' . strtolower($search) . '%')
+            ->whereIn('tags.tagsable_id', $catalogs)
+            ->join('catalogs', 'catalogs.id', '=', 'tags.tagsable_id')
+            ->pluck('catalogs.id');
     }
 
     public function getCompanySearchNameItem($companies, $search)
