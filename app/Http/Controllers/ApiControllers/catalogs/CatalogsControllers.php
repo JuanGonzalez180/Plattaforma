@@ -131,6 +131,7 @@ class CatalogsControllers extends ApiController
         $catalog->files;
         $catalog->user;
         $catalog->user->image;
+        $catalog->tags;
 
         return $this->showOne($catalog, 200);
     }
