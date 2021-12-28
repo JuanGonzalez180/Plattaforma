@@ -46,6 +46,7 @@ class ProductsTransformer extends TransformerAbstract
             'user_id'=> (int)$product->user_id,
             'company_id'=> (int)$product->company_id,
             'name'=> (string)$product->name,
+            'code'=> (string)$product->code,
             'type'=> (string)$product->type,
             'status'=> ((string)$product->status == Products::PRODUCT_ERASER) ? 'inactivo' : 'activo',
             'description'=> (string)$product->description,

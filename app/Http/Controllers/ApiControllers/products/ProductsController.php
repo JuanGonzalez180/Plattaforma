@@ -87,6 +87,7 @@ class ProductsController extends ApiController
 
         // Datos
         $productFields['name'] = $request['name'];
+        $productFields['code'] = $request['code'];
         $productFields['status'] = $request['status'];
         $productFields['user_id'] = $request['user'] ?? $user->id;
         $productFields['company_id'] = $user->companyId();
@@ -207,6 +208,7 @@ class ProductsController extends ApiController
 
         // Datos
         $productFields['name'] = $request['name'];
+        $productFields['code'] = $request['code'];
         $productFields['status'] = $request['status'];
         $productFields['user_id'] = $request['user'] ?? $user->id;
         $productFields['brand_id'] = $request['brand'] ?? 1;
