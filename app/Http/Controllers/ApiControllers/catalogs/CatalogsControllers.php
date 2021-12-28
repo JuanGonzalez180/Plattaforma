@@ -164,6 +164,8 @@ class CatalogsControllers extends ApiController
         $catalogFileds['user_id'] = $request['user'] ?? $user->id;
         $catalogFileds['status'] = $request['status'] ?? Catalogs::CATALOG_ERASER;
 
+        $catalog->update($catalogFileds);
+        
         if ($request->image) {
             $png_url = "catalog-" . time() . ".jpg";
             $img = $request->image;
@@ -181,16 +183,15 @@ class CatalogsControllers extends ApiController
             }
         }
 
+        foreach ($catalog->tags as $key => $tag) {
+            $tag->delete();
+        }
+
         if ($request->tags) {
             foreach ($request->tags as $key => $tag) {
                 $catalog->tags()->create(['name' => $tag['displayValue']]);
             }
-        }
-
-
-        $catalog->update($catalogFileds);
-
-        
+        }        
 
         return $this->showOne($catalog, 200);
     }
