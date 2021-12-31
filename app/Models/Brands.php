@@ -29,12 +29,10 @@ class Brands extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
-
     // Relacion uno a uno polimorfica
     public function image(){
         return $this->morphOne(Image::class, 'imageable');
     }
-
     public function company(){
         return $this->belongsTo(Company::class);
     }
