@@ -256,14 +256,23 @@ class SearchItemController extends ApiController
 
     public function getProductsSearchNameItem($products, $search)
     {
+        //busca por el producto por el nombre de la compañia
         $productCompanyName     = $this->getProductCompanyName($products, $search);
+        //busca por el nombre del producto
         $productName            = $this->getProductName($products, $search);
+        //busca por el codigo del producto
+        $productCode            = $this->getProductCode($products, $search);
+        //busca por el nombre de las etiquetas del producto
         $productTags            = $this->getProductTags($products, $search);
+        //buscar por la marca del producto
+        $productBrands          = $this->getProductBrand($products, $search);
 
         $products = array_unique(Arr::collapse([
             $productCompanyName,
             $productName,
-            $productTags
+            $productCode,
+            $productTags,
+            $productBrands
         ]));
 
         return $products;
@@ -456,6 +465,21 @@ class SearchItemController extends ApiController
     {
         return Products::whereIn('products.id', $products)
             ->where(strtolower('products.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->pluck('products.id');
+    }
+
+    public function getProductCode($products, $name)
+    {
+        return Products::whereIn('products.id', $products)
+            ->where(strtolower('products.code'), 'LIKE', '%' . strtolower($name) . '%')
+            ->pluck('products.id');
+    }
+
+    public function getProductBrand($products, $name)
+    {
+        return Brands::where(strtolower('brands.name'), 'LIKE', '%' . strtolower($name) . '%')
+            ->join('products', 'products.brand_id', '=', 'brands.id')
+            ->whereIn('products.id', $products)
             ->pluck('products.id');
     }
 

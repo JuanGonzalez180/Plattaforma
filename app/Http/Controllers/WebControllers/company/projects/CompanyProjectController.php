@@ -78,31 +78,32 @@ class CompanyProjectController extends Controller
                 $action = $action . '<div class="btn-group" role="group">';
                 $action = $action . '<button id="btnGroupDrop1" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="fas fa-ellipsis-v" title="Ver" aria-hidden="true"></span></button>';
                 $action = $action . '<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">';
-                
-                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href=""><p class="text-danger"><i class="fas fa-trash-alt"></i>&nbsp;<b>Eliminar Compañia</b></p></a>';
-
-
-
-
-
-
                 //proyectos
-                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('project-company-id', $value->id) . '">Proyectos <span class="badge badge-primary">' . count($value->projects) . '</span></a>';
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('project-company-id', $value->id) . '">Proyectos &nbsp;<span class="badge badge-primary">' . count($value->projects) . '</span></a>';
                 //Licitaciones
-                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('tender-company-id', ['company', $value->id]) . '">Licitaciones <span class="badge badge-primary">' . count($value->tenders) . '</span></a>';
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('tender-company-id', ['company', $value->id]) . '">Licitaciones &nbsp;<span class="badge badge-primary">' . count($value->tenders) . '</span></a>';
                 //Equipo
-                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('teams-company-id', $value->id) . '">Equipo <span class="badge badge-primary">' . count($value->teams) . '</span></a>';
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('teams-company-id', $value->id) . '">Equipo &nbsp;<span class="badge badge-primary">' . count($value->teams) . '</span></a>';
                 //Publicaciones
-                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('blog.company.id', $value->id) . '">Publicaciones <span class="badge badge-primary">' . count($value->blogs) . '</span></a>';
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('blog.company.id', $value->id) . '">Publicaciones &nbsp;<span class="badge badge-primary">' . count($value->blogs) . '</span></a>';
                 //Portafolio
-                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('portfolio.company.id', $value->id) . '">Portafolios <span class="badge badge-primary">' . count($value->portfolios) . '</span></a>';
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('portfolio.company.id', $value->id) . '">Portafolios &nbsp;<span class="badge badge-primary">' . count($value->portfolios) . '</span></a>';
                 //Catalogo
-                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('catalog.company.id', $value->id) . '">Catalogos <span class="badge badge-primary">' . count($value->catalogs) . '</span></a>';
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('catalog.company.id', $value->id) . '">Catalogos &nbsp;<span class="badge badge-primary">' . count($value->catalogs) . '</span></a>';
                 //  Reseñas
-                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('remark.class.id', ['company', $value->id]) . '">Reseñas <span class="badge badge-primary">' . count($value->remarks) . '</span></a>';
+                $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('remark.class.id', ['company', $value->id]) . '">Reseñas &nbsp;<span class="badge badge-primary">' . count($value->remarks) . '</span></a>';
+                //Eliminar Compañia
+                // if($value->status == Company::COMPANY_BANNED)
+                // {
+                //     $action = $action . '<div class="dropdown-divider"></div>';
+                //     $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('company-delete', $value->id) . '"><p class="text-danger"><i class="fas fa-trash-alt"></i>&nbsp;Eliminar Compañia</p></a>';    
+                // }
+                
                 $action = $action . '</div>';
                 $action = $action . '</div>';
                 $action = $action . '</div>';
+
+                
 
                 return $action;
             })

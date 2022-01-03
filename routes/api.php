@@ -93,10 +93,6 @@ use App\Http\Controllers\ApiControllers\publicity\advertisingplanspaidimages\Adv
 use App\Http\Controllers\ApiControllers\publicity\advertisingplans\AdvertisingPlansController;
 // Company Changes
 use App\Http\Controllers\ApiControllers\company\CompanyChanges\CompanyChangesNameController;
-
-use App\Http\Controllers\ApiControllers\company\CompanyDelete\CompanyDeleteController;
-
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -274,8 +270,6 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::put('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'update'])->name('company-tender-update');
     Route::delete('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'destroy'])->name('company-tender-destroy');
 
-    Route::get('/company/delete/{id}', CompanyDeleteController::class)->name('company-delete-all');
-
     //participar en licitación
     Route::post('/company/{slug}/tenders/{id}/send/participate', [CompanyTendersTransactController::class, 'store'])->name('company-send-participate');
     Route::post('/company/tenders/select/participate', [CompanyTendersTransactController::class, 'postComparate'])->name('company-select-participate');
@@ -320,6 +314,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 
 
     // Route::resource('/search/items/parameters', SearchParameterController::class, ['only' => ['index']])->names('search-parameter');
+    // Route::post('/search/items/parameters', SearchItemController::class)->name('search-parameter')->middleware('cors');
     Route::post('/search/items/parameters', SearchItemController::class)->name('search-parameter');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 
