@@ -93,11 +93,11 @@ class CompanyProjectController extends Controller
                 //  Reseñas
                 $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('remark.class.id', ['company', $value->id]) . '">Reseñas &nbsp;<span class="badge badge-primary">' . count($value->remarks) . '</span></a>';
                 //Eliminar Compañia
-                if($value->status == Company::COMPANY_BANNED)
-                {
-                    $action = $action . '<div class="dropdown-divider"></div>';
-                    $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('company-delete', $value->id) . '"><p class="text-danger"><i class="fas fa-trash-alt"></i>&nbsp;Eliminar Compañia</p></a>';    
-                }
+                // if($value->status == Company::COMPANY_BANNED)
+                // {
+                //     $action = $action . '<div class="dropdown-divider"></div>';
+                //     $action = $action . '<a class="dropdown-item d-flex justify-content-between align-items-center" href="' . route('company-delete', $value->id) . '"><p class="text-danger"><i class="fas fa-trash-alt"></i>&nbsp;Eliminar Compañia</p></a>';    
+                // }
                 
                 $action = $action . '</div>';
                 $action = $action . '</div>';

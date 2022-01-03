@@ -65,9 +65,6 @@ class SearchItemController extends ApiController
 
         $result = [];
 
-        var_dump($request->all());
-        die;
-
         $category_product = $this->getAssignValue(
             $request->categoryproduct,
             $request->category_product_one,
