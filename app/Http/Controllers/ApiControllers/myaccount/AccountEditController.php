@@ -22,7 +22,7 @@ class AccountEditController extends ApiController
             $rules = [
                 'name' => ['max:255'],
                 'lastname' => ['max:255'],
-                'username' => ['alpha_dash','max:255', Rule::unique('users')->ignore($user->id)],
+                // 'username' => ['alpha_dash','max:255', Rule::unique('users')->ignore($user->id)],
                 'email' => ['email', Rule::unique('users')->ignore($user->id) ],
             ];
 
@@ -31,8 +31,8 @@ class AccountEditController extends ApiController
         }
         $this->validate( $request, $rules );
 
-        if( $request->username )
-            $user->username = $request->username;
+        // if( $request->username )
+            // $user->username = $request->username;
 
         if( $request->email )
             $user->email = $request->email;
