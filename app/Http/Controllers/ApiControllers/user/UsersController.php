@@ -50,6 +50,7 @@ class UsersController extends ApiController
                     $user['type'] = 'oferta';
                     return $this->errorResponse( [ 'not_approved' => [$company->status]], 500 );
                 }
+                $user->slug = $company->slug;
             }elseif( $user->team ){
                 if( $user->team->status == Team::TEAM_PENDING ) {
                     return $this->errorResponse( [ 'team_pending' => ['not_approved']], 500 );
@@ -57,17 +58,14 @@ class UsersController extends ApiController
 
                 $company = $user->team->company;
                 $user['type'] = $company->type_entity->type->slug;
+                $user->slug = $company->slug;
             }
             
             $user->adminUser = $company->user;
             if( $user->adminUser ){
                 $user->adminUser->url = (string)$user->adminUser->image ? url( 'storage/' . $user->adminUser->image->url ) : '';
             }
-
-            $companyClass = $user->companyClass();
-            if( $companyClass ){
-                $user->slug = $companyClass->slug;
-            }
+            
             $user->image;
         } catch (JWTException $e) {
             return $this->errorResponse( [ 'error' => ['could_not_create_token']], 500 );
