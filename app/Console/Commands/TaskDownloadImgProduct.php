@@ -64,6 +64,7 @@ class TaskDownloadImgProduct extends Command
                 $product    = Products::find($value->product_id);
 
                 if (!$product) {
+                    Storage::append("archivo.txt","el producto no existe");
                     DB::table('temp_product_files')
                         ->where('id', $value->id)
                         ->delete();
@@ -145,14 +146,22 @@ class TaskDownloadImgProduct extends Command
 
     public function addMainImg($url, $product)
     {
+        Storage::append("archivo.txt","entro a imagen principal");
+        
         $file_format = strtolower(pathinfo($url, PATHINFO_EXTENSION));
-
+        
+        
         if ($this->url_exists($url) && in_array($file_format, $this->image_format)) {
+
+            Storage::append("archivo.txt","existe la url");
+
             $generator     = new Generator();
             $imageName     = $generator->generate($product->name);
             $imageName     = $imageName . '-' . uniqid() . '.' . $file_format;
 
             $routeProducts = $this->routeProducts . $product->id . '/' . $imageName;
+
+            Storage::append("archivo.txt",$this->routeFile . $routeProducts);
 
             DB::beginTransaction();
 
@@ -160,10 +169,16 @@ class TaskDownloadImgProduct extends Command
                 $contents   = file_get_contents($url);
                 Storage::disk('local')->put($this->routeFile . $routeProducts, $contents);
                 $product->image()->create(['url' => $routeProducts]);
+
+                Storage::append("archivo.txt","guardo con exito");
+
             } catch (\Exception $e) {
+                Storage::append("archivo.txt",$e);
                 DB::rollBack();
             }
             DB::commit();
+        }else{
+            Storage::append("archivo.txt","no existe la url");
         }
     }
 

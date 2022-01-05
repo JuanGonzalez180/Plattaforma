@@ -11,11 +11,15 @@ class AdvertisingPlansImages extends Model
 {
     use HasFactory;
 
+    const ADVER_PLAN_IMAGE_ERASER    = 'Borrador';
+    const ADVER_PLAN_IMAGE_PUBLISH   = 'Publicado';
+
     // protected $table = 'advertising_plans_images';
 
     protected $fillable = [
         'advertising_plans_id',
-        'images_advertising_plans_id'
+        'images_advertising_plans_id',
+        'status'
     ];
 
     public function advertisingPlans(){

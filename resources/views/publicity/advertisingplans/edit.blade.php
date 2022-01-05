@@ -21,7 +21,7 @@ Planes Stripe
                 <div class="container">
                     <div class="row">
                         <div class="col">
-                        <input class="form-check-input" type="checkbox" name="img_plan[]" value="{{ $imagePlan->id }}" @if( in_array($imagePlan->id, $imagesPlansRegister->toArray()) ) checked @endif>
+                        <input class="form-check-input" type="checkbox" name="img_plan[]" value="{{ $imagePlan->id }}" @if( in_array($imagePlan->id, $adPlanImagesEnabled) ) checked @endif>
                             <i class="fas fa-mobile-alt"></i>&nbsp;<b>Nombre:</b> {{ $imagePlan->name }}
                         </div>
                         <div class="col">

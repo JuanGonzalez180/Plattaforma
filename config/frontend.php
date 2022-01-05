@@ -2,7 +2,7 @@
 
 return [
 
-    'base_url' => env('BASE_URL_FRONTEND', 'http://platt.incdustry.com'),
+    'base_url' => env('BASE_URL_FRONTEND', 'https://staging.plattaforma.com'),
 
     'endpoints' => [
 

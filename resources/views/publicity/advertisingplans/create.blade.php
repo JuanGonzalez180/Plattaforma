@@ -13,7 +13,6 @@ Planes Stripe
 
         @include('publicity.advertisingplans._form')
 
-
         <div class="col-md-12">
             <div class="form-group">
                 <br>

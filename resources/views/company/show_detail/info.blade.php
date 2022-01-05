@@ -1,5 +1,5 @@
 <dlv class="row">
-   
+
 
 
     @if($company->cover_Page())
@@ -10,7 +10,7 @@
         </a>
     </dd>
     @endif
-    
+
     @if($company->image)
     <dt class="col-sm-4">Logo de la compañia:</dt>
     <dd class="col-sm-8">
@@ -52,8 +52,21 @@
         @endif
     </dd>
 
-    <dt class="col-sm-4">Administrador:</dt>
-    <dd class="col-sm-8">{{$company->user->username}}</dd>
+    <dt class="col-sm-4">Nombre Administrador:</dt>
+
+    <dd class="col-sm-8">
+        <h6>
+            @if($company->user->image)
+            <a href="{{ url('storage/' . $company->user->image->url ) }}" target="_blank">
+                <img src="{{ url('storage/' . $company->user->image->url ) }}" alt="preview image" class="rounded-circle float-left" style="width: 50px;">
+            </a>
+            <br>
+            &nbsp;
+            @endif
+            {{$company->user->fullName()}}
+        </h6>
+        <br>
+    </dd>
 
     <dt class="col-sm-4">Correo</dt>
     <dd class="col-sm-8">{{$company->user->email}}</dd>
@@ -98,10 +111,10 @@
     @if(count($company->tags)>0)
     <dt class="col-sm-4">Etiquetas:</dt>
     <dd class="col-sm-8">
-    @foreach($company->tags as $tag)
+        @foreach($company->tags as $tag)
         <span class="badge badge-primary">{{$tag->name}}</span>
-    @endforeach
-    @endif
+        @endforeach
+        @endif
 
     <dt class="col-sm-4">Pagina web:</dt>
     <dd class="col-sm-8">

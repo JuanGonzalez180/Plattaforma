@@ -68,14 +68,25 @@ class AdvertisingController extends Controller
 
         $plan = AdvertisingPlans::create($fields);
 
-        if ($request->img_plan) {
-            foreach ($request->img_plan as $id_img_plan) {
-                AdvertisingPlansImages::create([
-                    'advertising_plans_id'          => $plan->id,
-                    'images_advertising_plans_id'   => $id_img_plan
-                ]);
-            }
+
+        $imagesAdvertisingPlans = $this->getImagesAdvertisingPlans();
+
+        foreach ($imagesAdvertisingPlans as $value) {
+            AdvertisingPlansImages::create([
+                'advertising_plans_id'          => $plan->id,
+                'images_advertising_plans_id'   => $value->id,
+                'status'                        => in_array($value->id, $request->img_plan) ? AdvertisingPlansImages::ADVER_PLAN_IMAGE_PUBLISH : AdvertisingPlansImages::ADVER_PLAN_IMAGE_ERASER
+            ]);
         }
+
+        // if ($request->img_plan) {
+        //     foreach ($request->img_plan as $id_img_plan) {
+        //         AdvertisingPlansImages::create([
+        //             'advertising_plans_id'          => $plan->id,
+        //             'images_advertising_plans_id'   => $id_img_plan
+        //         ]);
+        //     }
+        // }
 
         $generator = new Generator();
 
@@ -110,12 +121,24 @@ class AdvertisingController extends Controller
     public function edit($id)
     {
         $plan                   = AdvertisingPlans::find($id);
+
+        $adPlanImagesEnabled = [];
+        foreach($plan->advertisingPlansImages as $value)
+        {
+            if($value->status == AdvertisingPlansImages::ADVER_PLAN_IMAGE_PUBLISH)
+                $adPlanImagesEnabled[] = $value->imagesAdvertisingPlans->id;
+        }
+
         $imagesPlans            = ImagesAdvertisingPlans::all();
         $type_ubications        = [AdvertisingPlans::RECTANGLE_TYPE, AdvertisingPlans::SQUARE_TYPE];
         $imagesPlansRegister    =  AdvertisingPlansImages::where('advertising_plans_id', $id)
             ->pluck('images_advertising_plans_id');
 
-        return view('publicity.advertisingplans.edit', compact('plan', 'type_ubications', 'imagesPlans', 'imagesPlansRegister'));
+        return view('publicity.advertisingplans.edit', compact('plan', 'type_ubications', 'imagesPlans', 'imagesPlansRegister', 'adPlanImagesEnabled'));
+    }
+
+    public function getImagesAdvertisingPlans(){
+        return ImagesAdvertisingPlans::all();
     }
 
     /**
@@ -138,6 +161,8 @@ class AdvertisingController extends Controller
         $this->validate($request, $rules);
 
         $plan = AdvertisingPlans::find($id);
+
+
         $plan->name             = $request->name;
         $plan->description      = $request->description;
         $plan->type_ubication   = $request->type_ubication;
@@ -165,14 +190,17 @@ class AdvertisingController extends Controller
         }
 
         $img_plan_request       = $request->img_plan;
-        $get_plans_images_id    = ($this->getPlansImagesID($plan->id))->toArray();
 
-        foreach (array_diff($img_plan_request,$get_plans_images_id) as $value) {
-            AdvertisingPlansImages::create([
-                'advertising_plans_id'          => $plan->id,
-                'images_advertising_plans_id'   => $value
-            ]);
+        if(isset($request->img_plan))
+        {
+            AdvertisingPlansImages::where('advertising_plans_id', $id)
+                ->update(['status' => AdvertisingPlansImages::ADVER_PLAN_IMAGE_ERASER]);
+    
+            AdvertisingPlansImages::where('advertising_plans_id', $id)->whereIn('images_advertising_plans_id', $img_plan_request)
+                ->update(['status' => AdvertisingPlansImages::ADVER_PLAN_IMAGE_PUBLISH]);
         }
+
+        
 
         return redirect()->route('publicity_plan.index')->with('success', 'El plan se ha editado satisfactoriamente');
     }

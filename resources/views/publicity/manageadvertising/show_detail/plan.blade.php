@@ -14,7 +14,6 @@
     <dt class="col-sm-12">Planes imagenes</dt>
     <dt class="col-sm-12">
         @if( $advertising->Plan->advertisingPlansImages)
-
         <ul class="list-group">
             @foreach($advertising->Plan->advertisingPlansImages as $value)
             <li class="list-group-item">
@@ -35,7 +34,6 @@
             </li>
             @endforeach
         </ul>
-
         @else
 
         <div class="container">

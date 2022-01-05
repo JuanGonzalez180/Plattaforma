@@ -314,7 +314,6 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 
 
     // Route::resource('/search/items/parameters', SearchParameterController::class, ['only' => ['index']])->names('search-parameter');
-    // Route::post('/search/items/parameters', SearchItemController::class)->name('search-parameter')->middleware('cors');
     Route::post('/search/items/parameters', SearchItemController::class)->name('search-parameter');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
 
