@@ -171,9 +171,6 @@ class AdvertisingController extends Controller
 
         $plan->save();
 
-        // var_dump($plan->id);
-        
-
         $generator = new Generator();
         if ($request->image) {
             $imageName  = $generator->generate($request->name);
@@ -199,8 +196,6 @@ class AdvertisingController extends Controller
             AdvertisingPlansImages::where('advertising_plans_id', $id)->whereIn('images_advertising_plans_id', $img_plan_request)
                 ->update(['status' => AdvertisingPlansImages::ADVER_PLAN_IMAGE_PUBLISH]);
         }
-
-        
 
         return redirect()->route('publicity_plan.index')->with('success', 'El plan se ha editado satisfactoriamente');
     }

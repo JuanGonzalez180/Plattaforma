@@ -4,8 +4,10 @@ namespace App\Http\Controllers\WebControllers\publicity\imagesadvertisingplan;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Models\AdvertisingPlans;
 use App\Http\Controllers\Controller;
 use App\Models\ImagesAdvertisingPlans;
+use App\Models\AdvertisingPlansImages;
 
 class ImagesAdvertisingPlansController extends Controller
 {
@@ -61,7 +63,22 @@ class ImagesAdvertisingPlansController extends Controller
 
         $plan = ImagesAdvertisingPlans::create($fields);
 
+        if($plan)
+        {
+            foreach($this-> getAdvertisingPlans() as $value){
+                AdvertisingPlansImages::create([
+                    'advertising_plans_id'          =>  $value,
+                    'images_advertising_plans_id'   =>  $plan->id
+                ]);
+            }
+        }
+
         return redirect()->route('img_publicity_plan.index')->with('success', 'El plan de imagenes se ha creado satisfactoriamente');
+    }
+
+    public function getAdvertisingPlans()
+    {
+        return AdvertisingPlans::all()->pluck('id');
     }
 
     /**
