@@ -72,7 +72,7 @@ class ProductController extends Controller
                 return $value->company->name;
             })
             ->editColumn('user_id', function (Products $value) {
-                return $value->user->name;
+                return $value->user->nameResponsable();
             })
             ->editColumn('brand_id', function (Products $value) {
                 return $value->brand->name;
@@ -82,7 +82,7 @@ class ProductController extends Controller
                 // return $value->fileSizeProduct();
             })
             ->addColumn('actions', 'product.datatables.action')
-            ->rawColumns(['actions', 'size_product'])
+            ->rawColumns(['actions', 'user_id', 'size_product'])
             ->orderColumn('size_product', function ($query, $order) {
                 $query->orderBy('status', 'asc');
             })

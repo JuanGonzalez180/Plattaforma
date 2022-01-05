@@ -188,10 +188,21 @@ class User extends Authenticatable implements JWTSubject
 
     //Nombre completo
     public function fullName(){
-
         $fullName = ( is_null($this->lastname) || $this->lastname == '')
             ? $this->name
             : $this->name." ".$this->lastname;
+            
+        return $fullName;
+    }
+    
+    public function nameResponsable(){
+        $fullName = ( is_null($this->lastname) || $this->lastname == '')
+            ? $this->name
+            : $this->name." ".$this->lastname;
+        
+        if(!$fullName && $this->team() ){
+            $fullName = $this->email . "<br><span class='badge badge-warning'>(No ha completado el registro)</span>";
+        }
             
         return $fullName;
     }

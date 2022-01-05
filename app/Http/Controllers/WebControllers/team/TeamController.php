@@ -8,6 +8,11 @@ use App\Models\Team;
 
 class TeamController extends Controller
 {
+    public $status = [
+        Team::TEAM_PENDING => "warning",
+        Team::TEAM_APPROVED => "success",
+    ];
+
     public function index($company_id)
     {
         $teams_a = Team::where('company_id', $company_id)
@@ -22,8 +27,8 @@ class TeamController extends Controller
 
         $teams  = $teams_a->merge($teams_b);
 
-        
-        return view('team.index', compact('teams'));
+        $status = $this->status;
+        return view('team.index', compact('teams', 'status' ));
     }
 
     public function show($id)
