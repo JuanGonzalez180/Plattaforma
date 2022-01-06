@@ -66,7 +66,7 @@ class AccountMyTeamController extends ApiController
         }
         
         $teamCompany = Team::where('company_id', $companyID)
-            ->where('status',Team::TEAM_APPROVED)
+            // ->where('status',Team::TEAM_APPROVED)
             ->orderBy('id', 'desc')->get();
         // $teamCompany = Team::where('company_id', $companyID)->orderBy('id', 'desc')->paginate();
         
