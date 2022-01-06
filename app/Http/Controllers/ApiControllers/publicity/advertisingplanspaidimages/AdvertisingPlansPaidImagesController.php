@@ -32,7 +32,8 @@ class AdvertisingPlansPaidImagesController extends ApiController
         $user = $this->validateUser();
         
         $planAdvertisings = AdvertisingPlans::find($request->id);
-        $planAdvertisings->advertisingPlansImages;
+
+        $planAdvertisings->advertisingPlansImages = $planAdvertisings->advertisingPlansImagesApprove();
         foreach ($planAdvertisings->advertisingPlansImages as $key => $image) {
             $image->imagesAdvertisingPlans;
         }

@@ -26,17 +26,24 @@ class AdvertisingPlans extends Model
     ];
 
     // Relacion uno a uno polimorfica
-    public function image(){
+    public function image()
+    {
         return $this->morphOne(Image::class, 'imageable');
     }
 
-    public function advertisingPlansImages(){
+    public function advertisingPlansImages()
+    {
         return $this->hasMany(AdvertisingPlansImages::class);
     }
 
-    public function typeRectangle() 
+    public function advertisingPlansImagesApprove()
     {
-        
+        return AdvertisingPlansImages::where('advertising_plans_id', $this->id)
+            ->where('status', AdvertisingPlansImages::ADVER_PLAN_IMAGE_PUBLISH)
+            ->get();
     }
 
+    public function typeRectangle()
+    {
+    }
 }
