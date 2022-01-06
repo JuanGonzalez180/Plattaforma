@@ -8,6 +8,7 @@ use App\Models\Advertisings;
 use App\Models\AdvertisingPlansPaidImages;
 use App\Models\AdvertisingPlans;
 use App\Models\RegistrationPayments;
+use App\Models\Statistics;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -47,13 +48,21 @@ class RandomAdvertisingsController extends ApiController
             ->join('registration_payments','registration_payments.paymentsable_id','=','advertisings.id')
             ->join('advertising_plans','advertising_plans.id','=','advertisings.plan_id')
             ->where('advertising_plans.type_ubication','=',$type_ubication)
-            ->where( DB::raw("DATE_FORMAT(CONCAT(advertisings.start_date,' ',advertisings.start_time), '%Y-%m-%d %H:%i' )"),'<=', Carbon::now()->format('Y-m-d H:i'))
-            ->where( DB::raw("DATE_FORMAT(CONCAT(DATE_ADD(advertisings.start_date, INTERVAL +advertising_plans.days DAY),' ',advertisings.start_time), '%Y-%m-%d %H:%i' )") ,'>=', Carbon::now()->format('Y-m-d H:i'))
+            ->where( DB::raw("DATE_FORMAT(advertisings.start_date, '%Y-%m-%d' )"),'<=', Carbon::now()->format('Y-m-d'))
+            ->where( DB::raw("DATE_FORMAT(DATE_ADD(advertisings.start_date, INTERVAL +advertising_plans.days DAY), '%Y-%m-%d' )") ,'>=', Carbon::now()->format('Y-m-d'))
             ->where('registration_payments.paymentsable_type','=',Advertisings::class)
             ->whereIn('registration_payments.status',[RegistrationPayments::REGISTRATION_APPROVED])
             ->orderByRaw('rand()')
             ->take(6)
             ->get();
+        
+        $viewAction = $advertisings->first();
+        if( $viewAction ){
+            $fields['statisticsable_id'] = $viewAction->advertisingable_id;
+            $fields['statisticsable_type'] = $viewAction->advertisingable_type;
+            $fields['action'] = 'view';
+            $statistic = Statistics::create($fields);
+        }
 
         // Carbon::now()->addDays("advertising_plans.days")->format('Y-m-d H:i');
 
