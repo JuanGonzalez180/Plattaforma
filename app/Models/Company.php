@@ -141,6 +141,11 @@ class Company extends Model
         return $this->hasMany(Team::class);
     }
 
+    public function teamsCount()
+    {
+        return Company::find($this->id)->teams->count();
+    }
+
     // Relacion uno a uno polimorfica
     public function image()
     {
