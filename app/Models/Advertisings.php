@@ -8,11 +8,13 @@ use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Products;
 use App\Models\Projects;
+use App\Models\Statistics;
 use App\Models\AdvertisingPlans;
 use App\Models\RegistrationPayments;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\AdvertisingPlansPaidImages;
 use App\Transformers\AdvertisingsTransformer;
+use App\Transformers\AdvertisingsRandomTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Advertisings extends Model
@@ -20,6 +22,7 @@ class Advertisings extends Model
     use HasFactory;
 
     public $transformer = AdvertisingsTransformer::class;
+    const TRANSFORMER_ADVERTISING_RANDOM = AdvertisingsRandomTransformer::class;
 
     const STATUS_START  = 'Sin iniciar';
     const STATUS_ACTIVE = 'Activo';
@@ -142,5 +145,12 @@ class Advertisings extends Model
     public function advertisingPlansPaidImages()
     {
         return $this->hasMany(AdvertisingPlansPaidImages::class);
+    }
+
+    public function addStatistics( $action ){
+        $fields['statisticsable_id'] = $this->advertisingable_id;
+        $fields['statisticsable_type'] = $this->advertisingable_type;
+        $fields['action'] = $action;
+        $statistic = Statistics::create($fields);
     }
 }

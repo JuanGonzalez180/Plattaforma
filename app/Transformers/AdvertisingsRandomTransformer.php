@@ -6,7 +6,7 @@ use App\Models\Advertisings;
 use League\Fractal\TransformerAbstract;
 use App\Transformers\AdvertisingPlansPaidImagesTransformer;
 
-class AdvertisingsTransformer extends TransformerAbstract
+class AdvertisingsRandomTransformer extends TransformerAbstract
 {
     /**
      * List of resources to automatically include
@@ -39,6 +39,9 @@ class AdvertisingsTransformer extends TransformerAbstract
             $transformation = fractal(  $advertising->advertisingPlansPaidImages, new $transformer );
             $images = $transformation->toArray();
         }
+
+        // Añadir a la estadística un View.
+        $advertising->addStatistics( 'view' );
 
         return [
             'id' => (int)$advertising->id,
