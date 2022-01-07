@@ -8,6 +8,18 @@ Publicidad
 @include('partials.structure.open-main')
 <h1>Publicidad</h1>
 <hr>
+@if(session()->get('success'))
+<div class="alert alert-success">
+    <i class="fas fa-check"></i>&nbsp;{{ session()->get('success') }}
+</div>
+@endif
+
+@if(session()->get('danger'))
+<div class="alert alert-danger">
+    <i class="fas fa-times"></i>&nbsp;{{ session()->get('danger') }}
+</div>
+@endif
+
 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
     <li class="nav-item">
         <a class="nav-link active" id="advertising-info-tab" data-toggle="pill" href="#advertising-info" role="tab" aria-controls="advertising-info" aria-selected="true">
@@ -46,15 +58,12 @@ Publicidad
 </div>
 @include('partials.structure.close-main')
 <script>
-    $("#advertising_form").submit(function(e) {
+    $('.form-advertising-status').submit(function(e) {
+        console.log('pasa por aca');
         e.preventDefault();
-        let id = $('#id').val();
-        let status = $('#status').val();
-        let _token = $("input[name=_token]").val();
-
         Swal.fire({
             title: '¿Estas seguro?',
-            text: "Cambiar el estado de la publicidad ?",
+            text: "Deseas cambiar el estado de la publicidad?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -63,31 +72,9 @@ Publicidad
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-
-                $.ajax({
-                    url: "{{route('manage-advertising-status-update')}}",
-                    type: "PUT",
-                    data: {
-                        id: id,
-                        status: status,
-                        _token: _token
-                    },
-                    success: function(data) {
-                        Swal.fire(
-                            'Exito!',
-                            data['message'],
-                            'success',
-                        ).then((result) => {
-                            if (result.isConfirmed) {
-                                location.reload();
-                            }
-                        })
-                    }
-                });
+                this.submit();
             }
         })
-
-
     });
 </script>
 @endsection

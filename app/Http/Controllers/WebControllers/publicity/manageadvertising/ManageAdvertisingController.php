@@ -179,19 +179,25 @@ class ManageAdvertisingController extends Controller
         $advertising->start_date    = Carbon::now()->format('Y-m-d');
         $advertising->save();
 
+        $message['type']    = "success";
+        $message['message'] = "La publicidad se encuantra en Revisión";
+
         if($advertising->status == Advertisings::STATUS_ADMIN_APPROVED)
         {
-            $message = "La publicidad ha sido aprobada";
+            $message['type']    = "success";
+            $message['message'] = "La publicidad ha sido aprobada";
             
         }
-        else if($advertising->status == Advertisings::STATUS_ADMIN_APPROVED)
+        else if($advertising->status == Advertisings::STATUS_ADMIN_REJECTED)
         {
-            $message = "La publicidad ha sido Rechazada";
+            $message['type']    = "danger";
+            $message['message'] = "La publicidad ha sido Rechazada";
 
         }
 
-        return response()->json(['message' => $message], 200);
 
+
+        return redirect()->route('manage_publicity_plan.show', $request->id)->with($message['type'], $message['message']);
     }
     /**
      * Remove the specified resource from storage.
