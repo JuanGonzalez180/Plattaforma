@@ -11,6 +11,7 @@ use App\Models\Products;
 use App\Models\Projects;
 use App\Models\RegistrationPayments;
 use App\Models\Tenders;
+use App\Models\Statistics;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -115,6 +116,8 @@ class AdvertisingController extends ApiController
         $advertisingFields['plan_id'] = $plan->id;
         $advertisingFields['name'] = $request['name'];
 
+        // Saber el número de imágenes que debe subir.
+        $plan->advertisingPlansImages = $plan->advertisingPlansImagesApprove();
         if(count($plan->advertisingPlansImages) !== count($request->images)){
             $projectError = ['advertising' => 'Error, Debes subir la misma cantidad de imágenes'];
             return $this->errorResponse($projectError, 500);
@@ -211,6 +214,25 @@ class AdvertisingController extends ApiController
             $value->image;
             $value->advertisingPlansImages->imagesAdvertisingPlans;
         }
+
+        // Statistics
+        $statistic = [];
+
+        $statistic['click'] = Statistics::selectRaw("COUNT(*) clicks, DATE_FORMAT(created_at, '%Y-%m-%d') date")
+                            ->where( 'statisticsable_type', $advertisings->advertisingable_type )
+                            ->where( 'statisticsable_id', $advertisings->advertisingable_id )
+                            ->where( 'action', 'click' )
+                            ->groupBy('date')
+                            ->get();
+
+        $statistic['view'] = Statistics::selectRaw("COUNT(*) views, DATE_FORMAT(created_at, '%Y-%m-%d') date")
+                            ->where( 'statisticsable_type', $advertisings->advertisingable_type )
+                            ->where( 'statisticsable_id', $advertisings->advertisingable_id )
+                            ->where( 'action', 'view' )
+                            ->groupBy('date')
+                            ->get();
+
+        $advertisings->statistic = $statistic;
 
         return $this->showOne($advertisings, 200);
     }
