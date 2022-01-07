@@ -47,7 +47,7 @@ class ManageAdvertisingController extends Controller
             })->where('registration_payments.company_id', $company);
         };
 
-        $advertisingList = $advertisingList->orderBy('start_date', 'desc');
+        $advertisingList = $advertisingList->orderBy('start_date', 'asc');
 
         return DataTables::of($advertisingList)
             ->editColumn('name', function (Advertisings $value) {
@@ -143,7 +143,6 @@ class ManageAdvertisingController extends Controller
         ];
 
         // $status_payment = RegistrationPayments::REGISTRATION_PENDING;
-
 
         return view('publicity.manageadvertising.show', compact('advertising', 'status', 'status_payment'));
     }

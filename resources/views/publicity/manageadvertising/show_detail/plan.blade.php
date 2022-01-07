@@ -13,9 +13,9 @@
     <dd class="col-sm-8">{{$advertising->Plan->type_ubication }}</dd>
     <dt class="col-sm-12">Planes imagenes</dt>
     <dt class="col-sm-12">
-        @if( $advertising->Plan->advertisingPlansImages)
+        @if( $advertising->Plan->advertisingPlansImagesApprove())
         <ul class="list-group">
-            @foreach($advertising->Plan->advertisingPlansImages as $value)
+            @foreach($advertising->Plan->advertisingPlansImagesApprove() as $value)
             <li class="list-group-item">
                 <div class="row">
                     <div class="col">
