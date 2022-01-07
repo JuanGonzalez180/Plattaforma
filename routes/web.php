@@ -279,7 +279,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/manage_publicity_plan/company', [ManageAdvertisingController::class, 'getAdvertisingCompanies'])
                 ->name('manage_publicity_plan.company');
 
-        Route::PUT('/manage_publicity_plan/update/status', [ManageAdvertisingController::class, 'update_status'])->name('manage-advertising-status-update');
+        Route::post('/manage_publicity_plan/update/status', [ManageAdvertisingController::class, 'update_status'])->name('adver-status-update');
         // tests
         Route::resource('test', TestController::class, ['only' => ['index', 'edit', 'update', 'show', 'store']])
                 ->names('testing')

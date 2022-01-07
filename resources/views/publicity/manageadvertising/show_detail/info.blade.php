@@ -9,27 +9,27 @@
     <dd class="col-sm-8">{{ $advertising->start_date }} </dd>
 </dl>
 <hr>
-<form>
-    <div class="form-group col-md-6">
-        <label for="type_id">Estado</label>
 
-        @if($advertising->payments->status == $status_payment[0])
+<div class="form-group col-md-12">
+    <label for="type_id">Estado</label>
+    @if($advertising->payments->status == $status_payment[0])
 
-        <div class="alert alert-primary" role="alert">
-            <i class="fas fa-info-circle"></i> El pago sigue pendiente, debe realizar el pago para aprobar o rechazar la publicidad.
-        </div>
+    <div class="alert alert-primary" role="alert">
+        <i class="fas fa-info-circle"></i> El pago sigue pendiente, debe realizar el pago para aprobar o rechazar la publicidad.
+    </div>
 
-        @elseif($advertising->payments->status == $status_payment[2])
+    @elseif($advertising->payments->status == $status_payment[2])
 
-        <div class="alert alert-danger" role="alert">
-            <i class="fas fa-times"></i> El pago ha sido rechazado
-        </div>
+    <div class="alert alert-danger" role="alert">
+        <i class="fas fa-times"></i> El pago ha sido rechazado
+    </div>
 
-        @elseif($advertising->payments->status == $status_payment[1] && $advertising->status == $status[0])
+    @elseif($advertising->payments->status == $status_payment[1] && $advertising->status == $status[0])
 
-        <form id="advertising_form">
-            @csrf
-            <input type="hidden" id="id" value="{{$advertising->id}}" name="id" />
+    <form method="POST" action="{{ route('adver-status-update') }}" class="d-inline form-advertising-status">
+        @csrf
+        <input type="hidden" id="id" value="{{$advertising->id}}" name="id" />
+        <div class="form-group">
             <div class="form-row">
                 <div class="form-group col-md-8">
                     <select name="status" id="status" class="form-control">
@@ -42,20 +42,20 @@
                     <button type="submit" class="btn btn-success">Aceptar</button>
                 </div>
             </div>
-        </form>
-
-        @elseif($advertising->payments->status == $status_payment[1] && $advertising->status == $status[1])
-
-        <div class="alert alert-success" role="alert">
-            <i class="fas fa-check"></i> La publidad ha sido aprobada.
         </div>
+    </form>
 
-        @elseif($advertising->payments->status == $status_payment[1] && $advertising->status == $status[2])
-        <div class="alert alert-primary" role="alert">
-            <i class="fas fa-info-circle"></i> La publidad ha sido rechazada.
-        </div>
-        @endif
+    @elseif($advertising->payments->status == $status_payment[1] && $advertising->status == $status[1])
 
-
+    <div class="alert alert-success" role="alert">
+        <i class="fas fa-check"></i> La publidad ha sido aprobada.
     </div>
-</form>
+
+    @elseif($advertising->payments->status == $status_payment[1] && $advertising->status == $status[2])
+    <div class="alert alert-primary" role="alert">
+        <i class="fas fa-info-circle"></i> La publidad ha sido rechazada.
+    </div>
+    @endif
+
+
+</div>
