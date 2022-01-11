@@ -36,11 +36,6 @@ Publicidad
             <i class="fas fa-money-bill-alt"></i>&nbsp;Pago
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" id="advertising-payment-tab" data-toggle="pill" href="#advertising-plan-img" role="tab" aria-controls="advertising-plan-img" aria-selected="false">
-            <i class="fas fa-images"></i>&nbsp;Plan imagenes
-        </a>
-    </li>
 </ul>
 <div class="tab-content" id="pills-tabContent">
     <div class="tab-pane fade show active" id="advertising-info" role="tabpanel" aria-labelledby="advertising-info-tab">
@@ -52,10 +47,24 @@ Publicidad
     <div class="tab-pane fade" id="advertising-payment" role="tabpanel" aria-labelledby="project-file-tab">
         @include('publicity.manageadvertising.show_detail.payment')
     </div>
-    <div class="tab-pane fade" id="advertising-plan-img" role="tabpanel" aria-labelledby="project-file-tab">
+</div>
+
+<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="#advertising-plan-img-tab" data-toggle="pill" href="##advertising-plan-img" role="tab" aria-controls="#advertising-plan-img" aria-selected="true">
+            <i class="fas fa-images"></i>&nbsp;Plan imagenes
+        </a>
+    </li>
+</ul>
+<div class="tab-content" id="pills-tabContent">
+    <div class="tab-pane fade show active" id="#advertising-plan-img" role="tabpanel" aria-labelledby="#advertising-plan-img-tab">
         @include('publicity.manageadvertising.show_detail.images')
     </div>
 </div>
+
+
+
+
 @include('partials.structure.close-main')
 <script>
     $('.form-advertising-status').submit(function(e) {
