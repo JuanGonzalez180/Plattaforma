@@ -49,6 +49,13 @@ class ManageAdvertisingController extends Controller
 
         $advertisingList = $advertisingList->orderBy('start_date', 'asc');
 
+        // $advertisingList  = $advertisingList->get();
+
+
+        // $advertisingList->where($advertisingList, function ($value, $key) {
+        //     return $value->payments->status == RegistrationPayments::REGISTRATION_PENDING;
+        // });
+
         return DataTables::of($advertisingList)
             ->editColumn('name', function (Advertisings $value) {
                 $message = '<cite title="Source Title">' . $value->name . '</cite><br>';
