@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\SocialNetworksRelation;
 use Illuminate\Database\Eloquent\Model;
 use App\Transformers\CompanyTransformer;
+use App\Models\AdvertisingPlansPaidImages;
 use App\Transformers\CompanyDetailTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -297,6 +298,43 @@ class Company extends Model
             ->count();
 
         return $files + $images;
+    }
+
+    public function fileListAdvertising()
+    {
+        return DB::table('images')->select('images.url', 'images.size', 'images.updated_at')
+            ->where('images.imageable_type', AdvertisingPlansPaidImages::class)
+            ->whereNotNull('images.size')
+            ->join('advertising_plans_paid_images', 'advertising_plans_paid_images.id', '=', 'images.imageable_id')
+            ->join('advertisings', 'advertisings.id', '=', 'advertising_plans_paid_images.advertisings_id')
+            ->join('registration_payments', 'registration_payments.paymentsable_id', '=', 'advertisings.id')
+            ->where('registration_payments.company_id', $this->id)
+            ->orderBy('images.created_at','desc')
+            ->get();
+    }
+
+    public function fileCountAdvertising()
+    {
+        return DB::table('images')->select('images.url', 'images.size', 'images.updated_at')
+            ->where('images.imageable_type', AdvertisingPlansPaidImages::class)
+            ->whereNotNull('images.size')
+            ->join('advertising_plans_paid_images', 'advertising_plans_paid_images.id', '=', 'images.imageable_id')
+            ->join('advertisings', 'advertisings.id', '=', 'advertising_plans_paid_images.advertisings_id')
+            ->join('registration_payments', 'registration_payments.paymentsable_id', '=', 'advertisings.id')
+            ->where('registration_payments.company_id', $this->id)
+            ->count();
+    }
+
+    public function fileSizeAdvertising()
+    {
+        return DB::table('images')->select('images.url', 'images.size', 'images.updated_at')
+            ->where('images.imageable_type', AdvertisingPlansPaidImages::class)
+            ->whereNotNull('images.size')
+            ->join('advertising_plans_paid_images', 'advertising_plans_paid_images.id', '=', 'images.imageable_id')
+            ->join('advertisings', 'advertisings.id', '=', 'advertising_plans_paid_images.advertisings_id')
+            ->join('registration_payments', 'registration_payments.paymentsable_id', '=', 'advertisings.id')
+            ->where('registration_payments.company_id', $this->id)
+            ->sum('images.size');
     }
 
     public function fileSizeCatalogs()
@@ -626,7 +664,8 @@ class Company extends Model
             ->merge($this->fileListProject())
             ->merge($this->fileListProduct())
             ->merge($this->fileListPortfolio())
-            ->merge($this->fileListTender());
+            ->merge($this->fileListTender())
+            ->merge($this->fileListAdvertising());
 
         return $files->sortBy([['updated_at', 'desc']]);
     }
@@ -639,8 +678,9 @@ class Company extends Model
         $product         = $this->fileSizeProduct();
         $portfolio       = $this->fileSizePortfolio();
         $tender          = $this->fileSizeTender();
+        $advertising     = $this->fileSizeAdvertising();
 
-        return $brands + $blog + $project + $product + $portfolio + $tender;
+        return $brands + $blog + $project + $product + $portfolio + $tender + $advertising;
     }
 
     public function fileCountTotal()
@@ -652,8 +692,9 @@ class Company extends Model
         $portfolio       = $this->fileCountPortfolio();
         $tender          = $this->fileCountTender();
         $catalog         = $this->fileCountCatalogs();
+        $advertising     = $this->fileCountAdvertising();
 
-        return $brands + $blog + $project + $product + $portfolio + $tender + $catalog;
+        return $brands + $blog + $project + $product + $portfolio + $tender + $catalog + $advertising;
     }
 
     public function fileSizeTotalDetail()
@@ -665,6 +706,7 @@ class Company extends Model
         $item['Portafolios']    = [$this->fileCountPortfolio(), $this->fileSizePortfolio()];
         $item['Projectos']      = [$this->fileCountProject(), $this->fileSizeProject()];
         $item['Catalogos']      = [$this->fileCountCatalogs(), $this->fileSizeCatalogs()];
+        $item['Publicidades']   = [$this->fileCountAdvertising(), $this->fileSizeAdvertising()];
 
         return $item;
     }

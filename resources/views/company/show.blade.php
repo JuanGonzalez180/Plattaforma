@@ -115,6 +115,16 @@ Compañia
                     </td>
                 </tr>
                 <tr>
+                    <th scope="row">Publicidad</th>
+                    <td>{{$company->fileCountAdvertising()}}</td>
+                    <td><span class="badge badge-primary">{{$company->formatSize($company->fileSizeAdvertising())}}</span></td>
+                    <td>
+                        <button type="button" class="btn btn-primary" onclick="fileModalEvent('advertisings')">
+                            <i class="fas fa-external-link-square-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
                     <th scope="row">Total</th>
                     <td>{{$company->fileCountTotal()}}</td>
                     <td><span class="badge badge-primary">{{$company->formatSize($company->fileSizeTotal())}}</span></td>
