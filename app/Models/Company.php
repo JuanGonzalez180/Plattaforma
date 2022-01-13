@@ -337,6 +337,11 @@ class Company extends Model
             ->sum('images.size');
     }
 
+    public function adminCompany()
+    {
+        return $this->user_id;
+    }
+
     public function fileSizeCatalogs()
     {
         $files = Files::where('files.filesable_type', Catalogs::class)
