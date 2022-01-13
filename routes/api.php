@@ -173,6 +173,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::resource('/myaccount/myservices', AccountMyServicesController::class, ['only' => ['index', 'store']])->names('myservices');
     Route::resource('/myaccount/myteam', AccountMyTeamController::class, ['only' => ['index', 'store', 'update', 'destroy']])->names('myteam');
     Route::get('/myaccount/myteam/approved', [AccountMyTeamController::class, 'teamUsersApproved'])->name('myteamapproved');
+    Route::get('/myaccount/myteam/resend/invitation/{team_id}', [AccountMyTeamController::class, 'resendInvitation'])->name('resentinvitation');
     Route::resource('/company/files', CompanyFilesController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('companyimages');
     Route::resource('/company/name', CompanyChangesNameController::class, ['only' => ['store']])->names('companychangename');
     /**

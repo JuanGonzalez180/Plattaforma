@@ -235,6 +235,24 @@ class AccountMyTeamController extends ApiController
         return $this->showOne($userMemberTeam, 200);
     }
 
+    public function resendInvitation(int $idMember)
+    {
+        $memberTeam     = Team::findOrFail($idMember);
+        $userMemberTeam = $memberTeam->user;
+
+        if ($memberTeam->status == Team::TEAM_APPROVED) {
+
+            // Generar el correo de invitacion.
+            Mail::to($userMemberTeam->email)->send(new SendInvitation($userMemberTeam));
+            
+            // Aquí debe devolver el usuario editado.
+            return $this->showOne($userMemberTeam, 200);
+        } else {
+            $teamError = ['user' => 'Error, el usuario ya ha sido aprobado.'];
+            return $this->errorResponse($teamError, 500);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -260,7 +278,6 @@ class AccountMyTeamController extends ApiController
             $userError = ['user' => ['Error, no se ha podido eliminar el integrante']];
             return $this->errorResponse($userError, 500);
         }
-
 
         // //Actulizados primero los registros del usuarios/ el responsable pase a ser el admin de la compañia
         $this->updateUserRegisters($userMemberTeam->id, $userAdmin);
