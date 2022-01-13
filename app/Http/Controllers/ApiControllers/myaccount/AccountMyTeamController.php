@@ -240,8 +240,6 @@ class AccountMyTeamController extends ApiController
         $memberTeam     = Team::findOrFail($idMember);
         $userMemberTeam = $memberTeam->user;
 
-        var_dump($memberTeam->status);
-
         if ($memberTeam->status == Team::TEAM_PENDING) {
 
             // Generar el correo de invitacion.
