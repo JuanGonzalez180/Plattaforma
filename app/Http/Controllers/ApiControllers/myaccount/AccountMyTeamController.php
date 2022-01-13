@@ -240,11 +240,13 @@ class AccountMyTeamController extends ApiController
         $memberTeam     = Team::findOrFail($idMember);
         $userMemberTeam = $memberTeam->user;
 
-        if ($memberTeam->status == Team::TEAM_APPROVED) {
+        var_dump($memberTeam->status);
+
+        if ($memberTeam->status == Team::TEAM_PENDING) {
 
             // Generar el correo de invitacion.
             Mail::to($userMemberTeam->email)->send(new SendInvitation($userMemberTeam));
-            
+
             // Aquí debe devolver el usuario editado.
             return $this->showOne($userMemberTeam, 200);
         } else {
