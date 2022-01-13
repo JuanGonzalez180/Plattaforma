@@ -10,7 +10,6 @@ Compañia
 <hr>
 
 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-
     <li class="nav-item">
         <a class="nav-link active" id="company-info-tab" data-toggle="pill" href="#company-info" role="tab" aria-controls="company-info" aria-selected="true">
             <i class="fas fa-info-circle"></i>&nbsp;Información
@@ -23,14 +22,13 @@ Compañia
             <span class="badge badge-light"></span>
         </a>
     </li>
-
 </ul>
+
 <div class="tab-content" id="pills-tabContent">
     <div class="tab-pane fade show active" id="company-info" role="tabpanel" aria-labelledby="company-info-tab">
         @include('company.show_detail.info')
     </div>
     <div class="tab-pane fade" id="size-company" role="tabpanel" aria-labelledby="size-company-tab">
-
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -134,10 +132,8 @@ Compañia
                         </button>
                     </td>
                 </tr>
-                
             </tbody>
         </table>
-
     </div>
 </div>
 <!-- Modal -->

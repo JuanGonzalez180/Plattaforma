@@ -21,7 +21,13 @@ class ManageAdvertisingController extends Controller
     {
         $companies = $this->getCompanies();
 
-        return view('publicity.manageadvertising.index', compact('companies'));
+        $status['PENDING_PAYMENT']  = 'Pago pendiente';
+        $status['PAYMENT_DECLINED'] = 'Pago rechazado';
+        $status['REVIEW']           = 'Revisión';
+        $status['APPROVED']         = 'Aprobado';
+        $status['REJECTED']         = 'Rechazado';
+
+        return view('publicity.manageadvertising.index', compact(['companies', 'status']));
     }
 
     public function getCompanies()
@@ -36,25 +42,42 @@ class ManageAdvertisingController extends Controller
 
     public function getAdvertisingCompanies(Request $request)
     {
-        $company = $request->company_id;
+        $company    = $request->company_id;
+        $status     = $request->status;
 
-        $advertisingList = Advertisings::select('advertisings.*');
-
-        if ($company != 'all') {
-            $advertisingList = $advertisingList->join('registration_payments', function ($join) {
+        $advertisingList = Advertisings::select('advertisings.*')
+            ->join('registration_payments', function ($join) {
                 $join->on('advertisings.id', '=', 'registration_payments.paymentsable_id')
                     ->where('registration_payments.paymentsable_type', '=',  Advertisings::class);
-            })->where('registration_payments.company_id', $company);
+            });
+
+        if ($company != 'all') {
+            $advertisingList = $advertisingList->where('registration_payments.company_id', $company);
         };
+
+        if ($status == 'PENDING_PAYMENT') {
+            //estado pendiente
+            $advertisingList = $advertisingList->where('registration_payments.status', RegistrationPayments::REGISTRATION_PENDING);
+        } else if ($status == 'PAYMENT_DECLINED') {
+            //estado rechazado
+            $advertisingList = $advertisingList->where('registration_payments.status', RegistrationPayments::REGISTRATION_REJECTED);
+        } else if ($status == 'REVIEW') {
+            //revision
+            $advertisingList = $advertisingList->where('registration_payments.status', RegistrationPayments::REGISTRATION_APPROVED)
+                ->where('advertisings.status', Advertisings::STATUS_ADMIN_CREATED);
+        } else if ($status == 'APPROVED') {
+            //Aprobada
+            $advertisingList = $advertisingList->where('registration_payments.status', RegistrationPayments::REGISTRATION_APPROVED)
+                ->where('advertisings.status', Advertisings::STATUS_ADMIN_APPROVED);
+        } else if ($status == 'REJECTED') {
+            //Rechazada
+            $advertisingList = $advertisingList->where('registration_payments.status', RegistrationPayments::REGISTRATION_APPROVED)
+                ->where('advertisings.status', Advertisings::STATUS_ADMIN_REJECTED);
+        }
+
 
         $advertisingList = $advertisingList->orderBy('start_date', 'asc');
 
-        // $advertisingList  = $advertisingList->get();
-
-
-        // $advertisingList->where($advertisingList, function ($value, $key) {
-        //     return $value->payments->status == RegistrationPayments::REGISTRATION_PENDING;
-        // });
 
         return DataTables::of($advertisingList)
             ->editColumn('name', function (Advertisings $value) {
@@ -188,17 +211,12 @@ class ManageAdvertisingController extends Controller
         $message['type']    = "success";
         $message['message'] = "La publicidad se encuantra en Revisión";
 
-        if($advertising->status == Advertisings::STATUS_ADMIN_APPROVED)
-        {
+        if ($advertising->status == Advertisings::STATUS_ADMIN_APPROVED) {
             $message['type']    = "success";
             $message['message'] = "La publicidad ha sido aprobada";
-            
-        }
-        else if($advertising->status == Advertisings::STATUS_ADMIN_REJECTED)
-        {
+        } else if ($advertising->status == Advertisings::STATUS_ADMIN_REJECTED) {
             $message['type']    = "danger";
             $message['message'] = "La publicidad ha sido Rechazada";
-
         }
 
 

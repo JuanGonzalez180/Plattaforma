@@ -19,15 +19,29 @@ Gestionar publicidad
 </div>
 @endif
 
-<div class="form-group col-md-6">
-    <label for="parent_id">Compañias</label>
-    <select name="company_id" id="company_id" class="form-control form-control-sm" onchange="getPlanCompany(this.value);">
-        <option value="all">Todos</option>
-        @foreach($companies as $company)
-        <option value="{{$company->id}}">{{$company->name}}</option>
-        @endforeach
-    </select>
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <label for="parent_id">Compañias</label>
+            <select name="company_id" id="company_id" class="form-control form-control-sm" onchange="getPlanCompany(this.value);">
+                <option value="all">Todos</option>
+                @foreach($companies as $company)
+                <option value="{{$company->id}}">{{$company->name}}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-sm">
+            <label for="parent_id">Estado</label>
+            <select name="status" id="status" class="form-control form-control-sm" onchange="getPlanCompany(this.value);">
+                <option value="all">Todos</option>
+                @foreach($status as $key => $value)
+                <option value="{{$key}}">{{$value}}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
 </div>
+<br>
 
 @include('partials.session-status')
 
@@ -57,6 +71,7 @@ Gestionar publicidad
                 },
                 "data": function(d) {
                     d.company_id = getCompanyId();
+                    d.status = getStatus();
                 }
             },
             "columns": [{
@@ -95,8 +110,15 @@ Gestionar publicidad
     });
 
     function getCompanyId() {
-        var select = document.getElementById('company_id');
-        var value = select.options[select.selectedIndex].value;
+        var select  = document.getElementById('company_id');
+        var value   = select.options[select.selectedIndex].value;
+
+        return value;
+    }
+
+    function getStatus() {
+        var select  = document.getElementById('status');
+        var value   = select.options[select.selectedIndex].value;
 
         return value;
     }

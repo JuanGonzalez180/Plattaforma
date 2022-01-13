@@ -227,6 +227,7 @@ class AccountMyTeamController extends ApiController
      */
     public function destroy(Request $request, int $idMember)
     {
+
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
 
