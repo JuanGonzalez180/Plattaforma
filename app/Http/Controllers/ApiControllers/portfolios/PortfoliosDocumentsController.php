@@ -55,7 +55,6 @@ class PortfoliosDocumentsController extends ApiController
 
     public function store(Request $request)
     {
-
         $user = $this->validateUser();
 
         $rules = [

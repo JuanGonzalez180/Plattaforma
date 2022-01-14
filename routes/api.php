@@ -283,6 +283,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('/company/{slug}/products/{id}', [CompanyProductsController::class, 'show'])->name('company-detail-products');
 
     Route::get('/company/{slug}/teams', [CompanyTeamsController::class, 'index'])->name('company-teams');
+    Route::get('/company/{slug}/teams/admin', [CompanyTeamsController::class, 'getAdminCompany'])->name('company-admin-teams');
     Route::get('/company/{slug}/portfolios', [CompanyPortfoliosController::class, 'index'])->name('company-portfolios');
     Route::get('/company/{slug}/catalogs', [CompanyCatalogsController::class, 'index'])->name('company-catalog');
 
