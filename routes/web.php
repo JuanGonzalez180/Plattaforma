@@ -11,6 +11,7 @@ use App\Http\Controllers\WebControllers\remark\RemarkController;
 use App\Http\Controllers\WebControllers\brands\BrandsController;
 use App\Http\Controllers\WebControllers\tender\TenderController;
 use App\Http\Controllers\WebControllers\company\CompanyController;
+use App\Http\Controllers\WebControllers\scripts\RemoveUnwantedUsersController;
 use App\Http\Controllers\WebControllers\company\projects\CompanyProjectController;
 
 
@@ -68,6 +69,8 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('script/update/filesize', [ScriptFilesController::class, 'updateSizeFiles']);
 
 Route::get('script/delete/filesize', [ScriptFilesController::class, 'deleteFileNotExist']);
+
+Route::get('script/delete/users/unwanted', RemoveUnwantedUsersController::class)->name('users-delete-unwanted');
 
 
 
@@ -138,13 +141,13 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/company/all/projects', [CompanyProjectController::class, 'index'])->name('companies-all-projects');
         Route::post('/company/get/projects', [CompanyProjectController::class, 'getCompany'])->name('companies-get-projects');
         Route::post('/company/get/projects/status', [CompanyProjectController::class, 'getCountStatus'])->name('companies-status-projects');
-
+        
         Route::post('/company/get/files', [CompanyFilesController::class, 'getFiles'])->name('companies-get-files');
-
+        
         Route::get('/company/all/providers', [CompanyProvidersController::class, 'index'])->name('companies-all-providers');
         Route::post('/company/get/providers', [CompanyProvidersController::class, 'getCompany'])->name('companies-get-providers');
         Route::post('/company/get/providers/status', [CompanyProvidersController::class, 'getCountStatus'])->name('companies-status-providers');
-
+        
         // Licitaciones
         Route::resource('licitaciones', TenderController::class, ['only' => ['edit', 'show']])
                 ->names('tender')

@@ -110,7 +110,7 @@ class CompanyController extends ApiController
         $userFields['verified'] = User::USER_NO_VERIFIED;
         // $userFields['validated'] = User::USER_NO_VALIDATED;
         $userFields['verification_token'] = User::generateVerificationToken();
-        $userFields['admin'] = User::USER_REGULAR;
+        $userFields['admin'] = User::USER_ADMIN;
 
         // Iniciar Transacción
         DB::beginTransaction();
