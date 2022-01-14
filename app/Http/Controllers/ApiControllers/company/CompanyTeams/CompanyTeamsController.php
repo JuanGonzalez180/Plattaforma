@@ -60,5 +60,4 @@ class CompanyTeamsController extends ApiController
 
         return $this->showOneData( $userTransform->transform($user_admin), 200 );
     }
-    
 }
