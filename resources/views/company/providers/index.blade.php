@@ -36,10 +36,11 @@ Proveedores
             </select>
         </div>
         <div class="col-sm">
-            <label for="parent_id">Tamaño</label>
+            <label for="parent_id">Ordenar por</label>
             <select name="size" id="size" class="form-control form-control-sm" onchange="getCompany();">
-                <option value="desc">Mayor</option>
-                <option value="asc">Menor</option>
+                @foreach($order as $key => $value)
+                <option value="{{$key}}">{{$value}}</option>
+                @endforeach
             </select>
         </div>
     </div>

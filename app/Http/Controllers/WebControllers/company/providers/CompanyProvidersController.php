@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\WebControllers\company\providers;
 
 use DataTables;
+use Carbon\Carbon;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -13,7 +14,14 @@ class CompanyProvidersController extends Controller
     {
         $status = $this->getStatus();
 
-        return view('company.providers.index', compact('status'));
+        $order['CREATED_DESC']      =   'Registro mas reciente';
+        $order['CREATED_ASC']       =   'Registro mas antiguo';
+        $order['SIZE_DESC']         =   'Mayor tamaño de archivos';
+        $order['SIZE_ASC']          =   'Menor tamaño de archivos'; 
+        $order['ALPHABETICAL_DESC'] =   'Alfabetico de A-Z';
+        $order['ALPHABETICAL_ASC']  =   'Alfabetico de Z-A'; 
+
+        return view('company.providers.index', compact(['status','order']));
     }
 
     public function getStatus()
@@ -43,7 +51,7 @@ class CompanyProvidersController extends Controller
     public function getCompany(Request $request)
     {
         $status     = $request->status;
-        $size       = $request->size;
+        $order       = $request->size;
 
         $companies  = Company::select('companies.*');
 
@@ -62,7 +70,33 @@ class CompanyProvidersController extends Controller
             return $item->size_company = $item->fileSizeTotal();
         });
 
-        $companies = collect($companies)->sortBy([['size_company', $size]]);
+        if($order == 'CREATED_DESC')
+        {
+            $companies = collect($companies)->sortBy([['created_at', 'desc']]);
+        }
+        else if($order == 'CREATED_ASC')
+        {
+            $companies = collect($companies)->sortBy([['created_at', 'asc']]);
+        }
+        else if($order == 'SIZE_DESC')
+        {
+            $companies = collect($companies)->sortBy([['size_company', 'desc']]);
+        }
+        else if($order == 'SIZE_ASC')
+        {
+            $companies = collect($companies)->sortBy([['size_company', 'asc']]);
+        }
+        else if($order == 'ALPHABETICAL_DESC')
+        {
+            $companies = collect($companies)->sortBy([['name', 'asc']]);
+        }
+        else if($order == 'ALPHABETICAL_ASC')
+        {
+            $companies = collect($companies)->sortBy([['name', 'desc']]);
+        }
+
+        Carbon::setLocale(config('app.locale'));
+        setlocale(LC_ALL, 'es_PA', 'es');
 
         return DataTables::of($companies)
             ->addColumn('entity', function (Company $value) {
@@ -100,7 +134,7 @@ class CompanyProvidersController extends Controller
                 return $action;
             })
             ->addColumn('date', function (Company $value) {
-                return $value->created_at->toFormattedDateString();
+                return $value->created_at->formatLocalized('%d %b %Y %H:%M %p')."<br>"."<span class='badge badge-light'>".$value->created_at->diffForHumans()."</span>";
             })
             ->editColumn('name', function (Company $value) {
                 return $value->name . "<br><span class='badge badge-secondary'><i class='far fa-envelope'></i></span> <b>" . $value->user->email . "</b>";
