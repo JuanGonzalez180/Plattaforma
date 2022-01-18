@@ -71,8 +71,6 @@ class CompanyController extends ApiController
             'phone' => 'required'
         ];
 
-        // hola
-
         $this->validate($request, $rules);
 
         // Traer los tipos registrados
