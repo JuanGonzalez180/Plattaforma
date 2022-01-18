@@ -59,16 +59,18 @@ class CompanyController extends ApiController
     {
         $rules = [
             // Country https://restcountries.eu/
-            'country_code' => 'required',
-            'country_backend' => 'required',
-            'email' => 'required|email|unique:users',
-            'name' => ['required', 'regex:/^[a-zA-Z0-9\s.&]*$/'],
-            'nit' => 'nullable',
-            'password' => 'required|min:6|confirmed',
-            'terms' => 'required',
-            'type_entity_id' => 'required',
+            'country_code'      => 'required',
+            'country_backend'   => 'required',
+            'user_name'         => 'required',
+            'lastname'          => 'nullable',
+            'email'             => 'required|email|unique:users',
+            'name'              => ['required', 'regex:/^[a-zA-Z0-9\s.&]*$/'],
+            'nit'               => 'nullable',
+            'password'          => 'required|min:6|confirmed',
+            'terms'             => 'required',
+            'type_entity_id'    => 'required',
             // 'web' => 'nullable|url',
-            'phone' => 'required'
+            'phone'             => 'required'
         ];
 
         $this->validate($request, $rules);
@@ -104,7 +106,9 @@ class CompanyController extends ApiController
             $i++;
         }
 
-        $userFields['email'] = strtolower($request['email']);
+        $userFields['name']     = strtolower($request['user_name']);
+        $userFields['lastname'] = strtolower($request['lastname']);
+        $userFields['email']    = strtolower($request['email']);
         $userFields['password'] = bcrypt($request->password);
         $userFields['verified'] = User::USER_NO_VERIFIED;
         // $userFields['validated'] = User::USER_NO_VALIDATED;
