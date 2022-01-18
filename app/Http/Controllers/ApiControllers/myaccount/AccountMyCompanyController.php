@@ -69,7 +69,7 @@ class AccountMyCompanyController extends ApiController
         $user = $this->validateUser();
         if( $user ){
             $rules = [
-                'name' => ['required', 'regex:/^[a-zA-Z\s]*$/'],
+                'name' => ['required', 'regex:/^[a-zA-Z0-9\s.&]*$/'],
                 'nit' => 'nullable',
                 'country_code' => 'required',
                 // 'web' => 'nullable|url',

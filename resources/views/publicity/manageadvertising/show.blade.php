@@ -51,7 +51,7 @@ Publicidad
 
 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
     <li class="nav-item">
-        <a class="nav-link active" id="#advertising-plan-img-tab" data-toggle="pill" href="##advertising-plan-img" role="tab" aria-controls="#advertising-plan-img" aria-selected="true">
+        <a class="nav-link disabled" id="#advertising-plan-img-tab" data-toggle="pill" href="##advertising-plan-img" role="tab" aria-controls="#advertising-plan-img" aria-selected="true">
             <i class="fas fa-images"></i>&nbsp;Plan imagenes
         </a>
     </li>

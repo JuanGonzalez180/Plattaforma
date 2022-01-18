@@ -57,13 +57,12 @@ class CompanyController extends ApiController
      */
     public function store(Request $request)
     {
-
         $rules = [
             // Country https://restcountries.eu/
             'country_code' => 'required',
             'country_backend' => 'required',
             'email' => 'required|email|unique:users',
-            'name' => ['required', 'regex:/^[a-zA-Z0-9\s]*$/'],
+            'name' => ['required', 'regex:/^[a-zA-Z0-9\s.&]*$/'],
             'nit' => 'nullable',
             'password' => 'required|min:6|confirmed',
             'terms' => 'required',
@@ -110,7 +109,7 @@ class CompanyController extends ApiController
         $userFields['verified'] = User::USER_NO_VERIFIED;
         // $userFields['validated'] = User::USER_NO_VALIDATED;
         $userFields['verification_token'] = User::generateVerificationToken();
-        $userFields['admin'] = User::USER_ADMIN;
+        $userFields['admin'] = User::USER_REGULAR;
 
         // Iniciar Transacción
         DB::beginTransaction();

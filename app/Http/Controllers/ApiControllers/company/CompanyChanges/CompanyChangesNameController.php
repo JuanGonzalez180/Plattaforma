@@ -25,7 +25,7 @@ class CompanyChangesNameController extends ApiController
         $user = $this->validateUser();
 
         $rules = [
-            'name' => ['required', 'regex:/^[a-zA-Z\s]*$/']
+            'name' => ['required', 'regex:/^[a-zA-Z0-9\s.&]*$/']
         ];
         $this->validate( $request, $rules );
 
