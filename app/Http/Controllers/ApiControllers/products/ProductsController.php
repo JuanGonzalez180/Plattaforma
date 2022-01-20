@@ -36,6 +36,7 @@ class ProductsController extends ApiController
 
         $companyID = $user->companyId();
         if ($companyID && $user->userType() == 'oferta') {
+            
             if ($user->isAdminFrontEnd()) {
                 // Si es admin
                 $products = Products::where('company_id', $companyID)

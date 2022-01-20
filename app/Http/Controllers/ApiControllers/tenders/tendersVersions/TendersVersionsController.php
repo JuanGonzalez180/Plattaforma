@@ -4,7 +4,10 @@ namespace App\Http\Controllers\ApiControllers\tenders\tendersVersions;
 
 use File;
 use JWTAuth;
+use Carbon\Carbon;
 use App\Models\Files;
+use App\Models\Tenders;
+use App\Models\Projects;
 use Illuminate\Http\Request;
 use App\Models\TendersVersions;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +58,15 @@ class TendersVersionsController extends ApiController
                 'date'      => 'required',
                 'hour'      => 'required'
             ];
+
+
+            $project_date_end   = Carbon::parse(Tenders::find($tender_id)->project->date_end);
+            $tender_date_end    = Carbon::parse(date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day'])));
+
+            if ($tender_date_end->greaterThan($project_date_end)) {
+                $tenderError = ['tender' => 'Error, La fecha de cierre de la licitacion debe ser menor a la fecha de cierre del proyecto'];
+                return $this->errorResponse($tenderError, 500);
+            }
 
             // Iniciar Transacción
             DB::beginTransaction();

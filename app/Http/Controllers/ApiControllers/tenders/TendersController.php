@@ -4,15 +4,25 @@ namespace App\Http\Controllers\ApiControllers\tenders;
 
 use JWTAuth;
 use Carbon\Carbon;
+use App\Models\Tags;
 use App\Models\User;
+use App\Models\Files;
+use App\Models\Image;
 use App\Models\Images;
 use App\Models\Company;
 use App\Models\Tenders;
+use App\Models\Remarks;
 use App\Models\Projects;
-use App\Models\TendersVersions;
-use App\Models\TendersCompanies;
+use App\Models\Interests;
+use App\Models\QueryWall;
+use App\Models\Proponents;
 use Illuminate\Http\Request;
+use App\Models\Notifications;
+use App\Models\TendersVersions;
+use App\Models\CategoryTenders;
+use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersController extends ApiController
@@ -335,6 +345,129 @@ class TendersController extends ApiController
      */
     public function destroy($id)
     {
-        //
+        $tender = Tenders::find($id);
+        
+        //-----1. borra todos los registros de compañias licitantes
+        $tenderCompanies    = $tender->tenderCompanies->pluck('id');
+        $this->deleteAllTenderCompanies($tenderCompanies);
+
+        //-----2. obtiene los id de los tenderVersions -----
+        $tenderVersions     = $tender->tendersVersion->pluck('id');
+        $this->deleteAllTenderVersions($tenderVersions);
+
+        //-----3. Borra los proponentes -----
+        $this->deleteTenderProponents($tender->id);
+
+        //-----4. Borra las categorias de la licitación -----
+        $this->deleteCategoryTenders($tender->id);
+
+        //-----5.borrar los datos de la licitación-----
+        $this->deleteAllTender($tender->id);
+        $tender->delete();
+    }
+
+    public function deleteAllTender($tender_id)
+    {
+        $this->deleteInterests([$tender_id], Tenders::class);
+        //Borra los remarks de tender
+        $this->deleteRemarks([$tender_id], Tenders::class);
+        //borra las notificaciones de tender
+        $this->deleteNotifications([$tender_id], Tenders::class);
+        //borra las querywalls de tender
+        $this->deleteQueryWall([$tender_id], Tenders::class);
+    }
+
+    public function deleteAllTenderCompanies($ids)
+    {
+        //borra los archivos de tendersCompanies
+        $this->deleteFiles($ids, TendersCompanies::class);
+        //borra los remarks de tendersCompanies
+        $this->deleteRemarks($ids, TendersCompanies::class);
+        //borra las notificaciones de las compañias licitantes
+        $this->deleteNotifications($ids, TendersCompanies::class);
+
+        //borra todas las compañias licitantes
+        TendersCompanies::whereIn('id', $ids)
+            ->delete();
+    }
+
+    public function deleteAllTenderVersions($ids)
+    {
+        //borra los archivos de las versiones de la licitación
+        $this->deleteFiles($ids, TendersVersions::class);
+        //borra las etiquetas de las versiones de la licitación
+        $this->deleteTags($ids, TendersVersions::class);
+        //borra las notificaciones de las versiones de la licitación
+        $this->deleteNotifications($ids, TendersVersions::class);
+
+        //borra todos las versiones de la licitacion
+        TendersVersions::whereIn('id', $ids)
+            ->delete();
+    }
+
+    public function deleteCategoryTenders($id)
+    {
+        CategoryTenders::where('tenders_id', $id)
+            ->delete();
+    }
+
+    public function deleteTenderProponents($id)
+    {
+        Proponents::where('licitacion_id', $id)
+            ->delete();
+    }
+
+    public function deleteNotifications($array_id, $classModel)
+    {
+        Notifications::whereIn('notificationsable_id', $array_id)
+            ->where('notificationsable_type', $classModel)
+            ->delete();
+    }
+
+    public function deleteFiles($array_id, $classModel)
+    {
+        $routeFile       = 'storage/';
+
+        $files  = Files::whereIn('filesable_id', $array_id)
+            ->where('filesable_type', $classModel)
+            ->get();
+
+        foreach ($files as $file) {
+            Storage::disk('local')->delete($routeFile . $file->url);
+            $file->delete();
+        }
+    }
+
+    public function deleteTags($array_id, $classModel)
+    {
+        Tags::whereIn('tagsable_id', $array_id)
+            ->where('tagsable_type', $classModel)
+            ->delete();
+    }
+
+    public function deleteRemarks($array_id, $classModel)
+    {
+        Remarks::whereIn('remarksable_id', $array_id)
+            ->where('remarksable_type', $classModel)
+            ->delete();
+    }
+
+    public function deleteInterests($array_id, $classModel)
+    {
+        Interests::whereIn('interestsable_id', $array_id)
+            ->where('interestsable_type', $classModel)
+            ->delete();
+    }
+
+    public function deleteQueryWall($array_id, $classModel)
+    {
+        QueryWall::whereIn('querysable_id', $array_id)
+            ->where('querysable_type', $classModel)
+            ->delete();
+    }
+
+    public function deleteRegistrationPayment()
+    {
+
     }
 }
