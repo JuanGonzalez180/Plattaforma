@@ -364,6 +364,8 @@ class TendersController extends ApiController
         //-----5.borrar los datos de la licitación-----
         $this->deleteAllTender($tender->id);
         $tender->delete();
+
+        return $this->showOne($tender, 200);
     }
 
     public function deleteAllTender($tender_id)
