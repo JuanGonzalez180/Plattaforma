@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\company;
 
 use JWTAuth;
+use App\Models\Tags;
 use App\Models\Blog;
 use App\Models\Team;
 use App\Models\User;
@@ -338,7 +339,10 @@ class CompanyController extends ApiController
             $user = $userTransform->transform($product->user);
             unset($product->user);
             $product->user = $user;
-            $product->tags;
+            $product->tags = Tags::where('tagsable_id',$product->id)
+                ->where('tagsable_type', Products::class)
+                ->take(6)
+                ->get();
             $product->image;
         }
 
