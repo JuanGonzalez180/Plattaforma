@@ -11,10 +11,13 @@ use App\Models\Projects;
 use Illuminate\Http\Request;
 use App\Models\TendersVersions;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersVersionsController extends ApiController
 {
+    public $routeFile           = 'public/';
+    public $routeTenderVersion  = 'images/tenders/';
 
     public function validateUser(){
         try {
@@ -113,21 +116,17 @@ class TendersVersionsController extends ApiController
                                             ->get()
                                             ->first();
 
-                        $file_name = $oldVersion->name;
-                        $carpeta = "images/tenders/".$id_last."/documents";
-        
-                        $file_url       = storage_path('app/public/'.$oldVersion->url); 
-                        $file_url_last  = storage_path('app/public/'.$carpeta.'/'.$file_name); 
-        
-                        if (!File::exists(storage_path('app/public/'.$carpeta))){
-                            File::makeDirectory(storage_path('app/public/'.$carpeta), 777, true);
-                        }
-        
-                        File::copy($file_url, $file_url_last);
-                        $tendersVersions->files()->create([ 'name' => $oldVersion->name, 'type'=> $oldVersion->type, 'url' => $carpeta.'/'.$file_name]);
+                        $fileName   = $oldVersion->name;
+                        $newFolder  = $this->routeTenderVersion.$id_last.'/documents';
+
+                        $file_old_version = $oldVersion->url;
+                        $file_new_version = $newFolder.'/'.$fileName;
+
+                        Storage::copy($this->routeFile.$file_old_version, $this->routeFile.$file_new_version);
+
+                        $tendersVersions->files()->create([ 'name' => $oldVersion->name, 'type'=> $oldVersion->type, 'url' => $file_new_version]);
                     }
                 }
-
             }
 
             DB::commit();
