@@ -264,7 +264,6 @@ class AccountMyTeamController extends ApiController
     {
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
-
         // Buscamos el usuario si existe en la tabla "Team"
         $memberTeam     = Team::findOrFail($idMember);
 
@@ -396,15 +395,17 @@ class AccountMyTeamController extends ApiController
         $routeFile = 'public/';
 
         $image  = Image::where('imageable_id', $user_id)
-            ->where('imageable_type', User::class)
-            ->first();
+            ->where('imageable_type', User::class);
 
-        //borra el archivo
-        Storage::disk('local')->delete($routeFile . $image->url);
-
-        //elimina la imagen del registro
-        Image::where('imageable_id', $image->imageable_id)
-            ->where('imageable_type', $image->imageable_type)
-            ->delete();
+        if($image->exists())
+        {
+            $image = $image->first();
+            //borra el archivo
+            Storage::disk('local')->delete($routeFile . $image->url);
+            //elimina la imagen del registro
+            Image::where('imageable_id', $image->imageable_id)
+                ->where('imageable_type', $image->imageable_type)
+                ->delete();
+        }
     }
 }
