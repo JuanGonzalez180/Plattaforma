@@ -165,6 +165,9 @@ class CompanyTendersController extends ApiController
     {
         $user           = $this->validateUser();
         $tender_company = TendersCompanies::find($id);
+
+        $company = Company::find($user->companyId());
+ 
         $tender_status  = $tender_company->tender->tendersVersionLast()->status;
 
         if (($tender_status == TendersVersions::LICITACION_CLOSED) || ($tender_status == TendersVersions::LICITACION_FINISHED)) {
@@ -172,8 +175,10 @@ class CompanyTendersController extends ApiController
             return $this->errorResponse($tenderCompanyError, 500);
         }
 
-        if ($user->id != $tender_company->user_id) {
-            $tenderCompanyError = ['tenderCompany' => 'Error, el usuario no tiene permiso para modificar la licitación de la ' . $user->id . 'compañia' . $tender_company->user_id];
+
+        // if (($user->id != $tender_company->user_id)) {
+        if (!in_array($user->id, [$tender_company->user_id, $company->adminCompany()])) {
+            $tenderCompanyError = ['tenderCompany' => 'Error, permiso para modificar la licitación de la ' . $user->id . 'compañia' . $tender_company->user_id];
             return $this->errorResponse($tenderCompanyError, 500);
         }
 
