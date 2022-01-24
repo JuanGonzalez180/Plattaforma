@@ -22,6 +22,8 @@ use App\Models\TendersVersions;
 use App\Models\CategoryTenders;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendDeleteTenderCompany;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -345,27 +347,64 @@ class TendersController extends ApiController
      */
     public function destroy($id)
     {
-        $tender = Tenders::find($id);
-        
+        $tender             = Tenders::find($id);
+        $tenderName         = $tender->name;
         //-----1. borra todos los registros de compañias licitantes
-        $tenderCompanies    = $tender->tenderCompanies->pluck('id');
-        $this->deleteAllTenderCompanies($tenderCompanies);
+        $tenderCompanies          = $tender->tenderCompanies->pluck('id');
+        $companiesParticipate     = $this->getCompaniesParticipating($tenderCompanies);
 
-        //-----2. obtiene los id de los tenderVersions -----
-        $tenderVersions     = $tender->tendersVersion->pluck('id');
-        $this->deleteAllTenderVersions($tenderVersions);
+        // $this->deleteAllTenderCompanies($tenderCompanies);
+        // //-----2. Borra todas las versiones de la licitación -----
+        // $tenderVersions     = $tender->tendersVersion->pluck('id');
+        // $this->deleteAllTenderVersions($tenderVersions);
+        // //-----3. Borra los proponentes -----
+        // $this->deleteTenderProponents($tender->id);
+        // //-----4. Borra las categorias de la licitación -----
+        // $this->deleteCategoryTenders($tender->id);
+        // //-----5.borrar los datos de la licitación-----
+        // $this->deleteAllTender($tender->id);
+        // $tender->delete();
 
-        //-----3. Borra los proponentes -----
-        $this->deleteTenderProponents($tender->id);
+        // //Envia los correos a las compañias licitantes
+        $this->sendDeleteTenderCompanyEmail($tenderName, $companiesParticipate);
 
-        //-----4. Borra las categorias de la licitación -----
-        $this->deleteCategoryTenders($tender->id);
+        // return $this->showOne($tender, 200);
+    }
 
-        //-----5.borrar los datos de la licitación-----
-        $this->deleteAllTender($tender->id);
-        $tender->delete();
+    public function sendDeleteTenderCompanyEmail($tenderName, $companies)
+    {
+        foreach ($companies as $value) {
+            // var_dump($value['company']);
+            // var_dump($value['email_responsible']);
+            // var_dump($value['email_admin']);
 
-        return $this->showOne($tender, 200);
+            // Mail::to($value['email_admin'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+            Mail::to('cris10@hotmail.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+            if($value['email_admin'] != $value['email_responsible'])
+            {
+                // Mail::to($value['email_responsible'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+                Mail::to('cris10@hotmail.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+            }
+        }
+        
+    }
+
+    public function getCompaniesParticipating($tenderCompanies)
+    {
+        $tendersCompanies =  TendersCompanies::whereIn('id',$tenderCompanies)
+            ->where('status', TendersCompanies::STATUS_PARTICIPATING)
+            ->get();
+
+        $companies = [];
+
+        foreach ($tendersCompanies as $key => $value)
+        {
+            $companies[$key]['company']             = $value->company->name;
+            $companies[$key]['email_responsible']   = $value->user->email;
+            $companies[$key]['email_admin']         = $value->company->user->email;
+        }
+
+        return $companies;
     }
 
     public function deleteAllTender($tender_id)
@@ -470,6 +509,5 @@ class TendersController extends ApiController
 
     public function deleteRegistrationPayment()
     {
-
     }
 }

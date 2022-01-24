@@ -7,6 +7,7 @@ use App\Models\Products;
 use App\Models\Category;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Schema\Blueprint;
@@ -100,7 +101,9 @@ class TaskDownloadImgProduct extends Command
         foreach ($files as $url) {
             $file_format    = strtolower(pathinfo($url, PATHINFO_EXTENSION));
 
-            if ($this->url_exists($url)) {
+            $response = Http::get($url);
+
+            if ($response->successful()) {
                 $fileName      = 'document' . '-' . rand() . '-' . time() . '.' . $file_format;
                 $routeFile     = $this->routeProducts . $product->id . '/documents/' . $fileName;
 
@@ -125,7 +128,9 @@ class TaskDownloadImgProduct extends Command
         foreach ($images as $url) {
             $file_format = strtolower(pathinfo($url, PATHINFO_EXTENSION));
 
-            if ($this->url_exists($url) && in_array($file_format, $this->image_format)) {
+            $response = Http::get($url);
+
+            if ($response->successful() && in_array($file_format, $this->image_format)) {
                 $imageName = 'image' . '-' . rand() . '-' . time() . '.' . $file_format;
                 $routeFile = $this->routeProducts . $product->id . '/images/' . $imageName;
 
@@ -149,9 +154,10 @@ class TaskDownloadImgProduct extends Command
         Storage::append("archivo.txt","entro a imagen principal");
         
         $file_format = strtolower(pathinfo($url, PATHINFO_EXTENSION));
+
+        $response = Http::get($url);
         
-        
-        if ($this->url_exists($url) && in_array($file_format, $this->image_format)) {
+        if ($response->successful() && in_array($file_format, $this->image_format)) {
 
             Storage::append("archivo.txt","existe la url");
 
@@ -180,18 +186,5 @@ class TaskDownloadImgProduct extends Command
         }else{
             Storage::append("archivo.txt","no existe la url");
         }
-    }
-
-    public function url_exists($url)
-    {
-        $ch  = curl_init($url);
-        curl_setopt($ch, CURLOPT_NOBODY, true);
-        curl_exec($ch);
-
-        $code   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $status = ($code == 200) ? true : false;
-
-        curl_close($ch);
-        return $status;
     }
 }

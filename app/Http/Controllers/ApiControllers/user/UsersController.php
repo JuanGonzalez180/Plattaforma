@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\ApiControllers\user;
 
+use JWTAuth;
 use App\Models\User;
 use App\Models\Team;
-use App\Models\Company;
 use App\Models\Image;
+use App\Models\Company;
 use Illuminate\Http\Request;
-use App\Http\Controllers\ApiControllers\ApiController;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Http\Controllers\ApiControllers\ApiController;
 
 class UsersController extends ApiController
 {
