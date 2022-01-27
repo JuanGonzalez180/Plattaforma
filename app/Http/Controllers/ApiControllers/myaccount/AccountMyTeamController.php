@@ -284,7 +284,6 @@ class AccountMyTeamController extends ApiController
         $this->deleteUserRegisters($userMemberTeam->id);
         // //Elimina la foto de perfil del usuario
         $this->deleteUserImage($userMemberTeam->id);
-
         // Eliminamos el integrante del equipo y luego su usuario registrado
         $memberTeam->delete();
         $userMemberTeam->delete();

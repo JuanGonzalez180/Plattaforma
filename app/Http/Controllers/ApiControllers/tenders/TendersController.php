@@ -4,31 +4,27 @@ namespace App\Http\Controllers\ApiControllers\tenders;
 
 use JWTAuth;
 use Carbon\Carbon;
-use App\Models\Tags;
-use App\Models\User;
-use App\Models\Files;
-use App\Models\Image;
-use App\Models\Images;
 use App\Models\Company;
 use App\Models\Tenders;
-use App\Models\Remarks;
 use App\Models\Projects;
-use App\Models\Interests;
-use App\Models\QueryWall;
 use App\Models\Proponents;
+use App\Models\Advertisings;
 use Illuminate\Http\Request;
-use App\Models\Notifications;
+use App\Traits\DeleteRecords;
 use App\Models\TendersVersions;
 use App\Models\CategoryTenders;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
+use App\Models\RegistrationPayments;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendDeleteTenderCompany;
-use Illuminate\Support\Facades\Storage;
+use App\Models\AdvertisingPlansPaidImages;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersController extends ApiController
 {
+    use DeleteRecords;
+
     public function validateUser()
     {
         try {
@@ -347,58 +343,93 @@ class TendersController extends ApiController
      */
     public function destroy($id)
     {
-        $tender             = Tenders::find($id);
-        $tenderName         = $tender->name;
+        $tender         = Tenders::find($id);
+        //Verifica si la licitación no existe para lanzar mensaje de error.
+        if (!$tender) {
+            return $this->errorResponse('La licitación no existe o ha sido eliminada.', 500);
+        }
+
+        $tenderStatus   = $tender->tendersVersionLast()->status;
+
         //-----1. borra todos los registros de compañias licitantes
         $tenderCompanies          = $tender->tenderCompanies->pluck('id');
         $companiesParticipate     = $this->getCompaniesParticipating($tenderCompanies);
 
-        // $this->deleteAllTenderCompanies($tenderCompanies);
-        // //-----2. Borra todas las versiones de la licitación -----
-        // $tenderVersions     = $tender->tendersVersion->pluck('id');
-        // $this->deleteAllTenderVersions($tenderVersions);
-        // //-----3. Borra los proponentes -----
-        // $this->deleteTenderProponents($tender->id);
-        // //-----4. Borra las categorias de la licitación -----
-        // $this->deleteCategoryTenders($tender->id);
-        // //-----5.borrar los datos de la licitación-----
-        // $this->deleteAllTender($tender->id);
-        // $tender->delete();
-
+        $this->deleteAllTenderCompanies($tenderCompanies);
+        //-----2. Borra todas las versiones de la licitación-----
+        $tenderVersions     = $tender->tendersVersion->pluck('id');
+        $this->deleteAllTenderVersions($tenderVersions);
+        //-----3. Borra los proponentes-----
+        $this->deleteTenderProponents($tender->id);
+        //-----4. Borra las categorias de la licitación-----
+        $this->deleteCategoryTenders($tender->id);
+        //-----5. Borra la publicidad/es de la licitación-----
+        $this->deleteAllAdvertising($tender->id);
+        // -----6.borrar los datos de la licitación-----
+        $this->deleteAllTender($tender->id);
+        $tender->delete();
         // //Envia los correos a las compañias licitantes
-        $this->sendDeleteTenderCompanyEmail($tenderName, $companiesParticipate);
+        if((in_array($tenderStatus, [TendersVersions::LICITACION_CREATED, TendersVersions::LICITACION_PUBLISH, TendersVersions::LICITACION_CLOSED])))
+        {
+            $this->sendDeleteTenderCompanyEmail($tender->name, $companiesParticipate);
+        }
 
-        // return $this->showOne($tender, 200);
+        return $this->showOne($tender, 200);
+    }
+
+    public function deleteAllAdvertising($tender_id)
+    {
+        $advertisings = $this->getAllAdvertising($tender_id, Tenders::class);
+
+        //borra los registros de facturación del la publicidad.
+        $this->deleteAllRegistPayment($advertisings, Advertisings::class);
+        //borra los registros y archivos de AdvertisingPlansPaidImages.
+        $this->deleteAdvertisingPlansPaidImages($advertisings);
+
+        //borra los registros de publicidad.
+        Advertisings::destroy($advertisings);
+    }
+
+    public function getAllAdvertising($tender_id, $modelClass)
+    {
+        return Advertisings::where('advertisingable_id', $tender_id)
+            ->where('advertisingable_type', $modelClass)
+            ->pluck('id');
+    }
+
+    public function deleteAdvertisingPlansPaidImages($advertisingId)
+    {
+        $planPaidImages = AdvertisingPlansPaidImages::where('advertisings_id', $advertisingId)
+            ->pluck('id');
+
+        //borra las imagenes del la publicidad
+        $this->deleteImage($planPaidImages, AdvertisingPlansPaidImages::class);
+
+        //borra los registros de AdvertisingPlansPaidImages
+        AdvertisingPlansPaidImages::destroy($planPaidImages);
     }
 
     public function sendDeleteTenderCompanyEmail($tenderName, $companies)
     {
         foreach ($companies as $value) {
-            // var_dump($value['company']);
-            // var_dump($value['email_responsible']);
-            // var_dump($value['email_admin']);
-
-            // Mail::to($value['email_admin'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
-            Mail::to('cris10@hotmail.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
-            if($value['email_admin'] != $value['email_responsible'])
-            {
-                // Mail::to($value['email_responsible'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
-                Mail::to('cris10@hotmail.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+            Mail::to($value['email_admin'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+            // Mail::to('cristian.fajardo@incdustry.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+            if ($value['email_admin'] != $value['email_responsible']) {
+                Mail::to($value['email_responsible'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+                // Mail::to('juan.gonzalez@incdustry.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
             }
         }
-        
     }
 
     public function getCompaniesParticipating($tenderCompanies)
     {
-        $tendersCompanies =  TendersCompanies::whereIn('id',$tenderCompanies)
+        $tendersCompanies =  TendersCompanies::whereIn('id', $tenderCompanies)
             ->where('status', TendersCompanies::STATUS_PARTICIPATING)
             ->get();
 
         $companies = [];
 
-        foreach ($tendersCompanies as $key => $value)
-        {
+        foreach ($tendersCompanies as $key => $value) {
             $companies[$key]['company']             = $value->company->name;
             $companies[$key]['email_responsible']   = $value->user->email;
             $companies[$key]['email_admin']         = $value->company->user->email;
@@ -456,58 +487,5 @@ class TendersController extends ApiController
     {
         Proponents::where('licitacion_id', $id)
             ->delete();
-    }
-
-    public function deleteNotifications($array_id, $classModel)
-    {
-        Notifications::whereIn('notificationsable_id', $array_id)
-            ->where('notificationsable_type', $classModel)
-            ->delete();
-    }
-
-    public function deleteFiles($array_id, $classModel)
-    {
-        $routeFile       = 'storage/';
-
-        $files  = Files::whereIn('filesable_id', $array_id)
-            ->where('filesable_type', $classModel)
-            ->get();
-
-        foreach ($files as $file) {
-            Storage::disk('local')->delete($routeFile . $file->url);
-            $file->delete();
-        }
-    }
-
-    public function deleteTags($array_id, $classModel)
-    {
-        Tags::whereIn('tagsable_id', $array_id)
-            ->where('tagsable_type', $classModel)
-            ->delete();
-    }
-
-    public function deleteRemarks($array_id, $classModel)
-    {
-        Remarks::whereIn('remarksable_id', $array_id)
-            ->where('remarksable_type', $classModel)
-            ->delete();
-    }
-
-    public function deleteInterests($array_id, $classModel)
-    {
-        Interests::whereIn('interestsable_id', $array_id)
-            ->where('interestsable_type', $classModel)
-            ->delete();
-    }
-
-    public function deleteQueryWall($array_id, $classModel)
-    {
-        QueryWall::whereIn('querysable_id', $array_id)
-            ->where('querysable_type', $classModel)
-            ->delete();
-    }
-
-    public function deleteRegistrationPayment()
-    {
     }
 }

@@ -3,34 +3,30 @@
 namespace App\Http\Controllers\WebControllers\company\CompanyDelete;
 
 use App\Models\User;
-use App\Models\Tags;
 use App\Models\Blog;
 use App\Models\Team;
-use App\Models\Image;
-use App\Models\Files;
 use App\Models\Brands;
-use App\Models\Remarks;
 use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Projects;
 use App\Models\Catalogs;
 use App\Models\Products;
 use App\Models\QueryWall;
-use App\Models\Interests;
 use App\Models\Portfolio;
 use App\Models\Addresses;
 use Illuminate\Http\Request;
-use App\Models\Notifications;
+use App\Traits\DeleteRecords;
 use App\Models\CategoryTenders;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 
 class CompanyDeleteController extends Controller
 {
+    use DeleteRecords;
+
     public $routeFile = 'public/';
 
     public function __invoke($id)
@@ -280,40 +276,6 @@ class CompanyDeleteController extends Controller
             ->delete();
     }
 
-    public function deleteFiles($array_id, $classModel)
-    {
-        $files  = Files::whereIn('filesable_id', $array_id)
-            ->where('filesable_type', $classModel)
-            ->get();
-
-        foreach ($files as $file) {
-            Storage::disk('local')->delete($this->routeFile . $file->url);
-            $file->delete();
-        }
-    }
-
-    public function deleteImage($array_id, $classModel)
-    {
-        $images  = Image::whereIn('imageable_id', $array_id)
-            ->where('imageable_type', $classModel)
-            ->get();
-
-        foreach ($images as $image) {
-            Storage::disk('local')->delete($this->routeFile . $image->url);
-            //elimina la imagen
-            Image::where('imageable_id', $image->imageable_id)
-                ->where('imageable_type', $image->imageable_type)
-                ->delete();
-        }
-    }
-
-    public function deleteTags($array_id, $classModel)
-    {
-        Tags::whereIn('tagsable_id', $array_id)
-            ->where('tagsable_type', $classModel)
-            ->delete();
-    }
-
     public function deleteCompanyTempFilesProducts($product_ids)
     {
         if (Schema::hasTable('temp_product_files')) {
@@ -324,31 +286,10 @@ class CompanyDeleteController extends Controller
         }
     }
 
-    public function deleteRemarks($array_id, $classModel)
-    {
-        Remarks::whereIn('remarksable_id', $array_id)
-            ->where('remarksable_type', $classModel)
-            ->delete();
-    }
-
-    public function deleteNotifications($array_id, $classModel)
-    {
-        Notifications::whereIn('notificationsable_id', $array_id)
-            ->where('notificationsable_type', $classModel)
-            ->delete();
-    }
-
     public function deleteAddresses($array_id, $classModel)
     {
         Addresses::whereIn('addressable_id', $array_id)
             ->where('addressable_type', $classModel)
-            ->delete();
-    }
-
-    public function deleteInterests($array_id, $classModel)
-    {
-        Interests::whereIn('interestsable_id', $array_id)
-            ->where('interestsable_type', $classModel)
             ->delete();
     }
 

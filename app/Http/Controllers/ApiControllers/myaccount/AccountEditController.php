@@ -20,10 +20,11 @@ class AccountEditController extends ApiController
             $user = JWTAuth::parseToken()->authenticate();
 
             $rules = [
-                'name' => ['max:255'],
-                'lastname' => ['max:255'],
+                'name'      => ['max:255'],
+                'lastname'  => ['max:255'],
+                // 'nit'       => 'nullable',
                 // 'username' => ['alpha_dash','max:255', Rule::unique('users')->ignore($user->id)],
-                'email' => ['email', Rule::unique('users')->ignore($user->id) ],
+                'email'     => ['email', Rule::unique('users')->ignore($user->id) ],
             ];
 
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
