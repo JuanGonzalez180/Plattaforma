@@ -67,7 +67,9 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // 'timezone' => 'UTC',
+    'timezone' => 'America/Panama',
+    // 'timezone' => 'America/Bogota',
 
     /*
     |--------------------------------------------------------------------------
@@ -93,7 +95,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    'fallback_locale' => 'es',
 
     /*
     |--------------------------------------------------------------------------
@@ -165,6 +167,7 @@ return [
         /*
          * Package Service Providers...
          */
+        Spatie\Fractal\FractalServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -174,6 +177,14 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+
+        Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider::class,
+        // JWT
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+        // Yajra
+        Yajra\DataTables\DataTablesServiceProvider::class,
+        //image invention
+        Intervention\Image\ImageServiceProvider::class,
 
     ],
 
@@ -226,6 +237,13 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        // JWT
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+        //Yajra
+        'DataTables' => Yajra\DataTables\Facades\DataTables::class,
+        //image invention
+        'Image' => Intervention\Image\Facades\Image::class,
 
     ],
 

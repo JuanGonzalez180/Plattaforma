@@ -17,23 +17,28 @@ class TypeProject extends Model
     protected $fillable = [
         'name',
         'description',
-        'icon',
-        'image',
         'parent_id',
-        'status',
-        'date',
-        'date_update'
+        'status'
     ];
 
     public function isPublish(){
         return $this->status == TypeProject::TYPEPROJECT_PUBLISH;
     }
 
+    public function parent(){
+        return $this->belongsTo(TypeProject::class, 'parent_id' );
+    }
+
     public function files(){
         return $this->belongsToMany(Files::class);
     }
 
-    public function projects(){
+    public function types_projectsProjects(){
         return $this->belongsToMany(Projects::class);
+    }
+
+    // Relacion uno a uno polimorfica
+    public function image(){
+        return $this->morphOne(Image::class, 'imageable');
     }
 }

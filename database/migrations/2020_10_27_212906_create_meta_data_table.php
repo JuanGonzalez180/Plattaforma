@@ -15,12 +15,13 @@ class CreateMetaDataTable extends Migration
     {
         Schema::create('meta_data', function (Blueprint $table) {
             $table->id();
+
+            $table->bigInteger('metadatable_id')->unsigned();
+            $table->string('metadatable_type');
+
             $table->string('name');
-            $table->string('value', 1000);
-            $table->string('type');
-            $table->bigInteger('type_id')->unsigned();
-            $table->string('date');
-            $table->string('date_update');
+            $table->string('value', 1000)->nullable();
+
             $table->timestamps();
         });
     }

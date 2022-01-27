@@ -15,9 +15,12 @@ class CreateTagsTable extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
+
+            $table->bigInteger('tagsable_id')->unsigned();
+            $table->string('tagsable_type');
+
             $table->string('name');
-            $table->string('date');
-            $table->string('date_update');
+
             $table->timestamps();
         });
     }

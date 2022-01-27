@@ -2,20 +2,14 @@
 
 namespace App\Models;
 
-use App\Blog;
-use App\Category;
-use App\Company;
-use App\Products;
-use App\Projects;
-use App\TypeProject;
-use App\TendersVersions;
-use App\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Files extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
 
     /**
      * type: Tipo de Archivo
@@ -23,37 +17,30 @@ class Files extends Model
     protected $fillable = [
         'name',
         'type',
-        'type_id',
-        'extension',
-        'date',
-        'date_update'
+        'url',
+        'size'
     ];
-    
-    public function blog(){
-        return $this->belongsToMany(Blog::class);
+
+    protected $hidden = [
+        'filesable_id',
+        'filesable_type',
+    ];
+
+    public function filesable()
+    {
+        return $this->morphTo();
     }
 
-    public function categories(){
-        return $this->belongsToMany(Category::class);
-    }
+    public function formatSize()
+    {
+        if (round(($this->size / pow(1024, 2)), 3) < '1') {
+            $file = round(($this->size*0.00097426203), 1). ' KB';
+        } else if (round(($this->size / pow(1024, 2)), 1) < '1024') {
+            $file = round(($this->size / pow(1024, 2)), 1) . ' MB';
+        } else if (round(($this->size / pow(1024, 2)), 1) >= '1024') {
+            $file = round(($this->size / pow(1024, 2)), 1) . ' GB';
+        }
 
-    public function company(){
-        return $this->belongsToMany(Company::class);
-    }
-
-    public function products(){
-        return $this->belongsToMany(Products::class);
-    }
-
-    public function projects(){
-        return $this->belongsToMany(Projects::class);
-    }
-
-    public function tendersVersions(){
-        return $this->belongsToMany(TendersVersions::class);
-    }
-
-    public function typeProjects(){
-        return $this->belongsToMany(TypeProject::class);
+        return $file;
     }
 }

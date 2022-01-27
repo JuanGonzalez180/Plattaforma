@@ -2,44 +2,34 @@
 
 namespace App\Models;
 
-use App\Company;
-use App\Interests;
-use App\Projects;
-use App\User;
-use App\Remarks;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Tags;
+use App\Models\User;
+use App\Models\Company;
+use App\Models\Remarks;
+use App\Models\Projects;
+use App\Models\Interests;
+use App\Models\QueryWall;
+use App\Models\Advertisings;
+use App\Models\Notifications;
+use App\Models\TendersVersions;
+use App\Models\TendersCompanies;
 use Illuminate\Database\Eloquent\Model;
+use App\Transformers\TendersTransformer;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Tenders extends Model
 {
     use HasFactory;
 
-    const LICITACION_CREATED = 'Borrador';
-    const LICITACION_PUBLISH = 'Publicada';
-    const LICITACION_CLOSED = 'Cerrada';
+    public $transformer = TendersTransformer::class;
 
     protected $fillable = [
         'name',
         'description',
         'project_id',
         'company_id',
-        'user_id',
-        'status',
-        'date',
-        'date_update'
+        'user_id'
     ];
-
-    public function isStatusCreated(){
-        return $this->status == Tenders::LICITACION_CREATED;
-    }
-
-    public function isStatusPublish(){
-        return $this->status == Tenders::LICITACION_PUBLISH;
-    }
-
-    public function isStatusClosed(){
-        return $this->status == Tenders::LICITACION_CLOSED;
-    }
 
     public function project(){
         return $this->belongsTo(Projects::class);
@@ -57,15 +47,83 @@ class Tenders extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function interests(){
-        return $this->belongsToMany(Interests::class);
+    // Relacion uno a muchos polimorfica
+    public function querywalls(){
+        return $this->morphMany(QueryWall::class, 'querysable');
     }
 
-    public function queryWalls(){
-        return $this->hasMany(QueryWall::class);
+    // Nuevo
+    public function tenderCategories(){
+        return $this->belongsToMany(Category::class);
     }
 
+    public function tendersVersion(){
+        return $this->hasMany(TendersVersions::class);
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function advertisings(){
+        return $this->morphMany(Advertisings::class, 'advertisingable');
+    }
+
+    public function tendersVersionLast(){
+        if( count($this->tendersVersion) && $this->tendersVersion[0] ){
+            return $this->tendersVersion[count($this->tendersVersion)-1];
+        }
+
+        return [];
+    }
+
+    public function tendersVersionLastPublishTags(){
+        $tenderVersionLastPublish = $this->tendersVersionLastPublish();
+        if( $tenderVersionLastPublish ){
+            $tags = Tags::where('tagsable_id', $tenderVersionLastPublish->id)
+                ->where('tagsable_type', TendersVersions::class)
+                ->orderBy('name','asc')
+                ->pluck('name');
+    
+            return $tags;
+        }
+        return [];
+    }
+
+    public function tendersVersionLastPublish(){
+        $tenderPublish = $this->tendersVersion
+            ->where( 'status','<>', TendersVersions::LICITACION_CREATED )
+            ->sortBy([ ['created_at', 'desc'] ]);
+        
+        if( $tenderPublish && $tenderPublish->count() ){
+            return $tenderPublish->first();
+        }
+
+        return [];
+    }
+    
+    public function tenderCompanies(){
+        return $this->hasMany(TendersCompanies::class, 'tender_id');
+    }
+
+    public function isWinner(){
+        $tenderVersion = TendersCompanies::where('tender_id', $this->id)
+            ->where('winner', TendersCompanies::WINNER_TRUE)
+            ->exists();
+
+        return $tenderVersion;
+    }
+
+    // Relacion uno a muchos polimorfica
+    public function notifications(){
+        return $this->morphMany(Notifications::class, 'notificationsable');
+    }
+
+    // Relacion uno a muchos polimorfica
     public function remarks(){
-        return $this->hasMany(Remarks::class);
+        return $this->morphMany(Remarks::class, 'remarksable');
     }
+    
+    // Relacion uno a muchos polimorfica
+    public function interests(){
+        return $this->morphMany(Interests::class, 'interestsable');
+    }
+
 }

@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
-use App\Company;
-use App\Files;
-use App\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
+use App\Models\Files;
+use App\Models\Image;
+use App\Models\Company;
+use App\Transformers\BlogTransformer;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Blog extends Model
 {
@@ -15,15 +17,14 @@ class Blog extends Model
     const BLOG_ERASER = 'Borrador';
     const BLOG_PUBLISH = 'Publicado';
 
+    public $transformer = BlogTransformer::class;
+
     protected $fillable = [
         'name',
-        'image',
         'description_short',
         'description',
         'status',
         'user_id',
-        'date',
-        'date_update',
         'company_id'
     ];
 
@@ -39,7 +40,13 @@ class Blog extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Relacion uno a uno polimorfica
+    public function image(){
+        return $this->morphOne(Image::class, 'imageable');
+    }
+
+    // Relacion uno a muchos polimorfica
     public function files(){
-        return $this->belongsToMany(Files::class);
+        return $this->morphMany(Files::class, 'filesable');
     }
 }

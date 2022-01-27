@@ -1,0 +1,1 @@
+<a type="button" href="{{ route('catalog.detail.show', $id) }}" class="btn btn-success btn-sm"> <span class="oi oi-eye" title="Ver" aria-hidden="true"></span> </a>

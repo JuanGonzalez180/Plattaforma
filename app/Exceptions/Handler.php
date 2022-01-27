@@ -13,6 +13,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Database\QueryException;
 
 class Handler extends ExceptionHandler
 {
@@ -22,7 +23,6 @@ class Handler extends ExceptionHandler
      *
      * @var array
      */
-
     protected $dontReport = [
         //
     ];
@@ -32,20 +32,22 @@ class Handler extends ExceptionHandler
      *
      * @var array
      */
-
     protected $dontFlash = [
         'password',
         'password_confirmation',
     ];
 
     /**
-     * Register the exception handling callbacks for the application.
+     * Report or log an exception.
      *
+     * @param  \Exception  $exception
      * @return void
+     *
+     * @throws \Exception
      */
-    public function register()
+    public function report(Throwable $exception)
     {
-        //
+        parent::report($exception);
     }
 
     /**
@@ -88,9 +90,18 @@ class Handler extends ExceptionHandler
         }
 
         if ($exception instanceof QueryException) {
-            $codigo = $exception->errorInfo[1];
-            if( $codigo == 1451 ){
-                return $this->errorResponse('No se puede eliminar de forma permanente el recurso porque está relacionado con algún otro.', 409);
+            $code = $exception->errorInfo[1];
+            
+            switch ($code) {
+                case 1451:
+                    return $this->errorResponse('No se puede eliminar de forma permanente el recurso porque está relacionado con algún otro.', 409);
+                    break;
+                
+                default:
+                    if( !config('app.debug') ){
+                        return $this->errorResponse('Error con una consulta en la base de datos.', 409);
+                    }
+                    break;
             }
         }
 
@@ -102,6 +113,9 @@ class Handler extends ExceptionHandler
     }
 
     protected function unauthenticated( $request, AuthenticationException $exception ){
+        if( $this->isFrontend($request) ){
+            return redirect()->guest('/');
+        }
         return $this->errorResponse('No autenticado', 401);
     }
 
@@ -112,11 +126,20 @@ class Handler extends ExceptionHandler
      * @param  \Illuminate\Http\Request  $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
+
     protected function convertValidationExceptionToResponse(ValidationException $e, $request)
     {
         $errors = $e->validator->errors()->getMessages();
-
+        if( $this->isFrontend($request) ){
+            return $request->ajax() ? response()->json($errors, 422) : redirect()
+                ->back()
+                ->withInput($request->input())
+                ->withErrors($errors);
+        }
         return $this->errorResponse($errors, 422);
     }
 
+    private function isFrontend($request){
+        return $request->acceptsHtml() && collect( $request->route()->middleware())->contains('web');
+    }
 }

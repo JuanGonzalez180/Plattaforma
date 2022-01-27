@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use App\Files;
-use App\Products;
-use App\Tenders;
+use App\Models\Image;
+use App\Models\Files;
+use App\Models\Tenders;
+use App\Models\Products;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,16 +19,16 @@ class Category extends Model
     protected $fillable = [
         'name',
         'description',
-        'icon',
-        'image',
         'parent_id',
-        'status',
-        'date',
-        'date_update'
+        'status'
     ];
 
     public function isPublish(){
         return $this->status == Category::CATEGORY_PUBLISH;
+    }
+
+    public function parent(){
+        return $this->belongsTo(Category::class, 'parent_id' );
     }
 
     public function files(){
@@ -37,8 +38,17 @@ class Category extends Model
     public function tenders(){
         return $this->belongsToMany(Tenders::class);
     }
+    
+    // Relacion uno a uno polimorfica
+    public function image(){
+        return $this->morphOne(Image::class, 'imageable');
+    }
 
-    public function products(){
+    public function categoriesProducts(){
         return $this->belongsToMany(Products::class);
+    }
+
+    public function categoriesTenders(){
+        return $this->belongsToMany(Tenders::class);
     }
 }
