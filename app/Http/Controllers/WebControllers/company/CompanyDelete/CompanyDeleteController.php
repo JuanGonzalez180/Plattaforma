@@ -27,8 +27,6 @@ class CompanyDeleteController extends Controller
 {
     use DeleteRecords;
 
-    public $routeFile = 'public/';
-
     public function __invoke($id)
     {
         $company = Company::find($id);
