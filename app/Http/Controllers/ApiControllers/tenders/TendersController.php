@@ -363,8 +363,8 @@ class TendersController extends ApiController
         $this->deleteTenderProponents($tender->id);
         //-----4. Borra las categorias de la licitación-----
         $this->deleteCategoryTenders($tender->id);
-        //-----5. Borra la publicidad/es de la licitación-----
-        $this->deleteAllAdvertising($tender->id);
+        // -----5. Borra la publicidad/es de la licitación-----
+        // $this->deleteAllAdvertising($tender->id);
         // -----6.borrar los datos de la licitación-----
         $this->deleteAllTender($tender->id);
         $tender->delete();
@@ -379,44 +379,42 @@ class TendersController extends ApiController
 
     public function deleteAllAdvertising($tender_id)
     {
-        $advertisings = $this->getAllAdvertising($tender_id, Tenders::class);
-
-        //borra los registros de facturación del la publicidad.
-        $this->deleteAllRegistPayment($advertisings, Advertisings::class);
-        //borra los registros y archivos de AdvertisingPlansPaidImages.
-        $this->deleteAdvertisingPlansPaidImages($advertisings);
-
-        //borra los registros de publicidad.
-        Advertisings::destroy($advertisings);
-    }
-
-    public function getAllAdvertising($tender_id, $modelClass)
-    {
-        return Advertisings::where('advertisingable_id', $tender_id)
-            ->where('advertisingable_type', $modelClass)
+        $advertisings = Advertisings::where('advertisingable_id', $tender_id)
+            ->where('advertisingable_type', Tenders::class)
             ->pluck('id');
+
+        foreach ($advertisings as $value) {
+            //borra los registros de facturación del la publicidad.
+            $this->deleteAllRegistPayment([$value], Advertisings::class);
+            //borra los registros y archivos de AdvertisingPlansPaidImages.
+            $this->deleteAdvertisingPlansPaidImages([$value]);
+            //borra los registros de publicidad.
+            Advertisings::destroy([$value]);
+        }
     }
 
     public function deleteAdvertisingPlansPaidImages($advertisingId)
     {
-        $planPaidImages = AdvertisingPlansPaidImages::where('advertisings_id', $advertisingId)
+        $planPaidImages = AdvertisingPlansPaidImages::whereIn('advertisings_id', $advertisingId)
             ->pluck('id');
 
-        //borra las imagenes del la publicidad
-        $this->deleteImage($planPaidImages, AdvertisingPlansPaidImages::class);
+        foreach ($planPaidImages as $value) {
+            //borra las imagenes del la publicidad
+            $this->deleteImage([$value], AdvertisingPlansPaidImages::class);
+            //borra los registros de AdvertisingPlansPaidImages
+            AdvertisingPlansPaidImages::destroy([$value]);
+        }
 
-        //borra los registros de AdvertisingPlansPaidImages
-        AdvertisingPlansPaidImages::destroy($planPaidImages);
     }
 
     public function sendDeleteTenderCompanyEmail($tenderName, $companies)
     {
         foreach ($companies as $value) {
-            Mail::to($value['email_admin'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
-            // Mail::to('cristian.fajardo@incdustry.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+            // Mail::to($value['email_admin'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+            Mail::to('cristian.fajardo@incdustry.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
             if ($value['email_admin'] != $value['email_responsible']) {
-                Mail::to($value['email_responsible'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
-                // Mail::to('juan.gonzalez@incdustry.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+                // Mail::to($value['email_responsible'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+                Mail::to('juan.gonzalez@incdustry.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
             }
         }
     }
