@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Remarks;
+use App\Models\TendersVersions;
 use App\Models\Notifications;
 use App\Transformers\TendersCompaniesTransformer;
 use App\Transformers\TendersMyCompanyTransformer;
@@ -59,6 +60,26 @@ class TendersCompanies extends Model
 
     public function files(){
         return $this->morphMany(Files::class, 'filesable');
+    }
+
+    public function priceTransformer(){
+        $price = 0;
+        $statusPrice = 'false';
+        $tender = Tenders::where('id', $this->tender_id)->first();
+        $version = $tender->tendersVersionLastPublish();
+
+        if( $version->status==TendersVersions::LICITACION_CLOSED || $version->status==TendersVersions::LICITACION_FINISHED ){
+            $price = $this->price;
+        }
+        
+        if( $this->price > 0 ){
+            $statusPrice = 'true';
+        }
+
+        return [
+            "price" => $price,
+            "status" => $statusPrice,
+        ];
     }
 
     // Relacion uno a muchos polimorfica

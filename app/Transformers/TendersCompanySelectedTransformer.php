@@ -40,6 +40,7 @@ class TendersCompanySelectedTransformer extends TransformerAbstract
             'tender_id'             => (int)$tendersCompanies->tender->id,
             'company_id'            => (int)$tendersCompanies->company_id,
             'user_fullname'         => (string)$tendersCompanies->user->fullName(),
+            'image'                 => $tendersCompanies->company->image,
             'tender_name'           => (string)$tendersCompanies->tender->name,
             'company_name'          => (string)$tendersCompanies->company->name,
             'tender_company_price'  => (int)$tendersCompanies->price,
