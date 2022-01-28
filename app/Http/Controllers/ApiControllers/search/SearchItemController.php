@@ -90,6 +90,13 @@ class SearchItemController extends ApiController
         $type_entity = !isset($request->type_entity) ? null : $request->type_entity;
         $status      = !isset($request->status) ? null : $request->status;
 
+        // Tender Consult, copy of SearchCompanyController
+        $tender_id = $request->tender_id;
+        $companiesTenders = [];
+        if ($tender_id) {
+            $companiesTenders = TendersCompanies::where('tender_id', '=', $tender_id)->pluck('company_id');
+        }
+
         if (!isset($request->type_consult)) {
             return [];
         }
@@ -97,7 +104,7 @@ class SearchItemController extends ApiController
         //se empieza a enviar los parametros de busqueda
         switch ($request->type_consult) {
             case 'companies':
-                $result = $this->getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date);
+                $result = $this->getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date, $companiesTenders);
                 break;
             case 'products':
                 $result = $this->getProductAll($type_entity, $category_product, $search);
@@ -116,7 +123,7 @@ class SearchItemController extends ApiController
         return $this->showAllPaginate($result);
     }
 
-    public function getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date)
+    public function getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date, $companiesTenders = [])
     {
         $type_user = ($this->validateUser())->userType();
 
@@ -147,6 +154,7 @@ class SearchItemController extends ApiController
         }
 
         return Company::whereIn('id', $companies)
+            ->whereNotIn('companies.id', $companiesTenders)
             ->orderBy('name', 'asc')
             ->get();
     }
