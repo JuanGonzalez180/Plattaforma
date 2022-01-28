@@ -346,32 +346,46 @@ class TendersController extends ApiController
         $tender         = Tenders::find($id);
         //Verifica si la licitación no existe para lanzar mensaje de error.
         if (!$tender) {
-            return $this->errorResponse('La licitación no existe o ha sido eliminada.', 500);
+            return $this->errorResponse('La licitación no existe o ya ha sido eliminada.', 500);
         }
 
-        $tenderStatus   = $tender->tendersVersionLast()->status;
+        DB::beginTransaction();
+        $errorTender = false;
+        try {
+            $tenderStatus   = $tender->tendersVersionLast()->status;
+            //-----1. borra todos los registros de compañias licitantes
+            $tenderCompanies          = $tender->tenderCompanies->pluck('id');
+            $companiesParticipate     = $this->getCompaniesParticipating($tenderCompanies);
+    
+            $this->deleteAllTenderCompanies($tenderCompanies);
+            //-----2. Borra todas las versiones de la licitación-----
+            $tenderVersions     = $tender->tendersVersion->pluck('id');
+            $this->deleteAllTenderVersions($tenderVersions);
+            //-----3. Borra los proponentes-----
+            $this->deleteTenderProponents($tender->id);
+            //-----4. Borra las categorias de la licitación-----
+            $this->deleteCategoryTenders($tender->id);
+            // -----5. Borra la publicidad/es de la licitación-----
+            // $this->deleteAllAdvertising($tender->id);
+            // -----6.borrar los datos de la licitación-----
+            $this->deleteAllTender($tender->id);
+            $tender->delete();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $errorTender = true;
+            $tenderError = ['user' => 'Error, no se ha podido borrar la licitación'];
+            return $this->errorResponse($tenderError, 500);
+        }
 
-        //-----1. borra todos los registros de compañias licitantes
-        $tenderCompanies          = $tender->tenderCompanies->pluck('id');
-        $companiesParticipate     = $this->getCompaniesParticipating($tenderCompanies);
 
-        $this->deleteAllTenderCompanies($tenderCompanies);
-        //-----2. Borra todas las versiones de la licitación-----
-        $tenderVersions     = $tender->tendersVersion->pluck('id');
-        $this->deleteAllTenderVersions($tenderVersions);
-        //-----3. Borra los proponentes-----
-        $this->deleteTenderProponents($tender->id);
-        //-----4. Borra las categorias de la licitación-----
-        $this->deleteCategoryTenders($tender->id);
-        // -----5. Borra la publicidad/es de la licitación-----
-        // $this->deleteAllAdvertising($tender->id);
-        // -----6.borrar los datos de la licitación-----
-        $this->deleteAllTender($tender->id);
-        $tender->delete();
-        // //Envia los correos a las compañias licitantes
-        if((in_array($tenderStatus, [TendersVersions::LICITACION_CREATED, TendersVersions::LICITACION_PUBLISH, TendersVersions::LICITACION_CLOSED])))
-        {
-            $this->sendDeleteTenderCompanyEmail($tender->name, $companiesParticipate);
+        if (!$errorTender) {
+            DB::commit();
+            try {
+                //Envia los correos a las compañias licitantes
+                if((in_array($tenderStatus, [TendersVersions::LICITACION_CREATED, TendersVersions::LICITACION_PUBLISH, TendersVersions::LICITACION_CLOSED])))
+                    $this->sendDeleteTenderCompanyEmail($tender->name, $companiesParticipate);
+            } catch (\Throwable $th) {
+            }
         }
 
         return $this->showOne($tender, 200);
@@ -410,11 +424,11 @@ class TendersController extends ApiController
     public function sendDeleteTenderCompanyEmail($tenderName, $companies)
     {
         foreach ($companies as $value) {
-            // Mail::to($value['email_admin'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
-            Mail::to('cristian.fajardo@incdustry.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+            Mail::to($value['email_admin'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+            // Mail::to('cristian.fajardo@incdustry.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
             if ($value['email_admin'] != $value['email_responsible']) {
-                // Mail::to($value['email_responsible'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
-                Mail::to('juan.gonzalez@incdustry.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+                Mail::to($value['email_responsible'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+                // Mail::to('juan.gonzalez@incdustry.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
             }
         }
     }
