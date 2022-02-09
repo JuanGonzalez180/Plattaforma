@@ -54,8 +54,17 @@ class TendersController extends ApiController
         $companyID = $user->companyId();
 
         if ($companyID && $user->userType() == 'demanda') {
-            $tenders = Tenders::select('tenders.id', 'tenders.name', 'tenders.description', 'tenders.project_id', 'tenders.company_id', 'tenders.user_id', 'tenders.date_update', 'tenders.created_at', 'tenders.updated_at')
-                ->where('tenders.company_id', $companyID);
+
+
+            if ($user->isAdminFrontEnd()) {
+                $tenders = Tenders::select('tenders.id', 'tenders.name', 'tenders.description', 'tenders.project_id', 'tenders.company_id', 'tenders.user_id', 'tenders.date_update', 'tenders.created_at', 'tenders.updated_at')
+                    ->where('tenders.company_id', $companyID);
+            } else {
+                $tenders = Tenders::select('tenders.id', 'tenders.name', 'tenders.description', 'tenders.project_id', 'tenders.company_id', 'tenders.user_id', 'tenders.date_update', 'tenders.created_at', 'tenders.updated_at')
+                    ->where('tenders.user_id', $user->id)
+                    ->where('tenders.company_id', $companyID);
+            }
+
             if ($request->project) {
                 $tenders = $tenders->where('project_id', $request->project);
             }
@@ -353,10 +362,13 @@ class TendersController extends ApiController
         $errorTender = false;
         try {
             $tenderStatus   = $tender->tendersVersionLast()->status;
+
+
+
             //-----1. borra todos los registros de compañias licitantes
             $tenderCompanies          = $tender->tenderCompanies->pluck('id');
             $companiesParticipate     = $this->getCompaniesParticipating($tenderCompanies);
-    
+
             $this->deleteAllTenderCompanies($tenderCompanies);
             //-----2. Borra todas las versiones de la licitación-----
             $tenderVersions     = $tender->tendersVersion->pluck('id');
@@ -382,7 +394,7 @@ class TendersController extends ApiController
             DB::commit();
             try {
                 //Envia los correos a las compañias licitantes
-                if((in_array($tenderStatus, [TendersVersions::LICITACION_CREATED, TendersVersions::LICITACION_PUBLISH, TendersVersions::LICITACION_CLOSED])))
+                if ((in_array($tenderStatus, [TendersVersions::LICITACION_CREATED, TendersVersions::LICITACION_PUBLISH, TendersVersions::LICITACION_CLOSED])))
                     $this->sendDeleteTenderCompanyEmail($tender->name, $companiesParticipate);
             } catch (\Throwable $th) {
             }
@@ -418,17 +430,14 @@ class TendersController extends ApiController
             //borra los registros de AdvertisingPlansPaidImages
             AdvertisingPlansPaidImages::destroy([$value]);
         }
-
     }
 
     public function sendDeleteTenderCompanyEmail($tenderName, $companies)
     {
         foreach ($companies as $value) {
             Mail::to($value['email_admin'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
-            // Mail::to('cristian.fajardo@incdustry.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
             if ($value['email_admin'] != $value['email_responsible']) {
                 Mail::to($value['email_responsible'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
-                // Mail::to('juan.gonzalez@incdustry.com')->send(new SendDeleteTenderCompany($tenderName, $value['company']));
             }
         }
     }

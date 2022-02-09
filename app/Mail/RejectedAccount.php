@@ -34,6 +34,7 @@ class RejectedAccount extends Mailable
     public function build()
     {
         return $this->view('emails.account-rejected')
+            ->subject($this->subject)
             ->with([
                 'name' => $this->user->username,
             ]);

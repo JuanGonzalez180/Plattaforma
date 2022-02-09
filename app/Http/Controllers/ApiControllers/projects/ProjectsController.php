@@ -58,19 +58,25 @@ class ProjectsController extends ApiController
         $companyID = $user->companyId();
         $projects = [];
 
-        if( $companyID && $user->userType() == 'demanda' ){
-            if( $user->isAdminFrontEnd() ){
-                // IS ADMIN
-                $projects = Projects::where('company_id', $companyID)
-                                    ->orderBy('id', 'desc')
-                                    ->get();
-            }else{
-                $projects = Projects::where('company_id', $companyID)
-                                        ->where('user_id', $user->id)
-                                        ->orderBy('id', 'desc')
-                                        ->get();
-            }
-        }
+        // if( $companyID && $user->userType() == 'demanda' ){
+        //     if( $user->isAdminFrontEnd() ){
+        //         // IS ADMIN
+        //         $projects = Projects::where('company_id', $companyID)
+        //                             ->orderBy('id', 'desc')
+        //                             ->get();
+        //     }else{
+        //         $projects = Projects::where('company_id', $companyID)
+        //                                 ->where('user_id', $user->id)
+        //                                 ->orderBy('id', 'desc')
+        //                                 ->get();
+        //     }
+        // }
+
+
+        $projects = Projects::where('company_id', $companyID)
+            // ->where('visible', Projects::PROJECTS_VISIBLE)
+            ->orderBy('id', 'desc')
+            ->get();
 
         return $this->showAll($projects);
     }

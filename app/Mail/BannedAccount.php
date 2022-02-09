@@ -32,7 +32,8 @@ class BannedAccount extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.account-banned')
+        return $this->markdown('emails.account-banned')
+            ->subject($this->subject)
             ->with([
                 'name' => $this->user->username,
             ]);

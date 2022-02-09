@@ -11,6 +11,8 @@ class SendDeleteTenderCompany extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $subject = "Se ha cerrado y borrado la licitación ";
+
     /**
      * Create a new message instance.
      *
@@ -29,7 +31,8 @@ class SendDeleteTenderCompany extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.send-delete-tender-company')
+        return $this->markdown('emails.send-delete-tender-company')
+            ->subject($this->subject.$this->tender_name)
             ->with([
                 'tender_name'               => $this->tender_name,
                 'company_name'              => $this->company_name

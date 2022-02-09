@@ -66,6 +66,7 @@ class TendersCompaniesActionController extends ApiController
         $emails = [];
         $notificationsIds = [];
 
+        //se hace un array del correo del responsable de la licitación y el admin de la compañia.
         $emails[] = $tenderCompany->company->user->email;
         $emails[] = $tenderCompany->user->email;
 

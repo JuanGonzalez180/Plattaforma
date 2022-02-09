@@ -35,7 +35,13 @@ class sendRespondTenderCompany extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.send-respond-tender-company')
+        $subject = "Solicitud de licitación ".$this->tenderName." aprobada";
+        if($this->status != TendersCompanies::STATUS_PARTICIPATING){
+            $subject = "Solicitud de licitación ".$this->tenderName." no aprobada";
+        }
+
+        return $this->markdown('emails.send-respond-tender-company')
+        ->subject($subject)
         ->with([
             'tenderName'        => $this->tenderName,
             'CompanyName'       => $this->CompanyName,

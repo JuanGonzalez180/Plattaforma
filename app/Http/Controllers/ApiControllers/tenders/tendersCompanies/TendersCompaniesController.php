@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\sendRespondTenderCompany;
 use App\Mail\SendInvitationTenderCompany;
+use App\Mail\SendUpdateTenderCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersCompaniesController extends ApiController
@@ -60,8 +61,8 @@ class TendersCompaniesController extends ApiController
         
 
         $tendersCompanies = [];
-
-        $tender = Tenders::findOrFail($tender_id);
+        $tender                 = Tenders::findOrFail($tender_id);
+        $tendersCompaniesOld    = $tender->tenderCompanies;  
 
         /*if( count($companies) + count($tender->tenderCompanies) < 3 ){
             $tenderCompanyError = [ 'tenderVersion' => 'Error, Se debe seleccionar mínimo 3 compañías'];
@@ -78,6 +79,9 @@ class TendersCompaniesController extends ApiController
                 $tenderCompanyFields['tender_id']   = $tender_id;
                 $tenderCompanyFields['company_id']  = $company["id"];
                 $tenderCompanyFields['user_id']     = $user->id;
+
+                //estado por defecto a la compañia/s que se invitan a la licitación
+                // $tenderCompanyFields['status']     = TendersCompanies::STATUS_EARRING;
 
                 try{
                     $tendersCompanies[] = TendersCompanies::create( $tenderCompanyFields );
@@ -114,14 +118,18 @@ class TendersCompaniesController extends ApiController
 
         // Enviar notificaciones a las compañías que ya estaban en el PROCESO.
         $notificationsIdsVersion = [];
-        foreach ($tender->tenderCompanies as $key => $tenderCompany) {
+        foreach ($tendersCompaniesOld as $key => $tenderCompany) {
             if( 
                 !in_array( $tenderCompany->company_id, $companies ) && 
                 $tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING
             ){
                 $notificationsIdsVersion[] = $tenderCompany->company->user->id;
-                
                 // Correo
+                Mail::to($tenderCompany->company->user->email)->send(new SendUpdateTenderCompany(
+                    $tender->name, 
+                    $tenderVersion->adenda, 
+                    $tenderCompany->company->name
+                ));
             }
         }
         $notifications = new Notifications();

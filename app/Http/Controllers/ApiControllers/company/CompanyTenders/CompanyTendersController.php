@@ -11,6 +11,7 @@ use App\Models\Notifications;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
+use App\Mail\SendOfferTenderCompany;
 use Illuminate\Support\Facades\Mail;
 use App\Transformers\UserTransformer;
 use Illuminate\Support\Facades\Storage;
@@ -153,7 +154,6 @@ class CompanyTendersController extends ApiController
 
     public function edit($id)
     {
-        //
         $user = $this->validateUser();
 
         $tender_company = TendersCompanies::findOrFail($id);
@@ -165,6 +165,21 @@ class CompanyTendersController extends ApiController
     {
         $user           = $this->validateUser();
         $tender_company = TendersCompanies::find($id);
+
+        $emails = [];
+
+        $emails[] = strtolower($tender_company->tender->company->user->email);
+        $emails[] = strtolower($tender_company->tender->user->email);
+
+        $emails = array_unique($emails);
+
+
+        // var_dump($tender_company->company->name);//nombre de la compañia participante
+        // var_dump($tender_company->tender->name);//nombre de la licitación
+        // var_dump($tender_company->price);//precio de la oferta
+        // var_dump($tender_company->tender->company->user->email);//emial del admin de la compañia de la licitación
+        // var_dump($tender_company->tender->user->email);//emial del responsable de la licitación
+   
 
         $company = Company::find($user->companyId());
  
@@ -186,15 +201,32 @@ class CompanyTendersController extends ApiController
 
         DB::beginTransaction();
 
+        $error = false;
         try {
             $tender_company->update($tenderCompanyFiels);
             DB::commit();
         } catch (\Throwable $th) {
+            $error = true;
             // Si existe algún error al actulizar tender-company
             DB::rollBack();
             $companyError = ['tenderCompany' => 'Error, no se ha podido gestionar la actualización'];
             return $this->errorResponse($companyError, 500);
         }
+
+        if(!$error)
+        {
+            foreach($emails as $email){
+                Mail::to($tender_company->tender->company->user->email)
+                // Mail::to('cris10x@hotmail.com')
+                    ->send(new SendOfferTenderCompany(
+                        $tender_company->company->name,
+                        $tender_company->tender->company->name,
+                        $tender_company->price,
+                        $tender_company->tender->name
+                ));
+            }
+        }
+
         return $this->showOne($tender_company, 200);
     }
 

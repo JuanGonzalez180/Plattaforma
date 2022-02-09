@@ -13,7 +13,7 @@ class CreatedAccount extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subject = "Creación Cuenta";
+    public $subject = "Creación de Cuenta";
     protected $company;
     protected $user;
     protected $entity;
@@ -38,7 +38,8 @@ class CreatedAccount extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.created-account')
+        return $this->markdown('emails.created-account')
+                    ->subject($this->subject)
                     ->with([
                         'name' => $this->company->name,
                         'entity' => $this->entity,

@@ -89,6 +89,7 @@ class TendersActionController extends ApiController
 
         return $this->showOne($tenderVersionLast,200);
     }
+    
 
     public function updateStatusDeclined($id)
     {
@@ -105,7 +106,8 @@ class TendersActionController extends ApiController
             $companies  = $tender->tenderCompanies;
             $notificationsIds = [];
 
-            foreach ($companies as $companyTender){
+            foreach ($companies as $companyTender)
+            {
                 $company = $companyTender->company;
                 // Informar por correo a los participantes que se ha declinado la licitación.
                 Mail::to($company->user->email)->send(new SendDeclinedTenderCompany($tender->name, $company->name));

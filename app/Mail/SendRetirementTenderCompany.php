@@ -14,6 +14,8 @@ class SendRetirementTenderCompany extends Mailable
     protected $tenderName;
     protected $CompanyName;
 
+    public $subject = "Compañia ha salido de la licitación";
+
     /**
      * Create a new message instance.
      *
@@ -32,7 +34,8 @@ class SendRetirementTenderCompany extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.send-retirement-tender-company')
+        return $this->markdown('emails.send-retirement-tender-company')
+        ->subject($this->subject)
         ->with([
             'tenderName'        => $this->tenderName,
             'CompanyName'       => $this->CompanyName

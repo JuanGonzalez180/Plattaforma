@@ -12,7 +12,7 @@ class ValidatedAccount extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subject = "Cuenta validada";
+    public $subject = "Cuenta Aprobada";
     protected $user;
 
     /**
@@ -34,6 +34,7 @@ class ValidatedAccount extends Mailable
     public function build()
     {
         return $this->view('emails.account-validated')
+                    ->subject($this->subject)
                     ->with([
                         'name' => $this->user->username,
                     ]);

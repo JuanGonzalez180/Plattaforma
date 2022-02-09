@@ -11,6 +11,8 @@ class SendDeclinedTenderCompany extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $subject = "Se ha declinado la licitación ";
+
     protected $tenderName;
     protected $companyName;
 
@@ -33,6 +35,7 @@ class SendDeclinedTenderCompany extends Mailable
     public function build()
     {
         return $this->view('emails.send-declined-tender-company')
+        ->subject($this->subject.$this->tenderName)
         ->with([
             'tenderName'        => $this->tenderName,
             'companyName'       => $this->companyName

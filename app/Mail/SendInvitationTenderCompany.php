@@ -35,6 +35,7 @@ class SendInvitationTenderCompany extends Mailable
     public function build()
     {
         return $this->view('emails.send-invitation-tender-company')
+        ->subject('La compañia ha sido invitada a la licitación '.$this->tenderName)
         ->with([
             'tenderName'        => $this->tenderName,
             'tenderVersionName' => $this->tenderVersionName,

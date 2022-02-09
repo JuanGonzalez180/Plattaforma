@@ -11,6 +11,8 @@ class SendWinnerTenderCompany extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $subject = "Ganador de la licitación";
+
     /**
      * Create a new message instance.
      *
@@ -29,7 +31,8 @@ class SendWinnerTenderCompany extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.send-select-winner-tender-company')
+        return $this->markdown('emails.send-select-winner-tender-company')
+        ->subject($this->subject)
         ->with([
             'tenderName'        => $this->tenderName,
             'CompanyName'       => $this->CompanyName

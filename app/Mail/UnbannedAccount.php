@@ -12,7 +12,7 @@ class UnbannedAccount extends Mailable
 {
     use Queueable, SerializesModels;
     
-    public $subject = "Cuenta Bloqueada";
+    public $subject = "Cuenta Desbloqueada";
     protected $user;
     /**
      * Create a new message instance.
@@ -31,7 +31,8 @@ class UnbannedAccount extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.account-unbanned')
+        return $this->markdown('emails.account-unbanned')
+            ->subject($this->subject)
             ->with([
                 'name' => $this->user->username,
             ]);
