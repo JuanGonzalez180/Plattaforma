@@ -682,10 +682,11 @@ class Company extends Model
         $project         = $this->fileSizeProject();
         $product         = $this->fileSizeProduct();
         $portfolio       = $this->fileSizePortfolio();
+        $catalog         = $this->fileSizeCatalogs();
         $tender          = $this->fileSizeTender();
         $advertising     = $this->fileSizeAdvertising();
 
-        return $brands + $blog + $project + $product + $portfolio + $tender + $advertising;
+        return $brands + $blog + $project + $product + $portfolio + $catalog + $tender + $advertising;
     }
 
     public function fileCountTotal()

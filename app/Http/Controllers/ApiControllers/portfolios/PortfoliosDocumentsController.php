@@ -79,17 +79,6 @@ class PortfoliosDocumentsController extends ApiController
             }
         }
 
-
-
-        // $imagick = new Imagick();
-  
-        // $imagick->readImage(public_path($routeFile . $fileInServer));
-  
-        // $saveImagePath = public_path('converted.jpg');
-        // $imagick->writeImages($saveImagePath, true);
-  
-        
-
         return $this->showAll($this->filesType($portfolio), 200);
     }
 
