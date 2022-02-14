@@ -28,6 +28,7 @@ class QueryWall extends Model
         'answer',
         'user_id',
         'status',
+        'user_answer_id',
         'visible'
     ];
 
@@ -46,6 +47,10 @@ class QueryWall extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function user_answer(){
+        return $this->belongsTo(User::class, 'user_answer_id', 'id');
     }
 
     public function company(){

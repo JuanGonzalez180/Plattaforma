@@ -80,6 +80,7 @@ class tenderQueryAnswerController extends ApiController
             } else {
                 $queryFields['answer'] = $request['answer'];
                 $queryFields['status'] = QueryWall::QUERYWALL_ANSWERED;
+                $queryFields['user_answer_id'] = $user->id;
             }
 
             try{
