@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\projects;
 
 use JWTAuth;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Image;
 use App\Models\Company;
@@ -18,7 +19,8 @@ class ProjectsController extends ApiController
     public $routeFile = 'public/';
     public $routeProjects = 'images/projects/';
 
-    public function validateUser(){
+    public function validateUser()
+    {
         try {
             $this->user = JWTAuth::parseToken()->authenticate();
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
@@ -30,25 +32,25 @@ class ProjectsController extends ApiController
     {
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
-        
+
         $companyID = $user->companyId();
 
-        if( $companyID && $user->userType() == 'demanda' ){
-            if( $user->isAdminFrontEnd() ){
+        if ($companyID && $user->userType() == 'demanda') {
+            if ($user->isAdminFrontEnd()) {
                 // IS ADMIN
                 $projects = Projects::where('company_id', $companyID)
-                                    ->orderBy('id', 'desc')
-                                    ->get();
-            }else{
+                    ->orderBy('id', 'desc')
+                    ->get();
+            } else {
                 $projects = Projects::where('company_id', $companyID)
-                                        ->where('user_id', $user->id)
-                                        ->orderBy('id', 'desc')
-                                        ->get();
+                    ->where('user_id', $user->id)
+                    ->orderBy('id', 'desc')
+                    ->get();
             }
-            
+
             return $this->showAllPaginate($projects);
         }
-        
+
         return [];
     }
 
@@ -78,10 +80,40 @@ class ProjectsController extends ApiController
             ->orderBy('id', 'desc')
             ->get();
 
+
+        $projects->map(function ($item, $key) {
+            return $item->status_date = $this->getStatusDate($item->date_start, $item->date_end);
+        });
+
         return $this->showAll($projects);
     }
 
-    public function store(Request $request){
+    public function getStatusDate($date_start, $date_end)
+    {
+        $date_start = Carbon::parse($date_start);
+        $date_end   = Carbon::parse($date_end);
+        $date_now   = Carbon::now()->format('Y-m-d');
+
+        $status = "";
+        
+        if ($date_now < $date_start)
+        {
+            $status = "No iniciada";
+        }
+        else if(($date_now >= $date_start) && ($date_now <= $date_end))
+        {
+            $status = "En Curso";
+        }
+        else if($date_now > $date_end)
+        {
+            $status = "Finalizada";
+        }
+
+        return $status;
+    }
+
+    public function store(Request $request)
+    {
         $user = $this->validateUser();
 
         $rules = [
@@ -91,7 +123,7 @@ class ProjectsController extends ApiController
             'status' => 'required',
         ];
 
-        $this->validate( $request, $rules );
+        $this->validate($request, $rules);
 
         // Iniciar Transacción
         DB::beginTransaction();
@@ -107,44 +139,44 @@ class ProjectsController extends ApiController
         $projectFields['meters'] = $request['meters'];
         $projectFields['status'] = $request['status'];
 
-        try{
+        try {
             // Crear Project
-            $project = Projects::create( $projectFields );
+            $project = Projects::create($projectFields);
         } catch (\Throwable $th) {
             // Si existe algún error al momento de crear el usuario
             $errorProject = true;
             DB::rollBack();
-            $projectError = [ 'project' => 'Error, no se ha podido crear el proyecto' ];
-            return $this->errorResponse( $projectError, 500 );
+            $projectError = ['project' => 'Error, no se ha podido crear el proyecto'];
+            return $this->errorResponse($projectError, 500);
         }
 
-        if( $project ){
-            if( $request->type ){
+        if ($project) {
+            if ($request->type) {
                 foreach ($request->type as $key => $typeId) {
                     $project->projectTypeProject()->attach($typeId);
                 }
             }
 
-            if( $request->image ){
-                $png_url = "project-".time().".jpg";
+            if ($request->image) {
+                $png_url = "project-" . time() . ".jpg";
                 $img = $request->image;
-                $img = substr($img, strpos($img, ",")+1);
+                $img = substr($img, strpos($img, ",") + 1);
                 $data = base64_decode($img);
-                
-                $routeFile = $this->routeProjects.$project->id.'/'.$png_url;
-                Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
+
+                $routeFile = $this->routeProjects . $project->id . '/' . $png_url;
+                Storage::disk('local')->put($this->routeFile . $routeFile, $data);
                 $project->image()->create(['url' => $routeFile]);
             }
 
-            if( $request->metadata ){
+            if ($request->metadata) {
                 foreach ($request->metadata as $key => $metadata) {
-                    if( $metadata['name'] ){
-                        $project->metadata()->create([ 'name' => $metadata['name'], 'value' => $metadata['value'] ]);
+                    if ($metadata['name']) {
+                        $project->metadata()->create(['name' => $metadata['name'], 'value' => $metadata['value']]);
                     }
                 }
             }
 
-            if( $request->address || $request->latitud || $request->longitud ){
+            if ($request->address || $request->latitud || $request->longitud) {
                 $project->address()->create([
                     'address' => $request->address,
                     'latitud' => $request->latitud,
@@ -155,7 +187,7 @@ class ProjectsController extends ApiController
 
         DB::commit();
 
-        return $this->showOne($project,201);
+        return $this->showOne($project, 201);
     }
 
     /**
@@ -175,7 +207,7 @@ class ProjectsController extends ApiController
         $project->address;
         $project->user;
         $project->user->image;
-        return $this->showOne($project,200);
+        return $this->showOne($project, 200);
     }
 
     /**
@@ -197,8 +229,8 @@ class ProjectsController extends ApiController
             'status' => 'required',
         ];
 
-        $this->validate( $request, $rules );
-        
+        $this->validate($request, $rules);
+
         // Datos
         $project = Projects::findOrFail($id);
 
@@ -210,48 +242,48 @@ class ProjectsController extends ApiController
         $projectFields['meters'] = $request['meters'];
         $projectFields['status'] = $request['status'];
 
-        $project->update( $projectFields );
+        $project->update($projectFields);
 
         // Tipos de proyectos
         // Eliminar los anteriores
-        foreach( $project->projectTypeProject as $key => $typeProject ){
+        foreach ($project->projectTypeProject as $key => $typeProject) {
             $project->projectTypeProject()->detach($typeProject->id);
         }
-        
+
         // Editar los nuevos
-        if( $request->type ){
+        if ($request->type) {
             foreach ($request->type as $key => $typeId) {
                 $project->projectTypeProject()->attach($typeId);
             }
         }
 
         // Imágenes
-        if( $request->image ){
-            $png_url = "project-".time().".jpg";
+        if ($request->image) {
+            $png_url = "project-" . time() . ".jpg";
             $img = $request->image;
-            $img = substr($img, strpos($img, ",")+1);
+            $img = substr($img, strpos($img, ",") + 1);
             $data = base64_decode($img);
-            $routeFile = $this->routeProjects.$project->id.'/'.$png_url;
-            
-            Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
+            $routeFile = $this->routeProjects . $project->id . '/' . $png_url;
 
-            if( $project->image ){
-                Storage::disk('local')->delete( $this->routeFile . $project->image->url );
-                $project->image()->update(['url' => $routeFile ]);
-            }else{
+            Storage::disk('local')->put($this->routeFile . $routeFile, $data);
+
+            if ($project->image) {
+                Storage::disk('local')->delete($this->routeFile . $project->image->url);
+                $project->image()->update(['url' => $routeFile]);
+            } else {
                 $project->image()->create(['url' => $routeFile]);
             }
         }
 
         // Dirección, Latitud y Longitud
-        if( $request->address || $request->latitud || $request->longitud ){
-            if( !$project->address ){
+        if ($request->address || $request->latitud || $request->longitud) {
+            if (!$project->address) {
                 $project->address()->create([
                     'address' => $request->address,
                     'latitud' => $request->latitud,
                     'longitud' => $request->longitud
                 ]);
-            }else{
+            } else {
                 $project->address()->update([
                     'address' => $request->address,
                     'latitud' => $request->latitud,
@@ -260,7 +292,7 @@ class ProjectsController extends ApiController
             }
         }
 
-        return $this->showOne($project,200);
+        return $this->showOne($project, 200);
     }
 
     public function changevisible(Request $request, int $id)
@@ -272,19 +304,19 @@ class ProjectsController extends ApiController
             'visible' => 'required'
         ];
 
-        $this->validate( $request, $rules );
+        $this->validate($request, $rules);
 
         // Datos
         $project = Projects::findOrFail($id);
-        if( $request->visible == Projects::PROJECTS_VISIBLE ){
+        if ($request->visible == Projects::PROJECTS_VISIBLE) {
             $request->visible = Projects::PROJECTS_VISIBLE_NO;
-        }else{
+        } else {
             $request->visible = Projects::PROJECTS_VISIBLE;
         }
         $projectFields['visible'] = $request->visible;
-        $project->update( $projectFields );
+        $project->update($projectFields);
 
-        return $this->showOne($project,200);
+        return $this->showOne($project, 200);
     }
 
     /**
@@ -302,31 +334,31 @@ class ProjectsController extends ApiController
         $project = Projects::find($id);
 
 
-        if(($project->tenders)->count() > 0){
-            return $this->errorResponse( [ 'error' => ['No se ha podido eliminar el proyecto, porque tiene licitaciones']], 500 );
+        if (($project->tenders)->count() > 0) {
+            return $this->errorResponse(['error' => ['No se ha podido eliminar el proyecto, porque tiene licitaciones']], 500);
         }
 
-        if( $project->image ){
-            Storage::disk('local')->delete( $this->routeFile . $project->image->url );
+        if ($project->image) {
+            Storage::disk('local')->delete($this->routeFile . $project->image->url);
             Image::where('imageable_id', $project->id)
-                ->where('imageable_type',Projects::class)
+                ->where('imageable_type', Projects::class)
                 ->delete();
         }
 
         $project->address()->delete();
-        foreach( $project->projectTypeProject as $key => $typeProject ){
+        foreach ($project->projectTypeProject as $key => $typeProject) {
             $project->projectTypeProject()->detach($typeProject->id);
         }
 
-        if( $project->files ){
+        if ($project->files) {
             foreach ($project->files as $key => $file) {
-                Storage::disk('local')->delete( $this->routeFile . $file->url );
+                Storage::disk('local')->delete($this->routeFile . $file->url);
                 $file->delete();
             }
         }
 
         $project->delete();
 
-        return $this->showOneData( ['success' => 'Se ha eliminado correctamente el proyecto', 'code' => 200 ], 200);
+        return $this->showOneData(['success' => 'Se ha eliminado correctamente el proyecto', 'code' => 200], 200);
     }
 }
