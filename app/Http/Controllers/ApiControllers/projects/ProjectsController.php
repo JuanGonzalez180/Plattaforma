@@ -98,15 +98,15 @@ class ProjectsController extends ApiController
         
         if ($date_now < $date_start)
         {
-            $status = "No iniciada";
+            $status = Projects::NOT_STARTED;
         }
         else if(($date_now >= $date_start) && ($date_now <= $date_end))
         {
-            $status = "En Curso";
+            $status = Projects::IN_PROGRESS;
         }
         else if($date_now > $date_end)
         {
-            $status = "Finalizada";
+            $status = Projects::FINALIZED;
         }
 
         return $status;

@@ -32,6 +32,11 @@ class Projects extends Model
     //STATUS
     const TECHNICAL_SPECIFICATIONS      = 'especificaciones-tecnicas';
     const IN_CONSTRUCTION               = 'en-construccion';
+
+    //STATUS DATE
+    const NOT_STARTED   = 'No iniciada'; //Cuando la fecha del proyecto es menor a la fecha de inicio.
+    const IN_PROGRESS   = 'En Curso'; //cuando la fecha del proyecto esta entre la fecha de inicio y la fecha final.
+    const FINALIZED     = 'Finalizada'; //Cuando la fecha del proyecto es mayor a la fecha final.
     
     //VISIBLE
     const PROJECTS_VISIBLE      = 'Visible';

@@ -27,8 +27,8 @@ class AddStatusToAdvertisingPlansImagesTable extends Migration
      */
     public function down()
     {
-        Schema::table('advertising_plans_images', function (Blueprint $table) {
-            $table->dropColumn('status');
+        Schema::table('brands', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 }

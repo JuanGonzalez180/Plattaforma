@@ -163,6 +163,12 @@ class CompanyTendersController extends ApiController
 
     public function update(Request $request, $slug, $id)
     {
+        $rules = [
+            'price' => 'required|min:1',
+        ];
+
+        $this->validate( $request, $rules );
+
         $user           = $this->validateUser();
         $tender_company = TendersCompanies::find($id);
 
