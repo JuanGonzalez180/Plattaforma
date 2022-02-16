@@ -167,7 +167,11 @@ class CompanyTendersController extends ApiController
             'price' => 'required|numeric|gt:0',
         ];
 
-        $this->validate( $request, $rules );
+        $customMessages = [
+            'price.gt' => 'El precio debe ser mayor a 0.'
+        ];
+
+        $this->validate( $request, $rules, $customMessages );
 
         $user           = $this->validateUser();
         $tender_company = TendersCompanies::find($id);
