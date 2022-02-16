@@ -163,6 +163,7 @@ class CompanyTendersController extends ApiController
 
     public function update(Request $request, $slug, $id)
     {
+        die;
         $rules = [
             'price' => 'required|min:1',
         ];
