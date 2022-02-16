@@ -164,7 +164,7 @@ class CompanyTendersController extends ApiController
     public function update(Request $request, $slug, $id)
     {
         $rules = [
-            'price' => 'required|numeric',
+            'price' => 'required|numeric|gt:0',
         ];
 
         $this->validate( $request, $rules );
