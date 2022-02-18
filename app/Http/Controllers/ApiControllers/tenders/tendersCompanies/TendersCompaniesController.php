@@ -79,7 +79,8 @@ class TendersCompaniesController extends ApiController
                 $tenderCompanyFields['tender_id']   = $tender_id;
                 $tenderCompanyFields['company_id']  = $company["id"];
                 $tenderCompanyFields['user_id']     = $user->id;
-
+                $tenderCompanyFields['status']      = TendersCompanies::STATUS_PROCESS;
+                
                 //estado por defecto a la compañia/s que se invitan a la licitación
                 // $tenderCompanyFields['status']     = TendersCompanies::STATUS_EARRING;
 

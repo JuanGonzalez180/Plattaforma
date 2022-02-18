@@ -12,6 +12,8 @@ use App\Models\TendersCompanies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\SendEnabledTenderCompany;
+use App\Mail\SendDisabledTenderCompany;
 use App\Mail\SendDeclinedTenderCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -89,6 +91,78 @@ class TendersActionController extends ApiController
 
         return $this->showOne($tenderVersionLast,200);
     }
+
+    public function updateStatusDisabled($id)
+    {
+        $tender            = Tenders::find($id);
+        $tenderVersionLast = $tender->tendersVersionLast();
+
+        DB::beginTransaction();
+
+        $tenderVersionLast->status = TendersVersions::LICITACION_DISABLED;
+
+        try{
+            $tenderVersionLast->save();
+            DB::commit();
+            $companies  = $tender->tenderCompanies;
+            $notificationsIds = [];
+
+            foreach ($companies as $companyTender)
+            {
+                $company = $companyTender->company;
+                // Informar por correo a los participantes que se ha declinado la licitación.
+                Mail::to($company->user->email)->send(new SendDisabledTenderCompany($tender->name, $company->name));
+                // array_push($notificationsIds, $company->user->id);
+            }
+            
+            // $notifications = new Notifications();
+            // $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERSDECLINED, $notificationsIds );
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $tenderVersionError = [ 'tenderVersionLast' => 'Error, no se ha podido gestionar la solicitud de la licitación' ];
+            return $this->errorResponse( $tenderVersionError, 500 );
+        }
+
+        return $this->showOne($tenderVersionLast,200);
+
+    }
+    
+    public function updateStatusEnabled($id)
+    {
+        $tender            = Tenders::find($id);
+        $tenderVersionLast = $tender->tendersVersionLast();
+
+        DB::beginTransaction();
+
+        $tenderVersionLast->status = TendersVersions::LICITACION_PUBLISH;
+
+        try{
+            $tenderVersionLast->save();
+            DB::commit();
+            $companies  = $tender->tenderCompanies;
+            $notificationsIds = [];
+
+            foreach ($companies as $companyTender)
+            {
+                $company = $companyTender->company;
+                // Informar por correo a los participantes que se ha habilitado la licitación.
+                Mail::to($company->user->email)->send(new SendEnabledTenderCompany($tender->name, $company->name));
+                // array_push($notificationsIds, $company->user->id);
+            }
+            
+            // $notifications = new Notifications();
+            // $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERSDECLINED, $notificationsIds );
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $tenderVersionError = [ 'tenderVersionLast' => 'Error, no se ha podido gestionar la solicitud de la licitación' ];
+            return $this->errorResponse( $tenderVersionError, 500 );
+        }
+
+        return $this->showOne($tenderVersionLast,200);
+
+    }
     
 
     public function updateStatusDeclined($id)
@@ -114,8 +188,8 @@ class TendersActionController extends ApiController
                 array_push($notificationsIds, $company->user->id);
             }
             
-            $notifications = new Notifications();
-            $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERSDECLINED, $notificationsIds );
+            // $notifications = new Notifications();
+            // $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERSDECLINED, $notificationsIds );
 
         } catch (\Throwable $th) {
             DB::rollBack();

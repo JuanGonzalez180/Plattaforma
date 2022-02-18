@@ -249,11 +249,12 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::put('/tenders/action/{id}/update/user', [TendersActionController::class, 'updateTenderUser'])->name('company-tender-update-user');
     Route::put('/tenders/action/{id}/closed/status', [TendersActionController::class, 'updateStatusClosed'])->name('company-tender-update-status-closed');
     Route::put('/tenders/action/{id}/declined/status', [TendersActionController::class, 'updateStatusDeclined'])->name('company-tender-update-status-declined');
+    Route::put('/tenders/action/{id}/disabled/status', [TendersActionController::class, 'updateStatusDisabled'])->name('company-tender-update-status-disabled');
+    Route::put('/tenders/action/{id}/enabled/status', [TendersActionController::class, 'updateStatusEnabled'])->name('company-tender-update-status-enabled');
     /**
      * Tenders
      */
     Route::resource('/tenders', TendersController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('tenders');
-
     /**
      * Company
      */
@@ -272,6 +273,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::put('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'update'])->name('company-tender-update');
     Route::delete('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'destroy'])->name('company-tender-destroy');
 
+    Route::put('/company/{slug}/tenders/{id}/status/{status}', [CompanyTendersController::class, 'updateStatusInvitation'])->name('company-tender-update-status'); 
     //participar en licitación
     Route::post('/company/{slug}/tenders/{id}/send/participate', [CompanyTendersTransactController::class, 'store'])->name('company-send-participate');
     Route::post('/company/tenders/select/participate', [CompanyTendersTransactController::class, 'postComparate'])->name('company-select-participate');

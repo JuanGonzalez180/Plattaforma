@@ -56,9 +56,11 @@ class ProjectsController extends ApiController
 
     public function all()
     {
-        $user = $this->validateUser();
-        $companyID = $user->companyId();
-        $projects = [];
+        $user       = $this->validateUser();
+        $companyID  = $user->companyId();
+        $projects   = [];
+
+        $date_now   = Carbon::now()->format('Y-m-d');
 
         // if( $companyID && $user->userType() == 'demanda' ){
         //     if( $user->isAdminFrontEnd() ){
@@ -73,17 +75,22 @@ class ProjectsController extends ApiController
         //                                 ->get();
         //     }
         // }
-
-
         $projects = Projects::where('company_id', $companyID)
             // ->where('visible', Projects::PROJECTS_VISIBLE)
             ->orderBy('id', 'desc')
             ->get();
-
-
+            
         $projects->map(function ($item, $key) {
             return $item->status_date = $this->getStatusDate($item->date_start, $item->date_end);
         });
+
+        foreach ($projects as $key => $value) {
+
+            if(!(($date_now >= $value->date_start) && ($date_now <= $value->date_end)))
+            {
+                unset($projects[$key]);
+            }
+        }
 
         return $this->showAll($projects);
     }

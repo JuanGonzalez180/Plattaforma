@@ -163,15 +163,20 @@ class CompanyTendersController extends ApiController
 
     public function update(Request $request, $slug, $id)
     {
+        // $rules = [
+        //     'price' => 'required|numeric|gt:0',
+        // ];
+
+        // $customMessages = [
+        //     'price.gt' => 'El precio debe ser mayor a 0.'
+        // ];
+
+        // $this->validate( $request, $rules, $customMessages );
         $rules = [
-            'price' => 'required|numeric|gt:0',
+            'price' => 'required|numeric',
         ];
 
-        $customMessages = [
-            'price.gt' => 'El precio debe ser mayor a 0.'
-        ];
-
-        $this->validate( $request, $rules, $customMessages );
+        $this->validate( $request, $rules );
 
         $user           = $this->validateUser();
         $tender_company = TendersCompanies::find($id);
@@ -238,6 +243,67 @@ class CompanyTendersController extends ApiController
         }
 
         return $this->showOne($tender_company, 200);
+    }
+
+    public function updateStatusInvitation($slug, $id, $status)
+    {
+        $user           = $this->validateUser();
+        $tender_company = TendersCompanies::find($id);
+        $tender_status  = $tender_company->tender->tendersVersionLast()->status;
+        
+        if($status == 'true')
+        {
+            $tender_company->status = TendersCompanies::STATUS_PARTICIPATING;
+            $tender_company->save();
+
+            return $this->showOne($tender_company, 200);
+
+        }
+        else
+        { 
+            if (($tender_status == TendersVersions::LICITACION_CLOSED) || ($tender_status == TendersVersions::LICITACION_FINISHED)) {
+                $tenderCompanyError = ['tenderCompany' => 'Error, la compañia no se puede retirar de la licitacion, por el motivo que la licitación esta cerrada o finalizada'];
+                return $this->errorResponse($tenderCompanyError, 500);
+            }
+    
+            // Revisar consulta.
+            if ($user->company[0]->id != $tender_company->company->id) {
+                $tenderCompanyError = ['tenderCompany' => 'Error, el usuario no tiene permiso para borrar la licitación de la compañia'];
+                return $this->errorResponse($tenderCompanyError, 500);
+            }
+    
+            $tender_company->delete();
+    
+            if ($tender_company->files) {
+                foreach ($tender_company->files as $key => $file) {
+                    Storage::disk('local')->delete($this->routeFile . $file->url);
+                    $file->delete();
+                }
+            }
+    
+            $company_name       = $tender_company->company->name;
+            $tender_name        = $tender_company->tender->name;
+    
+            $emails     = [];
+            $emails[]   = $tender_company->tender->user->email;
+            $emails[]   = $tender_company->tender->project->user->email;
+    
+            $emails = array_values(array_unique($emails));
+    
+            foreach ($emails as $email) {
+                Mail::to($email)
+                    ->send(new SendRetirementTenderCompany($tender_name, $company_name));
+            }
+    
+            // Enviar invitación por notificación
+            $notificationsIds = [];
+            $notificationsIds[] = $tender_company->tender->user_id;
+            $notifications = new Notifications();
+            $notifications->registerNotificationQuery($tender_company, Notifications::NOTIFICATION_TENDERCOMPANYNOPARTICIPATE, $notificationsIds);
+    
+            return $this->showOneData(['success' => 'Se ha eliminado correctamente.', 'code' => 200], 200);
+            
+        }
     }
 
     public function destroy($slug, $id)
