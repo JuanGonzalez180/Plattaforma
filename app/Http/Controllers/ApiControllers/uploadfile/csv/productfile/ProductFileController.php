@@ -88,6 +88,8 @@ class ProductFileController extends ApiController
         // $product = Products::where(strtoupper('name'), strtoupper($row[0]))
         //     ->where('brand_id', $brand_id);
 
+        
+
         // if (!$product->exists()) {
             $product = new Products;
             $product->name        = ucfirst($row[0]);
@@ -110,9 +112,9 @@ class ProductFileController extends ApiController
 
             DB::table('temp_product_files')->insert([
                 'product_id'    => $product->id,
-                'main_img'      => $row[5],
-                'galery_img'    => trim($row[6]),
-                'files'         => trim($row[7])
+                'main_img'      => (!is_null($row[5])) ? $row[5] : '',
+                'galery_img'    => (!is_null($row[6])) ? trim($row[6]) : '',
+                'files'         => (!is_null($row[7])) ? trim($row[7]) : '',
             ]);
         // }
     }
