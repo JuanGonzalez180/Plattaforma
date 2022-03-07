@@ -61,7 +61,23 @@ class QueryWall extends Model
         return Tenders::find($this->querysable_id)->user_id;
     }
 
+    public function queryWallTender() {
+        return Tenders::find($this->querysable_id);
+    }
+
+    public function queryWallTenderId() {
+        return Tenders::find($this->querysable_id)->id;
+    }
+
     public function queryWallProjectUser() {
         return Tenders::find($this->querysable_id)->project->user_id;
+    }
+
+    public function queryWallProjectId() {
+        return Tenders::find($this->querysable_id)->project->id;
+    }
+
+    public function notifications(){
+        return $this->morphMany(Notifications::class, 'notificationsable');
     }
 }

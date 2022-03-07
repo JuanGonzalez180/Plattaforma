@@ -42,6 +42,7 @@ class ProjectsTransformer extends TransformerAbstract
             'user_id'=> (int)$project->user_id,
             'company_id'=> (int)$project->company_id,
             'name'=> (string)$project->name,
+            'status_date'=> (string)$project->getStatusDate(),
             'status'=> (string)$project->status,
             'visible'=> (string)$project->visible,
             'meters'=> (string)$project->meters,
@@ -55,7 +56,6 @@ class ProjectsTransformer extends TransformerAbstract
             'image'=> $project->image,
         ];
     }
-
     
     public function transformDetail(Projects $project)
     {   

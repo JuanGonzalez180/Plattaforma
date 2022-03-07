@@ -78,26 +78,26 @@ class ProductFileController extends ApiController
 
         unlink($file_cvs);
 
-        return $this->showOneData(['success' => 'se han cargado todos los productos correctamente'], 200);
+        return $this->showOneData(['success' => 'Se han cargado todos los productos satisfactoriamente, las imagenes y archivos adjuntos se cargaran despues de 15 minutos.'], 200);
     }
 
     public function createProduct($row, $user, $companyID)
     {
         $brand_id   = (!empty($row[1])) ? $this->getBrandId($row[1], $user, $companyID) : 1;
 
-        // $product = Products::where(strtoupper('name'), strtoupper($row[0]))
-        //     ->where('brand_id', $brand_id);
+        $productx = Products::where(strtoupper('name'), strtoupper($row[0]))
+            ->where('brand_id', $brand_id)
+            ->where(strtolower('code'),'=',(!is_null($row[3])) ? $row[3] : '')
+            ->where('company_id', '=', $companyID);
 
-        
-
-        // if (!$product->exists()) {
+        if (!$productx->exists()) {
             $product = new Products;
             $product->name        = ucfirst($row[0]);
-            $product->code        = ucfirst($row[2]);
+            $product->code        = (!is_null($row[2])) ? $row[2] : '';
             $product->company_id  = $companyID;
             $product->user_id     = $user->id;
             $product->brand_id    = $brand_id;
-            $product->description = $row[3];
+            $product->description = (!is_null($row[3])) ? $row[3] : '';
             $product->type        = Products::TYPE_PRODUCT;
             $product->status      = Products::PRODUCT_PUBLISH;
             $product->save();
@@ -110,13 +110,20 @@ class ProductFileController extends ApiController
             if (!empty(trim($row[4])))
                 $this->addTags(trim($row[4]), $product);
 
-            DB::table('temp_product_files')->insert([
-                'product_id'    => $product->id,
-                'main_img'      => (!is_null($row[5])) ? $row[5] : '',
-                'galery_img'    => (!is_null($row[6])) ? trim($row[6]) : '',
-                'files'         => (!is_null($row[7])) ? trim($row[7]) : '',
-            ]);
-        // }
+
+            if(!(is_null($row[5]) && is_null($row[6]) && is_null($row[7])))
+            {
+                DB::table('temp_product_files')
+                    ->insert([
+                        'product_id'    => $product->id,
+                        'main_img'      => (!is_null($row[5])) ? $row[5] : '',
+                        'galery_img'    => (!is_null($row[6])) ? trim($row[6]) : '',
+                        'files'         => (!is_null($row[7])) ? trim($row[7]) : '',
+                    ]
+                );
+            }
+
+        }
     }
 
     public function getBrandId($name, $user, $companyID)

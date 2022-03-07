@@ -7,12 +7,14 @@ use App\Models\User;
 use App\Models\Tenders;
 use App\Models\QueryWall;
 use Illuminate\Http\Request;
+use App\Models\Notifications;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
 class tenderQueryQuestionController extends ApiController
 {
-    public function validateUser(){
+    public function validateUser()
+    {
         try {
             $this->user = JWTAuth::parseToken()->authenticate();
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
@@ -75,7 +77,24 @@ class tenderQueryQuestionController extends ApiController
             return $this->errorResponse( $questionError, 500 );
         }
         DB::commit();
+
+        $this->sendNotificationQuery($question, Notifications::NOTIFICATION_QUERYWALL_TENDER_QUESTION);
+
         return $this->showOne($question,201);   
+    }
+
+    public function sendNotificationQuery($query, $typeNotification)
+    {
+        $tender = Tenders::find($query->querysable_id);
+
+        $notificationsIds   = [];
+        $notificationsIds[] = $tender->user_id; // responsable de la licitación
+        $notificationsIds[] = $tender->company->user_id; //administrador de la compañia
+
+        $notificationsIds   = array_values(array_unique($notificationsIds));
+
+        $notifications      = new Notifications();
+        $notifications->registerNotificationQuery($query, $typeNotification, $notificationsIds);
     }
 
     public function update(Request $request, $id)
@@ -116,7 +135,6 @@ class tenderQueryQuestionController extends ApiController
             $queryError = [ 'querywall' => 'Error, El usuario no tiene privilegios para modificar la pregunta del muro de consultas' ];
             return $this->errorResponse( $queryError, 500 );
         }
-
     }
 
     public function destroy( int $id)

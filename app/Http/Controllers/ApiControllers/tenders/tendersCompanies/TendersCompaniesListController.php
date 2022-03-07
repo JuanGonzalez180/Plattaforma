@@ -27,7 +27,21 @@ class TendersCompaniesListController extends ApiController
 
         $filter = $request->filter;
 
+        // $tenders_company_earring = TendersCompanies::where('company_id', $company_id)
+        //     ->where('status','=',TendersCompanies::STATUS_EARRING)
+        //     ->orderBy('updated_at','desc')
+        //     ->get();
+            
+        // $tenders_company = TendersCompanies::where('company_id', $company_id)
+        //     ->where('status','<>',TendersCompanies::STATUS_EARRING)
+        //     ->orderBy('updated_at','desc')
+        //     ->get();
+
+        // $tenders_company = $tenders_company_earring->merge($tenders_company);
+
+
         $tenders_company = TendersCompanies::where('company_id', $company_id)
+            ->where('status','<>',TendersCompanies::STATUS_EARRING)
             ->orderBy('updated_at','desc')
             ->get();
 

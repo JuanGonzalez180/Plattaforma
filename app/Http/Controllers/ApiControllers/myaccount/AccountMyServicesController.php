@@ -28,7 +28,8 @@ class AccountMyServicesController extends ApiController
         $user = $this->validateUser();
 
         if( $user ){
-            if( $user->company ){
+            if( $user->company )
+            {
                 try{
                     $company = $user->company[0];
                     $company->companyCategoryServices;

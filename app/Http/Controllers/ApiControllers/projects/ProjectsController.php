@@ -47,7 +47,7 @@ class ProjectsController extends ApiController
                     ->orderBy('id', 'desc')
                     ->get();
             }
-
+            
             return $this->showAllPaginate($projects);
         }
 

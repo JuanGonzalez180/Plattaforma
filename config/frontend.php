@@ -11,6 +11,10 @@ return [
             'login' => 'autenticacion/iniciar-sesion',
         ],
 
+        'tender' => [
+            'tenderListprovider' => 'licitaciones/listado'
+        ]
+
     ],
 
 ];

@@ -18,6 +18,8 @@ use App\Models\Portfolio;
 use App\Models\TypesEntity;
 use Illuminate\Http\Request;
 use App\Mail\CreatedAccount;
+use App\Models\TendersVersions;
+use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str as Str;
 use Illuminate\Support\Facades\Mail;
@@ -271,17 +273,7 @@ class CompanyController extends ApiController
                 ->skip(0)->take(6);
 
             // Traer Licitaciones últimas 6
-            $company->tenders = Tenders::select('tenders.*', 'comp.status AS company_status')
-                ->where('tenders.company_id', $company->id)
-                ->join('projects', 'projects.id', '=', 'tenders.project_id')
-                ->where('projects.visible', Projects::PROJECTS_VISIBLE)
-                ->leftjoin('tenders_companies AS comp', function ($join) use ($userCompanyId) {
-                    $join->on('tenders.id', '=', 'comp.tender_id');
-                    $join->where('comp.company_id', '=', $userCompanyId);
-                })
-                ->orderBy('tenders.updated_at', 'desc')
-                ->skip(0)->take(6)
-                ->get();
+            $company->tenders = $this->getTenderCompany($company->id, $userCompanyId);
 
             // Traer Productos últimos 6
             $company->products = $company->products
@@ -381,6 +373,81 @@ class CompanyController extends ApiController
         }
 
         return $this->showOneTransform($company, 200);
+    }
+
+    public function getTenderCompany($company_id, $user_company_id)
+    {
+        // $tendersCompanies = Tenders::select('tenders.*', 'comp.status AS company_status')
+        //         ->where('tenders.company_id', $company_id)
+        //         ->join('projects', 'projects.id', '=', 'tenders.project_id')
+        //         ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+        //         ->leftjoin('tenders_companies AS comp', function ($join) use ($user_company_id) {
+        //             $join->on('tenders.id', '=', 'comp.tender_id');
+        //             $join->where('comp.company_id', '=', $user_company_id);
+        //         })
+        //         ->orderBy('tenders.updated_at', 'desc')
+        //         ->skip(0)->take(6)
+        //         ->get();
+
+        // return $tendersCompanies;
+
+        $tendersCompanies = Tenders::select('tenders.*', 'comp.status AS company_status')
+                ->where('tenders.company_id', $company_id)
+                ->join('projects', 'projects.id', '=', 'tenders.project_id')
+                ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+                ->leftjoin('tenders_companies AS comp', function ($join) use ($user_company_id) {
+                    $join->on('tenders.id', '=', 'comp.tender_id');
+                    $join->where('comp.company_id', '=', $user_company_id);
+                })
+                ->orderBy('tenders.updated_at', 'desc')
+                ->pluck('tenders.id');
+
+        $tendersParticipate = $this->getTenderParticipate();
+
+        $tenderArray = array_intersect(json_decode($tendersCompanies), json_decode($tendersParticipate));
+
+        $tenders = Tenders::select('tenders.*', 'comp.status AS company_status')
+                ->where('tenders.company_id', $company_id)
+                ->whereIn('tenders.id', $tenderArray)
+                ->join('projects', 'projects.id', '=', 'tenders.project_id')
+                ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+                ->leftjoin('tenders_companies AS comp', function ($join) use ($user_company_id) {
+                    $join->on('tenders.id', '=', 'comp.tender_id');
+                    $join->where('comp.company_id', '=', $user_company_id);
+                })
+                ->where('comp.status','=', TendersCompanies::STATUS_PARTICIPATING)
+                ->orderBy('tenders.updated_at', 'desc')
+                ->skip(0)->take(6)
+                ->get();
+
+        return $tenders;
+    }
+
+    public function getTenderParticipate()
+    {
+        $user = $this->validateUser();
+        // Compañía del usuario que está logueado
+        $userCompanyId = $user->companyId();
+
+        return TendersCompanies::where('company_id', $userCompanyId)
+            ->whereIn('tender_id', $this->getTendersPublish())
+            ->pluck('tender_id');
+    }
+
+    public function getTendersPublish()
+    {
+        return DB::table('tenders_versions as a')
+            ->select(DB::raw('max(a.created_at), a.tenders_id'))
+            ->where('a.status', TendersVersions::LICITACION_PUBLISH)
+            ->where((function ($query) {
+                $query->select(
+                    DB::raw("COUNT(*) from `tenders_versions` as `b` 
+                    where `b`.`status` != '" . TendersVersions::LICITACION_PUBLISH . "'  
+                    and `b`.`tenders_id` = a.tenders_id")
+                );
+            }), '=', 0)
+            ->groupBy('a.tenders_id')
+            ->pluck('a.tenders_id');
     }
 
     public function detail($slug)

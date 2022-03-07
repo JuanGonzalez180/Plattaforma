@@ -58,8 +58,9 @@ class PortfoliosDocumentsController extends ApiController
         $user = $this->validateUser();
 
         $rules = [
-            'id' => 'required'
+            'id'    => 'required'
         ];
+
         $this->validate($request, $rules);
 
         $portfolio = Portfolio::findOrFail($request->id);

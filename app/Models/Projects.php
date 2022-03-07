@@ -148,4 +148,28 @@ class Projects extends Model
     public function interests(){
         return $this->morphMany(Interests::class, 'interestsable');
     }
+
+    public function getStatusDate()
+    {
+        $date_start = Carbon::parse($this->date_start);
+        $date_end   = Carbon::parse($this->date_end);
+        $date_now   = Carbon::now()->format('Y-m-d');
+
+        $status = "";
+        
+        if ($date_now < $date_start)
+        {
+            $status = Projects::NOT_STARTED;
+        }
+        else if(($date_now >= $date_start) && ($date_now <= $date_end))
+        {
+            $status = Projects::IN_PROGRESS;
+        }
+        else if($date_now > $date_end)
+        {
+            $status = Projects::FINALIZED;
+        }
+
+        return $status;
+    }
 }

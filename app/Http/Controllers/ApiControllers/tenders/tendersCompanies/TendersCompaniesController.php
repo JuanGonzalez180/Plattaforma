@@ -133,8 +133,8 @@ class TendersCompaniesController extends ApiController
                 ));
             }
         }
-        $notifications = new Notifications();
-        $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION, $notificationsIdsVersion );
+        // $notifications = new Notifications();
+        // $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION, $tenderCompany->company->user->id );
 
         // return $this->showOne($tendersCompanies,201);
         return $this->showOne($tender,201);

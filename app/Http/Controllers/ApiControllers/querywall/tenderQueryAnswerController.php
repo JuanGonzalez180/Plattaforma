@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Tenders;
 use App\Models\QueryWall;
 use Illuminate\Http\Request;
+use App\Models\Notifications;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
@@ -82,15 +83,18 @@ class tenderQueryAnswerController extends ApiController
                 $queryFields['status'] = QueryWall::QUERYWALL_ANSWERED;
                 $queryFields['user_answer_id'] = $user->id;
             }
-
-            try{
+            try
+            {
                 $queryAnswer->update( $queryFields );
-            }catch(\Throwable $th){
+            }
+            catch(\Throwable $th){
                 DB::rollBack();
                 $questionError = [ 'question' => 'Error, no se ha podido responder a la pregunta' ];
                 return $this->errorResponse( $questionError, 500 );
             }
             DB::commit();
+
+            $this->sendNotificationQuery($queryAnswer, Notifications::NOTIFICATION_QUERYWALL_TENDER_ANSWER);
 
             return $this->showOne($queryAnswer,200);
 
@@ -99,6 +103,18 @@ class tenderQueryAnswerController extends ApiController
             return $this->errorResponse( $queryError, 500 );
         }
 
+    }
+
+    public function sendNotificationQuery($query, $typeNotification)
+    {
+        $notificationsIds   = [];
+        $notificationsIds[] = $query->user_id; // el usuario que realizo la pregunta
+        $notificationsIds[] = $query->user->companyClass()->user_id; //el usuario administrador de la compañia
+
+        $notificationsIds   = array_values(array_unique($notificationsIds));
+
+        $notifications      = new Notifications();
+        $notifications->registerNotificationQuery($query, $typeNotification, $notificationsIds);
     }
 
     public function changevisible(Request $request, int $id)

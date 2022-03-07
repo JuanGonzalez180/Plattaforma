@@ -163,15 +163,6 @@ class CompanyTendersController extends ApiController
 
     public function update(Request $request, $slug, $id)
     {
-        // $rules = [
-        //     'price' => 'required|numeric|gt:0',
-        // ];
-
-        // $customMessages = [
-        //     'price.gt' => 'El precio debe ser mayor a 0.'
-        // ];
-
-        // $this->validate( $request, $rules, $customMessages );
         $rules = [
             'price' => 'required|numeric',
         ];
@@ -180,21 +171,6 @@ class CompanyTendersController extends ApiController
 
         $user           = $this->validateUser();
         $tender_company = TendersCompanies::find($id);
-
-        $emails = [];
-
-        $emails[] = strtolower($tender_company->tender->company->user->email);
-        $emails[] = strtolower($tender_company->tender->user->email);
-
-        $emails = array_unique($emails);
-
-
-        // var_dump($tender_company->company->name);//nombre de la compañia participante
-        // var_dump($tender_company->tender->name);//nombre de la licitación
-        // var_dump($tender_company->price);//precio de la oferta
-        // var_dump($tender_company->tender->company->user->email);//emial del admin de la compañia de la licitación
-        // var_dump($tender_company->tender->user->email);//emial del responsable de la licitación
-   
 
         $company = Company::find($user->companyId());
  
@@ -205,8 +181,6 @@ class CompanyTendersController extends ApiController
             return $this->errorResponse($tenderCompanyError, 500);
         }
 
-
-        // if (($user->id != $tender_company->user_id)) {
         if (!in_array($user->id, [$tender_company->user_id, $company->adminCompany()])) {
             $tenderCompanyError = ['tenderCompany' => 'Error, permiso para modificar la licitación de la ' . $user->id . 'compañia' . $tender_company->user_id];
             return $this->errorResponse($tenderCompanyError, 500);
@@ -230,19 +204,31 @@ class CompanyTendersController extends ApiController
 
         if(!$error)
         {
-            foreach($emails as $email){
-                Mail::to($tender_company->tender->company->user->email)
-                // Mail::to('cris10x@hotmail.com')
-                    ->send(new SendOfferTenderCompany(
-                        $tender_company->company->name,
-                        $tender_company->tender->company->name,
-                        $tender_company->price,
-                        $tender_company->tender->name
-                ));
-            }
+            $this->sendEmailTenderCompanyOffer($tender_company);
+            $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_TENDERCOMPANY_OFFER);
         }
 
         return $this->showOne($tender_company, 200);
+    }
+
+    public function sendEmailTenderCompanyOffer($tender_company)
+    {
+        $emails = [];
+        $emails[] = strtolower($tender_company->tender->company->user->email);
+        $emails[] = strtolower($tender_company->tender->user->email);
+
+        $emails = array_unique($emails);
+
+        foreach($emails as $email){
+            Mail::to($tender_company->tender->company->user->email)
+            // Mail::to('cris10x@hotmail.com')
+                ->send(new SendOfferTenderCompany(
+                    $tender_company->company->name,
+                    $tender_company->tender->company->name,
+                    $tender_company->price,
+                    $tender_company->tender->name
+            ));
+        }
     }
 
     public function updateStatusInvitation($slug, $id, $status)
@@ -256,22 +242,12 @@ class CompanyTendersController extends ApiController
             $tender_company->status = TendersCompanies::STATUS_PARTICIPATING;
             $tender_company->save();
 
-            return $this->showOne($tender_company, 200);
+            $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_INVITATION_APPROVED);
 
+            return $this->showOne($tender_company, 200);
         }
         else
         { 
-            if (($tender_status == TendersVersions::LICITACION_CLOSED) || ($tender_status == TendersVersions::LICITACION_FINISHED)) {
-                $tenderCompanyError = ['tenderCompany' => 'Error, la compañia no se puede retirar de la licitacion, por el motivo que la licitación esta cerrada o finalizada'];
-                return $this->errorResponse($tenderCompanyError, 500);
-            }
-    
-            // Revisar consulta.
-            if ($user->company[0]->id != $tender_company->company->id) {
-                $tenderCompanyError = ['tenderCompany' => 'Error, el usuario no tiene permiso para borrar la licitación de la compañia'];
-                return $this->errorResponse($tenderCompanyError, 500);
-            }
-    
             $tender_company->delete();
     
             if ($tender_company->files) {
@@ -280,13 +256,28 @@ class CompanyTendersController extends ApiController
                     $file->delete();
                 }
             }
+
+            //envia los correos al responsable de licitación y al responsable del proyecto
+            $this->sendEmailInvitationTender($tender_company);
+            //envia los notificaciones al responsable de la licitación y al administrador
+            $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_INVITATION_REJECTED);
     
+            return $this->showOneData(
+                ['success' => 'Se ha eliminado correctamente.', 'code' => 200]
+                , 200
+            );
+            
+        }
+    }
+
+    public function sendEmailInvitationTender($tender_company)
+    {
             $company_name       = $tender_company->company->name;
             $tender_name        = $tender_company->tender->name;
     
             $emails     = [];
-            $emails[]   = $tender_company->tender->user->email;
-            $emails[]   = $tender_company->tender->project->user->email;
+            $emails[]   = $tender_company->tender->user->email; //reponsable de la licitación
+            $emails[]   = $tender_company->tender->project->user->email; //responsable del proyecto de la licitación
     
             $emails = array_values(array_unique($emails));
     
@@ -294,16 +285,19 @@ class CompanyTendersController extends ApiController
                 Mail::to($email)
                     ->send(new SendRetirementTenderCompany($tender_name, $company_name));
             }
-    
-            // Enviar invitación por notificación
-            $notificationsIds = [];
-            $notificationsIds[] = $tender_company->tender->user_id;
-            $notifications = new Notifications();
-            $notifications->registerNotificationQuery($tender_company, Notifications::NOTIFICATION_TENDERCOMPANYNOPARTICIPATE, $notificationsIds);
-    
-            return $this->showOneData(['success' => 'Se ha eliminado correctamente.', 'code' => 200], 200);
-            
-        }
+    }
+
+    public function sendNotificationTender($query, $typeNotification)
+    {
+        $notificationsIds   = [];
+        $notificationsIds[] = $query->tender->user_id; // responsable de la licitación
+        // $notificationsIds[] = $query->tender->project->user_id; // responsable del proyecto de la licitación
+        $notificationsIds[] = $query->tender->company->user_id; //administrador de la compañia
+
+        $notificationsIds   = array_values(array_unique($notificationsIds));
+
+        $notifications      = new Notifications();
+        $notifications->registerNotificationQuery($query, $typeNotification, $notificationsIds);
     }
 
     public function destroy($slug, $id)
@@ -347,10 +341,7 @@ class CompanyTendersController extends ApiController
         }
 
         // Enviar invitación por notificación
-        $notificationsIds = [];
-        $notificationsIds[] = $tender_company->tender->user_id;
-        $notifications = new Notifications();
-        $notifications->registerNotificationQuery($tender_company, Notifications::NOTIFICATION_TENDERCOMPANYNOPARTICIPATE, $notificationsIds);
+        $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_TENDERCOMPANYNOPARTICIPATE);
 
         return $this->showOneData(['success' => 'Se ha eliminado correctamente.', 'code' => 200], 200);
     }
