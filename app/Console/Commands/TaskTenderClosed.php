@@ -51,11 +51,12 @@ class TaskTenderClosed extends Command
         foreach ($tenders as $tender) {
             $hourValidate   = ($tender->tendersVersionLast()->hour == Carbon::now()->format('H:i'));
 
-            if ($hourValidate) {
-
+            if ($hourValidate)
+            {
                 $tender->tendersVersionLast()->status = TendersVersions::LICITACION_CLOSED;
                 $tender->tendersVersionLast()->save();
 
+                //envia las notificaciones
                 $this->sendNotificationTenders($tender);
             };
         }
@@ -86,7 +87,11 @@ class TaskTenderClosed extends Command
         if($tendersCompaniesUsers)
         {
             $notifications      = new Notifications();
+
+            //notifica a las empresas participantes de la licitación
             $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED, $tendersCompaniesUsers);
+            //notifica al encargado de la notificación y al admin de la compañia
+            $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN,[$tender->user_id, $tender->company->user_id] );
         }
     }
 
@@ -94,7 +99,8 @@ class TaskTenderClosed extends Command
     {
         return TendersCompanies::where('tender_id', $tender->id)
             ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
-            ->pluck('companies.user_id');
+            ->pluck('companies.user_id')
+            ->all(); 
     }
 
 }
