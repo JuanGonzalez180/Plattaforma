@@ -50,43 +50,67 @@ class TendersCompaniesActionController extends ApiController
         $tenderCompany->winner      = TendersCompanies::WINNER_TRUE;
         $tenderVersionLast->status  = TendersVersions::LICITACION_FINISHED;
 
-        try{
+        try
+        {
             $tenderCompany->save();
             $tenderVersionLast->save();
             DB::commit();
-        } catch (\Throwable $th) {
+        }
+        catch (\Throwable $th)
+        {
             DB::rollBack();
             $tenderError = [ 'tender' => 'Error, no se ha podido gestionar la solicitud de la licitación'];
             return $this->errorResponse( $tenderError, 500 );
         }
+        //envia los correos a las empresas que participaron en la licitación
+        $this->sendEmailTenderCompanies($tenderCompany);
+        //envia las notificaciones a las compañias licitantes. incluyendo a la compañia ganadora y a las demas que participarón
+        $this->sendNotificationTenderCompanies($tenderCompany);
+        
+        return $this->showOne($tenderCompany,200);
+    }
 
+    public function sendEmailTenderCompanies($tenderCompany)
+    {
         $companyName    = $tenderCompany->company->name;
         $tenderName     = $tenderCompany->tender->name;
-
         $emails = [];
-        $notificationsIds = [];
-
-        //se hace un array del correo del responsable de la licitación y el admin de la compañia.
-        $emails[] = $tenderCompany->company->user->email;
-        $emails[] = $tenderCompany->user->email;
-
-        $notificationsIds[] = $tenderCompany->company->user->id;
-        $notificationsIds[] = $tenderCompany->user->id;
         
-        $emails = array_values(array_unique($emails));
-        $notificationsIds = array_values(array_unique($notificationsIds));
+        //se hace un array del correo del responsable de la licitación y el admin de la compañia.
+        $emails = $this->getTendersCompaniesEmail($tenderCompany->tender);
 
         foreach($emails as $email){
             Mail::to($email)
                 ->send(new SendWinnerTenderCompany($tenderName, $companyName));
         }
-        
+
+    }
+
+    public function sendNotificationTenderCompanies($tenderCompany)
+    {
+        $notificationsIds = $this->getTendersCompaniesUsers($tenderCompany->tender);
+
         $notifications = new Notifications();
         $notifications->registerNotificationQuery( $tenderCompany, Notifications::NOTIFICATION_TENDERCOMPANYSELECTED, $notificationsIds );
+    }
 
-        // Falta notificar a las NO GANADORAS.
-        
-        return $this->showOne($tenderCompany,200);
+    public function getTendersCompaniesEmail($tender)
+    {
+        return array_values(array_unique(TendersCompanies::where('tenders_companies.tender_id', $tender->id)
+            ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
+            ->where('tenders_companies.status','=',TendersCompanies::STATUS_PARTICIPATING)
+            ->join('users', 'users.id', '=', 'companies.user_id')
+            ->pluck('users.email')
+            ->all())); 
+    }
+
+    public function getTendersCompaniesUsers($tender)
+    {
+        return array_values(array_unique(TendersCompanies::where('tenders_companies.tender_id', $tender->id)
+            ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
+            ->where('tenders_companies.status','=',TendersCompanies::STATUS_PARTICIPATING)
+            ->pluck('companies.user_id')
+            ->all())); 
     }
 
     public function SelectedMoreWinner(Request $request)

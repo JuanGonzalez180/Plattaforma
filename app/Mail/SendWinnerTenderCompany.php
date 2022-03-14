@@ -11,7 +11,7 @@ class SendWinnerTenderCompany extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subject = "Ganador de la licitación";
+    public $subject = "Licitación evaluada";
 
     /**
      * Create a new message instance.

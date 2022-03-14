@@ -165,7 +165,7 @@ class Notifications extends Model
         Notifications::NOTIFICATION_TENDERCOMPANYSELECTED => [ 
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
-            'message'   => 'Su propuesta ha sido seleccionada .' 
+            'message'   => 'La licitación ha sido evaluada, la empresa %s ha sido selecciona como la mejor oferta, muchas gracias por participar.' 
         ],
         Notifications::NOTIFICATION_TENDERINVITECOMPANIES => [ 
             'title'     => 'Licitación: %s', 
@@ -252,6 +252,7 @@ class Notifications extends Model
             $type == Notifications::NOTIFICATION_TENDERCOMPANYSELECTED
         ){
             $title      = sprintf($title, $query->tender->name);
+            $message    = sprintf($message, $query->name);
         }
         elseif( $type == Notifications::NOTIFICATION_TENDERINVITECOMPANIES )
         {

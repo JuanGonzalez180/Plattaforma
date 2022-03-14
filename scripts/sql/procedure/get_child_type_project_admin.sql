@@ -41,5 +41,3 @@ begin
   prepare stmt from @sql;
   execute stmt;
 END;$$
-
---call get_child_type_project_admin(33)

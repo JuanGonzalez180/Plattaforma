@@ -97,8 +97,9 @@ class TaskTenderClosed extends Command
 
     public function getTendersCompaniesUsers($tender)
     {
-        return TendersCompanies::where('tender_id', $tender->id)
+        return TendersCompanies::where('tenders_companies.tender_id', $tender->id)
             ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
+            ->where('tenders_companies.status','=',TendersCompanies::STATUS_PARTICIPATING)
             ->pluck('companies.user_id')
             ->all(); 
     }

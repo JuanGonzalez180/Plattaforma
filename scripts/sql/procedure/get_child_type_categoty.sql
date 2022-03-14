@@ -41,6 +41,3 @@ begin
   prepare stmt from @sql;
   execute stmt;
 END;$$
-
-
---call get_child_type_categoty(122);
