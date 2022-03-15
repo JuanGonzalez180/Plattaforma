@@ -152,6 +152,16 @@ class Notifications extends Model
                 $this->query_id = '';
             }
         }
+        else if($this->type == Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION && $this->notificationsable_type == Tenders::class)
+        {
+            $tender = Tenders::find($this->notificationsable_id);
+
+            if( $tender ){
+                $this->query_id = $tender->company->slug."/licitacion/".$tender->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
 
         return $this->query_id;
     }
