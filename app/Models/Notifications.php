@@ -201,7 +201,7 @@ class Notifications extends Model
         Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION => [ 
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
-            'message'   => 'Se ha actualizado una licitación en la que estás participando',
+            'message'   => 'Se ha creado una nueva adenda de la licitación',
         ],
         Notifications::NOTIFICATION_TENDERCOMPANY_OFFER => [ 
             'title'     => 'Licitación: %s', 
@@ -243,10 +243,8 @@ class Notifications extends Model
         $data['type']   = $type;
         $data['id']     = $query->id;
 
-        if( 
-            $type == Notifications::NOTIFICATION_TENDERSDECLINED || 
-            $type == Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION
-        ){
+        if( $type == Notifications::NOTIFICATION_TENDERSDECLINED )
+        {
             $title = sprintf($title, $query->name);
         }elseif( 
             $type == Notifications::NOTIFICATION_TENDERCOMPANYSELECTED
@@ -322,7 +320,12 @@ class Notifications extends Model
             $message    = sprintf($message, $query->name);
             $data['id'] = $query->id;
         }
-
+        elseif( $type == Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION ) //notificación cuando se crea una adenda de la licitación
+        {
+            $title      = sprintf($title, $query->name);
+            $message    = sprintf($message, $query->company->name);
+            $data['id'] = $query->company->slug."/licitacion/".$query->id;
+        }
 
         $usersIds = array_unique($usersIds);
 

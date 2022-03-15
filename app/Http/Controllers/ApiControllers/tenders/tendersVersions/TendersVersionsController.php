@@ -43,7 +43,7 @@ class TendersVersionsController extends ApiController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request) //crea nueva adenda de la licitación
     {
         $tender_id  = $request->tender_id;
         $files      = $request['files'];

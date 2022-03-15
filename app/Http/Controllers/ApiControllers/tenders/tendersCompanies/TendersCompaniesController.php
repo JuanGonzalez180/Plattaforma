@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\tenders\tendersCompanies;
 
 use JWTAuth;
+use App\Models\Team;
 use App\Models\Tenders;
 use App\Models\Company;
 use Illuminate\Http\Request;
@@ -52,92 +53,134 @@ class TendersCompaniesController extends ApiController
         return $this->showAllPaginate($companies);
     }
 
-    public function store( Request $request )
+    public function store( Request $request ) //envia invitaciones a la licitación
     {
         $tender_id = $request->tender_id;
         $companies = $request->companies_id;
 
         $user = $this->validateUser();
         
-
-        $tendersCompanies = [];
-        $tender                 = Tenders::findOrFail($tender_id);
-        $tendersCompaniesOld    = $tender->tenderCompanies;  
-
-        /*if( count($companies) + count($tender->tenderCompanies) < 3 ){
-            $tenderCompanyError = [ 'tenderVersion' => 'Error, Se debe seleccionar mínimo 3 compañías'];
-            return $this->errorResponse( $tenderCompanyError, 500 );
-        }*/
-
-        // Iniciar Transacción
         DB::beginTransaction();
 
-        if( $companies ){
-
-            foreach($companies as $company){
-
-                $tenderCompanyFields['tender_id']   = $tender_id;
-                $tenderCompanyFields['company_id']  = $company["id"];
-                $tenderCompanyFields['user_id']     = $user->id;
-                $tenderCompanyFields['status']      = TendersCompanies::STATUS_PROCESS;
-                
-                //estado por defecto a la compañia/s que se invitan a la licitación
-                // $tenderCompanyFields['status']     = TendersCompanies::STATUS_EARRING;
-
-                try{
-                    $tendersCompanies[] = TendersCompanies::create( $tenderCompanyFields );
-                } catch (\Throwable $th) {
-                    $errorTenderCompany = true;
-                    DB::rollBack();
-                    $tenderCompanyError = [ 'tenderVersion' => 'Error, no se ha podido crear la compania del tenders'];
-                    return $this->errorResponse( $tenderCompanyError, 500 );
-                }
-
-            }
-
-        }
-
+        //Licitación
         $tender                 = Tenders::findOrFail($tender_id);
+        //compañias que ya estan participando
+        $tendersCompaniesOld    = $tender->tenderCompanies; 
+        //registra las nuevas compañias a la licitación y obtiene una arreglo de las nuevas compañias
+        $tendersCompaniesNew    = ($companies)? $this->createTenderCompanies($tender, $companies) : []; 
+        
+        //Actualiza el estado de la licitación
         $tenderVersion          = $tender->tendersVersionLast();
         $tenderVersion->status  = TendersVersions::LICITACION_PUBLISH;
         $tenderVersion->save();
         DB::commit();
 
-        // Enviar invitación por correo y notificación
-        $notificationsIds = [];
-        foreach ($tendersCompanies as $key => $tenderCompany) {
-            $notificationsIds[] = $tenderCompany->company->user->id;
+        //Envia correos y notificaciones de invitación nuevas a participar
+        $this->sendMessageTenderInvitation($tendersCompaniesNew, $tender);
+        
+        //Envia correos y notificaciones a las compañia ya participantes
+        $this->sendMessageTenderVersión($tendersCompaniesOld, $tender);
+     
+        return $this->showOne($tender,201);
+    }
 
-            Mail::to($tenderCompany->company->user->email)->send(new SendInvitationTenderCompany(
-                $tender->name, 
-                $tenderVersion->adenda, 
+    public function sendMessageTenderInvitation($tenderCompanies, $tender)
+    {
+        $notifications = new Notifications();
+        
+        foreach ($tenderCompanies as $key => $tenderCompany)
+        {
+            //envia las notificaciones a los usuarios por compañia participante
+            $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERINVITECOMPANIES, $this->getTeamsCompanyIds($tenderCompany) );
+            //envia los correos a los usuarios por compañia participante
+            $this->sendEmailTenderInvitation($this->getTeamsCompanyEmails($tenderCompany), $tenderCompany);
+        }
+    }
+    
+    public function sendMessageTenderVersión($tenderCompanies, $tender)
+    {
+        $notifications = new Notifications();
+
+        foreach ($tenderCompanies as $key => $tenderCompany)
+        {
+            if($tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING)
+            {
+                //envia las notificaciones a los usuarios por compañia participante
+                $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION, $this->getTeamsCompanyIds($tenderCompany) );
+                //envia los correos a los usuarios por compañia participante
+                $this->sendEmailTenderVersion($this->getTeamsCompanyEmails($tenderCompany), $tenderCompany);
+            }
+        }
+    }
+
+    public function sendEmailTenderVersion($UserEmails, $tenderCompany)
+    {
+        foreach($UserEmails as $mail)
+        {
+            Mail::to($mail)->send(new SendUpdateTenderCompany(
+                $tenderCompany->tender->name, 
+                $tenderCompany->tender->tendersVersionLast()->adenda, 
                 $tenderCompany->company->name
             ));
         }
-        $notifications = new Notifications();
-        $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERINVITECOMPANIES, $notificationsIds );
-
-        // Enviar notificaciones a las compañías que ya estaban en el PROCESO.
-        $notificationsIdsVersion = [];
-        foreach ($tendersCompaniesOld as $key => $tenderCompany) {
-            if( 
-                !in_array( $tenderCompany->company_id, $companies ) && 
-                $tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING
-            ){
-                $notificationsIdsVersion[] = $tenderCompany->company->user->id;
-                // Correo
-                Mail::to($tenderCompany->company->user->email)->send(new SendUpdateTenderCompany(
-                    $tender->name, 
-                    $tenderVersion->adenda, 
-                    $tenderCompany->company->name
-                ));
-            }
+    }
+    
+    public function sendEmailTenderInvitation($UserEmails, $tenderCompany)
+    {
+        foreach($UserEmails as $mail)
+        {
+            Mail::to($mail)->send(new SendInvitationTenderCompany(
+                $tenderCompany->tender->name, 
+                $tenderCompany->tender->tendersVersionLast()->adenda, 
+                $tenderCompany->company->name
+            ));
         }
-        // $notifications = new Notifications();
-        // $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION, $tenderCompany->company->user->id );
+    }
 
-        // return $this->showOne($tendersCompanies,201);
-        return $this->showOne($tender,201);
+    public function createTenderCompanies($tender, $companies)
+    {
+        $user = $this->validateUser();
+        $tendersCompanies = [];
+
+        foreach($companies as $company)
+        {
+            $tenderCompanyFields['tender_id']   = $tender->id;
+            $tenderCompanyFields['company_id']  = $company["id"];
+            $tenderCompanyFields['user_id']     = $user->id;
+            $tenderCompanyFields['status']      = TendersCompanies::STATUS_PROCESS;
+            
+            $tendersCompanies[] = TendersCompanies::create( $tenderCompanyFields );
+        }
+
+        return $tendersCompanies;
+    }
+
+    public function getTeamsCompanyIds($tenderCompany)
+    {
+        $admin = $tenderCompany->company->user->id;
+        $teams = Team::where('company_id', $tenderCompany->company->id)
+            ->where('status', Team::TEAM_APPROVED)
+            ->pluck('user_id')
+            ->all();
+
+        return array_merge([$admin], $teams);
+    }
+
+    public function getTeamsCompanyEmails($tenderCompany)
+    {
+        $admin = $tenderCompany->company->user->email;
+        $teams = Team::where('teams.company_id', $tenderCompany->company->id)
+            ->where('teams.status', Team::TEAM_APPROVED)
+            ->join('users', 'users.id', '=', 'teams.user_id')
+            ->pluck('users.email')
+            ->all();
+
+        return array_merge([$admin], $teams);
+    }
+
+    public function sendEmailInvitationCompany($tenderCompany)
+    {
+
     }
 
     public function show($id)
@@ -147,6 +190,7 @@ class TendersCompaniesController extends ApiController
 
     public function update(Request $request, $id)
     {
+        // die;
         $user = $this->validateUser();
         $status = ($request->status == 'True')? TendersCompanies::STATUS_PARTICIPATING : TendersCompanies::STATUS_REJECTED;
 
