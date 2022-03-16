@@ -133,12 +133,11 @@ class TendersController extends ApiController
         DB::beginTransaction();
 
         // Datos
-        $tendersFields['name'] = $request['name'];
-        $tendersFields['description'] = $request['description'];
-        $tendersFields['user_id'] = $request['user'] ?? $user->id;
-        $tendersFields['company_id'] = $user->companyId();
-        $tendersFields['project_id'] = $request['project'];
-
+        $tendersFields['name']          = $request['name'];
+        $tendersFields['description']   = $request['description'];
+        $tendersFields['user_id']       = $request['user'] ?? $user->id;
+        $tendersFields['company_id']    = $user->companyId();
+        $tendersFields['project_id']    = $request['project'];
         // El campo Adenda quedará igual al nombre de la licitación por primera vez.
         $tendersVersionFields['adenda'] = $request['name'];
         $tendersVersionFields['price'] = $request['price'];
@@ -362,13 +361,9 @@ class TendersController extends ApiController
         $errorTender = false;
         try {
             $tenderStatus   = $tender->tendersVersionLast()->status;
-
-
-
             //-----1. borra todos los registros de compañias licitantes
             $tenderCompanies          = $tender->tenderCompanies->pluck('id');
             $companiesParticipate     = $this->getCompaniesParticipating($tenderCompanies);
-
             $this->deleteAllTenderCompanies($tenderCompanies);
             //-----2. Borra todas las versiones de la licitación-----
             $tenderVersions     = $tender->tendersVersion->pluck('id');
@@ -389,19 +384,26 @@ class TendersController extends ApiController
             return $this->errorResponse($tenderError, 500);
         }
 
-
-        if (!$errorTender) {
+        if (!$errorTender)
+        {
             DB::commit();
-            try {
-                //Envia los correos a las compañias licitantes
-                if ((in_array($tenderStatus, [TendersVersions::LICITACION_CREATED, TendersVersions::LICITACION_PUBLISH, TendersVersions::LICITACION_CLOSED])))
-                    $this->sendDeleteTenderCompanyEmail($tender->name, $companiesParticipate);
-            } catch (\Throwable $th) {
-            }
+
+            $this->sendDeleteTenderCompanyEmail($tender->name, $companiesParticipate);
         }
 
         return $this->showOne($tender, 200);
     }
+
+    public function getTendersCompanies($tender)
+    {
+        return TendersCompanies::where('tenders_companies.tender_id', $tender->id)
+            ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
+            ->where('companies.status','=',Company::COMPANY_APPROVED)
+            ->where('tenders_companies.status','=',TendersCompanies::STATUS_PARTICIPATING)
+            ->pluck('companies.id')
+            ->all(); 
+    }
+
 
     public function deleteAllAdvertising($tender_id)
     {

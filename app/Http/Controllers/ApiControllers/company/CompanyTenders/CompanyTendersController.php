@@ -181,10 +181,10 @@ class CompanyTendersController extends ApiController
             return $this->errorResponse($tenderCompanyError, 500);
         }
 
-        if (!in_array($user->id, [$tender_company->user_id, $company->adminCompany()])) {
-            $tenderCompanyError = ['tenderCompany' => 'Error, permiso para modificar la licitación de la ' . $user->id . 'compañia' . $tender_company->user_id];
-            return $this->errorResponse($tenderCompanyError, 500);
-        }
+        // if (!in_array($user->id, [$tender_company->user_id, $company->adminCompany()])) {
+        //     $tenderCompanyError = ['tenderCompany' => 'Error, permiso para modificar la licitación de la ' . $user->id . 'compañia' . $tender_company->user_id];
+        //     return $this->errorResponse($tenderCompanyError, 500);
+        // }
 
         $tenderCompanyFiels['price'] = $request->price;
 

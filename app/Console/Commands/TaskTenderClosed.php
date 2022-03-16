@@ -3,16 +3,19 @@
 namespace App\Console\Commands;
 
 use Carbon\Carbon;
+use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Notifications;
 use Illuminate\Console\Command;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
+use App\Traits\UsersCompanyTenders;
 use Illuminate\Support\Facades\Storage;
 
 class TaskTenderClosed extends Command
 {
+    use UsersCompanyTenders;
     /**
      * The name and signature of the console command.
      *
@@ -55,7 +58,6 @@ class TaskTenderClosed extends Command
             {
                 $tender->tendersVersionLast()->status = TendersVersions::LICITACION_CLOSED;
                 $tender->tendersVersionLast()->save();
-
                 //envia las notificaciones
                 $this->sendNotificationTenders($tender);
             };
@@ -80,27 +82,34 @@ class TaskTenderClosed extends Command
     }
 
     public function sendNotificationTenders($tender)
+    {     
+        $notifications      = new Notifications();
+        //notifica a las compañias licitantes, tanto para el admin de la compañia y a los integrantes del equipo
+        $this->sendNotificationTenderCompanyClose($tender);
+        //notifica al encargado de la notificación y al admin de la compañia
+        $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN,[$tender->user_id, $tender->company->user_id] );
+    }
+    
+    public function sendNotificationTenderCompanyClose($tender)
     {
-        //array de id de los usurios de las compañias licitantes
-        $tendersCompaniesUsers  = $this->getTendersCompaniesUsers($tender);
+        $companies = Company::whereIn('id',$this->getTendersCompanies($tender))
+            ->get();
+        
+        $notifications      = new Notifications();
 
-        if($tendersCompaniesUsers)
+        foreach($companies as $company)
         {
-            $notifications      = new Notifications();
-
-            //notifica a las empresas participantes de la licitación
-            $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED, $tendersCompaniesUsers);
-            //notifica al encargado de la notificación y al admin de la compañia
-            $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN,[$tender->user_id, $tender->company->user_id] );
+            $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED, $this->getTeamsCompanyUsers($company,'id'));
         }
     }
 
-    public function getTendersCompaniesUsers($tender)
+    public function getTendersCompanies($tender)
     {
         return TendersCompanies::where('tenders_companies.tender_id', $tender->id)
             ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
+            ->where('companies.status','=',Company::COMPANY_APPROVED)
             ->where('tenders_companies.status','=',TendersCompanies::STATUS_PARTICIPATING)
-            ->pluck('companies.user_id')
+            ->pluck('companies.id')
             ->all(); 
     }
 

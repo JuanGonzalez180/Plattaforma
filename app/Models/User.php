@@ -22,14 +22,14 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable, Billable;
 
-    const USER_VERIFIED = '1';
-    const USER_NO_VERIFIED = '0';
+    const USER_VERIFIED     = '1';
+    const USER_NO_VERIFIED  = '0';
 
-    const USER_VALIDATED = '1';
+    const USER_VALIDATED    = '1';
     const USER_NO_VALIDATED = '0';
 
-    const USER_ADMIN = 'true';
-    const USER_REGULAR = 'false';
+    const USER_ADMIN        = 'true';
+    const USER_REGULAR      = 'false';
 
     /**
      * The attributes that are mass assignable.

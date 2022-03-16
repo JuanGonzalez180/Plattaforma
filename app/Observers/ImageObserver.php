@@ -17,11 +17,12 @@ class ImageObserver
     public function created(Image $image)
     {
         Image::where('url', $image->url)
-                ->where('imageable_id', $image->imageable_id)
-                ->where('imageable_type', $image->imageable_type)
-                ->where('created_at', $image->created_at)
-                ->where('updated_at', $image->updated_at)
-                ->update(['size' => Storage::disk('local')->size($this->routeFile.$image->url)]);
+            ->where('imageable_id', $image->imageable_id)
+            ->where('imageable_type', $image->imageable_type)
+            ->where('created_at', $image->created_at)
+            ->where('updated_at', $image->updated_at)
+            ->update(['size' => Storage::disk('local')
+            ->size($this->routeFile.$image->url)]);
     }
 
     /**
@@ -33,11 +34,12 @@ class ImageObserver
     public function updated(Image $image)
     {
         Image::where('url', $image->url)
-                ->where('imageable_id', $image->imageable_id)
-                ->where('imageable_type', $image->imageable_type)
-                ->where('created_at', $image->created_at)
-                ->where('updated_at', $image->updated_at)
-                ->update(['size' => Storage::disk('local')->size($this->routeFile.$image->url)]);
+            ->where('imageable_id', $image->imageable_id)
+            ->where('imageable_type', $image->imageable_type)
+            ->where('created_at', $image->created_at)
+            ->where('updated_at', $image->updated_at)
+            ->update(['size' => Storage::disk('local')
+            ->size($this->routeFile.$image->url)]);
     }
 
     /**

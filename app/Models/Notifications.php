@@ -15,6 +15,7 @@ class Notifications extends Model
     use HasFactory;
     public $transformer = NotificationsTransformer::class;
     
+    const NOTIFICATION_TENDER_DELETE                = 'TendersDelete'; //notificación cuando se elimina una licitación
     const NOTIFICATION_TENDERSDECLINED              = 'TendersDeclined';
     const NOTIFICATION_TENDERCOMPANYSELECTED        = 'TenderCompanySelected';
     const NOTIFICATION_TENDERINVITECOMPANIES        = 'TenderInviteCompanies';
@@ -162,6 +163,10 @@ class Notifications extends Model
                 $this->query_id = '';
             }
         }
+        else if($this->type == Notifications::NOTIFICATION_TENDER_DELETE && $this->notificationsable_type == Tenders::class)
+        {
+            $this->query_id = '';
+        }
 
         return $this->query_id;
     }
@@ -238,6 +243,11 @@ class Notifications extends Model
             'subtitle'  => '', 
             'message'   => 'La licitación %s se ha cerrado, procede a evaluar la licitación.',
         ],
+        Notifications::NOTIFICATION_TENDER_DELETE => [ 
+            'title'     => 'Licitación: Lic. %s', 
+            'subtitle'  => '', 
+            'message'   => 'El administrador de la licitación Licitación %s ha decidido cerrar y eliminar la licitación.',
+        ]
     ];
 
     public function registerNotificationQuery( $query, $type, $usersIds, $params = [] ){
@@ -335,6 +345,11 @@ class Notifications extends Model
             $title      = sprintf($title, $query->name);
             $message    = sprintf($message, $query->company->name);
             $data['id'] = $query->company->slug."/licitacion/".$query->id;
+        }
+        elseif( $type == Notifications::NOTIFICATION_TENDER_DELETE ) //notificación se borra una licitación
+        {
+            $title      = sprintf($title, $query->name);
+            $message    = sprintf($message, $query->company->name);
         }
 
         $usersIds = array_unique($usersIds);

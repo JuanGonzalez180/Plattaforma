@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\ApiControllers\tenders\tendersCompanies;
 
 use JWTAuth;
-use App\Models\Team;
 use App\Models\Tenders;
 use App\Models\Company;
 use Illuminate\Http\Request;
@@ -11,14 +10,17 @@ use App\Models\Notifications;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
+use App\Traits\UsersCompanyTenders;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\SendUpdateTenderCompany;
 use App\Mail\sendRespondTenderCompany;
 use App\Mail\SendInvitationTenderCompany;
-use App\Mail\SendUpdateTenderCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersCompaniesController extends ApiController
 {
+    use UsersCompanyTenders;
+
     public function validateUser(){
         try {
             $this->user = JWTAuth::parseToken()->authenticate();
@@ -91,9 +93,9 @@ class TendersCompaniesController extends ApiController
         foreach ($tenderCompanies as $key => $tenderCompany)
         {
             //envia las notificaciones a los usuarios por compañia participante
-            $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERINVITECOMPANIES, $this->getTeamsCompanyIds($tenderCompany) );
+            $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERINVITECOMPANIES, $this->getTeamsCompanyUsers($tenderCompany->company, 'id') );
             //envia los correos a los usuarios por compañia participante
-            $this->sendEmailTenderInvitation($this->getTeamsCompanyEmails($tenderCompany), $tenderCompany);
+            $this->sendEmailTenderInvitation($this->getTeamsCompanyUsers($tenderCompany->company, 'email'), $tenderCompany);
         }
     }
     
@@ -106,9 +108,9 @@ class TendersCompaniesController extends ApiController
             if($tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING)
             {
                 //envia las notificaciones a los usuarios por compañia participante
-                $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION, $this->getTeamsCompanyIds($tenderCompany) );
+                $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION, $this->getTeamsCompanyUsers($tenderCompany->company, 'id') );
                 //envia los correos a los usuarios por compañia participante
-                $this->sendEmailTenderVersion($this->getTeamsCompanyEmails($tenderCompany), $tenderCompany);
+                $this->sendEmailTenderVersion($this->getTeamsCompanyUsers($tenderCompany->company, 'email'), $tenderCompany);
             }
         }
     }
@@ -153,34 +155,6 @@ class TendersCompaniesController extends ApiController
         }
 
         return $tendersCompanies;
-    }
-
-    public function getTeamsCompanyIds($tenderCompany)
-    {
-        $admin = $tenderCompany->company->user->id;
-        $teams = Team::where('company_id', $tenderCompany->company->id)
-            ->where('status', Team::TEAM_APPROVED)
-            ->pluck('user_id')
-            ->all();
-
-        return array_merge([$admin], $teams);
-    }
-
-    public function getTeamsCompanyEmails($tenderCompany)
-    {
-        $admin = $tenderCompany->company->user->email;
-        $teams = Team::where('teams.company_id', $tenderCompany->company->id)
-            ->where('teams.status', Team::TEAM_APPROVED)
-            ->join('users', 'users.id', '=', 'teams.user_id')
-            ->pluck('users.email')
-            ->all();
-
-        return array_merge([$admin], $teams);
-    }
-
-    public function sendEmailInvitationCompany($tenderCompany)
-    {
-
     }
 
     public function show($id)
