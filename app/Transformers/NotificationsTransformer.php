@@ -41,6 +41,7 @@ class NotificationsTransformer extends TransformerAbstract
             'type'=> (string)$notification->type,
             'subtitle'=> (string)$notification->subtitle,
             'message'=> (string)$notification->message,
+            'viewed'=> (boolean)$notification->viewed,
             'created_at'=> (string)$notification->created_at,
             'updated_at'=> (string)$notification->updated_at,
         ];

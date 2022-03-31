@@ -16,6 +16,7 @@ class Team extends Model
 
     protected $perPage = 9;
 
+
     public $transformer = TeamTransformer::class;
     const TRANSFORMER_TEAM_COMPANY = TeamDetailTransformer::class;
 
@@ -24,10 +25,10 @@ class Team extends Model
         'company_id',
         'position',
         'phone',
-        'status',
+        'status'
     ];
 
-    const TEAM_PENDING = 'Pendiente';
+    const TEAM_PENDING  = 'Pendiente';
     const TEAM_APPROVED = 'Aprobado';
 
     public function user(){

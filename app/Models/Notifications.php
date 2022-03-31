@@ -44,7 +44,8 @@ class Notifications extends Model
         'subtitle',
         'message',
         'user_id',
-        'type'
+        'type',
+        'viewed'
     ];
 
     protected $hidden = [
@@ -206,7 +207,8 @@ class Notifications extends Model
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
             'message'   => 'Ha sido aprobada la solicitud', 
-            'message2'  => 'Ha sido rechazada la solicitud', 
+            // 'message2'  => 'Ha sido rechazada la solicitud', 
+            'message2'  => 'La solicitud no fue aprobada', 
         ],
         Notifications::NOTIFICATION_TENDERCOMPANYPARTICIPATE => [ 
             'title'     => 'Licitación: %s', 

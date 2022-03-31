@@ -59,6 +59,7 @@ class TendersTransformer extends TransformerAbstract
             'tendersVersionLast'=> $tender->tendersVersionLast(),
             'tendersList'=> $tender->tendersVersion,
             'tendersVersionLastPublish'=> $tender->tendersVersionLastPublish(),
+            'tenderStatusUser'=> $tender->tenderStatusUser(),
             'tendersVersionCount'=> count($tender->tendersVersion),
         ];
     }
@@ -94,6 +95,7 @@ class TendersTransformer extends TransformerAbstract
             'tendersVersionLastPublish'=> $tender->tendersVersionLastPublish(),
             'tendersVersionCount'=> count($tender->tendersVersion),
             'tendersVersionList'=> $tender->tendersVersion->sortBy([ ['created_at', 'desc'] ]),
+            'tenderStatusUser'=> $tender->tenderStatusUser(),
         ];
     }
 }

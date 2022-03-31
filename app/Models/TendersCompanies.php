@@ -27,6 +27,8 @@ class TendersCompanies extends Model
     const TYPE_INTERESTED       = 'Interesado';
     const TYPE_INVITED          = 'Invitado';
     
+    const STATUS_EARRING_INVITATION  = 'Solicitud Pendiente'; //cuando el admin de la licitación acepta la solicitud
+
     const STATUS_EARRING        = 'Pendiente';
     const STATUS_PARTICIPATING  = 'Participando';
     const STATUS_REJECTED       = 'Rechazado';
@@ -34,6 +36,9 @@ class TendersCompanies extends Model
     
     const WINNER_TRUE           = 'true';
     const WINNER_FALSE          = 'false';
+
+    const PERCENTAGE_COMMISSION = 'porcentaje';
+    const VALUE_COMMISSION      = 'valor';
 
 
     protected $fillable = [
@@ -43,7 +48,8 @@ class TendersCompanies extends Model
         'type',
         'price',
         'status',
-        'winner'
+        'winner',
+        'commission'
     ];
 
     public function tender(){

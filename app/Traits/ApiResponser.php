@@ -62,6 +62,22 @@ trait ApiResponser{
         return $this->successResponse($collection, $code);
     }
 
+    protected function showAllPaginateSetTotal(Collection $collection, $code = 200, $total){
+        if( $collection->isEmpty() ){
+            return $this->successResponse(['data'=>$collection], $code);    
+        }
+
+        $transformer = $collection->first()->transformer;
+
+        $collection = $this->paginate($collection);
+        $collection = $this->transformData($collection, $transformer);
+
+
+        $collection["meta"]["pagination"]["total"] = $total;
+
+        return $this->successResponse($collection, $code);
+    }
+
     protected function showAllPaginateSetTransformer(Collection $collection, $transformer, $code = 200){
 
         if( $collection->isEmpty() ){

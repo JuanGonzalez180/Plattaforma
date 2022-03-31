@@ -255,6 +255,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
      * Tenders
      */
     Route::resource('/tenders', TendersController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('tenders');
+    Route::get('/tender/type/all', [TendersController::class, 'tenderTypeAll'])->name('tender-type-all');
     /**
      * Company
      */
@@ -315,9 +316,6 @@ Route::group(['middleware' => ['jwt.verify']], function () {
      */
     Route::post('/advertisings/random', RandomAdvertisingsController::class)->name('advertisings-random');
 
-
-
-
     // Route::resource('/search/items/parameters', SearchParameterController::class, ['only' => ['index']])->names('search-parameter');
     Route::post('/search/items/parameters', SearchItemController::class)->name('search-parameter');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
@@ -331,7 +329,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 
     // Notifications 
     Route::resource('/tokens', UsersTokensController::class, ['only' => ['store']])->names('tokens');
-    Route::resource('/notifications', NotificationsController::class, ['only' => ['index', 'destroy']])->names('notifications');
+    Route::resource('/notifications', NotificationsController::class, ['only' => ['index', 'destroy','update']])->names('notifications');
 
     // Chat
     Route::resource('/chats', ChatController::class, ['only' => ['index', 'store']])->names('chats');

@@ -60,6 +60,9 @@ class SearchItemController extends ApiController
 
     public function __invoke(Request $request)
     {
+
+        
+
         $user       = $this->validateUser();
         $type_user  = $user->userType();
 

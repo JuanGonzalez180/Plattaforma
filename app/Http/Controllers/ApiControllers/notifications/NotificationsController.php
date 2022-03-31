@@ -23,12 +23,25 @@ class NotificationsController extends ApiController
     }
 
     public function index(){
-        $user = $this->validateUser();
-        
-        $notifications = $user->notifications
-                              ->sortBy([ ['created_at', 'desc'] ]);
 
-        return $this->showAllPaginate($notifications);
+        $user = $this->validateUser();
+
+        //no vistas
+        $notificationsNotViewed = $this->getNotification($user->id, 0);
+        //vistas
+        $notificationsViewed    = $this->getNotification($user->id, 1);
+
+        $notifications = $notificationsNotViewed->merge($notificationsViewed);
+
+        return $this->showAllPaginateSetTotal($notifications, 200, $notificationsNotViewed->count());
+    }
+
+    public function getNotification($user_id,$status)
+    {
+        return Notifications::where('user_id', $user_id)
+            ->where('viewed',$status)
+            ->orderBy('created_at','desc')
+            ->get();
     }
     
     public function destroy($id)
@@ -40,5 +53,14 @@ class NotificationsController extends ApiController
         $notification->delete();
 
         return $this->showOneData( ['success' => 'Se ha eliminado correctamente la notificación', 'code' => 200 ], 200);
+    }
+
+    public function update($id)
+    {
+        $notification = Notifications::find($id);
+        $notification->viewed = 1;
+        $notification->save();
+
+        return $this->showOne($notification,200);
     }
 }

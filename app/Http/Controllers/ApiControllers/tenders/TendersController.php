@@ -511,4 +511,12 @@ class TendersController extends ApiController
         Proponents::where('licitacion_id', $id)
             ->delete();
     }
+
+    public function tenderTypeAll()
+    {
+        return [
+            Tenders::TYPE_PUBLIC,
+            Tenders::TYPE_PRIVATE
+        ];
+    }
 }

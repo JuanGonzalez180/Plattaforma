@@ -67,7 +67,7 @@ class CompanyController extends ApiController
             'user_name'         => 'required',
             'lastname'          => 'nullable',
             'email'             => 'required|email|unique:users',
-            'name'              => ['required', 'regex:/^[a-zA-Z0-9\s.&]*$/'],
+            'name'              => 'required',
             'nit'               => 'nullable',
             'password'          => 'required|min:6|confirmed',
             'terms'             => 'required',

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use JWTAuth;
 use App\Models\Tags;
 use App\Models\User;
 use App\Models\Company;
@@ -23,13 +24,25 @@ class Tenders extends Model
 
     public $transformer = TendersTransformer::class;
 
+    const TYPE_PUBLIC   = 'Publico';
+    const TYPE_PRIVATE  = 'Privado';
+
     protected $fillable = [
         'name',
         'description',
         'project_id',
         'company_id',
-        'user_id'
+        'user_id',
+        'type'
     ];
+
+    public function validateUser(){
+        try {
+            $this->user = JWTAuth::parseToken()->authenticate();
+        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+        }
+        return $this->user;
+    }
 
     public function project(){
         return $this->belongsTo(Projects::class);
@@ -124,6 +137,17 @@ class Tenders extends Model
     // Relacion uno a muchos polimorfica
     public function interests(){
         return $this->morphMany(Interests::class, 'interestsable');
+    }
+
+    public function tenderStatusUser()
+    {
+        $status = Tenders::select('tenders_companies.status')
+            ->where('tenders.id',$this->id)
+            ->join('tenders_companies', 'tenders_companies.tender_id', '=', 'tenders.id')
+            ->where('tenders_companies.company_id', $this->validateUser()->companyId())
+            ->value('tenders_companies.status');
+
+        return $status;
     }
 
 }

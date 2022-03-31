@@ -186,7 +186,8 @@ class CompanyTendersController extends ApiController
         //     return $this->errorResponse($tenderCompanyError, 500);
         // }
 
-        $tenderCompanyFiels['price'] = $request->price;
+        $tenderCompanyFiels['price']        = $request->price;
+        $tenderCompanyFiels['commission']  = $request->commission;
 
         DB::beginTransaction();
 

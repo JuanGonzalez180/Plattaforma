@@ -41,7 +41,7 @@ class TendersCompaniesListController extends ApiController
 
 
         $tenders_company = TendersCompanies::where('company_id', $company_id)
-            ->where('status','<>',TendersCompanies::STATUS_EARRING)
+            // ->where('status','<>',TendersCompanies::STATUS_EARRING)
             ->orderBy('updated_at','desc')
             ->get();
 

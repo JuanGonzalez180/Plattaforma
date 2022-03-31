@@ -32,6 +32,8 @@ class Projects extends Model
     //STATUS
     const TECHNICAL_SPECIFICATIONS      = 'especificaciones-tecnicas';
     const IN_CONSTRUCTION               = 'en-construccion';
+    const POST_CONSTRUCTION             = 'Post Construcción';
+    const MAINTENANCE                   = 'Mantenimiento';
 
     //STATUS DATE
     const NOT_STARTED   = 'No iniciada'; //Cuando la fecha del proyecto es menor a la fecha de inicio.
