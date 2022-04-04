@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\querywall;
 
 use JWTAuth;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Tenders;
 use App\Models\QueryWall;
@@ -79,9 +80,10 @@ class tenderQueryAnswerController extends ApiController
             if($request['visible']) {
                 $queryFields['visible'] = $request['visible'];
             } else {
-                $queryFields['answer'] = $request['answer'];
-                $queryFields['status'] = QueryWall::QUERYWALL_ANSWERED;
-                $queryFields['user_answer_id'] = $user->id;
+                $queryFields['answer']          = $request['answer'];
+                $queryFields['date_answer']     = Carbon::now();
+                $queryFields['status']          = QueryWall::QUERYWALL_ANSWERED;
+                $queryFields['user_answer_id']  = $user->id;
             }
             try
             {

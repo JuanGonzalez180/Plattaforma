@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\querywall;
 
 use JWTAuth;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Tenders;
 use App\Models\QueryWall;
@@ -61,12 +62,13 @@ class tenderQueryQuestionController extends ApiController
         DB::beginTransaction();
 
         $questionFields = $request->all();
-        $questionFields['querysable_id']    = $request->tender_id;
-        $questionFields['querysable_type']  = Tenders::class;
-        $questionFields['company_id']       = $company_id;
-        $questionFields['user_id']          = $user->id;
-        $questionFields['question']         = $request->question;
-        $questionFields['status']           = QueryWall::QUERYWALL_PUBLISH;
+        $questionFields['querysable_id']        = $request->tender_id;
+        $questionFields['querysable_type']      = Tenders::class;
+        $questionFields['company_id']           = $company_id;
+        $questionFields['user_id']              = $user->id;
+        $questionFields['question']             = $request->question;
+        $questionFields['date_questions']       = Carbon::now();
+        $questionFields['status']               = QueryWall::QUERYWALL_PUBLISH;
 
         try{
             $question = QueryWall::create( $questionFields );

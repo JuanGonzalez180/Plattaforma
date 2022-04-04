@@ -4,6 +4,7 @@ namespace App\Transformers;
 
 use App\Models\User;
 use League\Fractal\TransformerAbstract;
+use App\Transformers\CompanyTransformer;
 
 class UserTransformer extends TransformerAbstract
 {
@@ -32,14 +33,16 @@ class UserTransformer extends TransformerAbstract
      */
     public function transform(User $user)
     {
+        $companyTransformer = new CompanyTransformer();
+
         return [
-            //
             'id' => (int)$user->id,
             'name' => (string)$user->name,
             'lastname'=> (string)$user->lastname,
             'created_at'=> (string)$user->created_at,
             'updated_at'=> (string)$user->updated_at,
-            'url'=> (string)$user->image ? url( 'storage/' . $user->image->url ) : ''
+            'url'=> (string)$user->image ? url( 'storage/' . $user->image->url ) : '',
+            'company' => ($user->companyFull())? $companyTransformer->transform($user->companyFull()) : null,
         ];
     }
 }

@@ -37,6 +37,7 @@ class QueryWallTransformer extends TransformerAbstract
     public function transform(QueryWall $querywall)
     {
         $userTransform = new UserTransformer();
+        
 
         return [
             'id' => (int)$querywall->id,
@@ -45,7 +46,9 @@ class QueryWallTransformer extends TransformerAbstract
             'company_id'=> (int)$querywall->company_id,
             'company'=> $querywall->company,
             'question'=> (string)$querywall->question,
+            'date_answer'=> (string)$querywall->date_answer,
             'answer'=> (string)$querywall->answer,
+            'date_questions'=> (string)$querywall->date_questions,
             'user_id'=> (int)$querywall->user_id,
             'user'=> $userTransform->transform($querywall->user),
             'user_answer'=> ($querywall->user_answer)? $userTransform->transform($querywall->user_answer) : null,

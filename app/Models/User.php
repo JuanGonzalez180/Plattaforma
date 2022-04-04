@@ -153,6 +153,18 @@ class User extends Authenticatable implements JWTSubject
         return 0;
     }
 
+    public function companyFull()
+    {
+        if (count($this->company) && $this->company[0]) {
+            $company = $this->company[0];
+            return $company;
+        } elseif ($this->team) {
+            return $this->team->company;
+        }
+
+        return 0;
+    }
+
     public function companyName()
     {
         if (count($this->company) && $this->company[0]) {
