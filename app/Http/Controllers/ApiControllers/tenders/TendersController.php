@@ -53,14 +53,13 @@ class TendersController extends ApiController
         //IS ADMIN
         $companyID = $user->companyId();
 
-        if ($companyID && $user->userType() == 'demanda') {
-
-
+        if ($companyID && $user->userType() == 'demanda')
+        {
             if ($user->isAdminFrontEnd()) {
-                $tenders = Tenders::select('tenders.id', 'tenders.name', 'tenders.description', 'tenders.project_id', 'tenders.company_id', 'tenders.user_id', 'tenders.date_update', 'tenders.created_at', 'tenders.updated_at')
+                $tenders = Tenders::select('tenders.id', 'tenders.name', 'tenders.type', 'tenders.description', 'tenders.project_id', 'tenders.company_id', 'tenders.user_id', 'tenders.date_update', 'tenders.created_at', 'tenders.updated_at')
                     ->where('tenders.company_id', $companyID);
             } else {
-                $tenders = Tenders::select('tenders.id', 'tenders.name', 'tenders.description', 'tenders.project_id', 'tenders.company_id', 'tenders.user_id', 'tenders.date_update', 'tenders.created_at', 'tenders.updated_at')
+                $tenders = Tenders::select('tenders.id', 'tenders.name', 'tenders.type', 'tenders.description', 'tenders.project_id', 'tenders.company_id', 'tenders.user_id', 'tenders.date_update', 'tenders.created_at', 'tenders.updated_at')
                     ->where('tenders.user_id', $user->id)
                     ->where('tenders.company_id', $companyID);
             }
@@ -92,7 +91,7 @@ class TendersController extends ApiController
                 });
             }
 
-            $tenders = $tenders->groupBy('tenders.id', 'tenders.name', 'tenders.description', 'tenders.project_id', 'tenders.company_id', 'tenders.user_id', 'tenders.date_update', 'tenders.created_at', 'tenders.updated_at')
+            $tenders = $tenders->groupBy('tenders.id', 'tenders.name', 'tenders.type', 'tenders.description', 'tenders.project_id', 'tenders.company_id', 'tenders.user_id', 'tenders.date_update', 'tenders.created_at', 'tenders.updated_at')
                 ->get();
 
             return $this->showAllPaginate($tenders);

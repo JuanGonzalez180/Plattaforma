@@ -62,7 +62,7 @@ class TendersTransformer extends TransformerAbstract
             'tenderStatusUser'=> $tender->tenderStatusUser(),
             'slugTender'     => (string)$tender->company->slug,
             'tendersVersionCount'=> count($tender->tendersVersion),
-            'tenderType'=> (string)$tender->type
+            'tenderType'=> $tender->type
         ];
     }
 

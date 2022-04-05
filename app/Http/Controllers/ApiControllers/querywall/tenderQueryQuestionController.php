@@ -41,6 +41,7 @@ class tenderQueryQuestionController extends ApiController
             ->get();   
 
         return $this->showAllPaginate($queryWalls);
+        // return $this->showAll($queryWalls);
     }
 
     public function store(Request $request)
