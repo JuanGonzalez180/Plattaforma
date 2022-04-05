@@ -37,7 +37,7 @@ class TendersMyCompanyTransformer extends TransformerAbstract
         return [
             'id'                    => (int)$tendersCompanies->id,
             'tender_id'             => (int)$tendersCompanies->tender->id,
-            'tender_type'           => (int)$tendersCompanies->tender->type,
+            'tender_type'           => (string)$tendersCompanies->tender->type,
             'company_id'            => (int)$tendersCompanies->company_id,
             'slug_company'          => (string)$tendersCompanies->company->slug,
             'slug_tender'           => (string)$tendersCompanies->tender->company->slug,
