@@ -53,8 +53,7 @@ class TendersController extends ApiController
         //IS ADMIN
         $companyID = $user->companyId();
 
-        if ($companyID && $user->userType() == 'demanda')
-        {
+        if ($companyID && $user->userType() == 'demanda') {
             if ($user->isAdminFrontEnd()) {
                 $tenders = Tenders::select('tenders.id', 'tenders.name', 'tenders.type', 'tenders.description', 'tenders.project_id', 'tenders.company_id', 'tenders.user_id', 'tenders.date_update', 'tenders.created_at', 'tenders.updated_at')
                     ->where('tenders.company_id', $companyID);
@@ -383,8 +382,7 @@ class TendersController extends ApiController
             return $this->errorResponse($tenderError, 500);
         }
 
-        if (!$errorTender)
-        {
+        if (!$errorTender) {
             DB::commit();
 
             $this->sendDeleteTenderCompanyEmail($tender->name, $companiesParticipate);
@@ -397,10 +395,10 @@ class TendersController extends ApiController
     {
         return TendersCompanies::where('tenders_companies.tender_id', $tender->id)
             ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
-            ->where('companies.status','=',Company::COMPANY_APPROVED)
-            ->where('tenders_companies.status','=',TendersCompanies::STATUS_PARTICIPATING)
+            ->where('companies.status', '=', Company::COMPANY_APPROVED)
+            ->where('tenders_companies.status', '=', TendersCompanies::STATUS_PARTICIPATING)
             ->pluck('companies.id')
-            ->all(); 
+            ->all();
     }
 
 
