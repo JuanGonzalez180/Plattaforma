@@ -315,15 +315,6 @@ class SearchItemControllerOld extends ApiController
 
     public function statusProjects($projects, $filters)
     {
-        // if ($filters && isset($filters['status'])) {
-        //     if ($filters['status'] == 'especificaciones-tecnicas') {
-        //         $projects = $projects->where('status', '=', 'especificaciones-tecnicas');
-        //     } elseif ($filters['status'] == 'en-construccion') {
-        //         $projects = $projects->where('status', '=', 'en-construccion');
-        //     }
-        // }
-
-        // return $projects;
         if ($filters && isset($filters['status']))
         {
             switch ($filters['status'])
@@ -334,11 +325,8 @@ class SearchItemControllerOld extends ApiController
                 case Projects::IN_CONSTRUCTION:
                     $projects = $projects->where('status', '=', Projects::IN_CONSTRUCTION);
                     break;
-                case Projects::POST_CONSTRUCTION:
-                    $projects = $projects->where('status', '=', Projects::POST_CONSTRUCTION);
-                    break;
-                case Projects::MAINTENANCE:
-                    $projects = $projects->where('status', '=', Projects::MAINTENANCE);
+                case Projects::POST_CONSTRUCTION_AND_MAINTENANCE:
+                    $projects = $projects->where('status', '=', Projects::POST_CONSTRUCTION_AND_MAINTENANCE);
                     break;
             }
         }

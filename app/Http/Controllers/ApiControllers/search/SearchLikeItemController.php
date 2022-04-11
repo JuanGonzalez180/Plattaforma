@@ -177,11 +177,8 @@ class SearchLikeItemController extends ApiController
                 case Projects::IN_CONSTRUCTION:
                     $projects = $projects->where('status', '=', Projects::IN_CONSTRUCTION);
                     break;
-                case Projects::POST_CONSTRUCTION:
-                    $projects = $projects->where('status', '=', Projects::POST_CONSTRUCTION);
-                    break;
-                case Projects::MAINTENANCE:
-                    $projects = $projects->where('status', '=', Projects::MAINTENANCE);
+                case Projects::POST_CONSTRUCTION_AND_MAINTENANCE:
+                    $projects = $projects->where('status', '=', Projects::POST_CONSTRUCTION_AND_MAINTENANCE);
                     break;
             }
         }

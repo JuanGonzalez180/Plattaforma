@@ -30,10 +30,9 @@ class Projects extends Model
     const PROJECTS_PUBLISH  = 'Publicado';
 
     //STATUS
-    const TECHNICAL_SPECIFICATIONS      = 'especificaciones-tecnicas';
-    const IN_CONSTRUCTION               = 'en-construccion';
-    const POST_CONSTRUCTION             = 'post-construcción';
-    const MAINTENANCE                   = 'mantenimiento';
+    const TECHNICAL_SPECIFICATIONS              = 'especificaciones-tecnicas';
+    const IN_CONSTRUCTION                       = 'en-construccion';
+    const POST_CONSTRUCTION_AND_MAINTENANCE     = 'post-construcción-&-mantenimiento';
 
     //STATUS DATE
     const NOT_STARTED   = 'No iniciada'; //Cuando la fecha del proyecto es menor a la fecha de inicio.
