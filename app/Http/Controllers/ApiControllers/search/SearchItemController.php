@@ -667,7 +667,9 @@ class SearchItemController extends ApiController
             $status = Projects::TECHNICAL_SPECIFICATIONS;
         } else if ($status == Projects::IN_CONSTRUCTION) {
             $status = Projects::IN_CONSTRUCTION;
-        }
+        } else if ($status == Projects::POST_CONSTRUCTION_AND_MAINTENANCE) {
+            $status = Projects::POST_CONSTRUCTION_AND_MAINTENANCE;
+        } 
 
         return Projects::whereIn('id', $projects)
             ->where('projects.status', '=', $status)
@@ -680,7 +682,9 @@ class SearchItemController extends ApiController
             $status = Projects::TECHNICAL_SPECIFICATIONS;
         } else if ($status == Projects::IN_CONSTRUCTION) {
             $status = Projects::IN_CONSTRUCTION;
-        }
+        } else if ($status == Projects::POST_CONSTRUCTION_AND_MAINTENANCE) {
+            $status = Projects::POST_CONSTRUCTION_AND_MAINTENANCE;
+        } 
 
         return Projects::where('projects.status', '=', $status)
             ->join('tenders', 'tenders.project_id', '=', 'projects.id')
