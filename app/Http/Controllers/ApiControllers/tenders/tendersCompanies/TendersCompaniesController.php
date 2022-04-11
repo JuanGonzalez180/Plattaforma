@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\tenders\tendersCompanies;
 
 use JWTAuth;
+use App\Models\User;
 use App\Models\Tenders;
 use App\Models\Company;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ use App\Traits\UsersCompanyTenders;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendUpdateTenderCompany;
 use App\Mail\sendRespondTenderCompany;
+use App\Models\TemporalInvitationCompany;
 use App\Mail\SendInvitationTenderCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -82,8 +84,53 @@ class TendersCompaniesController extends ApiController
         
         //Envia correos y notificaciones a las compañia ya participantes
         $this->sendMessageTenderVersión($tendersCompaniesOld, $tender);
+
+
+        //Envia correos de invitación a compañia que no estan registradas en plattaforma
+        if($request->companies_email)
+        {
+            $this->sendInvitantionExternalCompanies($request->companies_email, $tender);
+        }
      
         return $this->showOne($tender,201);
+    }
+
+    public function sendInvitantionExternalCompanies($emails, $tender)
+    {
+        foreach ($emails as $key => $email)
+        {
+            if(!($this->emailExistUser($email)))
+            {
+                if(!($this->invitationTenderExist($email, $tender)))
+                    $this->createTemporalInvitationCompany($email, $tender);
+            }
+        }
+    }
+
+    public function createTemporalInvitationCompany($email, $tender)
+    {
+        $fields['tender_id']    = $tender->id;
+        $fields['email']        = $email;
+        
+        TemporalInvitationCompany::create( $fields );
+    }
+
+    public function invitationTenderExist($email, $tender)
+    {
+        return TemporalInvitationCompany::where('tender_id','=',  $tender->id)
+            ->where(strtolower('email'), '=', strtolower($email))
+            ->exists();
+    }
+
+    public function tenderCompanyExist($email, $tender)
+    {
+
+    }
+
+    public function emailExistUser($email)
+    {
+        return User::where('email', '=', $email)
+            ->exists();
     }
 
     public function sendMessageTenderInvitation($tenderCompanies, $tender)

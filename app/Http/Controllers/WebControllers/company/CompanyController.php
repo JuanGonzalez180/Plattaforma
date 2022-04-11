@@ -10,10 +10,13 @@ use App\Mail\BannedAccount;
 use Illuminate\Http\Request;
 use App\Mail\UnbannedAccount;
 use App\Mail\RejectedAccount;
+use App\Models\Notifications;
 use App\Mail\ValidatedAccount;
 use Illuminate\Validation\Rule;
+use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
+use App\Models\TemporalInvitationCompany;
 
 class CompanyController extends Controller
 {
@@ -109,28 +112,62 @@ class CompanyController extends Controller
 
         $company->save();
         // Enviamos mensaje al correo del usuario
-        if ($request->status == Company::COMPANY_APPROVED){
+        if ($request->status == Company::COMPANY_APPROVED) {
 
-            if($initialState == Company::COMPANY_CREATED || $initialState == Company::COMPANY_REJECTED){
+            if ($initialState == Company::COMPANY_CREATED || $initialState == Company::COMPANY_REJECTED) {
+                $this->createTenderCompanyInvitation($company);
                 Mail::to($company->user->email)->send(new ValidatedAccount($company->user));
-                $message = "La compañia se ha aprobado con exito y se ha enviado un correo de confirmación(".$company->user->email.").";
-            }else if($initialState == Company::COMPANY_BANNED){
+                $message = "La compañia se ha aprobado con exito y se ha enviado un correo de confirmación(" . $company->user->email . ").";
+            } else if ($initialState == Company::COMPANY_BANNED) {
                 Mail::to($company->user->email)->send(new UnbannedAccount($company->user));
-                $message = "La compañia se desbloqueado y se ha enviado un correo de confirmación(".$company->user->email.").";
+                $message = "La compañia se desbloqueado y se ha enviado un correo de confirmación(" . $company->user->email . ").";
             }
         }
-        
-        if ($request->status == Company::COMPANY_REJECTED){
+
+        if ($request->status == Company::COMPANY_REJECTED) {
             Mail::to($company->user->email)->send(new RejectedAccount($company->user));
-            $message = "La compañia no ha sido aprobada y se ha enviado un correo de confirmación(".$company->user->email.").";
+            $message = "La compañia no ha sido aprobada y se ha enviado un correo de confirmación(" . $company->user->email . ").";
         }
 
-        if ($request->status == Company::COMPANY_BANNED){
+        if ($request->status == Company::COMPANY_BANNED) {
             Mail::to($company->user->email)->send(new BannedAccount($company->user));
-            $message = "La compañia ha sido bloqueada y se ha enviado un correo de confirmación(".$company->user->email.").";
+            $message = "La compañia ha sido bloqueada y se ha enviado un correo de confirmación(" . $company->user->email . ").";
         }
 
         return response()->json(['message' => $message], 200);
+    }
+
+    public function createTenderCompanyInvitation($company)
+    {
+        $query  = TemporalInvitationCompany::where(strtolower('email'), strtolower($company->user->email));
+
+        if ($query->exists()) {
+            foreach ($query->get() as $value)
+            {
+                $tenderCompany = $this->createTenderCompany($company, $value->tender_id);
+                if($tenderCompany)
+                {
+                    $this->sendNotificationTenderInvitation($tenderCompany, $company->user->id);
+                    $value->delete();
+                }
+            }
+        }
+    }
+
+    public function sendNotificationTenderInvitation($tenderCompany, $user_id)
+    {
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery( $tenderCompany, Notifications::NOTIFICATION_TENDERINVITECOMPANIES, [$user_id] );
+    }
+
+    public function createTenderCompany($company, $tender_id)
+    {
+        $fields['tender_id']   = $tender_id;
+        $fields['company_id']  = $company->id;
+        $fields['user_id']     = $company->user->id;
+        $fields['status']      = TendersCompanies::STATUS_PROCESS;
+        
+        return TendersCompanies::create( $fields );
     }
 
     public function getTypeCompanies(Request $request)

@@ -39,7 +39,7 @@ class Projects extends Model
     const NOT_STARTED   = 'No iniciada'; //Cuando la fecha del proyecto es menor a la fecha de inicio.
     const IN_PROGRESS   = 'En Curso'; //cuando la fecha del proyecto esta entre la fecha de inicio y la fecha final.
     const FINALIZED     = 'Finalizada'; //Cuando la fecha del proyecto es mayor a la fecha final.
-    
+
     //VISIBLE
     const PROJECTS_VISIBLE      = 'Visible';
     const PROJECTS_VISIBLE_NO   = 'No-Visible';
@@ -59,16 +59,19 @@ class Projects extends Model
         'visible'
     ];
 
-    public function isPublish(){
+    public function isPublish()
+    {
         return $this->status == Projects::PROJECTS_PUBLISH;
     }
-    
-    public function isVisible(){
+
+    public function isVisible()
+    {
         return $this->visible == Projects::PROJECTS_VISIBLE;
     }
 
-    public function tenders(){
-        return $this->hasMany(Tenders::class,'project_id','id');
+    public function tenders()
+    {
+        return $this->hasMany(Tenders::class, 'project_id', 'id');
     }
 
     public function tendersEvents()
@@ -79,7 +82,7 @@ class Projects extends Model
 
         foreach ($tenders as $tender) {
             $versionLast = $tender->tendersVersionLast();
-            if($versionLast->status == TendersVersions::LICITACION_PUBLISH){
+            if ($versionLast->status == TendersVersions::LICITACION_PUBLISH) {
                 $notification[] = [
                     "tender_id" => $tender->id,
                     "date"      => $versionLast->date,
@@ -91,84 +94,90 @@ class Projects extends Model
         $notification = collect($notification)->sortBy('date');
 
         return array_values($notification->toArray());
-
     }
 
-    public function company(){
+    public function company()
+    {
         return $this->belongsTo(Company::class);
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
     // Relacion uno a uno polimorfica
-    public function image(){
+    public function image()
+    {
         return $this->morphOne(Image::class, 'imageable');
     }
 
     // Relacion uno a uno polimorfica
-    public function address(){
+    public function address()
+    {
         return $this->morphOne(Addresses::class, 'addressable');
     }
 
     // Relacion uno a muchos polimorfica
-    public function socialnetworks(){
+    public function socialnetworks()
+    {
         return $this->morphMany(SocialNetworksRelation::class, 'socialable');
     }
 
     // Relacion uno a muchos polimorfica
-    public function metadata(){
+    public function metadata()
+    {
         return $this->morphMany(MetaData::class, 'metadatable');
     }
-    
-    public function projectTypeProject(){
+
+    public function projectTypeProject()
+    {
         return $this->belongsToMany(TypeProject::class);
     }
 
     // Relacion uno a muchos polimorfica
-    public function advertisings(){
+    public function advertisings()
+    {
         return $this->morphMany(Advertisings::class, 'advertisingable');
     }
 
     // Relacion uno a muchos polimorfica
-    public function files(){
+    public function files()
+    {
         return $this->morphMany(Files::class, 'filesable');
     }
 
     // Relacion uno a muchos polimorfica
-    public function notifications(){
+    public function notifications()
+    {
         return $this->morphMany(Notifications::class, 'notificationsable');
     }
 
     // Relacion uno a muchos polimorfica
-    public function remarks(){
+    public function remarks()
+    {
         return $this->morphMany(Remarks::class, 'remarksable');
     }
 
     // Relacion uno a muchos polimorfica
-    public function interests(){
+    public function interests()
+    {
         return $this->morphMany(Interests::class, 'interestsable');
     }
 
     public function getStatusDate()
     {
-        $date_start = Carbon::parse($this->date_start);
-        $date_end   = Carbon::parse($this->date_end);
+        $date_start = Carbon::parse($this->date_start)->format('Y-m-d');
+        $date_end   = Carbon::parse($this->date_end)->format('Y-m-d');
         $date_now   = Carbon::now()->format('Y-m-d');
 
         $status = "";
-        
-        if ($date_now < $date_start)
-        {
+
+        if ($date_now < $date_start) {
             $status = Projects::NOT_STARTED;
-        }
-        else if(($date_now >= $date_start) && ($date_now <= $date_end))
-        {
+        } else if (($date_now >= $date_start) && ($date_now <= $date_end)) {
             $status = Projects::IN_PROGRESS;
-        }
-        else if($date_now > $date_end)
-        {
+        } else if ($date_now > $date_end) {
             $status = Projects::FINALIZED;
         }
 

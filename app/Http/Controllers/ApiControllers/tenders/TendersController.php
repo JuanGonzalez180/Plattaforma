@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\RegistrationPayments;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendDeleteTenderCompany;
+use App\Models\TemporalInvitationCompany;
 use App\Models\AdvertisingPlansPaidImages;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -372,7 +373,9 @@ class TendersController extends ApiController
             $this->deleteCategoryTenders($tender->id);
             // -----5. Borra la publicidad/es de la licitación-----
             // $this->deleteAllAdvertising($tender->id);
-            // -----6.borrar los datos de la licitación-----
+            // -----6.borrar las invitaciones de licitaciones a compañias-----
+            $this->deleteInvitationCompany($tender->id);
+            // -----7.borrar los datos de la licitación-----
             $this->deleteAllTender($tender->id);
             $tender->delete();
         } catch (\Throwable $th) {
@@ -389,6 +392,11 @@ class TendersController extends ApiController
         }
 
         return $this->showOne($tender, 200);
+    }
+
+    public function deleteInvitationCompany($tender_id)
+    {
+        TemporalInvitationCompany::where('tender_id',$tender_id)->delete();
     }
 
     public function getTendersCompanies($tender)

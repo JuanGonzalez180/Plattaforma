@@ -12,6 +12,7 @@ use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
 use App\Traits\UsersCompanyTenders;
 use Illuminate\Support\Facades\Storage;
+use App\Models\TemporalInvitationCompany;
 
 class TaskTenderClosed extends Command
 {
@@ -60,8 +61,15 @@ class TaskTenderClosed extends Command
                 $tender->tendersVersionLast()->save();
                 //envia las notificaciones
                 $this->sendNotificationTenders($tender);
+                //elimina las invitaciones a las compañia no registradas
+                $this->removeCompanyTenderInvitation($tender);
             };
         }
+    }
+
+    public function removeCompanyTenderInvitation($tender)
+    {
+        TemporalInvitationCompany::where('tender_id',$tender->id)->delete();
     }
 
     public function getTendersVersionLastPublish()
