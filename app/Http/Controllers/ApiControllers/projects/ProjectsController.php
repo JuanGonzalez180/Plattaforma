@@ -75,22 +75,18 @@ class ProjectsController extends ApiController
         //                                 ->get();
         //     }
         // }
+        
         $projects = Projects::where('company_id', $companyID)
-            // ->where('visible', Projects::PROJECTS_VISIBLE)
+            ->where('date_start', '<=', $date_now)->where('date_end', '>=', $date_now)
             ->orderBy('id', 'desc')
             ->get();
+
             
         $projects->map(function ($item, $key) {
             return $item->status_date = $this->getStatusDate($item->date_start, $item->date_end);
         });
 
-        foreach ($projects as $key => $value) {
 
-            if(!(($date_now >= $value->date_start) && ($date_now <= $value->date_end)))
-            {
-                unset($projects[$key]);
-            }
-        }
 
         return $this->showAll($projects);
     }

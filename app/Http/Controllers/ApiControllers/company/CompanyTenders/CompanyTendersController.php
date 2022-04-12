@@ -158,6 +158,10 @@ class CompanyTendersController extends ApiController
 
         $tender_company = TendersCompanies::findOrFail($id);
         $tender_company->files;
+
+        $tender_company->tender_value = $tender_company->tender->tendersVersionLast()->price; 
+
+
         return $this->showOne($tender_company, 200);
     }
 

@@ -35,16 +35,17 @@ class TendersCompanySelectedTransformer extends TransformerAbstract
     public function transform(TendersCompanies $tendersCompanies)
     {
         return [
-            'id'                    => (int)$tendersCompanies->id,
-            'user_id'               => (int)$tendersCompanies->user_id,
-            'tender_id'             => (int)$tendersCompanies->tender->id,
-            'company_id'            => (int)$tendersCompanies->company_id,
-            'user_fullname'         => (string)$tendersCompanies->user->fullName(),
-            'image'                 => $tendersCompanies->company->image,
-            'tender_name'           => (string)$tendersCompanies->tender->name,
-            'company_name'          => (string)$tendersCompanies->company->name,
-            'tender_company_price'  => (int)$tendersCompanies->price,
-            'files'                 => $tendersCompanies->files
+            'id'                         => (int)$tendersCompanies->id,
+            'user_id'                    => (int)$tendersCompanies->user_id,
+            'tender_id'                  => (int)$tendersCompanies->tender->id,
+            'company_id'                 => (int)$tendersCompanies->company_id,
+            'user_fullname'              => (string)$tendersCompanies->user->fullName(),
+            'image'                      => $tendersCompanies->company->image,
+            'tender_name'                => (string)$tendersCompanies->tender->name,
+            'company_name'               => (string)$tendersCompanies->company->name,
+            'tender_company_price'       => (int)$tendersCompanies->price,
+            'tender_company_commission'  => (int)$tendersCompanies->commission,
+            'files'                      => $tendersCompanies->files
         ];
     }
 }

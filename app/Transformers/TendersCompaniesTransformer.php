@@ -45,6 +45,7 @@ class TendersCompaniesTransformer extends TransformerAbstract
             'tender'        => $tendersCompanies->tenders,
             'type'          => (string)$tendersCompanies->type,
             'price'         => $tendersCompanies->priceTransformer(),
+            'commission'    => (int)$tendersCompanies->commission,
             'status'        => (string)$tendersCompanies->status,
             'winner'        => (string)$tendersCompanies->winner,
             'created_at'    => (string)$tendersCompanies->created_at,

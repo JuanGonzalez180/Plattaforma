@@ -110,12 +110,13 @@ class TendersController extends ApiController
         $user = $this->validateUser();
 
         $rules = [
-            'name' => 'required',
-            'description' => 'required',
-            'price' => 'required|numeric',
-            'project' => 'required|numeric',
-            'date' => 'required',
-            'hour' => 'required'
+            'name'          => 'required',
+            'description'   => 'required',
+            'price'         => 'required|numeric',
+            'project'       => 'required|numeric',
+            'date'          => 'required',
+            'hour'          => 'required',
+            'tender_type'   => 'required'
         ];
 
         $this->validate($request, $rules);
@@ -137,6 +138,7 @@ class TendersController extends ApiController
         $tendersFields['user_id']       = $request['user'] ?? $user->id;
         $tendersFields['company_id']    = $user->companyId();
         $tendersFields['project_id']    = $request['project'];
+        $tendersFields['type']          = $request['tender_type'];
         // El campo Adenda quedará igual al nombre de la licitación por primera vez.
         $tendersVersionFields['adenda'] = $request['name'];
         $tendersVersionFields['price'] = $request['price'];

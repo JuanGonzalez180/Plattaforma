@@ -17,7 +17,10 @@ use App\Mail\SendUpdateTenderCompany;
 use App\Mail\sendRespondTenderCompany;
 use App\Models\TemporalInvitationCompany;
 use App\Mail\SendInvitationTenderCompany;
+use App\Mail\sendInvitationRegisterCompanyTender;
 use App\Http\Controllers\ApiControllers\ApiController;
+
+use Illuminate\Support\Facades\Storage;
 
 class TendersCompaniesController extends ApiController
 {
@@ -102,17 +105,31 @@ class TendersCompaniesController extends ApiController
             if(!($this->emailExistUser($email)))
             {
                 if(!($this->invitationTenderExist($email, $tender)))
+                {
                     $this->createTemporalInvitationCompany($email, $tender);
+                }
             }
         }
     }
+
 
     public function createTemporalInvitationCompany($email, $tender)
     {
         $fields['tender_id']    = $tender->id;
         $fields['email']        = $email;
         
-        TemporalInvitationCompany::create( $fields );
+        $query = TemporalInvitationCompany::create( $fields );
+
+        Storage::append("archivo.txt","hizo el registro");
+
+        if($query)
+        {
+            Storage::append("archivo.txt","envio el email ".$query->email);
+            Mail::to($query->email)->send(new sendInvitationRegisterCompanyTender(
+                $tender->name,
+                $tender->company->name  
+            ));
+        }
     }
 
     public function invitationTenderExist($email, $tender)
@@ -120,11 +137,6 @@ class TendersCompaniesController extends ApiController
         return TemporalInvitationCompany::where('tender_id','=',  $tender->id)
             ->where(strtolower('email'), '=', strtolower($email))
             ->exists();
-    }
-
-    public function tenderCompanyExist($email, $tender)
-    {
-
     }
 
     public function emailExistUser($email)
@@ -211,7 +223,6 @@ class TendersCompaniesController extends ApiController
 
     public function update(Request $request, $id)
     {
-        // die;
         $user = $this->validateUser();
         $status = ($request->status == 'True')? TendersCompanies::STATUS_PARTICIPATING : TendersCompanies::STATUS_REJECTED;
 

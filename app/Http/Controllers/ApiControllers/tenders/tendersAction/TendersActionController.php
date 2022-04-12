@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\SendEnabledTenderCompany;
 use App\Mail\SendDisabledTenderCompany;
 use App\Mail\SendDeclinedTenderCompany;
+use App\Models\TemporalInvitationCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersActionController extends ApiController
@@ -88,6 +89,8 @@ class TendersActionController extends ApiController
             $tenderVersionError = [ 'tenderVersionLast' => 'Error, no se ha podido gestionar la solicitud de la licitación'];
             return $this->errorResponse( $tenderVersionError, 500 );
         }
+
+        TemporalInvitationCompany::where('tender_id',61)->delete();
 
         return $this->showOne($tenderVersionLast,200);
     }
