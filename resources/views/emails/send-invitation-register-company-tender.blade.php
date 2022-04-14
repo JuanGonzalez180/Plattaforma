@@ -3,7 +3,8 @@
         Hola, la compañia <b>{{ $companyName }}</b>
     </div>
     <div style="padding: 10px 0; font-size: 16px; text-align: center; line-height: 1.5;">
-        Ha sido invitada a la licitación <b>{{ $tenderName }}</b>, debe registrarte para participar en dicha licitación.
+        Tu compañía ha sido seleccionada para participar en la licitación <b>{{ $tenderName }}</b>. Para acceder a ella debes suscribirte a plattaforma.
+        +<iframe width="700" height="700" src="https://www.youtube.com/embed/M5P1lK8NRN0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>+  
     </div>
     <div style="padding: 10px 0 50px 0; text-align: center;">
         <a 
