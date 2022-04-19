@@ -90,7 +90,7 @@ class TendersActionController extends ApiController
             return $this->errorResponse( $tenderVersionError, 500 );
         }
 
-        TemporalInvitationCompany::where('tender_id',61)->delete();
+        TemporalInvitationCompany::where('tender_id',$id)->delete();
 
         return $this->showOne($tenderVersionLast,200);
     }

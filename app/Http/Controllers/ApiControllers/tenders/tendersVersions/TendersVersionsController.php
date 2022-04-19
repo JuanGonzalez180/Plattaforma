@@ -86,7 +86,7 @@ class TendersVersionsController extends ApiController
             }
 
             $tenderVersionFields['tenders_id']  = $tender_id;
-            $tenderVersionFields['status']      = TendersVersions::LICITACION_CREATED;
+            $tenderVersionFields['status']      = TendersVersions::LICITACION_PUBLISH;
 
             try{
                 $tendersVersions                = TendersVersions::create( $tenderVersionFields );
