@@ -146,7 +146,7 @@ class TendersController extends ApiController
             $tendersVersionFields['date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
         }
         if ($request['hour']) {
-            $tendersVersionFields['hour'] = $request['hour']['hour'] . ':' . $request['hour']['minute'];
+            $tendersVersionFields['hour'] = $this->timeFormat($request['hour']['hour']) . ':' . $this->timeFormat($request['hour']['minute']);
         }
 
         try {
@@ -180,6 +180,12 @@ class TendersController extends ApiController
         DB::commit();
 
         return $this->showOne($tender, 201);
+    }
+
+
+    public function timeFormat($value)
+    {
+        return (strlen((string)$value) <= 1) ? '0'.$value : $value; 
     }
 
     /**

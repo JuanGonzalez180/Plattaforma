@@ -212,7 +212,6 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::resource('/querywall/tenders/question', tenderQueryQuestionController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('querywalltendersQuestions');
     Route::resource('/querywall/tenders/answer', tenderQueryAnswerController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('querywalltendersAnswer');
     Route::put('/querywall/{id}/visible', [tenderQueryAnswerController::class, 'changevisible'])->name('querywallvisible');
-
     /**
      * portfolios
      */

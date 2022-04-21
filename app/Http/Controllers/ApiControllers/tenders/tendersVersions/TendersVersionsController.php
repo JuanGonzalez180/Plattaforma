@@ -82,7 +82,7 @@ class TendersVersionsController extends ApiController
             }
             
             if( $request['hour'] ){
-                $tenderVersionFields['hour'] = $request['hour']['hour'] . ':' . $request['hour']['minute'];
+                $tenderVersionFields['hour'] = $this->timeFormat($request['hour']['hour']) . ':' . $this->timeFormat($request['hour']['minute']);
             }
 
             $tenderVersionFields['tenders_id']  = $tender_id;
@@ -138,6 +138,12 @@ class TendersVersionsController extends ApiController
 
         return [];
         
+    }
+
+
+    public function timeFormat($value)
+    {
+        return (strlen((string)$value) <= 1) ? '0'.$value : $value; 
     }
 
     /**
