@@ -129,6 +129,12 @@ class Tenders extends Model
         return $this->hasMany(TendersCompanies::class, 'tender_id');
     }
 
+    public function tenderCompaniesId()
+    {
+        return TendersCompanies::where('tender_id',$this->id)
+            ->pluck('company_id');
+    }
+
     public function isWinner()
     {
         $tenderVersion = TendersCompanies::where('tender_id', $this->id)

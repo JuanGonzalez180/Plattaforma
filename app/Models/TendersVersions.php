@@ -58,6 +58,14 @@ class TendersVersions extends Model
         return $this->morphMany(Tags::class, 'tagsable');
     }
 
+    public function tagsName()
+    {
+        return Tags::where('tagsable_id', $this->id)
+            ->where('tagsable_type', TendersVersions::class)
+            ->pluck('name')
+            ->all();
+    }
+
     // Relacion uno a muchos polimorfica
     public function notifications(){
         return $this->morphMany(Notifications::class, 'notificationsable');

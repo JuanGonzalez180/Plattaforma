@@ -34,7 +34,8 @@ class Notifications extends Model
     //Licitaciones
     const NOTIFICATION_TENDER_STATUS_CLOSED         = 'TenderCompaniesStatusClosed'; //notificación cuando una licitacion se cierra y se le debe enviar a las compañia licitantes
     const NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN   = 'TenderCompaniesStatusClosedAdmin'; //notificación cuando una licitacion se cierra y se le debe enviar al encargado y administrador de la licitación
-    
+    const NOTIFICATION_RECOMMEND_TENDER             = 'TenderRecommend'; //Notifica recomendaciones a compañias con etiquetas en comun
+
     protected $guarded = [];
     /**
      * type: Tipo de Archivo
@@ -154,6 +155,16 @@ class Notifications extends Model
                 $this->query_id = '';
             }
         }
+        else if($this->type == Notifications::NOTIFICATION_RECOMMEND_TENDER && $this->notificationsable_type == Tenders::class)
+        {
+            $tender = Tenders::find($this->notificationsable_id);
+
+            if( $tender ){
+                $this->query_id = $tender->company->slug."/licitacion/".$tender->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
         else if($this->type == Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION && $this->notificationsable_type == Tenders::class)
         {
             $tender = Tenders::find($this->notificationsable_id);
@@ -244,6 +255,11 @@ class Notifications extends Model
             'title'     => 'Licitación: Lic. %s', 
             'subtitle'  => '', 
             'message'   => 'La licitación %s se ha cerrado, procede a evaluar la licitación.',
+        ],
+        Notifications::NOTIFICATION_RECOMMEND_TENDER => [ 
+            'title'     => 'Licitación: Lic. %s', 
+            'subtitle'  => '', 
+            'message'   => 'Te podria interesar esta licitación.',
         ],
         Notifications::NOTIFICATION_TENDER_DELETE => [ 
             'title'     => 'Licitación: Lic. %s', 
@@ -342,6 +358,12 @@ class Notifications extends Model
             $message    = sprintf($message, $query->name);
             $data['id'] = $query->id;
         }
+        elseif( $type == Notifications::NOTIFICATION_RECOMMEND_TENDER ) //notificación cuando una compañia tiene en comun sus etiqutas con alguna licitación
+        {
+            $title      = sprintf($title, $query->name);
+            $message    = sprintf($message, $query->name);
+            $data['id'] = $query->id;
+        }
         elseif( $type == Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION ) //notificación cuando se crea una adenda de la licitación
         {
             $title      = sprintf($title, $query->name);
@@ -355,6 +377,7 @@ class Notifications extends Model
         }
 
         $usersIds = array_unique($usersIds);
+
 
         foreach ($usersIds as $key => $user_id) {
 
@@ -373,6 +396,7 @@ class Notifications extends Model
 
     public function sendNotifications( $usersIds,  $title='', $subtitle='', $message='', $dataMessage = [] ){
         $FcmToken = [];
+
         foreach ($usersIds as $key => $user_id) {
             $user = User::find($user_id);
             foreach ($user->tokens as $key => $token) {

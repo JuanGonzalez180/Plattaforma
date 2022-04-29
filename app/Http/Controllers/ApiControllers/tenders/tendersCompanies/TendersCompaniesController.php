@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\tenders\tendersCompanies;
 
 use JWTAuth;
+use App\Models\Tags;
 use App\Models\User;
 use App\Models\Tenders;
 use App\Models\Company;
@@ -15,6 +16,7 @@ use App\Traits\UsersCompanyTenders;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendUpdateTenderCompany;
 use App\Mail\sendRespondTenderCompany;
+use App\Mail\sendRecommentTenderCompany;
 use App\Models\TemporalInvitationCompany;
 use App\Mail\SendInvitationTenderCompany;
 use App\Mail\sendInvitationRegisterCompanyTender;
@@ -63,7 +65,6 @@ class TendersCompaniesController extends ApiController
     public function store( Request $request ) //envia invitaciones a la licitación
     {
         $tender_id = $request->tender_id;
-        $companies = $request->companies_id;
 
         $user = $this->validateUser();
         
@@ -74,7 +75,11 @@ class TendersCompaniesController extends ApiController
         //compañias que ya estan participando
         $tendersCompaniesOld    = $tender->tenderCompanies; 
         //registra las nuevas compañias a la licitación y obtiene una arreglo de las nuevas compañias
-        $tendersCompaniesNew    = ($companies)? $this->createTenderCompanies($tender, $companies) : []; 
+        $tendersCompaniesNew    = ($request->companies_id)? $this->createTenderCompanies($tender, $request->companies_id) : []; 
+
+
+        $companies = $tendersCompaniesOld->merge($tendersCompaniesNew);
+
         
         //Actualiza el estado de la licitación
         $tenderVersion          = $tender->tendersVersionLast();
@@ -88,12 +93,16 @@ class TendersCompaniesController extends ApiController
         //Envia correos y notificaciones a las compañia ya participantes
         $this->sendMessageTenderVersión($tendersCompaniesOld, $tender);
 
-
         //Envia correos de invitación a compañia que no estan registradas en plattaforma
         if($request->companies_email)
         {
             $this->sendInvitantionExternalCompanies($request->companies_email, $tender);
         }
+
+        // enviar correos y notificaciones a compañias registradas pero no invitadas
+        // teniendo en comun las etiquetas de la licitacion y de las compañias
+        $this->sendRecommendTender($tender, $companies);
+
      
         return $this->showOne($tender,201);
     }
@@ -112,6 +121,67 @@ class TendersCompaniesController extends ApiController
         }
     }
 
+    public function sendRecommendTender($tender, $companies)
+    {
+        $companiesNew = [];
+
+        $tags = $tender->tendersVersionLast()->tagsName();
+
+        foreach ($companies as $key => $value) {
+            $companiesNew[] = $value['id'];
+        }
+
+        $recommendToCompanies = ($tender->type == 'Publico') ? $this->getQueryCompaniesTags($tags, $companiesNew) : [];
+
+        //si por lo menos existe alguna compañia con alguna etiqueta
+        if(sizeof($recommendToCompanies)>0)
+        {
+            foreach ($recommendToCompanies as $key => $value) {
+                $company = Company::find($value);
+
+                $this->sendNotificationRecommendTender($tender, $company->userIds());
+                $this->sendEmailRecommendTender($tender, ['cris10x@hotmail.com']);
+            }
+        }
+    }
+
+    public function sendNotificationRecommendTender($tender, $users)
+    {
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery( $tender, Notifications::NOTIFICATION_RECOMMEND_TENDER, $users );
+    }
+
+    public function sendEmailRecommendTender($tender, $emails)
+    {
+        foreach ($emails as $key => $value) {
+            Mail::to($value)->send(new sendRecommentTenderCompany(
+                $tender->name,
+                $tender->company->name,  
+                $tender->company->slug,  
+                $tender->id,  
+            ));
+        }
+    }
+
+    public function getQueryCompaniesTags($tags, $companies)
+    {
+        return Tags::where('tagsable_type',Company::class)
+            ->where(function($query) use($tags) {
+                for ($i = 0; $i < count($tags); $i++){
+                    $query->orwhere(strtolower('tags.name'),'like','%'.strtolower($tags[$i]).'%');
+                }
+            })
+            ->join('companies','companies.id','=','tags.tagsable_id')
+            ->whereNotIn('companies.id', $companies)
+            ->where('companies.status','Aprobado')
+            ->join('types_entities','types_entities.id','=','companies.type_entity_id')
+            ->join('types','types.id','=','types_entities.type_id')
+            ->where('types.name','=','Oferta')
+            ->orderBy('companies.id','asc')
+            ->distinct()
+            ->pluck('companies.id'); 
+    }
+
 
     public function createTemporalInvitationCompany($email, $tender)
     {
@@ -120,11 +190,8 @@ class TendersCompaniesController extends ApiController
         
         $query = TemporalInvitationCompany::create( $fields );
 
-        Storage::append("archivo.txt","hizo el registro");
-
         if($query)
         {
-            Storage::append("archivo.txt","envio el email ".$query->email);
             Mail::to($query->email)->send(new sendInvitationRegisterCompanyTender(
                 $tender->name,
                 $tender->company->name  

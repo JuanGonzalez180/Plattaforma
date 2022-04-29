@@ -12,7 +12,8 @@ return [
         ],
 
         'tender' => [
-            'tenderListprovider' => 'licitaciones/listado'
+            'tenderListprovider' => 'licitaciones/listado',
+            'tenderDetail'       => 'compania',
         ]
 
     ],

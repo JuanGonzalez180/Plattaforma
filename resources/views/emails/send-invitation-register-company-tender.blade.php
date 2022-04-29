@@ -1,7 +1,7 @@
 @include('emails.partials.header')
-    <div style="padding: 10px 0; font-size: 24px; text-align: center; line-height: 40px;">
+    <!-- <div style="padding: 10px 0; font-size: 24px; text-align: center; line-height: 40px;">
         Hola, la compañia <b>{{ $companyName }}</b>
-    </div>
+    </div> -->
     <div style="padding: 10px 0; font-size: 16px; text-align: center; line-height: 1.5;">
         Tu compañía ha sido seleccionada para participar en la licitación <b>{{ $tenderName }}</b>. Para acceder a ella debes suscribirte a plattaforma.
     </div>
