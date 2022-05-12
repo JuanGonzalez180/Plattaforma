@@ -240,8 +240,8 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::resource('/tenders/companies', TendersCompaniesController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('tendersCompanies');
     Route::get('/tenders/all/companies', [TendersCompaniesListController::class, 'indexTendersCompanies'])->name('company-tender-list');
     Route::get('/tenders/companies/selected/winner', [TendersCompaniesActionController::class, 'SelectedWinner'])->name('company-company-selected-winner');
+    Route::get('/tenders/companies/desert/tender', [TendersCompaniesActionController::class, 'desertTender'])->name('company-company-desert-tender');
     Route::get('/tenders/companies/selected/more/winner', [TendersCompaniesActionController::class, 'SelectedMoreWinner'])->name('company-company-selected-more--winner');
-
     /**
      * Tenders_action
      */

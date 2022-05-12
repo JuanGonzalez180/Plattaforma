@@ -59,14 +59,12 @@ class CompanyTendersTransactController extends ApiController
     public function store($slug, int $id)
     {
         $user = $this->validateUser();
-
         //verifica el estado del usuario
         if(!$this->statusCompanyUser($user))
         {
             $queryError = [ 'querywall' => 'Error, El usuario debe pagar la suscripción' ];
             return $this->errorResponse( $queryError, 500 );
         }
-
         $tenderCompany = TendersCompanies::where('tender_id', $id)->where('company_id', $user->companyId());
         $name_company = $user->companyName();
 

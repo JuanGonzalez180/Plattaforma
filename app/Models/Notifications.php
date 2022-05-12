@@ -192,7 +192,7 @@ class Notifications extends Model
         Notifications::NOTIFICATION_TENDERCOMPANYSELECTED => [ 
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
-            'message'   => 'La licitación ha sido evaluada, la empresa %s ha sido selecciona como la mejor oferta, muchas gracias por participar.' 
+            'message'   => 'La licitación ha sido adjudicada, la empresa %s ha sido selecciona como la mejor oferta, muchas gracias por participar.' 
         ],
         Notifications::NOTIFICATION_TENDERINVITECOMPANIES => [ 
             'title'     => 'Licitación: %s', 
@@ -249,7 +249,7 @@ class Notifications extends Model
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED => [ 
             'title'     => 'Licitación: Lic. %s', 
             'subtitle'  => '', 
-            'message'   => 'La licitación %s se ha cerrado.',
+            'message'   => 'La licitación %s se ha cerrado y esta en proceso de evaluación.',
         ],
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN => [ 
             'title'     => 'Licitación: Lic. %s', 

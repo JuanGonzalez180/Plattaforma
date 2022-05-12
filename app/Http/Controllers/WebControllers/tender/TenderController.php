@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\WebControllers\tender;
 
+use DataTables;
 use App\Models\Tenders;
 use App\Models\Projects;
 use Illuminate\Http\Request;
@@ -52,5 +53,50 @@ class TenderController extends Controller
 
         return redirect()->route('tender-company-id', ['company',$tenderVersionLast->tenders->company->id] )->with('success', 'Se ha declinado la licitación');
     }
-    
+
+    public function getFullTenders()
+    {
+        $companies = Tenders::select('companies.id','companies.name')
+            ->join('companies','companies.id','=','tenders.company_id')
+            ->orderBy('companies.name','asc')
+            ->distinct()
+            ->get();
+
+        $tenderStatus = [
+            TendersVersions::LICITACION_CREATED, 
+            TendersVersions::LICITACION_PUBLISH, 
+            TendersVersions::LICITACION_CLOSED, 
+            TendersVersions::LICITACION_FINISHED, 
+            TendersVersions::LICITACION_DISABLED
+        ];
+
+
+        $order['CREATED_DESC']      =   'fecha de cierre mas reciente';
+        $order['CREATED_ASC']       =   'fecha de cierre mas antigua';
+        $order['ALPHABETICAL_DESC'] =   'Alfabetico de A-Z';
+        $order['ALPHABETICAL_ASC']  =   'Alfabetico de Z-A'; 
+
+        return view('tender.showAll', compact(['companies', 'tenderStatus', 'order']));
+    }
+
+
+    public function getTenders(Request $request)
+    {
+        // $company        = $request->company;
+        // $status         = $request->status;
+        // $order          = $request->order;
+
+        $tenders  = Tenders::select('tenders.*')->get();
+
+
+        
+        return DataTables::of($tenders)
+        ->editColumn('company_id', function (Tenders $value) {
+            return $value->company->name;
+        })
+        ->editColumn('user_id', function (Tenders $value) {
+            return $value->user->name;
+        })
+        ->toJson();
+    }
 }

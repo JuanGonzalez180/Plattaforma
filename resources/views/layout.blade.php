@@ -91,9 +91,14 @@
                                 Comunidad Proveedores
                             </a>
                         </li>
-
+                        
                         <div class="dropdown-divider"></div>
-
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('tenders-companies-all') }}">
+                                <span data-feather="file"></span>
+                                Licitaciones
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link collapsed text-truncate" href="#publicitySubmenu" data-toggle="collapse" data-target="#publicitySubmenu"><span class="d-none d-sm-inline">Publicidad</span></a>
                             <div class="collapse" id="publicitySubmenu" aria-expanded="false">

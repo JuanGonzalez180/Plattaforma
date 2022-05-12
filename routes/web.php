@@ -153,6 +153,9 @@ Route::group(['middleware' => 'auth'], function () {
                 ->names('tender')
                 ->parameters(['licitaciones' => 'tender']);
 
+        Route::post('/tenders/all', [TenderController::class, 'getTenders'])->name('tenders.all');
+
+        Route::get('/tender/all', [TenderController::class, 'getFullTenders'])->name('tenders-companies-all');
         Route::get('/tender/{type}/{id}', [TenderController::class, 'index'])->name('tender-company-id');
 
         Route::post('/tender/decline', [TenderController::class, 'updateStatusDecline'])

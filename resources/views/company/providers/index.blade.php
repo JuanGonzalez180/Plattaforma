@@ -121,7 +121,6 @@ Proveedores
                 }
             }
         });
-        getStatusCount();
     });
 
     function getStatus() {

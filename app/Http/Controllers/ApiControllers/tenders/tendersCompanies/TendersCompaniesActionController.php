@@ -38,6 +38,32 @@ class TendersCompaniesActionController extends ApiController
         return $temp_array;
     }
 
+    public function desertTender(Request $request)
+    {
+        $id = $request->id;
+
+        $tender                     = Tenders::find($id);
+        $tenderVersionLast          = $tender->tendersVersionLast();
+
+        DB::beginTransaction();
+
+        $tenderVersionLast->status  = TendersVersions::LICITACION_DESERTED;
+
+        try
+        {
+            $tenderVersionLast->save();
+            DB::commit();
+        }
+        catch (\Throwable $th)
+        {
+            DB::rollBack();
+            $tenderError = [ 'tender' => 'Error, no se ha podido gestionar la solicitud de la licitación'];
+            return $this->errorResponse( $tenderError, 500 );
+        }
+
+        return $this->showOne($tenderVersionLast,200);
+    }
+
     public function SelectedWinner(Request $request)
     {
         $id = $request->id;
