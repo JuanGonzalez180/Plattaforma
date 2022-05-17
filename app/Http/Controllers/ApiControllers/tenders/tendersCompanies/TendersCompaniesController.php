@@ -72,6 +72,7 @@ class TendersCompaniesController extends ApiController
 
         //Licitación
         $tender                 = Tenders::findOrFail($tender_id);
+
         //compañias que ya estan participando
         $tendersCompaniesOld    = $tender->tenderCompanies; 
         //registra las nuevas compañias a la licitación y obtiene una arreglo de las nuevas compañias
@@ -140,7 +141,7 @@ class TendersCompaniesController extends ApiController
                 $company = Company::find($value);
 
                 $this->sendNotificationRecommendTender($tender, $company->userIds());
-                $this->sendEmailRecommendTender($tender, ['cris10x@hotmail.com']);
+                $this->sendEmailRecommendTender($tender, $company->emails());
             }
         }
     }
@@ -272,10 +273,13 @@ class TendersCompaniesController extends ApiController
 
         foreach($companies as $company)
         {
-            $tenderCompanyFields['tender_id']   = $tender->id;
-            $tenderCompanyFields['company_id']  = $company["id"];
-            $tenderCompanyFields['user_id']     = $user->id;
-            $tenderCompanyFields['status']      = TendersCompanies::STATUS_PROCESS;
+            $userCompanyId = Company::find($company["id"])->user->id;
+
+            $tenderCompanyFields['tender_id']           = $tender->id;
+            $tenderCompanyFields['company_id']          = $company["id"];
+            $tenderCompanyFields['user_id']             = $user->id;
+            $tenderCompanyFields['user_company_id']     = $userCompanyId;
+            $tenderCompanyFields['status']              = TendersCompanies::STATUS_PROCESS;
             
             $tendersCompanies[] = TendersCompanies::create( $tenderCompanyFields );
         }

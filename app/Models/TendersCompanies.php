@@ -44,6 +44,7 @@ class TendersCompanies extends Model
     protected $fillable = [
         'tender_id',
         'company_id',
+        'user_company_id',
         'user_id',
         'type',
         'price',
@@ -62,6 +63,11 @@ class TendersCompanies extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function userCompany()
+    {
+        return $this->belongsTo(User::class, 'user_company_id', 'id');
     }
 
     public function files(){

@@ -273,7 +273,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::put('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'update'])->name('company-tender-update');
     Route::delete('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'destroy'])->name('company-tender-destroy');
 
-    Route::put('/company/{slug}/tenders/{id}/status/{status}', [CompanyTendersController::class, 'updateStatusInvitation'])->name('company-tender-update-status'); 
+    Route::put('/company/{slug}/tenders/{id}/status/{status}/user/{user_id}', [CompanyTendersController::class, 'updateStatusInvitation'])->name('company-tender-update-status'); 
     //participar en licitación
     Route::post('/company/{slug}/tenders/{id}/send/participate', [CompanyTendersTransactController::class, 'store'])->name('company-send-participate');
     Route::post('/company/tenders/select/participate', [CompanyTendersTransactController::class, 'postComparate'])->name('company-select-participate');
