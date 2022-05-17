@@ -241,7 +241,6 @@ class CompanyTendersController extends ApiController
         $user           = $this->validateUser();
 
         var_dump('pasa por aca');
-        var_dump($user_id);
         die;
         
         // $tender_company = TendersCompanies::find($id);
