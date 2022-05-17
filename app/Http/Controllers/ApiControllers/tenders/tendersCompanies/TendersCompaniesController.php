@@ -141,7 +141,7 @@ class TendersCompaniesController extends ApiController
                 $company = Company::find($value);
 
                 $this->sendNotificationRecommendTender($tender, $company->userIds());
-                $this->sendEmailRecommendTender($tender, $company->emails());
+                $this->sendEmailRecommendTender($tender, ['davidmejia13320@gmail.com']);
             }
         }
     }
