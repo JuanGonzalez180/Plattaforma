@@ -27,6 +27,7 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Compañia</th>
+                <th scope="col">Licitación</th>
                 <th scope="col">Tipo</th>
                 <th scope="col">Estado</th>
                 <th scope="col">Precio</th>
@@ -39,6 +40,7 @@
                 <tr>
                     <th scope="row">{{ $loop->iteration }}</th>
                     <td>{{$company->company->name}}</td>
+                    <td>{{$company->tender->name}}</td>
                     <td>{{$company->type}}</td>
                     <td>{{$company->status}}</td>
                     <td>${{$company->price}}</td>
