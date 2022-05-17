@@ -245,6 +245,12 @@ class CompanyTendersController extends ApiController
         
         if($status == 'true')
         {
+
+            if(!is_null($user_id))
+            {
+                $tender_company->user_company_id = $user_id;
+            }
+
             $tender_company->status = TendersCompanies::STATUS_PARTICIPATING;
             $tender_company->save();
 
