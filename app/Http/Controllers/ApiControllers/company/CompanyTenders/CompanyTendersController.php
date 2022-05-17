@@ -241,6 +241,8 @@ class CompanyTendersController extends ApiController
         $user           = $this->validateUser();
         
         $tender_company = TendersCompanies::find($id);
+
+        $tender_user_admin = $tender_company->company->user->id;
         $tender_status  = $tender_company->tender->tendersVersionLast()->status;
         
         if($status == 'true')
@@ -249,8 +251,10 @@ class CompanyTendersController extends ApiController
             if(!is_null($user_id))
             {
                 $tender_company->user_company_id = $user_id;
+            }else{
+                $tender_company->user_company_id = $tender_user_admin;
             }
-            
+
             $tender_company->user_company_id = $user_id;
             
             $tender_company->status = TendersCompanies::STATUS_PARTICIPATING;
