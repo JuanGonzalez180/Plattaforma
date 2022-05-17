@@ -239,44 +239,41 @@ class CompanyTendersController extends ApiController
     public function updateStatusInvitation($slug, $id, $status, $user_id)
     {
         $user           = $this->validateUser();
-
-        var_dump('pasa por aca');
-        die;
         
-        // $tender_company = TendersCompanies::find($id);
-        // $tender_status  = $tender_company->tender->tendersVersionLast()->status;
+        $tender_company = TendersCompanies::find($id);
+        $tender_status  = $tender_company->tender->tendersVersionLast()->status;
         
-        // if($status == 'true')
-        // {
-        //     $tender_company->status = TendersCompanies::STATUS_PARTICIPATING;
-        //     $tender_company->save();
+        if($status == 'true')
+        {
+            $tender_company->status = TendersCompanies::STATUS_PARTICIPATING;
+            $tender_company->save();
 
-        //     $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_INVITATION_APPROVED);
+            $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_INVITATION_APPROVED);
 
-        //     return $this->showOne($tender_company, 200);
-        // }
-        // else
-        // { 
-        //     $tender_company->delete();
+            return $this->showOne($tender_company, 200);
+        }
+        else
+        { 
+            $tender_company->delete();
     
-        //     if ($tender_company->files) {
-        //         foreach ($tender_company->files as $key => $file) {
-        //             Storage::disk('local')->delete($this->routeFile . $file->url);
-        //             $file->delete();
-        //         }
-        //     }
+            if ($tender_company->files) {
+                foreach ($tender_company->files as $key => $file) {
+                    Storage::disk('local')->delete($this->routeFile . $file->url);
+                    $file->delete();
+                }
+            }
 
-        //     //envia los correos al responsable de licitación y al responsable del proyecto
-        //     $this->sendEmailInvitationTender($tender_company);
-        //     //envia los notificaciones al responsable de la licitación y al administrador
-        //     $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_INVITATION_REJECTED);
+            //envia los correos al responsable de licitación y al responsable del proyecto
+            $this->sendEmailInvitationTender($tender_company);
+            //envia los notificaciones al responsable de la licitación y al administrador
+            $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_INVITATION_REJECTED);
     
-        //     return $this->showOneData(
-        //         ['success' => 'Se ha eliminado correctamente.', 'code' => 200]
-        //         , 200
-        //     );
+            return $this->showOneData(
+                ['success' => 'Se ha eliminado correctamente.', 'code' => 200]
+                , 200
+            );
             
-        // }
+        }
     }
 
     public function sendEmailInvitationTender($tender_company)
