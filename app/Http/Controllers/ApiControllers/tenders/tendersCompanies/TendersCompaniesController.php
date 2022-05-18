@@ -137,12 +137,12 @@ class TendersCompaniesController extends ApiController
         //si por lo menos existe alguna compañia con alguna etiqueta
         if(sizeof($recommendToCompanies)>0)
         {
-            foreach ($recommendToCompanies as $key => $value) {
-                $company = Company::find($value);
+            // foreach ($recommendToCompanies as $key => $value) {
+            //     $company = Company::find($value);
 
-                $this->sendNotificationRecommendTender($tender, $company->userIds());
-                $this->sendEmailRecommendTender($tender, ['davidmejia13320@gmail.com']);
-            }
+            //     $this->sendNotificationRecommendTender($tender, $company->userIds());
+            //     $this->sendEmailRecommendTender($tender, ['davidmejia13320@gmail.com']);
+            // }
         }
     }
 
