@@ -81,11 +81,15 @@ class CompanyTendersTransactController extends ApiController
 
         DB::beginTransaction();
 
-        $tenderCompanyFields['tender_id']   = $id;
-        $tenderCompanyFields['company_id']  = $user->companyId();
-        $tenderCompanyFields['user_id']     = $user->id;
-        $tenderCompanyFields['type']        = TendersCompanies::TYPE_INTERESTED;
-        $tenderCompanyFields['status']      = TendersCompanies::STATUS_EARRING;
+        $tender = Tenders::find($id);
+
+        $tenderCompanyFields['tender_id']       = $id;
+        $tenderCompanyFields['company_id']      = $user->companyId();
+        // $tenderCompanyFields['user_id']         = $user->id;
+        $tenderCompanyFields['user_id']         = $tender->user_ids;
+        $tenderCompanyFields['type']            = TendersCompanies::TYPE_INTERESTED;
+        $tenderCompanyFields['status']          = TendersCompanies::STATUS_EARRING;
+        $tenderCompanyFields['user_company_id'] = $user->id;
 
         try{
             $tenderCompany = TendersCompanies::create( $tenderCompanyFields );
