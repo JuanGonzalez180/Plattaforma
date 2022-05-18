@@ -247,7 +247,7 @@ class CompanyTendersController extends ApiController
         
         if($status == 'true')
         {
-            if(!is_null($user_id))
+            if($user_id != 'null')
             {
                 $tender_company->user_company_id = $user_id;
             }else{

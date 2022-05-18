@@ -243,4 +243,9 @@ class User extends Authenticatable implements JWTSubject
 
         return $fullName;
     }
+
+    public function getAdminUser()
+    {
+        return Company::where('user_id',$this->id)->exists();
+    }
 }
