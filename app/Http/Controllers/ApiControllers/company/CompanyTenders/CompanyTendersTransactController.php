@@ -86,18 +86,18 @@ class CompanyTendersTransactController extends ApiController
         $tenderCompanyFields['tender_id']       = $id;
         $tenderCompanyFields['company_id']      = $user->companyId();
         // $tenderCompanyFields['user_id']         = $user->id;
-        $tenderCompanyFields['user_id']         = $tender->user_ids;
+        $tenderCompanyFields['user_id']         = $tender->user_id;
         $tenderCompanyFields['type']            = TendersCompanies::TYPE_INTERESTED;
         $tenderCompanyFields['status']          = TendersCompanies::STATUS_EARRING;
         $tenderCompanyFields['user_company_id'] = $user->id;
 
-        // try{
+        try{
             $tenderCompany = TendersCompanies::create( $tenderCompanyFields );
-        // }catch(\Throwable $th){
-        //     DB::rollBack();
-        //     $tenderCompanyError = [ 'question' => 'Error, no se ha podido gestionar la solicitud' ];
-        //     return $this->errorResponse( $tenderCompanyError, 500 );
-        // }
+        }catch(\Throwable $th){
+            DB::rollBack();
+            $tenderCompanyError = [ 'question' => 'Error, no se ha podido gestionar la solicitud' ];
+            return $this->errorResponse( $tenderCompanyError, 500 );
+        }
         DB::commit();
 
         $email = Tenders::find($id)->user->email;
