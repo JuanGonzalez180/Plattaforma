@@ -91,7 +91,7 @@ class tenderQueryAnswerController extends ApiController
             }
             catch(\Throwable $th){
                 DB::rollBack();
-                $questionError = [ 'question' => 'Error, no se ha podido responder a la pregunta' ];
+                $questionError = [ 'question' => 'Error, no se ha podido responder a la pregunta admin_id'.$admin_company,' tender_id'.$tender_resp.' projec_id'.$project_resp ];
                 return $this->errorResponse( $questionError, 500 );
             }
             DB::commit();
