@@ -91,7 +91,7 @@ class tenderQueryAnswerController extends ApiController
             }
             catch(\Throwable $th){
                 DB::rollBack();
-                $questionError = [ 'question' => 'Error, no se ha podido responder a la pregunta admin_id'.$admin_company,' tender_id'.$tender_resp.' projec_id'.$project_resp ];
+                $questionError = [ 'question' => 'Error, no se ha podido responder a la pregunta' ];
                 return $this->errorResponse( $questionError, 500 );
             }
             DB::commit();
@@ -101,7 +101,7 @@ class tenderQueryAnswerController extends ApiController
             return $this->showOne($queryAnswer,200);
 
         }else{
-            $queryError = [ 'querywall' => 'Error, El usuario no tiene privilegios para responder preguntas del muro de consultas' ];
+            $queryError = [ 'querywall' => 'Error, El usuario no tiene privilegios para responder preguntas del muro de consultas admin_id'.$admin_company,' tender_id'.$tender_resp.' projec_id'.$project_resp ];
             return $this->errorResponse( $queryError, 500 );
         }
 
