@@ -73,7 +73,7 @@ class tenderQueryAnswerController extends ApiController
         $tender_resp    = ($queryAnswer->queryWallTenderUser() == $user->id) ? True : False;
         $project_resp   = ($queryAnswer->queryWallProjectUser() == $user->id) ? True : False;
 
-        if( $admin_company || $tender_resp || $project_resp ) {
+        // if( $admin_company || $tender_resp || $project_resp ) {
 
             DB::beginTransaction();
 
@@ -100,10 +100,10 @@ class tenderQueryAnswerController extends ApiController
 
             return $this->showOne($queryAnswer,200);
 
-        }else{
-            $queryError = [ 'querywall' => 'Error, El usuario no tiene privilegios para responder preguntas del muro de consultas admin_id'.$admin_company,' tender_id'.$tender_resp.' projec_id'.$project_resp ];
-            return $this->errorResponse( $queryError, 500 );
-        }
+        // }else{
+        //     $queryError = [ 'querywall' => 'Error, El usuario no tiene privilegios para responder preguntas del muro de consultas' ];
+        //     return $this->errorResponse( $queryError, 500 );
+        // }
 
     }
 
