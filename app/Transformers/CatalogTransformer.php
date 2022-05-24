@@ -2,6 +2,7 @@
 
 namespace App\Transformers;
 
+use App\Models\Tags;
 use App\Models\Catalogs;
 use App\Transformers\UserTransformer;
 use App\Transformers\CompanyTransformer;
@@ -47,7 +48,11 @@ class CatalogTransformer extends TransformerAbstract
             'image'=> $catalog->image,
             'files'=> $catalog->files,
             'user'=> $userTransform->transform($catalog->user),
-            'tags'=> $catalog->tags,
+            // 'tags'=> $catalog->tags,
+            'tags'=> Tags::where('tagsable_id',$catalog->id)
+                ->where('tagsable_type', Catalogs::class)
+                ->take(3)
+                ->get(),
             'created_at'=> (string)$catalog->created_at,
             'updated_at'=> (string)$catalog->updated_at
         ];

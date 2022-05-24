@@ -55,7 +55,7 @@ class ProductsTransformer extends TransformerAbstract
             'updated_at'=> (string)$product->updated_at,
             'tags'=> Tags::where('tagsable_id',$product->id)
                 ->where('tagsable_type', Products::class)
-                ->take(6)
+                ->take(3)
                 ->get(),
             'brand'=> $product->brand,
             'user'=> $userTransform->transform($product->user),
