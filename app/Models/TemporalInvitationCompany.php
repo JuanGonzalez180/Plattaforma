@@ -14,10 +14,12 @@ class TemporalInvitationCompany extends Model
 
     protected $fillable = [
         'tender_id',
-        'email'
+        'email',
+        'send'
     ];
 
-    public function tender(){
+    public function tender()
+    {
         return $this->belongsTo(Tenders::class);
     }
 }

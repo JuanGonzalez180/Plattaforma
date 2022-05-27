@@ -14,7 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\TaskTenderClosed::class,
-        Commands\TaskDownloadImgProduct::class
+        Commands\TaskDownloadImgProduct::class,
+        Commands\TaskSendInvitationUnregisteredCompanies::class
     ];
 
     /**
@@ -25,11 +26,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        //cronJobs para cerrar licitaciones
         $schedule->command('task:tender_closed')->everyMinute();
-        //$schedule->command('task:download_img_product')->everyTwoMinutes();
-        //$schedule->command('task:download_img_product')->everyTenMinutes();
+        //cronJobs para descargar las imagenes y archivos de los productor cargados por carga masiva
         $schedule->command('task:download_img_product')->everyFifteenMinutes();
-        // $schedule->command('task:download_img_product')->everyFiveMinutes();
+        //cronJobs para enviar invitaciones a licitaciones a compañias no registradas a plattaforma
+        $schedule->command('task:task_send_invitation_unregistered_companies')->everyFiveMinutes();
     }
 
     /**

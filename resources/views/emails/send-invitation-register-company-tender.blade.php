@@ -1,9 +1,8 @@
 @include('emails.partials.header')
-    <!-- <div style="padding: 10px 0; font-size: 24px; text-align: center; line-height: 40px;">
-        Hola, la compañia <b>{{ $companyName }}</b>
-    </div> -->
+
     <div style="padding: 10px 0; font-size: 16px; text-align: center; line-height: 1.5;">
-    Tu compañía ha sido seleccionada por <b>{{ $companyName }}</b>, para participar en la licitación <b>{{ $tenderName }}</b>. Para acceder a ella debes suscribirte a plattaforma.
+    Hola, has recibido una invitación por parte de <b>{{ $companyName }}</b> a la licitación denominada: <b>{{ $tenderName }}</b>. 
+    <br>Para acceder a ella, suscribete en:
     </div>
     <div style="padding: 10px 0 50px 0; text-align: center;">
         <a 

@@ -61,8 +61,6 @@ class SearchItemController extends ApiController
     public function __invoke(Request $request)
     {
 
-        
-
         $user       = $this->validateUser();
         $type_user  = $user->userType();
 
@@ -940,7 +938,8 @@ class SearchItemController extends ApiController
             ->groupBy('a.tenders_id')
             ->pluck('a.tenders_id');
 
-        return $tenders;
+        // return $tenders;
+        return [];
     }
 
     public function getCompaniesTenderDate($companies, $date)

@@ -10,6 +10,9 @@ use App\Http\Controllers\WebControllers\stripe\PlanController;
 use App\Http\Controllers\WebControllers\remark\RemarkController;
 use App\Http\Controllers\WebControllers\brands\BrandsController;
 use App\Http\Controllers\WebControllers\tender\TenderController;
+use App\Http\Controllers\WebControllers\tenderemailcompanies\TenderEmailCompaniesController;
+
+
 use App\Http\Controllers\WebControllers\company\CompanyController;
 use App\Http\Controllers\WebControllers\scripts\RemoveUnwantedUsersController;
 use App\Http\Controllers\WebControllers\company\projects\CompanyProjectController;
@@ -155,8 +158,12 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::post('/tenders/all/companies', [TenderController::class, 'getTenders'])->name('tenders.companies.all');
 
+        Route::get('/tender/companies/emails', [TenderEmailCompaniesController::class, 'getFullCompanyTendersEmails'])->name('tenders-emails-companies-all');
+        
         Route::get('/tender/all', [TenderController::class, 'getFullTenders'])->name('tenders-companies-all');
         Route::get('/tender/{type}/{id}', [TenderController::class, 'index'])->name('tender-company-id');
+        
+
 
         Route::post('/tender/decline', [TenderController::class, 'updateStatusDecline'])
                 ->name('tender.decline');
