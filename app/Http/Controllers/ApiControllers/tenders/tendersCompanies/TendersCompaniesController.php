@@ -19,7 +19,6 @@ use App\Mail\sendRespondTenderCompany;
 use App\Mail\sendRecommentTenderCompany;
 use App\Models\TemporalInvitationCompany;
 use App\Mail\SendInvitationTenderCompany;
-use App\Mail\sendInvitationRegisterCompanyTender;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 use Illuminate\Support\Facades\Storage;
@@ -187,7 +186,7 @@ class TendersCompaniesController extends ApiController
     {
         return TemporalInvitationCompany::where('tender_id', '=',  $tender->id)
             ->where(strtolower('email'), '=', strtolower($email))
-            ->where('status', '=', false)
+            ->where('send', '=', false)
             ->exists();
     }
 
