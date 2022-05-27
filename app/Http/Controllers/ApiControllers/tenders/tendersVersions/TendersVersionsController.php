@@ -189,7 +189,7 @@ class TendersVersionsController extends ApiController
             ->get()
             ->first();
 
-        if($lastVersion->status == TendersVersions::LICITACION_CREATED) {
+        // if($lastVersion->status == TendersVersions::LICITACION_CREATED) {
             $rules = [
                 'adenda'    => 'required',
                 'price'     => 'required|numeric',
@@ -240,12 +240,12 @@ class TendersVersionsController extends ApiController
             $lastVersion->tags;
             return $this->showOne($lastVersion,201);
 
-        }else{
-            $tenderError = [ 'tenderVersion' => 'Error, la ultima versión de la licitacion no esta Borrador'];
-            return $this->errorResponse( $tenderError, 500 );
-        }
+        // }else{
+        //     $tenderError = [ 'tenderVersion' => 'Error, la ultima versión de la licitacion no esta Borrador'];
+        //     return $this->errorResponse( $tenderError, 500 );
+        // }
 
-        return [];
+        // return [];
         
     }
     /**
