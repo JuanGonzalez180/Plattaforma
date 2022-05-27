@@ -53,7 +53,8 @@ class TendersVersionsController extends ApiController
             ->get()
             ->first();
         
-        if($lastVersion->status == TendersVersions::LICITACION_PUBLISH) {
+        // if($lastVersion->status == TendersVersions::LICITACION_PUBLISH)
+        // {
             $rules = [
                 'adenda'    => 'required',
                 'price'     => 'required|numeric',
@@ -131,12 +132,12 @@ class TendersVersionsController extends ApiController
 
             DB::commit();
             return $this->showOne($tendersVersions,201);
-        }else{
-            $tenderError = [ 'tenderVersion' => 'Error, la ultima versión de la licitacion no esta publicada'];
-            return $this->errorResponse( $tenderError, 500 );
-        }
+        // }else{
+        //     $tenderError = [ 'tenderVersion' => 'Error, la ultima versión de la licitacion no esta publicada'];
+        //     return $this->errorResponse( $tenderError, 500 );
+        // }
 
-        return [];
+        // return [];
         
     }
 
