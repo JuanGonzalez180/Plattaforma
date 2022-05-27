@@ -212,7 +212,8 @@ class TendersVersionsController extends ApiController
                 $lastVersion->hour = $request['hour']['hour'] . ':' . $request['hour']['minute'];
             }
             
-            $lastVersion->status      = TendersVersions::LICITACION_CREATED;
+            // $lastVersion->status      = TendersVersions::LICITACION_CREATED;
+            $lastVersion->status      = TendersVersions::LICITACION_PUBLISH;
             
             try{
                 $lastVersion->save();
