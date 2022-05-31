@@ -65,6 +65,7 @@ Licitaciones
     {      
             table = $('#tender_table').DataTable( {
                 "serverSide": true,
+                "ordering": false,
                 "ajax": {
                     "url": "{{ route('tenders.companies.all') }}",
                     "type": "POST",

@@ -148,7 +148,6 @@ class CompanyController extends Controller
                 if($tenderCompany)
                 {
                     $this->sendNotificationTenderInvitation($tenderCompany, $company->user->id);
-                    $value->delete();
                 }
             }
         }

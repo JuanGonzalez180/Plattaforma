@@ -16,7 +16,7 @@ Licitaciones
     <div class="row">
         <div class="col-sm">
             <label for="company">Licitaciones</label>
-            <select name="tender" id="tender" class="form-control form-control-sm">
+            <select name="tender" id="tender" class="form-control form-control-sm" onchange="getCompany();">
                 <option value="all">Todas</option>
                 @foreach($tenders as $value)
                 <option value="{{$value['id']}}">{{ucfirst($value['name'])}}</option>
@@ -24,11 +24,10 @@ Licitaciones
             </select>
         </div>
         <div class="col-sm">
-            <label for="status">Compañia</label>
-            <select name="company" id="company" class="form-control form-control-sm">
-                <option value="all">Todas</option>
-                @foreach($companies as $value)
-                <option value="{{$value['id']}}">{{ucfirst($value['name'])}}</option>
+            <label for="parent_id">Ordenar por</label>
+            <select name="size" id="size" class="form-control form-control-sm" onchange="getCompany();">
+                @foreach($order as $key => $value)
+                <option value="{{$key}}">{{$value}}</option>
                 @endforeach
             </select>
         </div>
@@ -36,7 +35,7 @@ Licitaciones
 </div>
 <br>
 @include('partials.session-status')
-<table class="table table-striped table-bordered" style="width:100%">
+<table id="tender_table" class="table table-striped table-bordered" style="width:100%">
     <thead>
         <tr>
             <th scope="col">#</th>
@@ -50,6 +49,78 @@ Licitaciones
 </table>
 @include('partials.structure.close-main')
 <script>
+    var table;
 
+    $(document).ready(function() {
+        table = $('#tender_table').DataTable({
+            "serverSide": true,
+            "ordering": false,
+            "ajax": {
+                "url": "{{ route('tenders.invitation.email.all') }}",
+                "type": "POST",
+                "headers": {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                "data": function(d) {
+                    d.size = getSize();
+                    d.tender = getTender();
+                }
+            },
+            "columns": [{
+                    data: 'id'
+                },
+                {
+                    data: 'email'
+                },
+                {
+                    data: 'tender_name'
+                },
+                {
+                    data: 'company_name'
+                },
+                {
+                    data: 'register_email'
+                },
+                {
+                    data: 'date'
+                }
+            ],
+            "lengthMenu": [
+                [20, 50, 100],
+                [20, 50, 100]
+            ],
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                "zeroRecords": "Nothing found - sorry",
+                "info": "Mostrando la pagina _PAGE_ de _PAGES_",
+                "infoEmpty": "No hay elementos",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                "search": "Buscar:",
+                "paginate": {
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            }
+        });
+
+    });
+
+    function getSize() {
+        var select = document.getElementById('size');
+        var value = select.options[select.selectedIndex].value;
+
+        return value;
+    }
+
+    function getTender() {
+        var select = document.getElementById('tender');
+        var value = select.options[select.selectedIndex].value;
+
+        return value;
+    }
+
+    function getCompany() {
+        table.ajax.reload();
+    }
 </script>
 @endsection

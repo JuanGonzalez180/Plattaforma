@@ -22,4 +22,10 @@ class TemporalInvitationCompany extends Model
     {
         return $this->belongsTo(Tenders::class);
     }
+
+    public function mailExists()
+    {
+        return User::where('email',$this->email)
+            ->exists();
+    }
 }

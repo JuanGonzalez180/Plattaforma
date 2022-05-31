@@ -158,6 +158,8 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::post('/tenders/all/companies', [TenderController::class, 'getTenders'])->name('tenders.companies.all');
 
+        Route::post('/tenders/all/invitation/emails', [TenderEmailCompaniesController::class, 'getTendersInvitation'])->name('tenders.invitation.email.all');
+
         Route::get('/tender/companies/emails', [TenderEmailCompaniesController::class, 'getFullCompanyTendersEmails'])->name('tenders-emails-companies-all');
         
         Route::get('/tender/all', [TenderController::class, 'getFullTenders'])->name('tenders-companies-all');
