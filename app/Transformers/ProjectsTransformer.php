@@ -54,6 +54,7 @@ class ProjectsTransformer extends TransformerAbstract
             'user'=> $userTransform->transform($project->user),
             'company'=> $companyTransform->transform($project->company),
             'image'=> $project->image,
+            'type' => 'proyecto'
         ];
     }
     
@@ -82,6 +83,7 @@ class ProjectsTransformer extends TransformerAbstract
             'address'=> $project->address,
             'types_projects'=> $project->projectTypeProject,
             'files'=> $project->files,
+            'type' => 'proyecto'
         ];
     }
 }
