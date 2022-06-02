@@ -20,6 +20,9 @@ class QueryWall extends Model
     const QUERYWALL_VISIBLE     = 'Visible';
     const QUERYWALL_VISIBLE_NO  = 'No-Visible';
 
+    const TYPE_QUERY            = 'Consulta';
+    const TYPE_GLOBALMESSAGE    = 'Mensaje-Global';
+
     protected $fillable = [
         'querysable_id',
         'querysable_type',
@@ -31,7 +34,8 @@ class QueryWall extends Model
         'user_id',
         'status',
         'user_answer_id',
-        'visible'
+        'visible',
+        'type'
     ];
 
     protected $hidden = [

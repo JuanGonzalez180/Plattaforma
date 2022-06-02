@@ -74,6 +74,7 @@ class TendersCompaniesController extends ApiController
 
         //compañias que ya estan participando
         $tendersCompaniesOld    = $tender->tenderCompanies;
+
         //registra las nuevas compañias a la licitación y obtiene una arreglo de las nuevas compañias
         $tendersCompaniesNew    = ($request->companies_id) ? $this->createTenderCompanies($tender, $request->companies_id) : [];
 
@@ -200,11 +201,31 @@ class TendersCompaniesController extends ApiController
     {
         $notifications = new Notifications();
 
-        foreach ($tenderCompanies as $key => $tenderCompany) {
-            //envia las notificaciones a los usuarios por compañia participante
-            $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDERINVITECOMPANIES, $this->getTeamsCompanyUsers($tenderCompany->company, 'id'));
-            //envia los correos a los usuarios por compañia participante
-            $this->sendEmailTenderInvitation($this->getTeamsCompanyUsers($tenderCompany->company, 'email'), $tenderCompany);
+        foreach ($tenderCompanies as $key => $tenderCompany)
+        {
+            //*ANTES - ENVIA CORREO Y NOTIFICACIONES A TODOS LOS USUARIOS POR COMPAÑIAS INVITADAS.
+
+            //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante
+            // $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDERINVITECOMPANIES, $this->getTeamsCompanyUsers($tenderCompany->company, 'id'));
+            //2. CORREOS -> Envia los correos a los usuarios por compañia participante
+            // $this->sendEmailTenderInvitation($this->getTeamsCompanyUsers($tenderCompany->company, 'email'), $tenderCompany);
+
+
+            //*DESPUES - SOLO ENVIA LA NOTIFICACIÓN DE INVITACION AL ADMINISTRADOR DE LA COMPAÑIA INVITADA.
+
+            //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante.
+            $notifications->registerNotificationQuery
+            (
+                $tender, 
+                Notifications::NOTIFICATION_TENDERINVITECOMPANIES,
+                [$tenderCompany->company->user->id]
+            );
+            //2. CORREOS -> Envia los correos a los usuarios al usuario administrador de la compañia licitante.
+            $this->sendEmailTenderInvitation
+            (
+                [$tenderCompany->company->user->email], 
+                $tenderCompany
+            );
         }
     }
 
@@ -213,11 +234,37 @@ class TendersCompaniesController extends ApiController
         $notifications = new Notifications();
 
         foreach ($tenderCompanies as $key => $tenderCompany) {
-            if ($tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING) {
-                //envia las notificaciones a los usuarios por compañia participante
-                $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION, $this->getTeamsCompanyUsers($tenderCompany->company, 'id'));
-                //envia los correos a los usuarios por compañia participante
-                $this->sendEmailTenderVersion($this->getTeamsCompanyUsers($tenderCompany->company, 'email'), $tenderCompany);
+            if ($tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING)
+            {
+                //*ANTES - ENVIA CORREOS Y NOTIFICACIONES A TODOS LOS USUARIOS POR COMPAÑIAS YA PARTICIPANTES A LA LICITACION.
+
+                //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante
+                //$notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION, $this->getTeamsCompanyUsers($tenderCompany->company, 'id'));
+                //2. CORREOS -> Envia los correos a los usuarios por compañia participante
+                //$this->sendEmailTenderVersion($this->getTeamsCompanyUsers($tenderCompany->company, 'email'), $tenderCompany);
+                
+                
+                //*DESPUES - ENVIA CORREOS Y NOTIFICACIONES A SOLO LOS USUARIOS ENCARTGADOS DE LA LICITACIÓN Y ADMINISTRADOR POR COMPAÑIA.
+
+                //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante
+                $notifications->registerNotificationQuery
+                (
+                    $tender, 
+                    Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION,
+                    [
+                        $tenderCompany->userCompany()->id, 
+                        $tenderCompany->company->user->id
+                    ]
+                );
+                //2. CORREOS -> Envia los correos a los usuarios por compañia participante
+                $this->sendEmailTenderVersion
+                (
+                    [
+                        $tenderCompany->userCompany()->email, 
+                        $tenderCompany->company->user->email
+                    ], 
+                    $tenderCompany
+                );
             }
         }
     }

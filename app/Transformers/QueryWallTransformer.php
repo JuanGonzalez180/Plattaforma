@@ -55,6 +55,7 @@ class QueryWallTransformer extends TransformerAbstract
             'user_answer_company'=> ($querywall->user_answer)? Company::find($querywall->user_answer->companyId())->name : null,
             'status'=> (string)$querywall->status,
             'visible'=> (string)$querywall->visible,
+            'type'=> (string)$querywall->type,
             'created_at'=> (string)$querywall->created_at
         ];
     }

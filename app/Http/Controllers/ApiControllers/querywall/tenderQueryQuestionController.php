@@ -26,13 +26,14 @@ class tenderQueryQuestionController extends ApiController
     public function index( Request $request )
     {
         $tender_id = $request->tender_id;
+
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
 
-        if($user->userType() != 'oferta'){
-            $queryError = [ 'querywall' => 'Error, El usuario no puede ver las preguntas' ];
-            return $this->errorResponse( $queryError, 500 );
-        }
+        // if($user->userType() != 'oferta'){
+        //     $queryError = [ 'querywall' => 'Error, El usuario no puede ver las preguntas' ];
+        //     return $this->errorResponse( $queryError, 500 );
+        // }
 
         $queryWalls  = QueryWall::where('querysable_id', $tender_id)
             ->where('querysable_type', Tenders::class)
@@ -46,22 +47,23 @@ class tenderQueryQuestionController extends ApiController
 
     public function store(Request $request)
     {
+        
         $user = $this->validateUser();
         $company_id = $user->companyId();
 
-        if($user->userType() != 'oferta'){
-            $queryError = [ 'querywall' => 'Error, El usuario no puede hacer preguntas' ];
-            return $this->errorResponse( $queryError, 500 );
-        }
-
+        // if($user->userType() != 'oferta'){
+        //     $queryError = [ 'querywall' => 'Error, El usuario no puede hacer preguntas' ];
+        //     return $this->errorResponse( $queryError, 500 );
+        // }
+        
         $rules = [
             'question' => 'required|max:1000'
         ];
         
         $this->validate( $request, $rules );
-
+        
         DB::beginTransaction();
-
+        
         $questionFields = $request->all();
         $questionFields['querysable_id']        = $request->tender_id;
         $questionFields['querysable_type']      = Tenders::class;
@@ -71,6 +73,10 @@ class tenderQueryQuestionController extends ApiController
         $questionFields['date_questions']       = Carbon::now();
         $questionFields['status']               = QueryWall::QUERYWALL_PUBLISH;
 
+        //*si el mismo administrador de la licitación envia una pregunta se hace una pregunta es un mensaje global, pero si es un participante de la licitacion es una pregunta
+        $questionFields['type']                 = ($user->userType() != 'oferta')? QueryWall::TYPE_GLOBALMESSAGE: QueryWall::TYPE_QUERY;
+
+        
         try{
             $question = QueryWall::create( $questionFields );
         }catch(\Throwable $th){
