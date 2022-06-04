@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\tenders\tendersAction;
 
 use JWTAuth;
+use Carbon\Carbon;
 use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\QueryWall;
@@ -79,7 +80,9 @@ class TendersActionController extends ApiController
 
         DB::beginTransaction();
 
-        $tenderVersionLast->status = TendersVersions::LICITACION_CLOSED;
+        $tenderVersionLast->status  = TendersVersions::LICITACION_CLOSED;
+        $tenderVersionLast->date    = Carbon::now()->format('Y/m/d');
+        $tenderVersionLast->hour    = Carbon::now()->format('H:i');
 
         try{
             $tenderVersionLast->save();

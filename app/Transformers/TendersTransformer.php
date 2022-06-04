@@ -62,7 +62,9 @@ class TendersTransformer extends TransformerAbstract
             'tenderStatusUser'=> $tender->tenderStatusUser(),
             'slugTender'     => (string)$tender->company->slug,
             'tendersVersionCount'=> count($tender->tendersVersion),
-            'tenderType'=> $tender->type
+            'tenderType'=> $tender->type,
+            // 'commissionedUsers'=> $tender->commissionedUsers()
+            'participatingUsers'=> $tender->participatingUsers()
         ];
     }
 
@@ -99,8 +101,9 @@ class TendersTransformer extends TransformerAbstract
             'tendersVersionList'=> $tender->tendersVersion->sortBy([ ['created_at', 'desc'] ]),
             'tenderStatusUser'=> $tender->tenderStatusUser(),
             'slugTender'     => (string)$tender->company->slug,
-            'tenderType'=> (string)$tender->type
-
+            'tenderType'=> (string)$tender->type,
+            // 'commissionedUsers'=> $tender->commissionedUsers()
+            'participatingUsers'=> $tender->participatingUsers()
         ];
     }
 }

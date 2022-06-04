@@ -35,18 +35,20 @@ class tenderQueryAnswerController extends ApiController
 
         $queryWallsNotAnswered  = QueryWall::where('querysable_id', $tender_id)
             ->where('status',QueryWall::QUERYWALL_ANSWERED)
+            ->where('type','=','Consulta')
             ->where('querysable_type', Tenders::class)
             ->orderBy('created_at', 'desc')
             ->get();   
 
         $queryWallsAnswered  = QueryWall::where('querysable_id', $tender_id)
             ->where('status','<>',QueryWall::QUERYWALL_ANSWERED)
+            ->where('type','=','Consulta')
             ->where('querysable_type', Tenders::class)
             ->orderBy('updated_at', 'desc')
             ->get();   
 
-        $queryWalls = $queryWallsNotAnswered
-            ->merge($queryWallsAnswered);
+        $queryWalls = $queryWallsAnswered
+            ->merge($queryWallsNotAnswered);
 
         return $this->showAllPaginate($queryWalls);
     }

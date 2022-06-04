@@ -65,7 +65,8 @@ class CompanyTendersTransactController extends ApiController
             $queryError = [ 'querywall' => 'Error, El usuario debe pagar la suscripción' ];
             return $this->errorResponse( $queryError, 500 );
         }
-        $tenderCompany = TendersCompanies::where('tender_id', $id)->where('company_id', $user->companyId());
+        $tenderCompany = TendersCompanies::where('tender_id', $id)->where('company_id', $user->id);
+        
         $name_company = $user->companyName();
 
 

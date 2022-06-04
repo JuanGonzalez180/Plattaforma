@@ -172,4 +172,24 @@ class Tenders extends Model
 
         return $status;
     }
+
+    public function commissionedUsers()
+    {
+        return array_unique([$this->company->user->id, $this->user_id]);
+    }
+
+    public function participatingUsers()
+    {
+        $tenderCompanies = TendersCompanies::where('tender_id',$this->id)
+            ->get();
+
+        $users = [];
+        foreach ($tenderCompanies as $company)
+        {
+            $users[] = $company->user_id;
+            $users[] = $company->company->user->id;
+        }
+
+        return  $users;
+    }
 }

@@ -24,6 +24,10 @@ class TendersVersions extends Model
     const LICITACION_DISABLED   = 'Inactiva';
     const LICITACION_DESERTED   = 'Desierta';
 
+
+
+
+
     protected $fillable = [
         'tenders_id',
         'adenda',

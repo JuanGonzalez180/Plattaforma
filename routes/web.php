@@ -69,7 +69,7 @@ Auth::routes(['register' => false]);
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 //scripts
-Route::get('script/update/filesize', [ScriptFilesController::class, 'updateSizeFiles']);
+Route::get('script/update/generic', [ScriptFilesController::class, 'genericScript']);
 
 Route::get('script/delete/filesize', [ScriptFilesController::class, 'deleteFileNotExist']);
 

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\WebControllers\scripts;
 
 use App\Models\Files;
 use App\Models\Image;
+use App\Models\Tenders;
+use App\Models\TendersCompanies;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -12,6 +14,16 @@ class ScriptFilesController extends Controller
 {
     public $routeFile       = 'storage/';
 
+
+    public function genericScript()
+    {
+        $tendersCompanies = TendersCompanies::all();
+        foreach ($tendersCompanies as $value)
+        {
+            $value->user_company_id = $value->company->user->id;
+            $value->save();
+        }
+    }
 
     public function updateSizeFiles()
     {

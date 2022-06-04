@@ -227,7 +227,7 @@ class SearchItemController extends ApiController
         }
 
         return Tenders::whereIn('id', $tenders)
-            ->orderBy('name', 'asc')
+            ->orderBy('created_at', 'asc')
             ->get();
     }
     public function getProjectAll($status, $type_entity, $type_project, $category_tender, $search, $date)
@@ -422,11 +422,16 @@ class SearchItemController extends ApiController
     {
         $tenderVersionEnabled = $this->getTendersPublishVersion();
 
-        return TendersVersions::whereIn('tenders_versions.id', $tenderVersionEnabled)
-            ->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
+        return TendersVersions::join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
             ->join('companies', 'companies.id', '=', 'tenders.company_id')
             // ->where('companies.status','=',Company::COMPANY_APPROVED)
             ->pluck('tenders.id');
+
+        // return TendersVersions::whereIn('tenders_versions.id', $tenderVersionEnabled)
+        //     ->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
+        //     ->join('companies', 'companies.id', '=', 'tenders.company_id')
+        //     // ->where('companies.status','=',Company::COMPANY_APPROVED)
+        //     ->pluck('tenders.id');
     }
 
     public function getProjectEnabled()
