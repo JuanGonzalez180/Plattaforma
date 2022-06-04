@@ -186,7 +186,7 @@ class Tenders extends Model
         $users = [];
         foreach ($tenderCompanies as $company)
         {
-            $users[] = $company->user_id;
+            $users[] = $company->user_company_id;
             $users[] = $company->company->user->id;
         }
 

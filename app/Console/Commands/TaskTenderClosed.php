@@ -57,12 +57,9 @@ class TaskTenderClosed extends Command
 
             if ($hourValidate)
             {
-
                 $tender->tendersVersionLast()->status = TendersVersions::LICITACION_CLOSED;
+                $tender->tendersVersionLast()->close  = TendersVersions::LICITACION_CLOSED_SYSTEM;
                 $tender->tendersVersionLast()->save();
-
-                Storage::append("Licitación_evidencia.txt","*id "+$tender->name+" *La licitación '"+$tender->name+"' ha cerrado, con la version del codigo '"+$tender->tendersVersionLast()->id+"' a las :"+$tender->tendersVersionLast()->hour+".");
-
                 //envia las notificaciones
                 $this->sendNotificationTenders($tender);
                 //elimina las invitaciones a las compañia no registradas

@@ -81,8 +81,9 @@ class TendersActionController extends ApiController
         DB::beginTransaction();
 
         $tenderVersionLast->status  = TendersVersions::LICITACION_CLOSED;
-        $tenderVersionLast->date    = Carbon::now()->format('Y/m/d');
+        $tenderVersionLast->date    = Carbon::now()->format('Y-m-d');
         $tenderVersionLast->hour    = Carbon::now()->format('H:i');
+        $tenderVersionLast->close   = TendersVersions::LICITACION_CLOSED_USER;
 
         try{
             $tenderVersionLast->save();

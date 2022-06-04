@@ -9,6 +9,7 @@ use App\Models\Tenders;
 use App\Models\QueryWall;
 use Illuminate\Http\Request;
 use App\Models\Notifications;
+use App\Models\TendersCompanies;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
@@ -87,12 +88,36 @@ class tenderQueryQuestionController extends ApiController
         }
         DB::commit();
 
-        $this->sendNotificationQuery($question, Notifications::NOTIFICATION_QUERYWALL_TENDER_QUESTION);
+        if($user->userType() != 'oferta')
+        {
+            $this->sendNotificationQueryProponents($question, Notifications::NOTIFICATION_QUERYWALL_TENDER_ADMIN);
+        }
+        else
+        {
+            $this->sendNotificationQueryAdmin($question, Notifications::NOTIFICATION_QUERYWALL_TENDER_QUESTION);
+        }
 
         return $this->showOne($question,201);   
     }
 
-    public function sendNotificationQuery($query, $typeNotification)
+    public function sendNotificationQueryProponents($query, $typeNotification)
+    {
+        $tenderCompanies = TendersCompanies::where('tender_id', $query->querysable_id)
+            ->where('status', TendersCompanies::STATUS_PARTICIPATING)
+            ->get();
+
+        $users = [];
+        foreach ($tenderCompanies as $value)
+        {
+            $users[] = $value->company->user->id;
+            $users[] = $value->user_company_id;
+        }
+
+        $notifications  = new Notifications();
+        $notifications->registerNotificationQuery($query, $typeNotification, $users);
+    }
+
+    public function sendNotificationQueryAdmin($query, $typeNotification)
     {
         $tender = Tenders::find($query->querysable_id);
 
@@ -102,7 +127,7 @@ class tenderQueryQuestionController extends ApiController
 
         $notificationsIds   = array_values(array_unique($notificationsIds));
 
-        $notifications      = new Notifications();
+        $notifications  = new Notifications();
         $notifications->registerNotificationQuery($query, $typeNotification, $notificationsIds);
     }
 

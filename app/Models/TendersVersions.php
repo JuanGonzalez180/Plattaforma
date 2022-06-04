@@ -24,8 +24,9 @@ class TendersVersions extends Model
     const LICITACION_DISABLED   = 'Inactiva';
     const LICITACION_DESERTED   = 'Desierta';
 
-
-
+    const LICITACION_CLOSED_BLANK   = 'Indefinido';
+    const LICITACION_CLOSED_USER    = 'Cerrado por el usuario';
+    const LICITACION_CLOSED_SYSTEM  = 'Cerrado por el sistema';
 
 
     protected $fillable = [
@@ -34,7 +35,8 @@ class TendersVersions extends Model
         'price',
         'date',
         'hour',
-        'status'
+        'status',
+        'close'
     ];
 
     public function isStatusCreated(){

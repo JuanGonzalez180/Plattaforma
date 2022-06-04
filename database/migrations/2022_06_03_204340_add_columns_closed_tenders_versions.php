@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use App\Models\TendersVersions;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class AddColumnsClosedTendersVersions extends Migration
 {
@@ -15,9 +16,9 @@ class AddColumnsClosedTendersVersions extends Migration
     {
         Schema::table('tenders_versions', function (Blueprint $table)
         {
-            $table->string('hour')
-                ->after('close')
-                ->default(0);
+            $table->string('close')
+                ->after('hour')
+                ->default(TendersVersions::LICITACION_CLOSED_BLANK);
         });
     }
 
@@ -28,7 +29,8 @@ class AddColumnsClosedTendersVersions extends Migration
      */
     public function down()
     {
-        Schema::table('tenders_versions', function (Blueprint $table) {
+        Schema::table('tenders_versions', function (Blueprint $table)
+        {
             $table->dropColumn('close');
         });
     }

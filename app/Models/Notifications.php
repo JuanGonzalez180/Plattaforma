@@ -30,6 +30,7 @@ class Notifications extends Model
     //Muro de consultas
     const NOTIFICATION_QUERYWALL_TENDER_QUESTION    = 'QueryWallQuestions'; //notificación cuando una empresa licitante hace una pregunta en una licitación
     const NOTIFICATION_QUERYWALL_TENDER_ANSWER      = 'QueryWallAnswer'; //notificación cuando una empresa licitante hace una pregunta en una licitación
+    const NOTIFICATION_QUERYWALL_TENDER_ADMIN       = 'QueryWallAdmin'; //notificación cuando una empresa licitante hace una pregunta en una licitación
     
     //Licitaciones
     const NOTIFICATION_TENDER_STATUS_CLOSED         = 'TenderCompaniesStatusClosed'; //notificación cuando una licitacion se cierra y se le debe enviar a las compañia licitantes
@@ -124,6 +125,18 @@ class Notifications extends Model
             }
         }
         else if($this->type == Notifications::NOTIFICATION_QUERYWALL_TENDER_ANSWER && $this->notificationsable_type == QueryWall::class)
+        {
+            $tenderQuestion = QueryWall::find($this->notificationsable_id);
+
+            if( $tenderQuestion ){
+                // $this->query_id = $tenderQuestion->queryWallTenderId();
+                $this->query_id = $tenderQuestion->queryWallTender()->company->slug."/licitacion/".$tenderQuestion->queryWallTenderId();
+                // $tender->company->slug."/licitacion/".$tender->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
+        else if($this->type == Notifications::NOTIFICATION_QUERYWALL_TENDER_ADMIN && $this->notificationsable_type == QueryWall::class)
         {
             $tenderQuestion = QueryWall::find($this->notificationsable_id);
 
@@ -246,6 +259,11 @@ class Notifications extends Model
             'subtitle'  => '', 
             'message'   => 'La compañia %s, ha respondido tu pregunta.',
         ],
+        Notifications::NOTIFICATION_QUERYWALL_TENDER_ADMIN => [ 
+            'title'     => 'Muro de consultas: Lic. %s', 
+            'subtitle'  => '', 
+            'message'   => 'El encargado de la licitación ha hecho un anuncio.',
+        ],
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED => [ 
             'title'     => 'Licitación: Lic. %s', 
             'subtitle'  => '', 
@@ -339,6 +357,14 @@ class Notifications extends Model
             $data['id'] = $tender->project_id . '/' . $tender->id;
         }
         elseif( $type == Notifications::NOTIFICATION_QUERYWALL_TENDER_ANSWER ) //notificación cuando una compañia responde una pregunta a una licitación
+        {
+            $tender     = Tenders::find($query->querysable_id);
+
+            $title      = sprintf($title, $tender->name);
+            $message    = sprintf($message, $tender->company->name);
+            $data['id'] = $tender->company->slug."/licitacion/".$tender->id;
+        }
+        elseif( $type == Notifications::NOTIFICATION_QUERYWALL_TENDER_ADMIN ) //notificación cuando una compañia responde una pregunta a una licitación
         {
             $tender     = Tenders::find($query->querysable_id);
 
