@@ -252,7 +252,7 @@ class TendersCompaniesController extends ApiController
                     $tender, 
                     Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION,
                     [
-                        $tenderCompany->userCompany()->id, 
+                        $tenderCompany->userCompany->id, 
                         $tenderCompany->company->user->id
                     ]
                 );
@@ -260,7 +260,7 @@ class TendersCompaniesController extends ApiController
                 $this->sendEmailTenderVersion
                 (
                     [
-                        $tenderCompany->userCompany()->email, 
+                        $tenderCompany->userCompany->email, 
                         $tenderCompany->company->user->email
                     ], 
                     $tenderCompany

@@ -10,39 +10,39 @@ use App\Http\Controllers\WebControllers\stripe\PlanController;
 use App\Http\Controllers\WebControllers\remark\RemarkController;
 use App\Http\Controllers\WebControllers\brands\BrandsController;
 use App\Http\Controllers\WebControllers\tender\TenderController;
-use App\Http\Controllers\WebControllers\tenderemailcompanies\TenderEmailCompaniesController;
 
 
 use App\Http\Controllers\WebControllers\company\CompanyController;
-use App\Http\Controllers\WebControllers\scripts\RemoveUnwantedUsersController;
-use App\Http\Controllers\WebControllers\company\projects\CompanyProjectController;
 
 
-use App\Http\Controllers\WebControllers\company\CompanyFiles\CompanyFilesController;
 
-use App\Http\Controllers\WebControllers\exportfile\xls\CategoriesFileController;
 
-use App\Http\Controllers\WebControllers\company\providers\CompanyProvidersController;
 use App\Http\Controllers\WebControllers\project\ProjectController;
 use App\Http\Controllers\WebControllers\product\ProductController;
-use App\Http\Controllers\WebControllers\catalog\CatalogsController;
 use App\Http\Controllers\WebControllers\country\CountryController;
+use App\Http\Controllers\WebControllers\catalog\CatalogsController;
 use App\Http\Controllers\WebControllers\category\CategoryController;
 use App\Http\Controllers\WebControllers\querywall\QueryWallController;
 use App\Http\Controllers\WebControllers\stripe\SubscriptionController;
 use App\Http\Controllers\WebControllers\portfolio\PortfolioController;
+use App\Http\Controllers\WebControllers\scripts\ScriptFilesController;
 use App\Http\Controllers\WebControllers\stripe\ProductsStripeController;
 use App\Http\Controllers\WebControllers\typeproject\TypeProjectController;
-use App\Http\Controllers\WebControllers\scripts\ScriptFilesController;
 use App\Http\Controllers\WebControllers\typesentity\TypesEntityController;
+use App\Http\Controllers\WebControllers\scripts\RemoveUnwantedUsersController;
 use App\Http\Controllers\WebControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\WebControllers\socialnetworks\SocialNetworksController;
+use App\Http\Controllers\WebControllers\exportfile\xls\CategoriesFileController;
+use App\Http\Controllers\WebControllers\company\projects\CompanyProjectController;
 use App\Http\Controllers\WebControllers\tendercompanies\TenderCompaniesController;
 use App\Http\Controllers\WebControllers\uploadfile\template\ProductFileController;
 use App\Http\Controllers\WebControllers\uploadfile\file\importCategoriesController;
 use App\Http\Controllers\WebControllers\categoryservices\CategoryServicesController;
+use App\Http\Controllers\WebControllers\company\CompanyFiles\CompanyFilesController;
+use App\Http\Controllers\WebControllers\company\providers\CompanyProvidersController;
 use App\Http\Controllers\WebControllers\company\CompanyDelete\CompanyDeleteController;
 use App\Http\Controllers\WebControllers\publicity\advertisingplans\AdvertisingController;
+use App\Http\Controllers\WebControllers\tenderEmailInvitation\tenderEmailInvitationController;
 use App\Http\Controllers\WebControllers\publicity\manageadvertising\ManageAdvertisingController;
 use App\Http\Controllers\WebControllers\publicity\imagesadvertisingplan\ImagesAdvertisingPlansController;
 
@@ -158,14 +158,13 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::post('/tenders/all/companies', [TenderController::class, 'getTenders'])->name('tenders.companies.all');
 
-        Route::post('/tenders/all/invitation/emails', [TenderEmailCompaniesController::class, 'getTendersInvitation'])->name('tenders.invitation.email.all');
+        Route::post('/tenders/all/invitation/emails', [tenderEmailInvitationController::class, 'getTendersInvitation'])->name('tenders.invitation.email.all');
 
-        Route::get('/tender/companies/emails', [TenderEmailCompaniesController::class, 'getFullCompanyTendersEmails'])->name('tenders-emails-companies-all');
+        Route::get('/tender/companies/emails', [tenderEmailInvitationController::class, 'getFullCompanyTendersEmails'])->name('tenders-emails-companies-all');
         
         Route::get('/tender/all', [TenderController::class, 'getFullTenders'])->name('tenders-companies-all');
         Route::get('/tender/{type}/{id}', [TenderController::class, 'index'])->name('tender-company-id');
         
-
 
         Route::post('/tender/decline', [TenderController::class, 'updateStatusDecline'])
                 ->name('tender.decline');
