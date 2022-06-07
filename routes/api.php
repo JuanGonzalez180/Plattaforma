@@ -297,7 +297,6 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     /*csv*/
     Route::post('/uploadfile/csv/product/file', [ProductFileController::class, 'store'])->name('csv-product-file');
     Route::get('/filedownload/csv/product/file', [ProductFileController::class, 'downloadTemplate'])->name('download-csv-product-file');
-
     /**
      * Search
      */
@@ -309,37 +308,29 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     // Route::post('/search/item/companies', SearchLikeCompanyController::class)->name('search-item-companies');
     Route::resource('/search/items', SearchItemControllerOld::class, ['only' => ['index']])->names('search-items');
     Route::resource('/search/like/items', SearchLikeItemController::class, ['only' => ['index']])->names('search-like-items');
-
     /**
      * Random
      */
     Route::post('/advertisings/random', RandomAdvertisingsController::class)->name('advertisings-random');
-
     // Route::resource('/search/items/parameters', SearchParameterController::class, ['only' => ['index']])->names('search-parameter');
     Route::post('/search/items/parameters', SearchItemController::class)->name('search-parameter');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
-
     // Remarks
     Route::resource('/remarks', RemarksController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('remarks');
-
     // Interests or Favorites
     Route::resource('/interests', InterestsController::class, ['only' => ['index', 'store', 'destroy']])->names('interests');
     Route::resource('/favorites', FavoritesController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('favorites');
-
     // Notifications 
     Route::resource('/tokens', UsersTokensController::class, ['only' => ['store']])->names('tokens');
     Route::resource('/notifications', NotificationsController::class, ['only' => ['index', 'destroy','update']])->names('notifications');
-
     // Chat
     Route::resource('/chats', ChatController::class, ['only' => ['index', 'store']])->names('chats');
     Route::get('/chats/notread', [ChatController::class, 'notread'])->name('chats-notread');
     // Messages
     Route::resource('/messages', MessagesController::class, ['only' => ['index', 'store']])->names('messages');
-
     Route::resource('advertisings/plans/images', AdvertisingPlansPaidImagesController::class, ['only' => ['index', 'edit', 'update']])->names('advertisings_images');
     Route::get('/advertisings/plans', AdvertisingPlansController::class)->name('advertisings_plans');
     Route::resource('/advertisings', AdvertisingController::class, ['only' => ['index', 'store', 'edit', 'update']])->names('advertisings');
-
     //EXPORT FILES
     Route::get('/categories/list/file/xlsx', function () {
         return (new CategoriesFileController)->export()->download('categorias.xlsx');

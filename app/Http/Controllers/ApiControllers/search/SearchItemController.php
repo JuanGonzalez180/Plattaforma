@@ -227,7 +227,7 @@ class SearchItemController extends ApiController
         }
 
         return Tenders::whereIn('id', $tenders)
-            ->orderBy('created_at', 'asc')
+            ->orderBy('updated_at', 'desc')
             ->get();
     }
     public function getProjectAll($status, $type_entity, $type_project, $category_tender, $search, $date)
@@ -422,16 +422,16 @@ class SearchItemController extends ApiController
     {
         $tenderVersionEnabled = $this->getTendersPublishVersion();
 
-        return TendersVersions::join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
-            ->join('companies', 'companies.id', '=', 'tenders.company_id')
-            // ->where('companies.status','=',Company::COMPANY_APPROVED)
-            ->pluck('tenders.id');
-
-        // return TendersVersions::whereIn('tenders_versions.id', $tenderVersionEnabled)
-        //     ->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
+        // return TendersVersions::join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
         //     ->join('companies', 'companies.id', '=', 'tenders.company_id')
         //     // ->where('companies.status','=',Company::COMPANY_APPROVED)
         //     ->pluck('tenders.id');
+
+        return TendersVersions::whereIn('tenders_versions.id', $tenderVersionEnabled)
+            ->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
+            ->join('companies', 'companies.id', '=', 'tenders.company_id')
+            // ->where('companies.status','=',Company::COMPANY_APPROVED)
+            ->pluck('tenders.id');
     }
 
     public function getProjectEnabled()
@@ -1053,18 +1053,37 @@ class SearchItemController extends ApiController
     public function getTendersPublishVersion()
     {
 
+        // **** SOLO LICITACIONES EN ESTADO PUBLICADO
+        // $tenders = DB::table('tenders_versions as a')
+        //     ->select(
+        //         DB::raw('max(a.created_at), a.tenders_id'),
+        //         DB::raw("(SELECT `c`.id from `tenders_versions` as `c` 
+        //         where `c`.`status` = '" . TendersVersions::LICITACION_PUBLISH . "'  
+        //         and `c`.`tenders_id` = a.tenders_id ORDER BY `c`.id DESC LIMIT 1) AS version_id")
+        //     )
+        //     ->where('a.status', TendersVersions::LICITACION_PUBLISH)
+        //     ->where((function ($query) {
+        //         $query->select(
+        //             DB::raw("COUNT(*) from `tenders_versions` as `b` 
+        //             where `b`.`status` != '" . TendersVersions::LICITACION_PUBLISH . "'  
+        //             and `b`.`tenders_id` = a.tenders_id")
+        //         );
+        //     }), '=', 0)
+        //     ->groupBy('a.tenders_id')
+        //     ->pluck('version_id');
+
         $tenders = DB::table('tenders_versions as a')
             ->select(
                 DB::raw('max(a.created_at), a.tenders_id'),
                 DB::raw("(SELECT `c`.id from `tenders_versions` as `c` 
-                where `c`.`status` = '" . TendersVersions::LICITACION_PUBLISH . "'  
+                where `c`.`status` != '" . TendersVersions::LICITACION_CREATED . "'  
                 and `c`.`tenders_id` = a.tenders_id ORDER BY `c`.id DESC LIMIT 1) AS version_id")
             )
-            ->where('a.status', TendersVersions::LICITACION_PUBLISH)
+            ->where('a.status', '<>',TendersVersions::LICITACION_CREATED)
             ->where((function ($query) {
                 $query->select(
                     DB::raw("COUNT(*) from `tenders_versions` as `b` 
-                    where `b`.`status` != '" . TendersVersions::LICITACION_PUBLISH . "'  
+                    where `b`.`status` = '" . TendersVersions::LICITACION_CREATED . "'  
                     and `b`.`tenders_id` = a.tenders_id")
                 );
             }), '=', 0)

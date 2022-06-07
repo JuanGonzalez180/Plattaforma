@@ -22,8 +22,6 @@ Proveedores
     {{ session()->get('success') }}
 </div>
 @endif
-
-
 <div class="container">
     <div class="row">
         <div class="col-sm">
@@ -121,6 +119,7 @@ Proveedores
                 }
             }
         });
+        getStatusCount();
     });
 
     function getStatus() {
