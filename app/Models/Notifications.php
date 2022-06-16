@@ -34,6 +34,7 @@ class Notifications extends Model
     
     //Licitaciones
     const NOTIFICATION_TENDER_STATUS_CLOSED         = 'TenderCompaniesStatusClosed'; //notificación cuando una licitacion se cierra y se le debe enviar a las compañia licitantes
+    const NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE  = 'TenderCompaniesStatusClosedBefore'; //notificación cuando una licitacion es cerrada antes de tiempo por el administrador y se le debe enviar a las compañia licitantes
     const NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN   = 'TenderCompaniesStatusClosedAdmin'; //notificación cuando una licitacion se cierra y se le debe enviar al encargado y administrador de la licitación
     const NOTIFICATION_RECOMMEND_TENDER             = 'TenderRecommend'; //Notifica recomendaciones a compañias con etiquetas en comun
 
@@ -158,6 +159,16 @@ class Notifications extends Model
                 $this->query_id = '';
             }
         }
+        else if($this->type == Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE && $this->notificationsable_type == Tenders::class)
+        {
+            $tender = Tenders::find($this->notificationsable_id);
+
+            if( $tender ){
+                $this->query_id = $tender->company->slug."/licitacion/".$tender->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
         else if($this->type == Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN && $this->notificationsable_type == Tenders::class)
         {
             $tender = Tenders::find($this->notificationsable_id);
@@ -205,7 +216,7 @@ class Notifications extends Model
         Notifications::NOTIFICATION_TENDERCOMPANYSELECTED => [ 
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
-            'message'   => 'La licitación ha sido adjudicada, la empresa %s ha sido selecciona como la mejor oferta, muchas gracias por participar.' 
+            'message'   => 'La licitación ha sido adjudicada, la compañia %s ha sido selecciona como la mejor oferta, muchas gracias por participar.' 
         ],
         Notifications::NOTIFICATION_TENDERINVITECOMPANIES => [ 
             'title'     => 'Licitación: %s', 
@@ -269,6 +280,11 @@ class Notifications extends Model
             'subtitle'  => '', 
             'message'   => 'La licitación %s se ha cerrado y esta en proceso de evaluación.',
         ],
+        Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE => [ 
+            'title'     => 'Licitación: Lic. %s', 
+            'subtitle'  => '', 
+            'message'   => 'El administrador ha cerrado la licitación %s antes de la fecha prevista y esta en proceso de evaluación.',
+        ],
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN => [ 
             'title'     => 'Licitación: Lic. %s', 
             'subtitle'  => '', 
@@ -306,7 +322,7 @@ class Notifications extends Model
             $type == Notifications::NOTIFICATION_TENDERCOMPANYSELECTED
         ){
             $title      = sprintf($title, $query->tender->name);
-            $message    = sprintf($message, $query->name);
+            $message    = sprintf($message, $query->company->name);
         }
         elseif( $type == Notifications::NOTIFICATION_TENDERINVITECOMPANIES )
         {
@@ -373,6 +389,12 @@ class Notifications extends Model
             $data['id'] = $tender->company->slug."/licitacion/".$tender->id;
         }
         elseif( $type == Notifications::NOTIFICATION_TENDER_STATUS_CLOSED ) //notificación cuando una licitación se cierra y le notifica a las empresas licitantes
+        {
+            $title      = sprintf($title, $query->name);
+            $message    = sprintf($message, $query->name);
+            $data['id'] = $query->id;
+        }
+        elseif( $type == Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE ) //notificación cuando una licitación es cerrada por el administrador antes de tiempo y le notifica a las empresas licitantes
         {
             $title      = sprintf($title, $query->name);
             $message    = sprintf($message, $query->name);

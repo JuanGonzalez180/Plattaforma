@@ -179,6 +179,9 @@ class TendersController extends ApiController
         }
         DB::commit();
 
+
+        // * Notifica al integrate del equipo encargado de la licitación
+
         return $this->showOne($tender, 201);
     }
 
@@ -450,9 +453,9 @@ class TendersController extends ApiController
     public function sendDeleteTenderCompanyEmail($tenderName, $companies)
     {
         foreach ($companies as $value) {
-            Mail::to($value['email_admin'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+            Mail::to(trim($value['email_admin']))->send(new SendDeleteTenderCompany($tenderName, $value['company']));
             if ($value['email_admin'] != $value['email_responsible']) {
-                Mail::to($value['email_responsible'])->send(new SendDeleteTenderCompany($tenderName, $value['company']));
+                Mail::to(trim($value['email_responsible']))->send(new SendDeleteTenderCompany($tenderName, $value['company']));
             }
         }
     }

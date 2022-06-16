@@ -43,7 +43,7 @@ class SendCodeController extends ApiController
             $user->code_time = Carbon::now()->addMinutes($minutes)->format('Y-m-d H:i:s');
             $user->save();
 
-            Mail::to($user->email)->send(new SendCode( $code, $minutes, $user ));
+            Mail::to(trim($user->email))->send(new SendCode( $code, $minutes, $user ));
             return $this->showOneData( ['success' => 'Se ha enviado un correo electrónico'], 200);
         }
 

@@ -167,7 +167,7 @@ class CompanyController extends ApiController
             DB::commit();
             try {
                 // Generar el correo de Verificación.
-                Mail::to($user->email)->send(new CreatedAccount($company, $user, $type['type']['slug']));
+                Mail::to(trim($user->email))->send(new CreatedAccount($company, $user, $type['type']['slug']));
             } catch (\Throwable $th) {
             }
         }

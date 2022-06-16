@@ -14,6 +14,8 @@ return [
         'tender' => [
             'tenderListprovider' => 'licitaciones/listado',
             'tenderDetail'       => 'compania',
+            'tenderList'         => 'mis-licitaciones/listado',
+            'tender'             => 'licitacion'
         ]
 
     ],

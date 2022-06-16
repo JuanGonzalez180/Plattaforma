@@ -44,7 +44,7 @@ class TenderController extends Controller
             $tencompanies  = $tenderVersionLast->tenders->tenderCompanies;
 
             foreach ($tencompanies as $tencompany)
-                Mail::to($tencompany->company->user->email)->send(new SendDeclinedTenderCompany($tenderVersionLast->tenders->name, $tencompany->company->name));
+                Mail::to(trim($tencompany->company->user->email))->send(new SendDeclinedTenderCompany($tenderVersionLast->tenders->name, $tencompany->company->name));
 
         } catch (\Throwable $th) {
             DB::rollBack();

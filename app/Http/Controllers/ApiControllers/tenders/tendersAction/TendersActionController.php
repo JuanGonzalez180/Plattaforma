@@ -7,16 +7,17 @@ use Carbon\Carbon;
 use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\QueryWall;
+use Illuminate\Http\Request;
 use App\Models\Notifications;
 use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendEnabledTenderCompany;
 use App\Mail\SendDisabledTenderCompany;
 use App\Mail\SendDeclinedTenderCompany;
 use App\Models\TemporalInvitationCompany;
+use App\Mail\tender\tenderClose\sendCloseTenderAdmin;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class TendersActionController extends ApiController
@@ -76,7 +77,8 @@ class TendersActionController extends ApiController
 
     public function updateStatusClosed($id)
     {
-        $tenderVersionLast = Tenders::find($id)->tendersVersionLast();
+        $tender             = Tenders::find($id);
+        $tenderVersionLast  = $tender->tendersVersionLast();
 
         DB::beginTransaction();
 
@@ -94,7 +96,35 @@ class TendersActionController extends ApiController
             return $this->errorResponse( $tenderVersionError, 500 );
         }
 
+        //*Envia las Notificaciones.
+        $this->sendNotificationTenders($tender);
+        //*Envia los Correos.
+        $this->sendEmailsTenders($tender);
+
         return $this->showOne($tenderVersionLast,200);
+    }
+
+    public function sendNotificationTenders($tender)
+    {
+        $notifications  = new Notifications();
+        //*Notifica a las compañias participantes de la licitación.
+        $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE, $tender->TenderParticipatingCompanyIdUsers());
+        //*Notifica al administrador y/o encargado de la licitación.
+        $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN, $tender->TenderAdminIdUsers());
+    }
+
+    public function sendEmailsTenders($tender)
+    {
+        // *Correos de las compañias participantes de la licitación.
+        $emails = $tender->TenderParticipatingCompanyEmails();
+
+        foreach ($emails as $email)
+        {
+            Mail::to(trim($email))->send(new sendCloseTenderAdmin(
+                $tender->name,
+                $tender->company->name 
+            ));
+        }
     }
 
     public function updateStatusDisabled($id)
@@ -116,7 +146,7 @@ class TendersActionController extends ApiController
             {
                 $company = $companyTender->company;
                 // Informar por correo a los participantes que se ha declinado la licitación.
-                Mail::to($company->user->email)->send(new SendDisabledTenderCompany($tender->name, $company->name));
+                Mail::to(trim($company->user->email))->send(new SendDisabledTenderCompany($tender->name, $company->name));
                 // array_push($notificationsIds, $company->user->id);
             }
             
@@ -152,7 +182,7 @@ class TendersActionController extends ApiController
             {
                 $company = $companyTender->company;
                 // Informar por correo a los participantes que se ha habilitado la licitación.
-                Mail::to($company->user->email)->send(new SendEnabledTenderCompany($tender->name, $company->name));
+                Mail::to(trim($company->user->email))->send(new SendEnabledTenderCompany($tender->name, $company->name));
                 // array_push($notificationsIds, $company->user->id);
             }
             
@@ -189,7 +219,7 @@ class TendersActionController extends ApiController
             {
                 $company = $companyTender->company;
                 // Informar por correo a los participantes que se ha declinado la licitación.
-                Mail::to($company->user->email)->send(new SendDeclinedTenderCompany($tender->name, $company->name));
+                Mail::to(trim($company->user->email))->send(new SendDeclinedTenderCompany($tender->name, $company->name));
                 array_push($notificationsIds, $company->user->id);
             }
             

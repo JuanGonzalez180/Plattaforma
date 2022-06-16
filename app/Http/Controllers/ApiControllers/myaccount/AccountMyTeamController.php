@@ -193,7 +193,7 @@ class AccountMyTeamController extends ApiController
         }
 
         // Generar el correo de invitacion.
-        Mail::to($newUser->email)->send(new SendInvitation($newUser));
+        Mail::to(trim($newUser->email))->send(new SendInvitation($newUser));
 
         // Aquí debe devolver el usuario creado.
         return $this->showOne($newUser, 201);
@@ -229,7 +229,7 @@ class AccountMyTeamController extends ApiController
         ]);
 
         // Generar el correo de invitacion.
-        Mail::to($userMemberTeam->email)->send(new SendInvitation($userMemberTeam));
+        Mail::to(trim($userMemberTeam->email))->send(new SendInvitation($userMemberTeam));
 
         // Aquí debe devolver el usuario editado.
         return $this->showOne($userMemberTeam, 200);
@@ -243,7 +243,7 @@ class AccountMyTeamController extends ApiController
         if ($memberTeam->status == Team::TEAM_PENDING) {
 
             // Generar el correo de invitacion.
-            Mail::to($userMemberTeam->email)->send(new SendInvitation($userMemberTeam));
+            Mail::to(trim($userMemberTeam->email))->send(new SendInvitation($userMemberTeam));
 
             // Aquí debe devolver el usuario editado.
             return $this->showOne($userMemberTeam, 200);

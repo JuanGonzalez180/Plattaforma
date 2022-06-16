@@ -104,4 +104,13 @@ class TendersCompanies extends Model
         return $this->morphMany(Notifications::class, 'notificationsable');
     }
 
+    public function tenderCompanyEmails()
+    {
+        return array_unique([$this->company->user->email, $this->userCompany->email]);
+    }
+
+    public function tenderCompanyUsersIds()
+    {
+        return array_unique([$this->company->user->id, $this->userCompany->id]);
+    }
 }

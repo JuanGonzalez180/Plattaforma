@@ -129,9 +129,16 @@ class Tenders extends Model
         return $this->hasMany(TendersCompanies::class, 'tender_id');
     }
 
+    public function tenderCompaniesActive()
+    {
+        return TendersCompanies::where('tender_id', $this->id)
+            ->where('status', TendersCompanies::STATUS_PARTICIPATING)
+            ->get();
+    }
+
     public function tenderCompaniesId()
     {
-        return TendersCompanies::where('tender_id',$this->id)
+        return TendersCompanies::where('tender_id', $this->id)
             ->pluck('company_id');
     }
 
@@ -180,16 +187,80 @@ class Tenders extends Model
 
     public function participatingUsers()
     {
-        $tenderCompanies = TendersCompanies::where('tender_id',$this->id)
+        $tenderCompanies = TendersCompanies::where('tender_id', $this->id)
             ->get();
 
         $users = [];
-        foreach ($tenderCompanies as $company)
-        {
+        foreach ($tenderCompanies as $company) {
             $users[] = $company->user_company_id;
             $users[] = $company->company->user->id;
         }
 
         return  $users;
+    }
+
+    // *Devuvle los correos de los usuarios participantes de la licitación.
+    public function TenderParticipatingCompanyEmails()
+    {
+        $emails = [];
+
+        $tenderCompanies = TendersCompanies::where('tender_id', $this->id)
+            ->where('status', TendersCompanies::STATUS_PARTICIPATING)
+            ->get();
+
+
+        foreach ($tenderCompanies as $tenderCompany) {
+            $emails[] = $tenderCompany->userCompany->email;
+            $emails[] = $tenderCompany->company->user->email;
+        }
+
+        return array_unique($emails);
+    }
+
+    // *Devuelve los id/s de los usuarios participantes de la licitación.
+    public function TenderParticipatingCompanyIdUsers()
+    {
+        $ids = [];
+
+        $tenderCompanies = TendersCompanies::where('tender_id', $this->id)
+            ->where('status', TendersCompanies::STATUS_PARTICIPATING)
+            ->get();
+
+
+        foreach ($tenderCompanies as $tenderCompany) {
+            $ids[] = $tenderCompany->userCompany->id;
+            $ids[] = $tenderCompany->company->user->id;
+        }
+
+        return array_unique($ids);
+    }
+
+    // *Devuelve los id/s de administrador de la compañia y del ecargado de la licitación.
+    public function TenderAdminIdUsers()
+    {
+        $ids = [
+            $this->company->user->id,
+            $this->user->id,
+        ];
+
+        return array_unique($ids);
+    }
+
+    // *Devuelve los correos del administrador de la compañia y encargado de la licitación.
+    public function TenderAdminEmails()
+    {
+        $emails = [
+            $this->company->user->email,
+            $this->user->email,
+        ];
+
+        return array_unique($emails);
+    }
+
+    public function tendersCompaniesParticipating()
+    {
+        return TendersCompanies::where('tender_id', $this->id)
+            ->where('status', TendersCompanies::STATUS_PARTICIPATING)
+            ->get();
     }
 }

@@ -109,11 +109,8 @@ class TendersCompaniesController extends ApiController
 
     public function sendInvitantionExternalCompanies($emails, $tender)
     {
-        foreach ($emails as $key => $email)
-        {
-
-            if (!($this->emailExistUser($email)) && !($this->invitationTenderExist($email, $tender)))
-            {
+        foreach ($emails as $key => $email) {
+            if (!($this->emailExistUser($email)) && !($this->invitationTenderExist($email, $tender))) {
                 $fields['tender_id']    = $tender->id;
                 $fields['email']        = $email;
 
@@ -136,8 +133,7 @@ class TendersCompaniesController extends ApiController
 
         //si por lo menos existe alguna compañia con alguna etiqueta
         if (sizeof($recommendToCompanies) > 0) {
-            foreach ($recommendToCompanies as $key => $value)
-            {
+            foreach ($recommendToCompanies as $key => $value) {
                 $company = Company::find($value);
 
                 $this->sendNotificationRecommendTender($tender, $company->userIds());
@@ -155,7 +151,7 @@ class TendersCompaniesController extends ApiController
     public function sendEmailRecommendTender($tender, $emails)
     {
         foreach ($emails as $key => $value) {
-            Mail::to($value)->send(new sendRecommentTenderCompany(
+            Mail::to(trim($value))->send(new sendRecommentTenderCompany(
                 $tender->name,
                 $tender->company->name,
                 $tender->company->slug,
@@ -201,8 +197,7 @@ class TendersCompaniesController extends ApiController
     {
         $notifications = new Notifications();
 
-        foreach ($tenderCompanies as $key => $tenderCompany)
-        {
+        foreach ($tenderCompanies as $key => $tenderCompany) {
             //*ANTES - ENVIA CORREO Y NOTIFICACIONES A TODOS LOS USUARIOS POR COMPAÑIAS INVITADAS.
 
             //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante
@@ -214,18 +209,16 @@ class TendersCompaniesController extends ApiController
             //*DESPUES - SOLO ENVIA LA NOTIFICACIÓN DE INVITACION AL ADMINISTRADOR DE LA COMPAÑIA INVITADA.
 
             //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante.
-            $notifications->registerNotificationQuery
-            (
-                $tender, 
-                Notifications::NOTIFICATION_TENDERINVITECOMPANIES,
-                [$tenderCompany->company->user->id]
-            );
+            $notifications->registerNotificationQuery(
+                    $tender,
+                    Notifications::NOTIFICATION_TENDERINVITECOMPANIES,
+                    [$tenderCompany->company->user->id]
+                );
             //2. CORREOS -> Envia los correos a los usuarios al usuario administrador de la compañia licitante.
-            $this->sendEmailTenderInvitation
-            (
-                [$tenderCompany->company->user->email], 
-                $tenderCompany
-            );
+            $this->sendEmailTenderInvitation(
+                    [$tenderCompany->company->user->email],
+                    $tenderCompany
+                );
         }
     }
 
@@ -234,37 +227,34 @@ class TendersCompaniesController extends ApiController
         $notifications = new Notifications();
 
         foreach ($tenderCompanies as $key => $tenderCompany) {
-            if ($tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING)
-            {
+            if ($tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING) {
                 //*ANTES - ENVIA CORREOS Y NOTIFICACIONES A TODOS LOS USUARIOS POR COMPAÑIAS YA PARTICIPANTES A LA LICITACION.
 
                 //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante
                 //$notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION, $this->getTeamsCompanyUsers($tenderCompany->company, 'id'));
                 //2. CORREOS -> Envia los correos a los usuarios por compañia participante
                 //$this->sendEmailTenderVersion($this->getTeamsCompanyUsers($tenderCompany->company, 'email'), $tenderCompany);
-                
-                
+
+
                 //*DESPUES - ENVIA CORREOS Y NOTIFICACIONES A SOLO LOS USUARIOS ENCARTGADOS DE LA LICITACIÓN Y ADMINISTRADOR POR COMPAÑIA.
 
                 //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante
-                $notifications->registerNotificationQuery
-                (
-                    $tender, 
-                    Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION,
-                    [
-                        $tenderCompany->userCompany->id, 
-                        $tenderCompany->company->user->id
-                    ]
-                );
+                $notifications->registerNotificationQuery(
+                        $tender,
+                        Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION,
+                        [
+                            $tenderCompany->userCompany->id,
+                            $tenderCompany->company->user->id
+                        ]
+                    );
                 //2. CORREOS -> Envia los correos a los usuarios por compañia participante
-                $this->sendEmailTenderVersion
-                (
-                    [
-                        $tenderCompany->userCompany->email, 
-                        $tenderCompany->company->user->email
-                    ], 
-                    $tenderCompany
-                );
+                $this->sendEmailTenderVersion(
+                        [
+                            $tenderCompany->userCompany->email,
+                            $tenderCompany->company->user->email
+                        ],
+                        $tenderCompany
+                    );
             }
         }
     }
@@ -272,7 +262,7 @@ class TendersCompaniesController extends ApiController
     public function sendEmailTenderVersion($UserEmails, $tenderCompany)
     {
         foreach ($UserEmails as $mail) {
-            Mail::to($mail)->send(new SendUpdateTenderCompany(
+            Mail::to(trim($mail))->send(new SendUpdateTenderCompany(
                 $tenderCompany->tender->name,
                 $tenderCompany->tender->tendersVersionLast()->adenda,
                 $tenderCompany->company->name
@@ -283,7 +273,7 @@ class TendersCompaniesController extends ApiController
     public function sendEmailTenderInvitation($UserEmails, $tenderCompany)
     {
         foreach ($UserEmails as $mail) {
-            Mail::to($mail)->send(new SendInvitationTenderCompany(
+            Mail::to(trim($mail))->send(new SendInvitationTenderCompany(
                 $tenderCompany->tender->name,
                 $tenderCompany->tender->tendersVersionLast()->adenda,
                 $tenderCompany->company->name

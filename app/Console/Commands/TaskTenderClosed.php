@@ -11,8 +11,11 @@ use App\Models\TendersVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
 use App\Traits\UsersCompanyTenders;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use App\Models\TemporalInvitationCompany;
+use App\Mail\tender\tenderClose\sendCloseAdminTender;
+use App\Mail\tender\tenderClose\sendCloseTenderCronJobs;
 
 class TaskTenderClosed extends Command
 {
@@ -48,29 +51,31 @@ class TaskTenderClosed extends Command
      */
     public function handle()
     {
+        // *Trae las licitaciones publicadas a cerrar el dia de hoy.
         $tendersVersionLastPublish = $this->getTendersVersionLastPublish();
 
         $tenders = Tenders::whereIn('id', $tendersVersionLastPublish)->get();
 
         foreach ($tenders as $tender) {
+            // *Valida si la hora de cierre de la licitación es igual a la hora actual.
             $hourValidate   = ($tender->tendersVersionLast()->hour == Carbon::now()->format('H:i'));
 
-            if ($hourValidate)
-            {
-                $tender->tendersVersionLast()->status = TendersVersions::LICITACION_CLOSED;
-                $tender->tendersVersionLast()->close  = TendersVersions::LICITACION_CLOSED_SYSTEM;
-                $tender->tendersVersionLast()->save();
-                //envia las notificaciones
+            if ($hourValidate) {
+                //*Cierra las licitacines.
+                $this->tenderVersionUpdate($tender);
+                //*Envia las notificaciones
                 $this->sendNotificationTenders($tender);
-                //elimina las invitaciones a las compañia no registradas
-                $this->removeCompanyTenderInvitation($tender);
+                //*Enviar los correos
+                $this->sendEmailsTenders($tender);
             };
         }
     }
 
-    public function removeCompanyTenderInvitation($tender)
+    public function tenderVersionUpdate($tender)
     {
-        TemporalInvitationCompany::where('tender_id',$tender->id)->delete();
+        $tender->tendersVersionLast()->status = TendersVersions::LICITACION_CLOSED;
+        $tender->tendersVersionLast()->close  = TendersVersions::LICITACION_CLOSED_SYSTEM;
+        $tender->tendersVersionLast()->save();
     }
 
     public function getTendersVersionLastPublish()
@@ -91,35 +96,36 @@ class TaskTenderClosed extends Command
     }
 
     public function sendNotificationTenders($tender)
-    {     
-        $notifications      = new Notifications();
-        //notifica a las compañias licitantes, tanto para el admin de la compañia y a los integrantes del equipo
-        $this->sendNotificationTenderCompanyClose($tender);
-        //notifica al encargado de la notificación y al admin de la compañia
-        $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN,[$tender->user_id, $tender->company->user_id] );
-    }
-    
-    public function sendNotificationTenderCompanyClose($tender)
     {
-        $companies = Company::whereIn('id',$this->getTendersCompanies($tender))
-            ->get();
-        
         $notifications      = new Notifications();
+        //*Notifica a los usuarios de las compañias participantes de la licitación.
+        $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED, $tender->TenderParticipatingCompanyIdUsers());
+        //*Notifica al administrador y/o encargado de la licitación.
+        $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN, $tender->TenderAdminIdUsers());
+    }
 
-        foreach($companies as $company)
+    public function sendEmailsTenders($tender)
+    {
+        // *Correos de las compañias participantes de la licitación.
+        $tenderCompaniesEmails = $tender->TenderParticipatingCompanyEmails();
+
+        // *Correos del administrador o encargado de la licitación.
+        $tenderAdminEmails     = $tender->TenderAdminEmails();
+
+        foreach ($tenderCompaniesEmails as $companyEmail)
         {
-            $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED, $this->getTeamsCompanyUsers($company,'id'));
+            Mail::to(trim($companyEmail))->send(new sendCloseTenderCronJobs(
+                $tender->name,
+                $tender->company->name 
+            ));
+        }
+
+        foreach ($tenderAdminEmails as $adminEmail)
+        {
+            Mail::to(trim($adminEmail))->send(new sendCloseAdminTender(
+                $tender->name,
+                $tender->company->name 
+            ));
         }
     }
-
-    public function getTendersCompanies($tender)
-    {
-        return TendersCompanies::where('tenders_companies.tender_id', $tender->id)
-            ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
-            ->where('companies.status','=',Company::COMPANY_APPROVED)
-            ->where('tenders_companies.status','=',TendersCompanies::STATUS_PARTICIPATING)
-            ->pluck('companies.id')
-            ->all(); 
-    }
-
 }

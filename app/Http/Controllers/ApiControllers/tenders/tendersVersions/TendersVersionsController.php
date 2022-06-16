@@ -9,8 +9,12 @@ use App\Models\Files;
 use App\Models\Tenders;
 use App\Models\Projects;
 use Illuminate\Http\Request;
+use App\Models\Notifications;
 use App\Models\TendersVersions;
+use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendUpdateTenderCompany;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -19,7 +23,8 @@ class TendersVersionsController extends ApiController
     public $routeFile           = 'public/';
     public $routeTenderVersion  = 'images/tenders/';
 
-    public function validateUser(){
+    public function validateUser()
+    {
         try {
             $this->user = JWTAuth::parseToken()->authenticate();
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
@@ -34,7 +39,6 @@ class TendersVersionsController extends ApiController
      */
     public function index()
     {
-
     }
 
     /**
@@ -47,104 +51,130 @@ class TendersVersionsController extends ApiController
     {
         $tender_id  = $request->tender_id;
         $files      = $request['files'];
- 
-        $lastVersion = TendersVersions::where('tenders_id','=', $tender_id)
-            ->orderBy('created_at','DESC')
+
+        $lastVersion = TendersVersions::where('tenders_id', '=', $tender_id)
+            ->orderBy('created_at', 'DESC')
             ->get()
             ->first();
-        
-        // if($lastVersion->status == TendersVersions::LICITACION_PUBLISH)
-        // {
-            $rules = [
-                'adenda'    => 'required',
-                'price'     => 'required|numeric',
-                'project'   => 'required|numeric',
-                'date'      => 'required',
-                'hour'      => 'required'
-            ];
 
+        $rules = [
+            'adenda'    => 'required',
+            'price'     => 'required|numeric',
+            'project'   => 'required|numeric',
+            'date'      => 'required',
+            'hour'      => 'required'
+        ];
 
-            $project_date_end   = Carbon::parse(Tenders::find($tender_id)->project->date_end);
-            $tender_date_end    = Carbon::parse(date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day'])));
+        $project_date_end   = Carbon::parse(Tenders::find($tender_id)->project->date_end);
+        $tender_date_end    = Carbon::parse(date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day'])));
 
-            if ($tender_date_end->greaterThan($project_date_end)) {
-                $tenderError = ['tender' => 'Error, La fecha de cierre de la licitacion debe ser menor a la fecha de cierre del proyecto'];
-                return $this->errorResponse($tenderError, 500);
+        if ($tender_date_end->greaterThan($project_date_end)) {
+            $tenderError = ['tender' => 'Error, La fecha de cierre de la licitacion debe ser menor a la fecha de cierre del proyecto'];
+            return $this->errorResponse($tenderError, 500);
+        }
+
+        DB::beginTransaction();
+
+        $tenderVersionFields['adenda']  = $request['adenda'];
+        $tenderVersionFields['price']   = $request['price'];
+
+        if ($request['date']) {
+            $tenderVersionFields['date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
+        }
+
+        if ($request['hour']) {
+            $tenderVersionFields['hour'] = $this->timeFormat($request['hour']['hour']) . ':' . $this->timeFormat($request['hour']['minute']);
+        }
+
+        $tenderVersionFields['tenders_id']  = $tender_id;
+        $tenderVersionFields['status']      = TendersVersions::LICITACION_PUBLISH;
+
+        try {
+            //*Crea la nueva adenda.
+            $tendersVersions                = TendersVersions::create($tenderVersionFields);
+
+            //*Crea las etiquetas de la nueva adenda.
+            foreach ($request->tags as $key => $tag) {
+                $tendersVersions->tags()->create(['name' => $tag['displayValue']]);
             }
+        } catch (\Throwable $th) {
+            // Si existe algún error al momento de crear el usuario
+            $errorTender = true;
+            DB::rollBack();
+            $tenderError = ['tenderVersion' => 'Error, no se ha podido crear la versión de la licitación'];
+            return $this->errorResponse($tenderError, 500);
+        }
 
-            // Iniciar Transacción
-            DB::beginTransaction();
 
-            $tenderVersionFields['adenda']  = $request['adenda'];
-            $tenderVersionFields['price']   = $request['price'];
+        //* Si existe una nueva version copia los archivos de la adenda anterios a la actual
+        if ($tendersVersions) {
+            $id_old     = $lastVersion->id;
+            $id_last    = $tendersVersions->id;
 
-            if( $request['date'] ){
-                $tenderVersionFields['date'] = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
-            }
-            
-            if( $request['hour'] ){
-                $tenderVersionFields['hour'] = $this->timeFormat($request['hour']['hour']) . ':' . $this->timeFormat($request['hour']['minute']);
-            }
+            if ($files) {
+                foreach ($files as $key => $file) {
+                    $oldVersion = Files::select('filesable_type', 'name', 'type', 'url')
+                        ->where('id', $file['files_id'])
+                        ->get()
+                        ->first();
 
-            $tenderVersionFields['tenders_id']  = $tender_id;
-            $tenderVersionFields['status']      = TendersVersions::LICITACION_PUBLISH;
+                    $fileName   = $oldVersion->name;
+                    $newFolder  = $this->routeTenderVersion . $id_last . '/documents';
 
-            try{
-                $tendersVersions                = TendersVersions::create( $tenderVersionFields );
+                    $file_old_version = $oldVersion->url;
+                    $file_new_version = $newFolder . '/' . $fileName;
 
-                foreach ($request->tags as $key => $tag) {
-                    $tendersVersions->tags()->create(['name' => $tag['displayValue']]);
-                }
-                // Crear TenderVersion
-            } catch (\Throwable $th) {
-                // Si existe algún error al momento de crear el usuario
-                $errorTender = true;
-                DB::rollBack();
-                $tenderError = [ 'tenderVersion' => 'Error, no se ha podido crear la versión de la licitación'];
-                return $this->errorResponse( $tenderError, 500 );
-            }
+                    Storage::copy($this->routeFile . $file_old_version, $this->routeFile . $file_new_version);
 
-            if( $tendersVersions ) {
-                
-                $id_old     = $lastVersion->id;
-                $id_last    = $tendersVersions->id;
-                
-                if( $files ){
-                    foreach ($files as $key => $file) {
-                        // Files::select('filesable_type','name','type','url')->where('id',14)->get()->first()
-                        $oldVersion = Files::select('filesable_type','name','type','url')
-                                            ->where('id',$file['files_id'])
-                                            ->get()
-                                            ->first();
-
-                        $fileName   = $oldVersion->name;
-                        $newFolder  = $this->routeTenderVersion.$id_last.'/documents';
-
-                        $file_old_version = $oldVersion->url;
-                        $file_new_version = $newFolder.'/'.$fileName;
-
-                        Storage::copy($this->routeFile.$file_old_version, $this->routeFile.$file_new_version);
-
-                        $tendersVersions->files()->create([ 'name' => $oldVersion->name, 'type'=> $oldVersion->type, 'url' => $file_new_version]);
-                    }
+                    $tendersVersions->files()->create(['name' => $oldVersion->name, 'type' => $oldVersion->type, 'url' => $file_new_version]);
                 }
             }
+        }
 
-            DB::commit();
-            return $this->showOne($tendersVersions,201);
-        // }else{
-        //     $tenderError = [ 'tenderVersion' => 'Error, la ultima versión de la licitacion no esta publicada'];
-        //     return $this->errorResponse( $tenderError, 500 );
-        // }
+        // * Envia correos y notificaciones a las compañias participantes.
+        $this->sendMessageTenderVersión($tendersVersions->tenders->tendersCompaniesParticipating(), $tendersVersions->tenders);
 
-        // return [];
-        
+        DB::commit();
+        return $this->showOne($tendersVersions, 201);
+    }
+
+    public function sendMessageTenderVersión($tenderCompanies, $tender)
+    {
+        $notifications = new Notifications();
+
+        foreach ($tenderCompanies as $key => $tenderCompany) {
+            if ($tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING)
+            {
+                //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante
+                $notifications->registerNotificationQuery(
+                    $tender,
+                    Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION,
+                    $tenderCompany->tenderCompanyUsersIds()
+                );
+                // 2. CORREOS -> Envia los correos a los usuarios ya participantes
+                $this->sendEmailTenderVersion(
+                    $tenderCompany->tenderCompanyEmails(),
+                    $tenderCompany
+                );
+            }
+        }
+    }
+
+    public function sendEmailTenderVersion($UserEmails, $tenderCompany)
+    {
+        foreach ($UserEmails as $mail) {
+            Mail::to(trim($mail))->send(new SendUpdateTenderCompany(
+                $tenderCompany->tender->name,
+                $tenderCompany->tender->tendersVersionLast()->adenda,
+                $tenderCompany->company->name
+            ));
+        }
     }
 
 
     public function timeFormat($value)
     {
-        return (strlen((string)$value) <= 1) ? '0'.$value : $value; 
+        return (strlen((string)$value) <= 1) ? '0' . $value : $value;
     }
 
     /**
@@ -160,8 +190,8 @@ class TendersVersionsController extends ApiController
 
     public function edit($id)
     {
-        $lastVersion = TendersVersions::where('tenders_id','=', $id)
-            ->orderBy('created_at','DESC')
+        $lastVersion = TendersVersions::where('tenders_id', '=', $id)
+            ->orderBy('created_at', 'DESC')
             ->get()
             ->first();
 
@@ -172,7 +202,7 @@ class TendersVersionsController extends ApiController
         $lastVersion->date;
         $lastVersion->hour;
 
-        return $this->showOne($lastVersion,201);
+        return $this->showOne($lastVersion, 201);
     }
 
     /**
@@ -184,62 +214,62 @@ class TendersVersionsController extends ApiController
      */
     public function update(Request $request, $id)
     {
-        $lastVersion = TendersVersions::where('tenders_id','=', $id)
-            ->orderBy('created_at','DESC')
+        $lastVersion = TendersVersions::where('tenders_id', '=', $id)
+            ->orderBy('created_at', 'DESC')
             ->get()
             ->first();
 
         // if($lastVersion->status == TendersVersions::LICITACION_CREATED) {
-            $rules = [
-                'adenda'    => 'required',
-                'price'     => 'required|numeric',
-                'date'      => 'required',
-                'hour'      => 'required'
-            ];
+        $rules = [
+            'adenda'    => 'required',
+            'price'     => 'required|numeric',
+            'date'      => 'required',
+            'hour'      => 'required'
+        ];
 
-            // Iniciar Transacción
-            DB::beginTransaction();
+        // Iniciar Transacción
+        DB::beginTransaction();
 
-            $lastVersion->adenda  = $request['adenda'];
-            $lastVersion->price   = $request['price'];
+        $lastVersion->adenda  = $request['adenda'];
+        $lastVersion->price   = $request['price'];
 
-            
-            if( $request['date'] ){
-                $lastVersion->date = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
+
+        if ($request['date']) {
+            $lastVersion->date = date("Y-m-d", strtotime($request['date']['year'] . '-' . $request['date']['month'] . '-' . $request['date']['day']));
+        }
+
+        if ($request['hour']) {
+            $lastVersion->hour = $request['hour']['hour'] . ':' . $request['hour']['minute'];
+        }
+
+        // $lastVersion->status      = TendersVersions::LICITACION_CREATED;
+        $lastVersion->status      = TendersVersions::LICITACION_PUBLISH;
+
+        try {
+            $lastVersion->save();
+
+            // Tags
+            // Eliminar los anteriores
+            foreach ($lastVersion->tags as $key => $tag) {
+                $tag->delete();
             }
-            
-            if( $request['hour'] ){
-                $lastVersion->hour = $request['hour']['hour'] . ':' . $request['hour']['minute'];
+
+            foreach ($request->tags as $key => $tag) {
+                $lastVersion->tags()->create(['name' => $tag['displayValue']]);
             }
-            
-            // $lastVersion->status      = TendersVersions::LICITACION_CREATED;
-            $lastVersion->status      = TendersVersions::LICITACION_PUBLISH;
-            
-            try{
-                $lastVersion->save();
 
-                // Tags
-                // Eliminar los anteriores
-                foreach( $lastVersion->tags as $key => $tag ){
-                    $tag->delete();
-                }
+            // Axtualiza TenderVersion
+        } catch (\Throwable $th) {
+            // Si existe algún error al momento de crear el usuario
+            $errorTender = true;
+            DB::rollBack();
+            $tenderError = ['tenderVersion' => 'Error, no se ha podido actulizar la versión de la licitación'];
+            return $this->errorResponse($tenderError, 500);
+        }
 
-                foreach ($request->tags as $key => $tag) {
-                    $lastVersion->tags()->create(['name' => $tag['displayValue']]);
-                }
-
-                // Axtualiza TenderVersion
-            } catch (\Throwable $th) {
-                // Si existe algún error al momento de crear el usuario
-                $errorTender = true;
-                DB::rollBack();
-                $tenderError = [ 'tenderVersion' => 'Error, no se ha podido actulizar la versión de la licitación'];
-                return $this->errorResponse( $tenderError, 500 );
-            }
-            
-            DB::commit();
-            $lastVersion->tags;
-            return $this->showOne($lastVersion,201);
+        DB::commit();
+        $lastVersion->tags;
+        return $this->showOne($lastVersion, 201);
 
         // }else{
         //     $tenderError = [ 'tenderVersion' => 'Error, la ultima versión de la licitacion no esta Borrador'];
@@ -247,7 +277,7 @@ class TendersVersionsController extends ApiController
         // }
 
         // return [];
-        
+
     }
     /**
      * Remove the specified resource from storage.

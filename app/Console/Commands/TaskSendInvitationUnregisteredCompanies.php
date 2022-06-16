@@ -43,7 +43,7 @@ class TaskSendInvitationUnregisteredCompanies extends Command
         
         foreach ($email as $key => $value)
         {
-            Mail::to($value->email)->send(new sendInvitationRegisterCompanyTender(
+            Mail::to(trim($value->email))->send(new sendInvitationRegisterCompanyTender(
                 $value->tender->name,
                 $value->tender->company->name  
             ));

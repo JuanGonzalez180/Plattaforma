@@ -225,8 +225,7 @@ class CompanyTendersController extends ApiController
         $emails = array_unique($emails);
 
         foreach($emails as $email){
-            Mail::to($tender_company->tender->company->user->email)
-            // Mail::to('cris10x@hotmail.com')
+            Mail::to(trim($tender_company->tender->company->user->email))
                 ->send(new SendOfferTenderCompany(
                     $tender_company->company->name,
                     $tender_company->tender->company->name,
@@ -257,7 +256,10 @@ class CompanyTendersController extends ApiController
             $tender_company->status = TendersCompanies::STATUS_PARTICIPATING;
             $tender_company->save();
 
+            // Notifica al administrador de la licitación que dicha compañia ha aceptado la invitación.
             $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_INVITATION_APPROVED);
+
+            
 
             return $this->showOne($tender_company, 200);
         }
@@ -297,7 +299,7 @@ class CompanyTendersController extends ApiController
             $emails = array_values(array_unique($emails));
     
             foreach ($emails as $email) {
-                Mail::to($email)
+                Mail::to(trim($email))
                     ->send(new SendRetirementTenderCompany($tender_name, $company_name));
             }
     }
@@ -351,7 +353,7 @@ class CompanyTendersController extends ApiController
         $emails = array_values(array_unique($emails));
 
         foreach ($emails as $email) {
-            Mail::to($email)
+            Mail::to(trim($email))
                 ->send(new SendRetirementTenderCompany($tender_name, $company_name));
         }
 

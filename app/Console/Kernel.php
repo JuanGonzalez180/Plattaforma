@@ -26,9 +26,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //cronJobs para cerrar licitaciones
+        // cronJobs para cerrar licitaciones
         $schedule->command('task:tender_closed')->everyMinute();
-        //cronJobs para descargar las imagenes y archivos de los productor cargados por carga masiva
+        // cronJobs para descargar las imagenes y archivos de los productor cargados por carga masiva
         $schedule->command('task:download_img_product')->everyFifteenMinutes();
         //cronJobs para enviar invitaciones a licitaciones a compañias no registradas a plattaforma
         $schedule->command('task:task_send_invitation_unregistered_companies')->everyFiveMinutes();

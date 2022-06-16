@@ -9,10 +9,14 @@ use App\Models\Tenders;
 use App\Models\QueryWall;
 use Illuminate\Http\Request;
 use App\Models\Notifications;
-use App\Models\TendersCompanies;
 use Illuminate\Validation\Rule;
+use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\QueryWall\sendGlobalMessage;
+use App\Mail\QueryWall\sendQuestionMessage;
 use App\Http\Controllers\ApiControllers\ApiController;
+
 class tenderQueryQuestionController extends ApiController
 {
     public function validateUser()
@@ -24,7 +28,7 @@ class tenderQueryQuestionController extends ApiController
         return $this->user;
     }
 
-    public function index( Request $request )
+    public function index(Request $request)
     {
         $tender_id = $request->tender_id;
 
@@ -40,7 +44,7 @@ class tenderQueryQuestionController extends ApiController
             ->where('querysable_type', Tenders::class)
             ->where('visible', QueryWall::QUERYWALL_VISIBLE)
             ->orderBy('created_at', 'desc')
-            ->get();   
+            ->get();
 
         return $this->showAllPaginate($queryWalls);
         // return $this->showAll($queryWalls);
@@ -48,23 +52,17 @@ class tenderQueryQuestionController extends ApiController
 
     public function store(Request $request)
     {
-        
         $user = $this->validateUser();
         $company_id = $user->companyId();
 
-        // if($user->userType() != 'oferta'){
-        //     $queryError = [ 'querywall' => 'Error, El usuario no puede hacer preguntas' ];
-        //     return $this->errorResponse( $queryError, 500 );
-        // }
-        
         $rules = [
             'question' => 'required|max:1000'
         ];
-        
-        $this->validate( $request, $rules );
-        
+
+        $this->validate($request, $rules);
+
         DB::beginTransaction();
-        
+
         $questionFields = $request->all();
         $questionFields['querysable_id']        = $request->tender_id;
         $questionFields['querysable_type']      = Tenders::class;
@@ -75,29 +73,53 @@ class tenderQueryQuestionController extends ApiController
         $questionFields['status']               = QueryWall::QUERYWALL_PUBLISH;
 
         //*si el mismo administrador de la licitación envia una pregunta se hace una pregunta es un mensaje global, pero si es un participante de la licitacion es una pregunta
-        $questionFields['type']                 = ($user->userType() != 'oferta')? QueryWall::TYPE_GLOBALMESSAGE: QueryWall::TYPE_QUERY;
+        $questionFields['type']                 = ($user->userType() != 'oferta') ? QueryWall::TYPE_GLOBALMESSAGE : QueryWall::TYPE_QUERY;
 
-        
-        try{
-            $question = QueryWall::create( $questionFields );
-        }catch(\Throwable $th){
+
+        try {
+            $question = QueryWall::create($questionFields);
+        } catch (\Throwable $th) {
             $errorquestion = true;
             DB::rollBack();
-            $questionError = [ 'question' => 'Error, no se ha podido crear la pregunta' ];
-            return $this->errorResponse( $questionError, 500 );
+            $questionError = ['question' => 'Error, no se ha podido crear la pregunta'];
+            return $this->errorResponse($questionError, 500);
         }
         DB::commit();
 
-        if($user->userType() != 'oferta')
-        {
+        if ($user->userType() != 'oferta') {
             $this->sendNotificationQueryProponents($question, Notifications::NOTIFICATION_QUERYWALL_TENDER_ADMIN);
-        }
-        else
-        {
+
+            // *Correos de las compañias participantes de la licitación.
+            $tenderCompaniesEmails = $question->queryWallTender()->TenderParticipatingCompanyEmails();
+
+            foreach ($tenderCompaniesEmails as $email) {
+                Mail::to(trim($email))->send(new sendGlobalMessage(
+                    $question->queryWallTender()->company->name,
+                    $question->queryWallTender()->name,
+                    $question->queryWallTender()->id,
+                    $question->queryWallTender()->company->slug,
+                    $question->question
+                ));
+            }
+
+        } else {
             $this->sendNotificationQueryAdmin($question, Notifications::NOTIFICATION_QUERYWALL_TENDER_QUESTION);
+
+            // *Correos del administrador y encargado de la licitación.
+            $terderAdminEmail = $question->queryWallTender()->TenderAdminEmails();
+
+            foreach ($terderAdminEmail as $email) {
+                Mail::to(trim($email))->send(new sendQuestionMessage(
+                    $question->user->companyFull()->name,
+                    $question->queryWallTender()->name,
+                    $question->queryWallTender()->id,
+                    $question->queryWallTender()->company->slug,
+                    $question->question
+                ));
+            }
         }
 
-        return $this->showOne($question,201);   
+        return $this->showOne($question, 201);
     }
 
     public function sendNotificationQueryProponents($query, $typeNotification)
@@ -107,8 +129,7 @@ class tenderQueryQuestionController extends ApiController
             ->get();
 
         $users = [];
-        foreach ($tenderCompanies as $value)
-        {
+        foreach ($tenderCompanies as $value) {
             $users[] = $value->company->user->id;
             $users[] = $value->user_company_id;
         }
@@ -135,70 +156,66 @@ class tenderQueryQuestionController extends ApiController
     {
         $user = $this->validateUser();
 
-        if($user->userType() != 'oferta'){
-            $queryError = [ 'querywall' => 'Error, El usuario no puede modificar preguntas' ];
-            return $this->errorResponse( $queryError, 500 );
+        if ($user->userType() != 'oferta') {
+            $queryError = ['querywall' => 'Error, El usuario no puede modificar preguntas'];
+            return $this->errorResponse($queryError, 500);
         }
 
         $queryAnswer = QueryWall::where('id', $id)
             ->where('querysable_type', Tenders::class)
             ->first();
 
-        if(!$queryAnswer) {
-            $queryError = [ 'querywall' => 'Error, La pregunta no exite en el muro de consultas de licitaciones' ];
-            return $this->errorResponse( $queryError, 500 );
+        if (!$queryAnswer) {
+            $queryError = ['querywall' => 'Error, La pregunta no exite en el muro de consultas de licitaciones'];
+            return $this->errorResponse($queryError, 500);
         }
 
-        if( $queryAnswer->user_id == $user->id ) {
+        if ($queryAnswer->user_id == $user->id) {
 
             DB::beginTransaction();
             $queryFields['question'] = $request['question'];
 
-            try{
-                $queryAnswer->update( $queryFields );
-            }catch(\Throwable $th){
+            try {
+                $queryAnswer->update($queryFields);
+            } catch (\Throwable $th) {
                 DB::rollBack();
-                $questionError = [ 'question' => 'Error, no se ha podido modificar la pregunta' ];
-                return $this->errorResponse( $questionError, 500 );
+                $questionError = ['question' => 'Error, no se ha podido modificar la pregunta'];
+                return $this->errorResponse($questionError, 500);
             }
             DB::commit();
 
-            return $this->showOne($queryAnswer,200);
-
-        }else{
-            $queryError = [ 'querywall' => 'Error, El usuario no tiene privilegios para modificar la pregunta del muro de consultas' ];
-            return $this->errorResponse( $queryError, 500 );
+            return $this->showOne($queryAnswer, 200);
+        } else {
+            $queryError = ['querywall' => 'Error, El usuario no tiene privilegios para modificar la pregunta del muro de consultas'];
+            return $this->errorResponse($queryError, 500);
         }
     }
 
-    public function destroy( int $id)
+    public function destroy(int $id)
     {
         $user = $this->validateUser();
 
-        if($user->userType() != 'oferta'){
-            $queryError = [ 'querywall' => 'Error, El usuario no puede borrar preguntas' ];
-            return $this->errorResponse( $queryError, 500 );
+        if ($user->userType() != 'oferta') {
+            $queryError = ['querywall' => 'Error, El usuario no puede borrar preguntas'];
+            return $this->errorResponse($queryError, 500);
         }
 
         $queryAnswer = QueryWall::where('id', $id)
             ->where('querysable_type', Tenders::class)
             ->first();
 
-        if(!$queryAnswer) {
-            $queryError = [ 'querywall' => 'Error, La pregunta no exite en el muro de consultas de licitaciones' ];
-            return $this->errorResponse( $queryError, 500 );
+        if (!$queryAnswer) {
+            $queryError = ['querywall' => 'Error, La pregunta no exite en el muro de consultas de licitaciones'];
+            return $this->errorResponse($queryError, 500);
         }
 
-        if( $queryAnswer->user_id == $user->id ) {
+        if ($queryAnswer->user_id == $user->id) {
             $queryAnswer->delete();
-        }else{
-            $queryError = [ 'querywall' => 'Error, El usuario no tiene privilegios para barrar la pregunta del muro de consultas' ];
-            return $this->errorResponse( $queryError, 500 );
+        } else {
+            $queryError = ['querywall' => 'Error, El usuario no tiene privilegios para barrar la pregunta del muro de consultas'];
+            return $this->errorResponse($queryError, 500);
         }
 
-        return $this->showOneData( ['success' => 'Se ha eliminado correctamente la pregunta del muro de consultas', 'code' => 200 ], 200);
+        return $this->showOneData(['success' => 'Se ha eliminado correctamente la pregunta del muro de consultas', 'code' => 200], 200);
     }
-
 }
-    
-

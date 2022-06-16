@@ -103,7 +103,7 @@ class CompanyTendersTransactController extends ApiController
 
         $email = Tenders::find($id)->user->email;
 
-        Mail::to($email)->send(new SendParticipateTenderCompany(
+        Mail::to(trim($email))->send(new SendParticipateTenderCompany(
             Tenders::find($id)->name,
             $user->companyName()
         ));

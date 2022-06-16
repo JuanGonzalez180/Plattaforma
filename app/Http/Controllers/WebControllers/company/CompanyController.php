@@ -116,21 +116,21 @@ class CompanyController extends Controller
 
             if ($initialState == Company::COMPANY_CREATED || $initialState == Company::COMPANY_REJECTED) {
                 $this->createTenderCompanyInvitation($company);
-                Mail::to($company->user->email)->send(new ValidatedAccount($company->user));
+                Mail::to(trim($company->user->email))->send(new ValidatedAccount($company->user));
                 $message = "La compañia se ha aprobado con exito y se ha enviado un correo de confirmación(" . $company->user->email . ").";
             } else if ($initialState == Company::COMPANY_BANNED) {
-                Mail::to($company->user->email)->send(new UnbannedAccount($company->user));
+                Mail::to(trim($company->user->email))->send(new UnbannedAccount($company->user));
                 $message = "La compañia se desbloqueado y se ha enviado un correo de confirmación(" . $company->user->email . ").";
             }
         }
 
         if ($request->status == Company::COMPANY_REJECTED) {
-            Mail::to($company->user->email)->send(new RejectedAccount($company->user));
+            Mail::to(trim($company->user->email))->send(new RejectedAccount($company->user));
             $message = "La compañia no ha sido aprobada y se ha enviado un correo de confirmación(" . $company->user->email . ").";
         }
 
         if ($request->status == Company::COMPANY_BANNED) {
-            Mail::to($company->user->email)->send(new BannedAccount($company->user));
+            Mail::to(trim($company->user->email))->send(new BannedAccount($company->user));
             $message = "La compañia ha sido bloqueada y se ha enviado un correo de confirmación(" . $company->user->email . ").";
         }
 

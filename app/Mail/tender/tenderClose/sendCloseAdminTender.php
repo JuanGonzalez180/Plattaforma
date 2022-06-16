@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail\tender\tenderClose;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class SendDeclinedTenderCompany extends Mailable
+class sendCloseAdminTender extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subject = "Se ha declinado la licitación.";
+    public $subject = "La licitación ";
 
     protected $tenderName;
     protected $companyName;
@@ -21,7 +21,7 @@ class SendDeclinedTenderCompany extends Mailable
      *
      * @return void
      */
-    public function __construct( string $tenderName, string $companyName)
+    public function __construct(string $tenderName, string $companyName)
     {
         $this->tenderName   = $tenderName;
         $this->companyName  = $companyName;
@@ -34,11 +34,11 @@ class SendDeclinedTenderCompany extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.send-declined-tender-company')
-        ->subject($this->subject.$this->tenderName)
-        ->with([
-            'tenderName'        => $this->tenderName,
-            'companyName'       => $this->companyName
-        ]);
+        return $this->view('emails.send-close-admin-tender')
+            ->subject($this->subject . $this->tenderName.' se ha cerrado, procede a evaluar.')
+            ->with([
+                'tenderName'        => $this->tenderName,
+                'companyName'       => $this->companyName
+            ]);
     }
 }
