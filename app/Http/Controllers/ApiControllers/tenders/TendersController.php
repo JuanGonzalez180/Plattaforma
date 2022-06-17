@@ -185,10 +185,12 @@ class TendersController extends ApiController
         return $this->showOne($tender, 201);
     }
 
+    // public function formatDate
+
 
     public function timeFormat($value)
-    {
-        return (strlen((string)$value) <= 1) ? '0'.$value : $value; 
+    { 
+        return (strlen((string)$value) == 1) ? str_pad($value,2,"0", STR_PAD_LEFT) : $value; 
     }
 
     /**

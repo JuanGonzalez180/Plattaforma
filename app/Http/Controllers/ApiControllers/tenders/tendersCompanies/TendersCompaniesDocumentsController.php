@@ -98,7 +98,9 @@ class TendersCompaniesDocumentsController extends ApiController
         $tmp = explode('.', $fileTendersCompanies->name);
         $extension = end($tmp);
 
-        $routeFile = $this->tendersCompanies.$tendersCompanies->id.'/documents/';
+        $routeFile = $this->routeTenderCompany.$tendersCompanies->id.'/documents/';
+
+
         $file['name'] = preg_replace("/[^A-Za-z0-9]/", '', $request['name']) . "." . $extension;
         $file['url'] = $routeFile . $file['name'];
         
