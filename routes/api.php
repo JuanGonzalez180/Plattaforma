@@ -37,8 +37,11 @@ use App\Http\Controllers\ApiControllers\projects\ProjectsFilesController;
 use App\Http\Controllers\ApiControllers\socialnetworks\SocialNetworksController;
 use App\Http\Controllers\ApiControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\ApiControllers\tenders\TendersController;
+use App\Http\Controllers\ApiControllers\quotes\QuotesController;
+use App\Http\Controllers\ApiControllers\quotes\quotesCompanies\QuotesCompaniesController;
 use App\Http\Controllers\ApiControllers\uploadfile\csv\productfile\ProductFileController;
 use App\Http\Controllers\ApiControllers\tenders\tendersDocuments\TendersDocumentsController;
+use App\Http\Controllers\ApiControllers\quotes\quotesDocuments\QuotesDocumentsController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesDocumentsController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesListController;
@@ -227,9 +230,17 @@ Route::group(['middleware' => ['jwt.verify']], function () {
      */
     Route::resource('/tenders/documents', TendersDocumentsController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('tendersdocuments');
     /**
+     * quotes_docuemnts
+     */
+    Route::resource('/quotes/documents', QuotesDocumentsController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('quotesdocuments');
+    /**
      * Tenders_companies_docuemnts
      */
     Route::resource('/tenders/companies/documents', TendersCompaniesDocumentsController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('tenderscompaniesdocuments');
+    /**
+     * Tenders_companies_docuemnts
+     */
+    // Route::resource('/quotes/companies/documents', QuotesCompaniesController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('quotescompaniesdocuments');
     /**
      * Tenders_vesion
      */
@@ -255,6 +266,11 @@ Route::group(['middleware' => ['jwt.verify']], function () {
      */
     Route::resource('/tenders', TendersController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('tenders');
     Route::get('/tender/type/all', [TendersController::class, 'tenderTypeAll'])->name('tender-type-all');
+    /**
+     * quotes
+     */
+    Route::resource('/quotes', QuotesController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('quotes');
+    // Route::get('/tender/type/all', [TendersController::class, 'tenderTypeAll'])->name('tender-type-all');
     /**
      * Company
      */
