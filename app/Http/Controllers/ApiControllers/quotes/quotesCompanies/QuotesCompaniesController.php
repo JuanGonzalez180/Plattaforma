@@ -5,12 +5,12 @@ namespace App\Http\Controllers\ApiControllers\quotes\quotesCompanies;
 use JWTAuth;
 use App\Models\Tags;
 use App\Models\User;
-use App\Models\Tenders;
+use App\Models\Quotes;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Models\Notifications;
-use App\Models\TendersVersions;
-use App\Models\TendersCompanies;
+use App\Models\QuotesVersions;
+use App\Models\QuotesCompanies;
 use Illuminate\Support\Facades\DB;
 use App\Traits\UsersCompanyTenders;
 use Illuminate\Support\Facades\Mail;
@@ -23,7 +23,7 @@ use App\Http\Controllers\ApiControllers\ApiController;
 
 use Illuminate\Support\Facades\Storage;
 
-class QuotesCompaniesController extends Controller
+class QuotesCompaniesController extends ApiController
 {
     use UsersCompanyTenders;
 
@@ -39,25 +39,62 @@ class QuotesCompaniesController extends Controller
     public function index(Request $request)
     {
         $user = $this->validateUser();
-        $tender_id = $request->tender_id;
+        $quote_id = $request->quote_id;
 
-        $tender = Tenders::where('id', $tender_id)->first();
-        $version = $tender->tendersVersionLastPublish();
+        $quote      = Quotes::find($quote_id);
+        $version    = $quote->quotesVersionLastPublish();
 
-        if ($user->userType() != 'demanda' && ($version->status == TendersVersions::LICITACION_CREATED || $version->status == TendersVersions::LICITACION_PUBLISH)) {
+        if ($user->userType() != 'demanda' && ($version->status == QuotesVersions::QUOTATION_CREATED || $version->status == QuotesVersions::QUOTATION_PUBLISH)) {
             $companyError = ['company' => 'Error, El usuario no puede listar las compañias participantes'];
             return $this->errorResponse($companyError, 500);
         }
 
-        $companies = TendersCompanies::select('tenders_companies.*', 'images.url')
-            ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
+        $companies = QuotesCompanies::select('quotes_companies.*', 'images.url')
+            ->join('companies', 'companies.id', '=', 'quotes_companies.company_id')
             ->leftJoin('images', function ($join) {
                 $join->on('images.imageable_id', '=', 'companies.id');
                 $join->where('images.imageable_type', '=', Company::class);
             })
-            ->where('tenders_companies.tender_id', $tender_id)
+            ->where('quotes_companies.quotes_id', $quote_id)
             ->get();
 
         return $this->showAllPaginate($companies);
+    }
+
+    public function store(Request $request) //envia invitaciones a la cotización
+    {
+        $quote_id = $request->quote_id;
+
+        $user = $this->validateUser();
+
+        //Licitación
+        $quote                 = Quotes::find($quote_id);
+
+        //compañias que ya estan participando
+        $tendersCompaniesOld    = $quote->quoteCompanies;
+
+        //registra las nuevas compañias a la cotización y obtiene una arreglo de las nuevas compañias
+        $tendersCompaniesNew    = ($request->companies_id) ? $this->createQuoteCompanies($quote, $request->companies_id) : [];
+
+    }
+
+    public function createQuoteCompanies($tender, $companies)
+    {
+        $user = $this->validateUser();
+        $quoteCompanies = [];
+
+        foreach ($companies as $company) {
+            $userCompanyId = Company::find($company["id"])->user->id;
+
+            $fields['tender_id']           = $tender->id;
+            $fields['company_id']          = $company["id"];
+            $fields['user_id']             = $user->id;
+            $fields['user_company_id']     = $userCompanyId;
+            $fields['status']              = TendersCompanies::STATUS_PROCESS;
+
+            $quoteCompanies[] = TendersCompanies::create($fields);
+        }
+
+        return $quoteCompanies;
     }
 }
