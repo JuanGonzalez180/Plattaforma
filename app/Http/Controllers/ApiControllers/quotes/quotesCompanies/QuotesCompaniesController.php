@@ -76,9 +76,19 @@ class QuotesCompaniesController extends ApiController
         //registra las nuevas compañias a la cotización y obtiene una arreglo de las nuevas compañias
         $tendersCompaniesNew    = ($request->companies_id) ? $this->createQuoteCompanies($quote, $request->companies_id) : [];
 
+
+        //Actualiza el estado de la licitación
+        $quoteVersion          = $quote->quotesVersionLast();
+        $quoteVersion->status  = QuotesVersions::QUOTATION_PUBLISH;
+        $quoteVersion->save();
+        DB::commit();
+
+
+        return $this->showOne($quote, 201);
+
     }
 
-    public function createQuoteCompanies($tender, $companies)
+    public function createQuoteCompanies($quotes, $companies)
     {
         $user = $this->validateUser();
         $quoteCompanies = [];
@@ -86,13 +96,13 @@ class QuotesCompaniesController extends ApiController
         foreach ($companies as $company) {
             $userCompanyId = Company::find($company["id"])->user->id;
 
-            $fields['tender_id']           = $tender->id;
+            $fields['quotes_id']           = $quotes->id;
             $fields['company_id']          = $company["id"];
             $fields['user_id']             = $user->id;
             $fields['user_company_id']     = $userCompanyId;
-            $fields['status']              = TendersCompanies::STATUS_PROCESS;
+            $fields['status']              = QuotesCompanies::STATUS_PROCESS;
 
-            $quoteCompanies[] = TendersCompanies::create($fields);
+            $quoteCompanies[] = QuotesCompanies::create($fields);
         }
 
         return $quoteCompanies;
