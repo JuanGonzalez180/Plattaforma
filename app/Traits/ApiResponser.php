@@ -53,9 +53,9 @@ trait ApiResponser{
         if( $collection->isEmpty() ){
             return $this->successResponse(['data'=>$collection], $code);    
         }
-
+        
         $transformer = $collection->first()->transformer;
-
+        
         $collection = $this->paginate($collection);
         $collection = $this->transformData($collection, $transformer);
 

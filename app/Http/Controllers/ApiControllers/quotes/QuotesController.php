@@ -43,9 +43,64 @@ class QuotesController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+
+        $rules = [
+            'project' => 'nullable|numeric',
+        ];
+
+        $this->validate($request, $rules);
+
+        //IS ADMIN
+        $companyID = $user->companyId();
+
+        if ($companyID && $user->userType() == 'demanda') {
+            if ($user->isAdminFrontEnd()) {
+                $quotes = Quotes::select('quotes.id', 'quotes.name', 'quotes.type', 'quotes.description', 'quotes.project_id', 'quotes.company_id', 'quotes.user_id', 'quotes.date_update', 'quotes.created_at', 'quotes.updated_at')
+                    ->where('quotes.company_id', $companyID);
+            } else {
+                $quotes = Quotes::select('quotes.id', 'quotes.name', 'quotes.type', 'quotes.description', 'quotes.project_id', 'quotes.company_id', 'quotes.user_id', 'quotes.date_update', 'quotes.created_at', 'quotes.updated_at')
+                    ->where('quotes.user_id', $user->id)
+                    ->where('quotes.company_id', $companyID);
+            }
+
+            if ($request->project) {
+                $quotes = $quotes->where('project_id', $request->project);
+            }
+
+            // Filtrar por orden desc or asc
+            if ($request->orderby && $request->order) {
+                $quotes = $quotes->join('quotes_versions AS qversion', function ($join) {
+                    $join->on('quotes.id', '=', 'qversion.quotes_id');
+                    $join->on('qversion.created_at', '=', DB::raw('(SELECT MAX(created_at) FROM quotes_versions WHERE quotes_id=qversion.quotes_id)'));
+                });
+                if ($request->orderby == 'date') {
+                    $quotes = $quotes->orderBy('qversion.date', $request->order);
+                } elseif ($request->orderby == 'price') {
+                    $quotes = $quotes->orderBy('qversion.price', $request->order);
+                }
+            } else {
+                $quotes = $quotes->orderBy('quotes.updated_at', 'desc');
+            }
+
+            if ($request->filter) {
+                $quotes = $quotes->join('projects', function ($join) use ($request) {
+                    $join->on('quotes.project_id', '=', 'projects.id')
+                        ->where(strtolower('quotes.name'), 'LIKE', '%' . strtolower($request->filter) . '%')
+                        ->orWhere(strtolower('projects.name'), 'LIKE', '%' . strtolower($request->filter) . '%');
+                });
+            }
+
+            $quotes = $quotes->groupBy('quotes.id', 'quotes.name', 'quotes.type', 'quotes.description', 'quotes.project_id', 'quotes.company_id', 'quotes.user_id', 'quotes.date_update', 'quotes.created_at', 'quotes.updated_at')
+                ->get();
+
+            return $this->showAllPaginate($quotes);
+        }
+
+        return [];
     }
 
     /**
@@ -142,8 +197,8 @@ class QuotesController extends ApiController
     }
 
     public function timeFormat($value)
-    { 
-        return (strlen((string)$value) == 1) ? str_pad($value,2,"0", STR_PAD_LEFT) : $value; 
+    {
+        return (strlen((string)$value) == 1) ? str_pad($value, 2, "0", STR_PAD_LEFT) : $value;
     }
 
     /**
@@ -154,7 +209,7 @@ class QuotesController extends ApiController
      */
     public function show($id)
     {
-        
+
         $user = $this->validateUser();
 
         $quotes = Quotes::findOrFail($id);

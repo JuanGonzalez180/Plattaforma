@@ -51,10 +51,10 @@ class Quotes extends Model
         return $this->belongsTo(Projects::class);
     }
 
-    public function categories()
-    {
-        return $this->belongsToMany(Category::class);
-    }
+    // public function categories()
+    // {
+    //     return $this->belongsToMany(Category::class);
+    // }
 
     public function company()
     {
