@@ -49,6 +49,7 @@ class TendersCompaniesListController extends ApiController
 
         // $tenders_company = $tenders_company_earring->merge($tenders_company);
 
+
         $transformer = TendersCompanies::TRANSFORMER_TENDER_MY_COMPANY;
 
         return $this->showAllPaginateSetTransformer($tenders_company, $transformer);

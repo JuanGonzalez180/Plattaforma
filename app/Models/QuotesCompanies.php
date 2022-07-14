@@ -53,7 +53,7 @@ class QuotesCompanies extends Model
     ];
 
     public function quote(){
-        return $this->belongsTo(Quotes::class);
+        return $this->belongsTo(Quotes::class, 'quotes_id');
     }
 
     public function company(){

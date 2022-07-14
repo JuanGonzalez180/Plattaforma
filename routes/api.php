@@ -45,6 +45,7 @@ use App\Http\Controllers\ApiControllers\quotes\quotesDocuments\QuotesDocumentsCo
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesDocumentsController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesListController;
+use App\Http\Controllers\ApiControllers\quotes\quotesCompanies\CuotesCompaniesListController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersAction\TendersActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersVersions\TendersVersionsController;
@@ -250,6 +251,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::resource('/tenders/companies', TendersCompaniesController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('tendersCompanies');
     Route::resource('/quotes/companies', QuotesCompaniesController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('quotescompanies');
     Route::get('/tenders/all/companies', [TendersCompaniesListController::class, 'indexTendersCompanies'])->name('company-tender-list');
+    Route::get('/quotes/all/companies', [CuotesCompaniesListController::class, 'indexQuotesCompanies'])->name('company-quote-list');
     Route::get('/tenders/companies/selected/winner', [TendersCompaniesActionController::class, 'SelectedWinner'])->name('company-company-selected-winner');
     Route::get('/tenders/companies/desert/tender', [TendersCompaniesActionController::class, 'desertTender'])->name('company-company-desert-tender');
     Route::get('/tenders/companies/selected/more/winner', [TendersCompaniesActionController::class, 'SelectedMoreWinner'])->name('company-company-selected-more--winner');
