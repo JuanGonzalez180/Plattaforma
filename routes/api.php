@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiControllers\action\statistics\StatisticsController;
 use App\Http\Controllers\ApiControllers\blog\BlogFilesController;
 use App\Http\Controllers\ApiControllers\querywall\tenderQueryQuestionController;
 use App\Http\Controllers\ApiControllers\querywall\tenderQueryAnswerController;
+use App\Http\Controllers\ApiControllers\querywall\quotesQueryAnswerController;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosController;
 use App\Http\Controllers\ApiControllers\catalogs\CatalogsControllers;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosDocumentsController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\ApiControllers\categoryservices\CategoryServicesControl
 use App\Http\Controllers\ApiControllers\company\CompanyController;
 use App\Http\Controllers\ApiControllers\company\CompanyProjects\CompanyProjectsController;
 use App\Http\Controllers\ApiControllers\company\CompanyTenders\CompanyTendersController;
+use App\Http\Controllers\ApiControllers\company\CompanyQuotes\CompanyQuotesController;
 use App\Http\Controllers\ApiControllers\company\CompanyTenders\CompanyTendersTransactController;
 use App\Http\Controllers\ApiControllers\company\CompanyBlogs\CompanyBlogsController;
 use App\Http\Controllers\ApiControllers\company\CompanyFileSize\CompanyFileSizeController;
@@ -215,6 +217,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
      */
     Route::resource('/querywall/tenders/question', tenderQueryQuestionController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('querywalltendersQuestions');
     Route::resource('/querywall/tenders/answer', tenderQueryAnswerController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('querywalltendersAnswer');
+    Route::resource('/querywall/quotes/answer', quotesQueryAnswerController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('querywallquotesAnswer');
     Route::put('/querywall/{id}/visible', [tenderQueryAnswerController::class, 'changevisible'])->name('querywallvisible');
     /**
      * portfolios
@@ -290,6 +293,12 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('/company/tenders/{id}/edit', [CompanyTendersController::class, 'edit'])->name('company-tender-edit');
     Route::put('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'update'])->name('company-tender-update');
     Route::delete('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'destroy'])->name('company-tender-destroy');
+    
+    Route::get('/company/{slug}/quotes', [CompanyQuotesController::class, 'index'])->name('company-quotes');
+    Route::get('/company/{slug}/quotes/{id}', [CompanyQuotesController::class, 'show'])->name('company-quotes-detail');
+    // Route::get('/company/tenders/{id}/edit', [CompanyTendersController::class, 'edit'])->name('company-tender-edit');
+    // Route::put('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'update'])->name('company-tender-update');
+    // Route::delete('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'destroy'])->name('company-tender-destroy');
 
     Route::put('/company/{slug}/tenders/{id}/status/{status}/user/{user_id}', [CompanyTendersController::class, 'updateStatusInvitation'])->name('company-tender-update-status'); 
     //participar en licitación

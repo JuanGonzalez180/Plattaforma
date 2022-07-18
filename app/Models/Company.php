@@ -12,6 +12,7 @@ use App\Models\Brands;
 use App\Models\Country;
 use App\Models\Remarks;
 use App\Models\Tenders;
+use App\Models\Quotes;
 use App\Models\MetaData;
 use App\Models\Products;
 use App\Models\Projects;
@@ -110,6 +111,11 @@ class Company extends Model
     public function tenders()
     {
         return $this->hasMany(Tenders::class);
+    }
+
+    public function quotes()
+    {
+        return $this->hasMany(Quotes::class);
     }
 
     public function products()

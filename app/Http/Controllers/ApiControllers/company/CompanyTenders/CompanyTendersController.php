@@ -93,7 +93,6 @@ class CompanyTendersController extends ApiController
 
     public function show($slug, $id)
     {
-
         $user           = $this->validateUser();
         // Compañía del usuario que está logueado
         $userCompanyId  = $user->companyId();

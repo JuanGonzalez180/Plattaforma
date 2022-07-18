@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\Tenders;
+use App\Models\Quotes;
 use Illuminate\Database\Eloquent\Model;
 use App\Transformers\QueryWallTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -67,6 +68,10 @@ class QueryWall extends Model
         return Tenders::find($this->querysable_id)->user_id;
     }
 
+    public function queryWallQuoteUser() {
+        return Quotes::find($this->querysable_id)->user_id;
+    }
+
     public function queryWallTender() {
         return Tenders::find($this->querysable_id);
     }
@@ -77,6 +82,10 @@ class QueryWall extends Model
 
     public function queryWallProjectUser() {
         return Tenders::find($this->querysable_id)->project->user_id;
+    }
+
+    public function queryWallQuoteProjectUser(){
+        return Quotes::find($this->querysable_id)->project->user_id;
     }
 
     public function queryWallProjectId() {
