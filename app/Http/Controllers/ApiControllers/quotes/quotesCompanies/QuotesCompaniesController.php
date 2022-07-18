@@ -43,8 +43,6 @@ class QuotesCompaniesController extends ApiController
 
         $quote      = Quotes::find($quote_id);
 
-        var_dump($quote);
-        die;
         $version    = $quote->quotesVersionLastPublish();
 
         if ($user->userType() != 'demanda' && ($version->status == QuotesVersions::QUOTATION_CREATED || $version->status == QuotesVersions::QUOTATION_PUBLISH)) {
