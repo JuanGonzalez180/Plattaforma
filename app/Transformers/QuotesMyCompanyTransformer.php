@@ -35,7 +35,7 @@ class QuotesMyCompanyTransformer extends TransformerAbstract
     {
         return [
             'id'                    => (int)$quotesCompanies->id,
-            // 'quote_id'             => (int)$quotesCompanies->quote->id,
+            'quote_id'             => (int)$quotesCompanies->quote->id,
             'quote_type'           => (string)$quotesCompanies->quote->type,
             'company_id'            => (int)$quotesCompanies->company_id,
             'slug_company'          => (string)$quotesCompanies->company->slug,
