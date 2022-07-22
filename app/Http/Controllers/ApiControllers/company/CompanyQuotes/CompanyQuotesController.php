@@ -116,7 +116,7 @@ class CompanyQuotesController extends ApiController
         // quotes Company
         $company_status = '';
         $quoteCompany = QuotesCompanies::where('quotes_id', $id)
-            // ->where('company_id', $userCompanyId)
+            ->where('company_id', $userCompanyId)
             ->first();
         
         if ($quoteCompany && $quoteCompany->status) {
@@ -168,4 +168,17 @@ class CompanyQuotesController extends ApiController
 
         return $this->showOne($quote, 200);
     }
+
+    public function edit($id)
+    {
+        $user = $this->validateUser();
+
+        $quote_company = QuotesCompanies::findOrFail($id);
+        $quote_company->files;
+
+        $quote_company->quote_value = $quote_company->quote->quotesVersionLast()->price; 
+
+        return $this->showOne($quote_company, 200);
+    }
+
 }

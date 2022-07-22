@@ -9,6 +9,7 @@ use App\Models\TendersCompanies;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Newsletter;
 
 class ScriptFilesController extends Controller
 {
@@ -17,12 +18,21 @@ class ScriptFilesController extends Controller
 
     public function genericScript()
     {
-        $tendersCompanies = TendersCompanies::all();
-        foreach ($tendersCompanies as $value)
-        {
-            $value->user_company_id = $value->company->user->id;
-            $value->save();
-        }
+        // $tendersCompanies = TendersCompanies::all();
+        // foreach ($tendersCompanies as $value)
+        // {
+        //     $value->user_company_id = $value->company->user->id;
+        //     $value->save();
+        // }
+
+        Newsletter::subscribe('davidmejia-2000@outlook.com');
+
+        // if ( ! Newsletter::isSubscribed('davidmejia-2000@outlook.com') ) {
+        //     Newsletter::subscribe('davidmejia-2000@outlook.com');
+        //     // Newsletter::addTags(['ingeniero', 'sistemas'], 'davidmejia-2000@outlook.com');
+        // }
+
+        var_dump('hola mundo');
     }
 
     public function updateSizeFiles()

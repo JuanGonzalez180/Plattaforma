@@ -26,6 +26,7 @@ use App\Http\Controllers\WebControllers\querywall\QueryWallController;
 use App\Http\Controllers\WebControllers\stripe\SubscriptionController;
 use App\Http\Controllers\WebControllers\portfolio\PortfolioController;
 use App\Http\Controllers\WebControllers\scripts\ScriptFilesController;
+use App\Http\Controllers\WebControllers\scripts\uploadEmailsToMailchimp;
 use App\Http\Controllers\WebControllers\stripe\ProductsStripeController;
 use App\Http\Controllers\WebControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\WebControllers\typesentity\TypesEntityController;
@@ -70,10 +71,14 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 //scripts
 Route::get('script/update/generic', [ScriptFilesController::class, 'genericScript']);
-
 Route::get('script/delete/filesize', [ScriptFilesController::class, 'deleteFileNotExist']);
-
 Route::get('script/delete/users/unwanted', RemoveUnwantedUsersController::class)->name('users-delete-unwanted');
+
+// *Gestionar correos de mailchimp
+// ->registrar todos los correos de plattaforma a mailchimp
+Route::get('script/resgister/all/emails', [uploadEmailsToMailchimp::class, 'registerAllEmails'])->name('emails-all-register');
+// ->borrar todos los correos de plattaforma a mailchimp
+Route::get('script/delete/all/emails', [uploadEmailsToMailchimp::class, 'deleteAllEmails'])->name('emails-all-delete');
 
 
 

@@ -815,12 +815,12 @@ class Company extends Model
 
     public function emails()
     {
-        $teams = Team::select('user_id')
-            ->where('company_id', $this->id)
-            ->where('status','Aprobado')
-            ->join('users','users.id','=','teams.user_id')
-            ->pluck('users.email')
-            ->all();
+        $teams = Team::select('users.email')
+        ->where('company_id', $this->id)
+        ->where('status','Aprobado')
+        ->join('users','users.id','=','teams.user_id')
+        ->pluck('users.email')
+        ->all();
 
         $email = array_merge([$this->user->email], $teams);
     
