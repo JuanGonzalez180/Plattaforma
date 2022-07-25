@@ -79,6 +79,8 @@ Route::get('script/delete/users/unwanted', RemoveUnwantedUsersController::class)
 Route::get('script/resgister/all/emails', [uploadEmailsToMailchimp::class, 'registerAllEmails'])->name('emails-all-register');
 // ->borrar todos los correos de plattaforma a mailchimp
 Route::get('script/delete/all/emails', [uploadEmailsToMailchimp::class, 'deleteAllEmails'])->name('emails-all-delete');
+// ->deshabilita todos los correos, que perteneces a las compañias no activas
+Route::get('script/disabled/company/emails', [uploadEmailsToMailchimp::class, 'disabledEmails'])->name('emails-company-dissabled');
 
 
 

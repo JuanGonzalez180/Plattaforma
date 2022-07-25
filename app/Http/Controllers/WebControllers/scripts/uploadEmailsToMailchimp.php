@@ -42,15 +42,19 @@ class uploadEmailsToMailchimp extends Controller
         var_dump('Se borraron todos los correos');
     }
 
-    function enabledEmails()
+    function disabledEmails()
     {
-        $companies = Company::where('status','Aprobado')->get();
+        $companies = Company::where('status','<>','Aprobado')->get();
 
-        foreach ($companies as $company) {
-            
+        foreach ($companies as $company)
+        {
+            $emails = $company->emails();
+
+            foreach($emails as $email)
+            {
+                Newsletter::unsubscribe($email, 'subscribers');
+            }
         }
-
-        
     }
       
 }
