@@ -47,7 +47,8 @@ class TendersCompaniesDocumentsController extends ApiController
         return $this->showAll($this->filesType( $tendersCompanies ),200);
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $user = $this->validateUser();
 
         $rules = [
@@ -62,12 +63,20 @@ class TendersCompaniesDocumentsController extends ApiController
             $fileNameOnly = pathinfo($completeFileName, PATHINFO_FILENAME);
             $extension = strtolower($request->file('files')->getClientOriginalExtension());
 
-            if( in_array( $extension, $this->allowed ) ){
+            // if( in_array( $extension, $this->allowed ) ){
+            //     $fileInServer = 'document' . '-' . rand() . '-' . time() . '.' . $extension;
+            //     $routeFile = $this->routeTenderCompany.$tendersCompanies->id.'/documents/';
+            //     $request->file('files')->storeAs( $this->routeFile . $routeFile, $fileInServer);
+            //     $tendersCompanies->files()->create([ 'name' => $fileInServer, 'type'=> 'documents', 'url' => $routeFile.$fileInServer]);
+            // }else{
+            //     return $this->errorResponse( [ 'error' => ['El tipo de archivo no es válido']], 500 );
+            // }
+            try{
                 $fileInServer = 'document' . '-' . rand() . '-' . time() . '.' . $extension;
                 $routeFile = $this->routeTenderCompany.$tendersCompanies->id.'/documents/';
                 $request->file('files')->storeAs( $this->routeFile . $routeFile, $fileInServer);
                 $tendersCompanies->files()->create([ 'name' => $fileInServer, 'type'=> 'documents', 'url' => $routeFile.$fileInServer]);
-            }else{
+            }catch(\Throwable $th){
                 return $this->errorResponse( [ 'error' => ['El tipo de archivo no es válido']], 500 );
             }
         }

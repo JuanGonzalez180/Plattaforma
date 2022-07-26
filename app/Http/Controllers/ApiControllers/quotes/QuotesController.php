@@ -172,7 +172,7 @@ class QuotesController extends ApiController
             $quotesVersions = QuotesVersions::create($quotesVersionFields);
         } catch (\Throwable $th) {
             // Si existe algún error al momento de crear el usuario
-            $errorTender = true;
+            $errorQuote = true;
             DB::rollBack();
             $quotationError = ['quotation' => 'Error, no se ha podido crear la cotización'];
             return $this->errorResponse($quotationError, 500);
@@ -283,6 +283,105 @@ class QuotesController extends ApiController
      */
     public function destroy($id)
     {
-        //
+        $quote = Quotes::find($id);
+
+        if(!$quote) {
+            return $this->errorResponse('La cotización no existe o ya ha sido eliminada.', 500);
+        }
+
+        DB::beginTransaction();
+        $errorQuote = false;
+
+        // try {
+            $quoteStatus   = $quote->quotesVersionLast()->status;
+            //-----1. borra todos los registros de compañias licitantes
+            $quoteCompanies             = $quote->quoteCompanies->pluck('id');
+            $companiesParticipate       = $this->getCompaniesParticipating($quoteCompanies);
+            $this->deleteAllQuoteCompanies($quoteCompanies);
+            //-----2. Borra todas las versiones de la cotización-----
+            $quoteVersions     = $quote->quotesVersion->pluck('id');
+            $this->deleteAllQuoteVersions($quoteVersions);
+            //-----3. Borra los proponentes-----
+            // $this->deleteQuoteProponents($quote->id);
+            // -----4.borrar las invitaciones de cotizaciones a compañias-----
+            // pendiente
+            // -----5.borrar los datos de la cotización-----
+            $this->deleteAllQuote($quote->id);
+            $quote->delete();
+        // } catch (\Throwable $th) {
+        //     DB::rollBack();
+        //     $errorQuote = true;
+        //     $quoteError = ['user' => 'Error, no se ha podido borrar la cotización'];
+        //     return $this->errorResponse($quoteError, 500);
+        // }
+
+        if (!$errorQuote) {
+            DB::commit();
+            // $this->sendDeleteTenderCompanyEmail($quote->name, $companiesParticipate);
+        }
+
+        return $this->showOne($quote, 200);
+    }
+
+    public function deleteAllQuote($quote_id)
+    {
+        $this->deleteInterests([$quote_id], Quotes::class);
+        //Borra los remarks de cotización
+        $this->deleteRemarks([$quote_id], Quotes::class);
+        //borra las notificaciones de cotización
+        $this->deleteNotifications([$quote_id], Quotes::class);
+        //borra las querywalls de cotización
+        $this->deleteQueryWall([$quote_id], Quotes::class);
+    }
+
+    public function deleteeQuoteProponents($id)
+    {
+        Proponents::where('licitacion_id', $id)
+            ->delete();
+    }
+
+    public function deleteAllQuoteVersions($ids)
+    {
+        //borra los archivos de las versiones de la cotización
+        $this->deleteFiles($ids, QuotesVersions::class);
+        //borra las etiquetas de las versiones de la cotización
+        $this->deleteTags($ids, QuotesVersions::class);
+        //borra las notificaciones de las versiones de la cotización
+        $this->deleteNotifications($ids, QuotesVersions::class);
+
+        //borra todos las versiones de la cotización
+        QuotesVersions::whereIn('id', $ids)
+            ->delete();
+    }
+
+    public function getCompaniesParticipating($quoteCompanies)
+    {
+        $quotesCompanies =  QuotesCompanies::whereIn('id', $quoteCompanies)
+            ->where('status', QuotesCompanies::STATUS_PARTICIPATING)
+            ->get();
+
+        $companies = [];
+
+        foreach ($quotesCompanies as $key => $value) {
+            $companies[$key]['company']             = $value->company->name;
+            $companies[$key]['email_responsible']   = $value->user->email;
+            $companies[$key]['email_admin']         = $value->company->user->email;
+        }
+
+        return $companies;
+    }
+
+    public function deleteAllQuoteCompanies($ids)
+    {
+        //borra los archivos de quotesCompanies
+        $this->deleteFiles($ids, QuotesCompanies::class);
+        //borra los remarks de quotesCompanies
+        $this->deleteRemarks($ids, QuotesCompanies::class);
+        //borra las notificaciones de las compañias licitantes
+        $this->deleteNotifications($ids, QuotesCompanies::class);
+
+        //borra todas las compañias licitantes
+        QuotesCompanies::whereIn('id', $ids)
+            ->delete();
     }
 }
