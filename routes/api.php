@@ -20,6 +20,7 @@ use App\Http\Controllers\ApiControllers\company\CompanyProjects\CompanyProjectsC
 use App\Http\Controllers\ApiControllers\company\CompanyTenders\CompanyTendersController;
 use App\Http\Controllers\ApiControllers\company\CompanyQuotes\CompanyQuotesController;
 use App\Http\Controllers\ApiControllers\company\CompanyTenders\CompanyTendersTransactController;
+use App\Http\Controllers\ApiControllers\company\CompanyQuotes\CompanyQuotesTransactController;
 use App\Http\Controllers\ApiControllers\company\CompanyBlogs\CompanyBlogsController;
 use App\Http\Controllers\ApiControllers\company\CompanyFileSize\CompanyFileSizeController;
 use App\Http\Controllers\ApiControllers\company\CompanyProducts\CompanyProductsController;
@@ -299,6 +300,9 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     // Route::get('/company/tenders/{id}/edit', [CompanyTendersController::class, 'edit'])->name('company-tender-edit');
     // Route::put('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'update'])->name('company-tender-update');
     // Route::delete('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'destroy'])->name('company-tender-destroy');
+ 
+    // participar en cotización:
+    Route::post('/company/quotes/select/participate', [CompanyQuotesTransactController::class, 'postComparate'])->name('company-quotes-select-participate');
 
     Route::put('/company/{slug}/tenders/{id}/status/{status}/user/{user_id}', [CompanyTendersController::class, 'updateStatusInvitation'])->name('company-tender-update-status'); 
     //participar en licitación
