@@ -108,4 +108,42 @@ class QuotesCompaniesController extends ApiController
 
         return $quoteCompanies;
     }
+
+    public function update(Request $request, $id)
+    {
+        $user = $this->validateUser();
+        $status = ($request->status == 'True') ? QuotesCompanies::STATUS_PARTICIPATING : QuotesCompanies::STATUS_REJECTED;
+
+        if ($user->userType() != 'demanda') {
+            $companyError = ['quoteCompany' => 'Error, El usuario no puede gestionar la validacion de la compañia hacia la cotización'];
+            return $this->errorResponse($companyError, 500);
+        }
+
+        $quoteCompany = QuotesCompanies::find($id);
+        // Iniciar Transacción
+        DB::beginTransaction();
+
+        $quoteCompany->status = $status;
+
+        try {
+            $quoteCompany->save();
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $quoteCompanyError = ['quote' => 'Error, no se ha podido gestionar la solicitud de la compañia'];
+            return $this->errorResponse($quoteCompanyError, 500);
+        }
+
+        DB::commit();
+
+        $email          = $quoteCompany->company->user->email;
+        $quote_name     = $quoteCompany->quote->name;
+        $company_name   = $quoteCompany->company->name;
+
+        // email pendiente
+
+        //notificaciones pendientes
+
+        return $this->showOne($quoteCompany, 200);
+    }
 }
