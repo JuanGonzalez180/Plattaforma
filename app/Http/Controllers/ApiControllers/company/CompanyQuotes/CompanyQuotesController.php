@@ -183,7 +183,6 @@ class CompanyQuotesController extends ApiController
 
     public function updateStatusInvitation($slug, $id, $status, $user_id)
     {
-        var_dump('pasa por aca');
         $user           = $this->validateUser();
 
         $quote_company  = QuotesCompanies::find($id);
@@ -199,6 +198,11 @@ class CompanyQuotesController extends ApiController
             }else{
                 $quote_company->user_company_id = $quote_user_admin;
             }
+
+            $quote_company->status = QuotesCompanies::STATUS_PARTICIPATING;
+            $quote_company->save();
+
+            return $this->showOne($quote_company, 200);
 
         }
         else
