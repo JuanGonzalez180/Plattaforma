@@ -300,13 +300,14 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::put('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'update'])->name('company-tender-update');
     Route::delete('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'destroy'])->name('company-tender-destroy');
     
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     Route::get('/company/quotes/{id}/edit', [CompanyQuotesController::class, 'edit'])->name('company-quote-edit');
+    Route::put('/company/{slug}/quotes/{id}', [CompanyTendersController::class, 'update'])->name('company-quote-update');
 
 
 

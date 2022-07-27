@@ -228,4 +228,52 @@ class CompanyQuotesController extends ApiController
             );
         }
     }
+
+    public function update(Request $request, $slug, $id)
+    {
+        $rules = [
+            'price' => 'required|numeric',
+        ];
+
+        $this->validate( $request, $rules );
+
+        $user           = $this->validateUser();
+        $quote_company = QuotesCompanies::find($id);
+
+        $company = Company::find($user->companyId());
+
+        $quote_status  = $quote_company->quote->quotesVersionLast()->status;
+
+        if ($quote_status == QuotesVersions::QUOTATION_FINISHED) {
+            $quoteCompanyError = ['tenderCompany' => 'Error, la compañia no puede actualizar la cotización, por el motivo que la cotización esta cerrada.'];
+            return $this->errorResponse($quoteCompanyError, 500);
+        }
+
+        $quoteCompanyFiels['price']         = $request->price;
+        $quoteCompanyFiels['commission']    = $request->commission;
+
+        DB::beginTransaction();
+
+        $error = false;
+
+        $error = false;
+        try {
+            $quote_company->update($quoteCompanyFiels);
+            DB::commit();
+        } catch (\Throwable $th) {
+            $error = true;
+            // Si existe algún error al actulizar tender-company
+            DB::rollBack();
+            $companyError = ['quoteCompany' => 'Error, no se ha podido gestionar la actualización'];
+            return $this->errorResponse($companyError, 500);
+        }
+
+        if(!$error)
+        {
+            // $this->sendEmailTenderCompanyOffer($tender_company);
+            // $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_TENDERCOMPANY_OFFER);
+        }
+
+        return $this->showOne($quote_company, 200);
+    }
 }
