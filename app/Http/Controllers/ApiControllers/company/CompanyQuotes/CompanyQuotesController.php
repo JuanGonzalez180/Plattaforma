@@ -181,4 +181,46 @@ class CompanyQuotesController extends ApiController
         return $this->showOne($quote_company, 200);
     }
 
+    public function updateStatusInvitation($slug, $id, $status, $user_id)
+    {
+        $user           = $this->validateUser();
+
+        $quote_company  = QuotesCompanies::find($id);
+
+        $quote_user_admin   = $quote_company->company->user->id;
+        $quote_status       = $quote_company->quote->quotesVersionLast()->status;
+
+        if($status == 'true')
+        {
+            if($user_id != 'null')
+            {
+                $quote_company->user_company_id = $user_id;
+            }else{
+                $quote_company->user_company_id = $quote_user_admin;
+            }
+
+        }
+        else
+        {
+            $quote_company->delete();
+
+            if ($quote_company->files) {
+                foreach ($quote_company->files as $key => $file) {
+                    Storage::disk('local')->delete($this->routeFile . $file->url);
+                    $file->delete();
+                }
+            }
+
+
+            //envia los correos al responsable de licitación y al responsable del proyecto
+            // $this->sendEmailInvitationTender($tender_company);
+            //envia los notificaciones al responsable de la licitación y al administrador
+            // $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_INVITATION_REJECTED);
+
+            return $this->showOneData(
+                ['success' => 'Se ha eliminado correctamente.', 'code' => 200]
+                , 200
+            );
+        }
+    }
 }
