@@ -307,7 +307,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     
     
     Route::get('/company/quotes/{id}/edit', [CompanyQuotesController::class, 'edit'])->name('company-quote-edit');
-    Route::put('/company/{slug}/quotes/{id}', [CompanyTendersController::class, 'update'])->name('company-quote-update');
+    Route::put('/company/{slug}/quotes/{id}', [CompanyQuotesController::class, 'update'])->name('company-quote-update');
 
 
 
