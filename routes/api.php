@@ -47,6 +47,7 @@ use App\Http\Controllers\ApiControllers\tenders\tendersDocuments\TendersDocument
 use App\Http\Controllers\ApiControllers\quotes\quotesDocuments\QuotesDocumentsController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesDocumentsController;
+use App\Http\Controllers\ApiControllers\quotes\quotesCompanies\QuotesCompaniesDocumentsController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesListController;
 use App\Http\Controllers\ApiControllers\quotes\quotesCompanies\CuotesCompaniesListController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesActionController;
@@ -243,6 +244,10 @@ Route::group(['middleware' => ['jwt.verify']], function () {
      * Tenders_companies_docuemnts
      */
     Route::resource('/tenders/companies/documents', TendersCompaniesDocumentsController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('tenderscompaniesdocuments');
+    /**
+     * quotes_companies_docuemnts
+     */
+    Route::resource('/quotes/companies/documents', QuotesCompaniesDocumentsController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('quotescompaniesdocuments');
     /**
      * quotes_companies_docuemnts
      */
