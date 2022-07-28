@@ -73,19 +73,19 @@ class QuotesVersionsController extends ApiController
         $quoteVersionFields['tenders_id']  = $quote_id;
         $quoteVersionFields['status']      = QuotesVersions::QUOTATION_PUBLISH;
 
-        try {
+        // try {
             //*Crea la nueva adenda.
             $quotesVersions                = QuotesVersions::create($quoteVersionFields);
             //*Crea las etiquetas de la nueva adenda.
             foreach ($request->tags as $key => $tag) {
                 $quotesVersions->tags()->create(['name' => $tag['displayValue']]);
             }
-        } catch (\Throwable $th) {
-            $errorTender = true;
-            DB::rollBack();
-            $quoteError = ['quoteVersion' => 'Error, no se ha podido crear la versión de la cotización'];
-            return $this->errorResponse($quoteError, 500);
-        }
+        // } catch (\Throwable $th) {
+        //     $errorTender = true;
+        //     DB::rollBack();
+        //     $quoteError = ['quoteVersion' => 'Error, no se ha podido crear la versión de la cotización'];
+        //     return $this->errorResponse($quoteError, 500);
+        // }
 
         //* Si existe una nueva version copia los archivos de la adenda anterios a la actual
         if ($quotesVersions) {
@@ -113,11 +113,12 @@ class QuotesVersionsController extends ApiController
                     // $this->sendMessageTenderVersión($quotesVersions->quotes->quotesCompaniesParticipating(), $quotesVersions->quotes);
 
 
-                    DB::commit();
-                    return $this->showOne($quotesVersions, 201);
                 }
             }
         }
+        
+        DB::commit();
+        return $this->showOne($quotesVersions, 201);
     }
 
     public function sendMessageTenderVersión($tenderCompanies, $tender)
