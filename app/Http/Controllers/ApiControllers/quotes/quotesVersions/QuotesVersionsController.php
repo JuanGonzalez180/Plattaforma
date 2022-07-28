@@ -20,7 +20,7 @@ use App\Http\Controllers\ApiControllers\ApiController;
 class QuotesVersionsController extends ApiController
 {
     public $routeFile           = 'public/';
-    public $routeQuoteVersion   = 'images/quotes/';
+    public $routeQuoteVersion   = 'images/quote/';
 
     public function validateUser()
     {
