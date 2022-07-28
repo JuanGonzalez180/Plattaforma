@@ -54,6 +54,7 @@ use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompanie
 use App\Http\Controllers\ApiControllers\quotes\quotesCompanies\QuotesCompaniesActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersAction\TendersActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersVersions\TendersVersionsController;
+use App\Http\Controllers\ApiControllers\quotes\quotesVersions\QuotesVersionsController;
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
 
@@ -255,6 +256,10 @@ Route::group(['middleware' => ['jwt.verify']], function () {
      * Tenders_vesion
      */
     Route::resource('/tenders/version', TendersVersionsController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('tendersVersions');
+    /**
+     * quotes_vesion
+     */
+    Route::resource('/quotes/version', QuotesVersionsController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('quotesVersions');
     /**
      * Tenders_companies
      */

@@ -239,7 +239,7 @@ class TendersVersionsController extends ApiController
         }
 
         if ($request['hour']) {
-            $lastVersion->hour = $request['hour']['hour'] . ':' . $request['hour']['minute'];
+            $lastVersion->hour = $this->timeFormat($request['hour']['hour']) . ':' . $this->timeFormat($request['hour']['minute']);
         }
 
         // $lastVersion->status      = TendersVersions::LICITACION_CREATED;

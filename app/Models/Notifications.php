@@ -33,6 +33,8 @@ class Notifications extends Model
     // COTIZACIONES
     const NOTIFICATION_QUOTEINVITECOMPANIES         = 'QuoteInviteCompanies';
     const NOTIFICATION_QUOTECOMPANYNEWVERSION       = 'QuoteCompanyNewVersion';
+    const NOTIFICATION_QUOTE_STATUS_CLOSED          = 'QuoteCompaniesStatusClosed'; //notificación cuando una cotización se cierra y se le debe enviar a las compañia licitantes
+    const NOTIFICATION_QUOTE_STATUS_CLOSED_ADMIN    = 'QuoteCompaniesStatusClosedAdmin'; //notificación cuando una licitacion se cierra y se le debe enviar al encargado y administrador de la licitación
     
     
     //Muro de consultas
@@ -167,6 +169,16 @@ class Notifications extends Model
                 $this->query_id = '';
             }
         }
+        else if($this->type == Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED && $this->notificationsable_type == Quotes::class)
+        {
+            $quote = Quotes::find($this->notificationsable_id);
+
+            if( $quote ){
+                $this->query_id = $quote->company->slug."/cotizacion/".$quote->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
         else if($this->type == Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE && $this->notificationsable_type == Tenders::class)
         {
             $tender = Tenders::find($this->notificationsable_id);
@@ -183,6 +195,16 @@ class Notifications extends Model
 
             if( $tender ){
                 $this->query_id = $tender->project_id . '/' . $tender->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
+        else if($this->type == Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED_ADMIN && $this->notificationsable_type == Quotes::class)
+        {
+            $quote = Quotes::find($this->notificationsable_id);
+
+            if( $quote ){
+                $this->query_id = $quote->project_id . '/' . $quote->id;
             }else{
                 $this->query_id = '';
             }
@@ -308,6 +330,11 @@ class Notifications extends Model
             'subtitle'  => '', 
             'message'   => 'La licitación %s se ha cerrado y esta en proceso de evaluación.',
         ],
+        Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED => [ 
+            'title'     => 'Cotización: Lic. %s', 
+            'subtitle'  => '', 
+            'message'   => 'La cotización %s se ha cerrado y esta en proceso de evaluación.',
+        ],
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE => [ 
             'title'     => 'Licitación: Lic. %s', 
             'subtitle'  => '', 
@@ -317,6 +344,11 @@ class Notifications extends Model
             'title'     => 'Licitación: Lic. %s', 
             'subtitle'  => '', 
             'message'   => 'La licitación %s se ha cerrado, procede a evaluar la licitación.',
+        ],
+        Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED_ADMIN => [ 
+            'title'     => 'Cotización: Lic. %s', 
+            'subtitle'  => '', 
+            'message'   => 'La cotización %s se ha cerrado, procede a evaluar la cotización.',
         ],
         Notifications::NOTIFICATION_RECOMMEND_TENDER => [ 
             'title'     => 'Licitación: Lic. %s', 
@@ -427,6 +459,12 @@ class Notifications extends Model
             $message    = sprintf($message, $query->name);
             $data['id'] = $query->id;
         }
+        elseif( $type == Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED ) //notificación cuando una cotización se cierra y le notifica a las empresas cotizantes
+        {
+            $title      = sprintf($title, $query->name);
+            $message    = sprintf($message, $query->name);
+            $data['id'] = $query->id;
+        }
         elseif( $type == Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE ) //notificación cuando una licitación es cerrada por el administrador antes de tiempo y le notifica a las empresas licitantes
         {
             $title      = sprintf($title, $query->name);
@@ -434,6 +472,12 @@ class Notifications extends Model
             $data['id'] = $query->id;
         }
         elseif( $type == Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN ) //notificación cuando una licitación se cierra y el encargado de la licitación o admin de la empresa procede a evaluar
+        {
+            $title      = sprintf($title, $query->name);
+            $message    = sprintf($message, $query->name);
+            $data['id'] = $query->id;
+        }
+        elseif( $type == Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED_ADMIN ) //notificación cuando una cotización se cierra y el encargado de la cotización o admin de la empresa procede a evaluar
         {
             $title      = sprintf($title, $query->name);
             $message    = sprintf($message, $query->name);

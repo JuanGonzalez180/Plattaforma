@@ -4,9 +4,12 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use App\Models\Quotes;
+use App\Models\Notifications;
 use App\Models\QuotesVersions;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\quote\quoteClose\sendCloseQuoteCronJobs;
 class TaskQuoteClosed extends Command
 {
     /**
@@ -54,11 +57,37 @@ class TaskQuoteClosed extends Command
                 //*Cierra las licitacines.
                 $this->quoteVersionUpdate($quote);
                 //*Envia las notificaciones
-                // $this->sendNotificationTenders($quote);
+                $this->sendNotificationQuotes($quote);
                 //*Enviar los correos
-                // $this->sendEmailsTenders($quote);
+                $this->sendEmailsQuotes($quote);
             };
         }
+    }
+
+    public function sendEmailsQuotes($quote)
+    {
+        // *Correos de las compañias participantes de la licitación.
+        $quoteCompaniesEmails = $quote->QuoteParticipatingCompanyEmails();
+        // *Correos del administrador o encargado de la licitación.
+        $quoteAdminEmails    = $quote->QuoteAdminEmails();
+
+        foreach ($quoteCompaniesEmails as $companyEmail)
+        {
+            Mail::to(trim($companyEmail))->send(new sendCloseQuoteCronJobs(
+                $quote->name,
+                $quote->company->name 
+            ));
+        }
+
+    }
+
+    public function sendNotificationQuotes($quote)
+    {
+        $notifications      = new Notifications();
+        //*Notifica a los usuarios de las compañias participantes de la cotización.
+        $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED, $quote->QuoteParticipatingCompanyIdUsers());
+        //*Notifica al administrador y/o encargado de la cotización.
+        $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED_ADMIN, $quote->QuoteAdminIdUsers());
     }
 
     public function quoteVersionUpdate($tender)

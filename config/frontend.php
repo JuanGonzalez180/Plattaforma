@@ -18,7 +18,8 @@ return [
             'tender'             => 'licitacion'
         ],
         'quote' => [
-            'quoteListprovider' => 'cotizaciones/listado'
+            'quoteListprovider' => 'cotizaciones/listado',
+            'quoteList'         => 'mis-cotizaciones/listado',
         ]
 
 
