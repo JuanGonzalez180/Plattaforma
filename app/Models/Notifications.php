@@ -15,6 +15,9 @@ class Notifications extends Model
     use HasFactory;
     public $transformer = NotificationsTransformer::class;
     
+
+
+    // LICITACIONES
     const NOTIFICATION_TENDER_DELETE                = 'TendersDelete'; //notificación cuando se elimina una licitación
     const NOTIFICATION_TENDERSDECLINED              = 'TendersDeclined';
     const NOTIFICATION_TENDERCOMPANYSELECTED        = 'TenderCompanySelected';
@@ -26,7 +29,12 @@ class Notifications extends Model
     const NOTIFICATION_TENDERCOMPANYPARTICIPATE     = 'TenderCompanyParticipate';
     const NOTIFICATION_TENDERCOMPANYNEWVERSION      = 'TenderCompanyNewVersion';
     const NOTIFICATION_TENDERCOMPANY_OFFER          = 'TenderCompanyOffer'; //Notificación cuando una compañia ha ofertado en una licitación
-
+    
+    // COTIZACIONES
+    const NOTIFICATION_QUOTEINVITECOMPANIES         = 'QuoteInviteCompanies';
+    const NOTIFICATION_QUOTECOMPANYNEWVERSION       = 'QuoteCompanyNewVersion';
+    
+    
     //Muro de consultas
     const NOTIFICATION_QUERYWALL_TENDER_QUESTION    = 'QueryWallQuestions'; //notificación cuando una empresa licitante hace una pregunta en una licitación
     const NOTIFICATION_QUERYWALL_TENDER_ANSWER      = 'QueryWallAnswer'; //notificación cuando una empresa licitante hace una pregunta en una licitación
@@ -199,6 +207,16 @@ class Notifications extends Model
                 $this->query_id = '';
             }
         }
+        else if($this->type == Notifications::NOTIFICATION_QUOTECOMPANYNEWVERSION && $this->notificationsable_type == Quotes::class)
+        {
+            $quote = Quotes::find($this->notificationsable_id);
+
+            if( $quote ){
+                $this->query_id = $quote->company->slug."/cotizacion/".$quote->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
         else if($this->type == Notifications::NOTIFICATION_TENDER_DELETE && $this->notificationsable_type == Tenders::class)
         {
             $this->query_id = '';
@@ -222,6 +240,11 @@ class Notifications extends Model
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
             'message'   => 'La compañía ha sido invitada a la licitación: %s.' 
+        ],
+        Notifications::NOTIFICATION_QUOTEINVITECOMPANIES => [ 
+            'title'     => 'Cotización: %s', 
+            'subtitle'  => '', 
+            'message'   => 'La compañía ha sido invitada a la cotización: %s.' 
         ],
         Notifications::NOTIFICATION_TENDERCOMPANYNOPARTICIPATE => [ 
             'title'     => 'Licitación: %s', 
@@ -254,6 +277,11 @@ class Notifications extends Model
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
             'message'   => 'Se ha creado una nueva adenda de la licitación',
+        ],
+        Notifications::NOTIFICATION_QUOTECOMPANYNEWVERSION => [ 
+            'title'     => 'Cotización: %s', 
+            'subtitle'  => '', 
+            'message'   => 'Se ha creado una nueva adenda de la cotización',
         ],
         Notifications::NOTIFICATION_TENDERCOMPANY_OFFER => [ 
             'title'     => 'Licitación: %s', 
@@ -325,6 +353,11 @@ class Notifications extends Model
             $message    = sprintf($message, $query->company->name);
         }
         elseif( $type == Notifications::NOTIFICATION_TENDERINVITECOMPANIES )
+        {
+            $title      = sprintf($title, $query->name);
+            $message    = sprintf($message, $query->name);
+        }
+        elseif( $type == Notifications::NOTIFICATION_QUOTEINVITECOMPANIES )
         {
             $title      = sprintf($title, $query->name);
             $message    = sprintf($message, $query->name);
@@ -417,6 +450,12 @@ class Notifications extends Model
             $title      = sprintf($title, $query->name);
             $message    = sprintf($message, $query->company->name);
             $data['id'] = $query->company->slug."/licitacion/".$query->id;
+        }
+        elseif( $type == Notifications::NOTIFICATION_QUOTECOMPANYNEWVERSION ) //notificación cuando se crea una adenda de la cotización
+        {
+            $title      = sprintf($title, $query->name);
+            $message    = sprintf($message, $query->company->name);
+            $data['id'] = $query->company->slug."/cotizacion/".$query->id;
         }
         elseif( $type == Notifications::NOTIFICATION_TENDER_DELETE ) //notificación se borra una licitación
         {

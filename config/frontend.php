@@ -16,7 +16,11 @@ return [
             'tenderDetail'       => 'compania',
             'tenderList'         => 'mis-licitaciones/listado',
             'tender'             => 'licitacion'
+        ],
+        'quote' => [
+            'quoteListprovider' => 'cotizaciones/listado'
         ]
+
 
     ],
 

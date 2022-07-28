@@ -15,10 +15,11 @@ use Illuminate\Support\Facades\DB;
 use App\Traits\UsersCompanyTenders;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendUpdateTenderCompany;
+use App\Mail\SendUpdateQuoteCompany;
 use App\Mail\sendRespondTenderCompany;
 use App\Mail\sendRecommentTenderCompany;
-use App\Models\TemporalInvitationCompany;
-use App\Mail\SendInvitationTenderCompany;
+use App\Mail\SendInvitationQuoteCompany;
+use App\Models\TemporalInvitationCompanyQuote;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 use Illuminate\Support\Facades\Storage;
@@ -72,10 +73,10 @@ class QuotesCompaniesController extends ApiController
         $quote                 = Quotes::find($quote_id);
 
         //compañias que ya estan participando
-        $tendersCompaniesOld    = $quote->quoteCompanies;
+        $quotesCompaniesOld    = $quote->quoteCompanies;
 
         //registra las nuevas compañias a la cotización y obtiene una arreglo de las nuevas compañias
-        $tendersCompaniesNew    = ($request->companies_id) ? $this->createQuoteCompanies($quote, $request->companies_id) : [];
+        $quotesCompaniesNew    = ($request->companies_id) ? $this->createQuoteCompanies($quote, $request->companies_id) : [];
 
 
         //Actualiza el estado de la licitación
@@ -84,9 +85,115 @@ class QuotesCompaniesController extends ApiController
         $quoteVersion->save();
         DB::commit();
 
+        //Envia los correos e invitaciones a las compañias nuevas a participar
+        $this->sendMessageQuoteInvitation($quotesCompaniesNew, $quote);
+
+        //Envia correos y notificaciones a las compañia ya participantes
+        // $this->sendMessageQuoteVersion($quotesCompaniesOld, $quote);
+
+        //Envia correos de invitación a compañia que no estan registradas en plattaforma
+        if ($request->companies_email) {
+            $this->sendInvitantionExternalCompanies($request->companies_email, $quote);
+        }
 
         return $this->showOne($quote, 201);
+    }
 
+    public function sendInvitantionExternalCompanies($emails, $quote)
+    {
+        foreach ($emails as $key => $email) {
+            if (!($this->emailExistUser($email)) && !($this->invitationTenderExist($email, $quote))) {
+                $fields['quote_id']    = $quote->id;
+                $fields['email']       = trim($email);
+
+                TemporalInvitationCompanyQuote::create($fields);
+            }
+        }
+    }
+
+    public function invitationTenderExist($email, $tender)
+    {
+        return TemporalInvitationCompanyQuote::where('quote_id', '=',  $tender->id)
+            ->where(strtolower('email'), '=', strtolower($email))
+            ->where('send', '=', false)
+            ->exists();
+    }
+
+    public function emailExistUser($email)
+    {
+        return User::where('email', '=', $email)
+            ->exists();
+    }
+
+    public function sendMessageQuoteVersion($quoteCompanies, $tender)
+    {
+        $notifications = new Notifications();
+
+        foreach ($quoteCompanies as $key => $quoteCompany) {
+            if ($quoteCompany->status == QuotesCompanies::STATUS_PARTICIPATING) {
+
+                //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante
+                $notifications->registerNotificationQuery(
+                    $tender,
+                    Notifications::NOTIFICATION_QUOTECOMPANYNEWVERSION,
+                    [
+                        $quoteCompany->userCompany->id,
+                        $quoteCompany->company->user->id
+                    ]
+                );
+                // 2. CORREOS -> Envia los correos a los usuarios por compañia participante
+                $this->sendEmailTenderVersion(
+                    [
+                        $quoteCompany->userCompany->email,
+                        $quoteCompany->company->user->email
+                    ],
+                    $quoteCompany
+                );
+            }
+        }
+    }
+
+    public function sendEmailQuoteVersion($UserEmails, $quoteCompany)
+    {
+        foreach ($UserEmails as $mail) {
+            Mail::to(trim($mail))->send(new SendUpdateQuoteCompany(
+                $quoteCompany->quote->name,
+                $quoteCompany->quote->quotesVersionLast()->adenda,
+                $quoteCompany->company->name
+            ));
+        }
+    }
+
+    public function sendMessageQuoteInvitation($quoteCompanies, $quote)
+    {
+        $notifications = new Notifications();
+
+        foreach ($quoteCompanies as $key => $quoteCompany) {
+
+            //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante.
+            $notifications->registerNotificationQuery(
+                $quote,
+                Notifications::NOTIFICATION_QUOTEINVITECOMPANIES,
+                [$quoteCompany->company->user->id]
+            );
+
+            //2. CORREOS -> Envia los correos a los usuarios al usuario administrador de la compañia cotizante.
+            $this->sendEmailQuoteInvitation(
+                [$quoteCompany->company->user->email],
+                $quoteCompany
+            );
+        }
+    }
+
+    public function sendEmailQuoteInvitation($UserEmails, $quoteCompany)
+    {
+        foreach ($UserEmails as $mail) {
+            Mail::to(trim($mail))->send(new SendInvitationQuoteCompany(
+                $quoteCompany->quote->name,
+                $quoteCompany->quote->quotesVersionLast()->adenda,
+                $quoteCompany->company->name
+            ));
+        }
     }
 
     public function createQuoteCompanies($quotes, $companies)
