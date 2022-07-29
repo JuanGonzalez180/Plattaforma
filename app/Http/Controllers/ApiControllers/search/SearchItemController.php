@@ -16,6 +16,7 @@ use App\Models\Projects;
 use App\Models\Products;
 use Illuminate\Support\Arr;
 use App\Models\TypeProject;
+use App\Models\QuotesCompanies;
 use App\Models\TypesEntity;
 use Illuminate\Http\Request;
 use App\Models\CategoryTenders;
@@ -60,10 +61,6 @@ class SearchItemController extends ApiController
 
     public function __invoke(Request $request)
     {
-
-        var_dump($request->all());
-        die;
-
         $user       = $this->validateUser();
         $type_user  = $user->userType();
 
@@ -95,10 +92,19 @@ class SearchItemController extends ApiController
         $status      = !isset($request->status) ? null : $request->status;
 
         // Tender Consult, copy of SearchCompanyController
+        $discardedCompanies = [];
+
+
+        // licitaciones
         $tender_id = $request->tender_id;
-        $companiesTenders = [];
         if ($tender_id) {
-            $companiesTenders = TendersCompanies::where('tender_id', '=', $tender_id)->pluck('company_id');
+            $discardedCompanies = TendersCompanies::where('tender_id', '=', $tender_id)->pluck('company_id');
+        }
+
+        // cotizaciones
+        $quote_id = $request->quote_id;
+        if ($quote_id) {
+            $discardedCompanies = QuotesCompanies::where('quotes_id', '=', $quote_id)->pluck('company_id');
         }
 
         if (!isset($request->type_consult)) {
@@ -108,7 +114,7 @@ class SearchItemController extends ApiController
         //se empieza a enviar los parametros de busqueda
         switch ($request->type_consult) {
             case 'companies':
-                $result = $this->getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date, $companiesTenders);
+                $result = $this->getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date, $discardedCompanies);
                 break;
             case 'products':
                 $result = $this->getProductAll($type_entity, $category_product, $search);
@@ -127,7 +133,7 @@ class SearchItemController extends ApiController
         return $this->showAllPaginate($result);
     }
 
-    public function getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date, $companiesTenders = [])
+    public function getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date, $discardedCompanies = [])
     {
         $type_user = ($this->validateUser())->userType();
 
@@ -158,7 +164,7 @@ class SearchItemController extends ApiController
         }
 
         return Company::whereIn('id', $companies)
-            ->whereNotIn('companies.id', $companiesTenders)
+            ->whereNotIn('companies.id', $discardedCompanies)
             ->orderBy('name', 'asc')
             ->get();
     }
