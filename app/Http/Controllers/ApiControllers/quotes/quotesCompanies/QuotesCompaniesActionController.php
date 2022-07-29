@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ApiControllers\quotes\quotesCompanies;
 
 use JWTAuth;
+use App\Models\Quotes;
 use Illuminate\Http\Request;
 use App\Models\QuotesCompanies;
 use App\Models\QuotesVersions;
@@ -24,17 +25,15 @@ class QuotesCompaniesActionController extends ApiController
     public function SelectedWinner(Request $request)
     {
         $id                = $request->id;
-        $quoteCompany      = QuotesCompanies::find($id);
-        $quoteVersionLast  = $quoteCompany->quote->quotesVersionLast();
-
+        $quote             = Quotes::find($id);
+        $quoteVersionLast  = $quote->quotesVersionLast();
 
         DB::beginTransaction();
 
-        $quoteCompany->winner      = QuotesCompanies::WINNER_TRUE;
+        // $quote->winner      = QuotesCompanies::WINNER_TRUE;
         $quoteVersionLast->status  = QuotesVersions::QUOTATION_FINISHED;
 
         try {
-            $quoteCompany->save();
             $quoteVersionLast->save();
             DB::commit();
         } catch (\Throwable $th) {
@@ -46,7 +45,7 @@ class QuotesCompaniesActionController extends ApiController
         // $this->sendEmailTenderCompanies($tenderCompany);
         //envia las notificaciones a las compañias licitantes. incluyendo a la compañia ganadora y a las demas que participarón
         // $this->sendNotificationTenderCompanies($tenderCompany);
-        return $this->showOne($quoteCompany, 200);
+        return $this->showOne($quoteVersionLast , 200);
     }
     /**
      * Display a listing of the resource.
