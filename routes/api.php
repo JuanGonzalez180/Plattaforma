@@ -274,7 +274,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     /**
      * quotes_action
      */
-    Route::get('/quotes/companies/selected/winner', [QuotesCompaniesActionController::class, 'SelectedWinner'])->name('company-quotes-selected-winner');
+    Route::get('/quotes/companies/selected/winner/{id}', [QuotesCompaniesActionController::class, 'SelectedWinner'])->name('company-quotes-selected-winner');
     Route::put('/quotes/action/{id}/closed/status', [QuotesActionController::class, 'updateStatusClosed'])->name('company-quotes-update-status-closed');
 
     /**
