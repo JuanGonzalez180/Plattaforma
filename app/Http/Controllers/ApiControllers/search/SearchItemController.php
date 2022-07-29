@@ -61,6 +61,9 @@ class SearchItemController extends ApiController
     public function __invoke(Request $request)
     {
 
+        var_dump($request->all());
+        die;
+
         $user       = $this->validateUser();
         $type_user  = $user->userType();
 
