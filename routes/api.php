@@ -53,6 +53,7 @@ use App\Http\Controllers\ApiControllers\quotes\quotesCompanies\CuotesCompaniesLi
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesActionController;
 use App\Http\Controllers\ApiControllers\quotes\quotesCompanies\QuotesCompaniesActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersAction\TendersActionController;
+use App\Http\Controllers\ApiControllers\quotes\quotesActions\QuotesActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersVersions\TendersVersionsController;
 use App\Http\Controllers\ApiControllers\quotes\quotesVersions\QuotesVersionsController;
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
@@ -274,6 +275,8 @@ Route::group(['middleware' => ['jwt.verify']], function () {
      * quotes_action
      */
     Route::get('/quotes/companies/selected/winner', [QuotesCompaniesActionController::class, 'SelectedWinner'])->name('company-quotes-selected-winner');
+    Route::put('/quotes/action/{id}/closed/status', [QuotesActionController::class, 'updateStatusClosed'])->name('company-quotes-update-status-closed');
+
     /**
      * Tenders_action
      */
