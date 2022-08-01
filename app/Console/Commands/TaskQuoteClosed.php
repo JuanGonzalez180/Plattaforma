@@ -9,7 +9,9 @@ use App\Models\QuotesVersions;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\quote\quoteClose\sendCloseAdminQuote;
 use App\Mail\quote\quoteClose\sendCloseQuoteCronJobs;
+
 class TaskQuoteClosed extends Command
 {
     /**
@@ -71,14 +73,18 @@ class TaskQuoteClosed extends Command
         // *Correos del administrador o encargado de la licitación.
         $quoteAdminEmails    = $quote->QuoteAdminEmails();
 
-        foreach ($quoteCompaniesEmails as $companyEmail)
-        {
+        foreach ($quoteCompaniesEmails as $companyEmail) {
             Mail::to(trim($companyEmail))->send(new sendCloseQuoteCronJobs(
                 $quote->name,
-                $quote->company->name 
+                $quote->company->name
             ));
         }
-
+        foreach ($quoteAdminEmails as $adminEmail) {
+            Mail::to(trim($adminEmail))->send(new sendCloseAdminQuote(
+                $quote->name,
+                $quote->company->name
+            ));
+        }    
     }
 
     public function sendNotificationQuotes($quote)

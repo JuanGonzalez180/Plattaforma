@@ -7,24 +7,23 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class sendCloseQuoteCronJobs extends Mailable
+class sendTenderClose extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subject = "Se ha cerrado la cotización ";
+    public $subject = "La cotización ";
 
     protected $quoteName;
-    protected $companyName;
-
+    protected $quoteCompany;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(string $quoteName, string $companyName)
+    public function __construct(string $quoteName,string $quoteCompany)
     {
-        $this->quoteName    = $quoteName;
-        $this->companyName  = $companyName;
+        $this->quoteName        = $quoteName;
+        $this->quoteCompany     = $quoteCompany;
     }
 
     /**
@@ -34,11 +33,11 @@ class sendCloseQuoteCronJobs extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.quote.send-close-quote-cronjobs-company')
-            ->subject($this->subject . $this->quoteName . '.')
+        return $this->view('emails.quote.send-close-quote')
+            ->subject($this->subject . $this->quoteName . ' se ha cerrado, gracias por participar.')
             ->with([
                 'quoteName'         => $this->quoteName,
-                'companyName'       => $this->companyName
+                'quoteCompany'      => $this->quoteCompany,
             ]);
     }
 }

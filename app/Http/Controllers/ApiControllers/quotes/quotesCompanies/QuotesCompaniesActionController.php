@@ -5,9 +5,12 @@ namespace App\Http\Controllers\ApiControllers\quotes\quotesCompanies;
 use JWTAuth;
 use App\Models\Quotes;
 use Illuminate\Http\Request;
-use App\Models\QuotesCompanies;
+use App\Models\Notifications;
 use App\Models\QuotesVersions;
+use App\Models\QuotesCompanies;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\quote\quoteClose\sendTenderClose;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class QuotesCompaniesActionController extends ApiController
@@ -41,11 +44,36 @@ class QuotesCompaniesActionController extends ApiController
             $tenderError = ['tender' => 'Error, no se ha podido gestionar la solicitud de la licitación'];
             return $this->errorResponse($tenderError, 500);
         }
-        //envia los correos a las empresas que participaron en la licitación
-        // $this->sendEmailTenderCompanies($tenderCompany);
+        //envia los correos a las empresas que participaron en la cotización
+        $this->sendEmailQuoteCompanies($quote);
         //envia las notificaciones a las compañias licitantes. incluyendo a la compañia ganadora y a las demas que participarón
-        // $this->sendNotificationTenderCompanies($tenderCompany);
+        $this->sendNotificationQuoteCompanies($quote);
+
         return $this->showOne($quoteVersionLast , 200);
+    }
+
+    public function sendEmailQuoteCompanies($quote)
+    {
+        $quote_name     = $quote->name;
+        $quote_company  = $quote->company->name;
+        $companies_emails   = $quote->QuoteParticipatingCompanyEmails();
+
+        foreach ($companies_emails as $email) {
+            Mail::to(trim($email))
+                ->send(new sendTenderClose($quote_name, $quote_company));
+        }
+
+    }
+
+    public function sendNotificationQuoteCompanies($quote)
+    {
+        $quote_name         = $quote->name;
+        $quote_company      = $quote->company->name;
+        $companies_user_id  = $quote->QuoteParticipatingCompanyIdUsers();
+
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_QUOTE_CLOSED, $companies_user_id);
+
     }
     /**
      * Display a listing of the resource.

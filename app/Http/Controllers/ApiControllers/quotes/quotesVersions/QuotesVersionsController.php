@@ -12,8 +12,8 @@ use App\Models\Notifications;
 use App\Models\QuotesVersions;
 use App\Models\QuotesCompanies;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-// use App\Mail\SendUpdateTenderCompany;
+use App\Mail\SendUpdateQuoteCompany;
+use Illuminate\Support\Facades\Mail; 
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -107,39 +107,47 @@ class QuotesVersionsController extends ApiController
 
                     Storage::copy($this->routeFile . $file_old_version, $this->routeFile . $file_new_version);
 
-                    $quotesVersions->files()->create(['name' => $oldVersion->name, 'type' => $oldVersion->type, 'url' => $file_new_version]);
-
-                    // * Envia correos y notificaciones a las compañias participantes.
-                    // $this->sendMessageTenderVersión($quotesVersions->quotes->quotesCompaniesParticipating(), $quotesVersions->quotes);
-
-
+                    $quotesVersions->files()->create(['name' => $oldVersion->name, 'type' => $oldVersion->type, 'url' => $file_new_version]);            
                 }
             }
         }
+        // * Envia correos y notificaciones a las compañias participantes.
+        $this->sendMessageQuoteVersion($quotesVersions->quotes->quotesCompaniesParticipating(), $quotesVersions->quotes);
 
         DB::commit();
         return $this->showOne($quotesVersions, 201);
     }
 
-    public function sendMessageTenderVersión($tenderCompanies, $tender)
+    public function sendMessageQuoteVersion($quotesCompanies, $tender)
     {
         $notifications = new Notifications();
 
-        // foreach ($tenderCompanies as $key => $tenderCompany) {
-        //     if ($tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING) {
-        //         //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante
-        //         $notifications->registerNotificationQuery(
-        //             $tender,
-        //             Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION,
-        //             $tenderCompany->tenderCompanyUsersIds()
-        //         );
-        //         // 2. CORREOS -> Envia los correos a los usuarios ya participantes
-        //         $this->sendEmailTenderVersion(
-        //             $tenderCompany->tenderCompanyEmails(),
-        //             $tenderCompany
-        //         );
-        //     }
-        // }
+        foreach ($quotesCompanies as $key => $quoteCompany) {
+            if ($quoteCompany->status == QuotesCompanies::STATUS_PARTICIPATING) {
+                //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante
+                $notifications->registerNotificationQuery(
+                    $tender,
+                    Notifications::NOTIFICATION_QUOTECOMPANYNEWVERSION,
+                    $quoteCompany->quoteCompanyUsersIds()
+                );
+                // 2. CORREOS -> Envia los correos a los usuarios ya participantes
+                $this->sendEmailQuoteVersion(
+                    $quoteCompany->quoteCompanyEmails(),
+                    $quoteCompany
+                );
+            }
+        }
+    }
+
+    public function sendEmailQuoteVersion($UserEmails, $quoteCompany)
+    {
+        foreach ($UserEmails as $mail) {
+            Mail::to(trim($mail))->send(new SendUpdateQuoteCompany(
+                $quoteCompany->quote->name,
+                $quoteCompany->quote->quotesVersionLast()->adenda,
+                $quoteCompany->company->name
+            ));
+        }
     }
 
     public function timeFormat($value)

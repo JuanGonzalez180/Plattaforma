@@ -35,6 +35,7 @@ class Notifications extends Model
     const NOTIFICATION_QUOTECOMPANYNEWVERSION       = 'QuoteCompanyNewVersion';
     const NOTIFICATION_QUOTE_STATUS_CLOSED          = 'QuoteCompaniesStatusClosed'; //notificación cuando una cotización se cierra y se le debe enviar a las compañia licitantes
     const NOTIFICATION_QUOTE_STATUS_CLOSED_ADMIN    = 'QuoteCompaniesStatusClosedAdmin'; //notificación cuando una licitacion se cierra y se le debe enviar al encargado y administrador de la licitación
+    const NOTIFICATION_QUOTE_CLOSED                 = 'QuoteStatusClosed';
     
     
     //Muro de consultas
@@ -258,6 +259,11 @@ class Notifications extends Model
             'subtitle'  => '', 
             'message'   => 'La licitación ha sido adjudicada, la compañia %s ha sido selecciona como la mejor oferta, muchas gracias por participar.' 
         ],
+        Notifications::NOTIFICATION_QUOTE_CLOSED => [ 
+            'title'     => 'Cotización: %s', 
+            'subtitle'  => '', 
+            'message'   => 'La cotización de la compañia %s ha sido cerrada, gracias por participar.' 
+        ],
         Notifications::NOTIFICATION_TENDERINVITECOMPANIES => [ 
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
@@ -378,10 +384,19 @@ class Notifications extends Model
         if( $type == Notifications::NOTIFICATION_TENDERSDECLINED )
         {
             $title = sprintf($title, $query->name);
-        }elseif( 
+        }
+        elseif( 
             $type == Notifications::NOTIFICATION_TENDERCOMPANYSELECTED
-        ){
+        )
+        {
             $title      = sprintf($title, $query->tender->name);
+            $message    = sprintf($message, $query->company->name);
+        }
+        elseif( 
+            $type == Notifications::NOTIFICATION_QUOTE_CLOSED
+        )
+        {
+            $title      = sprintf($title, $query->name);
             $message    = sprintf($message, $query->company->name);
         }
         elseif( $type == Notifications::NOTIFICATION_TENDERINVITECOMPANIES )

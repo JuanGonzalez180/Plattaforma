@@ -1,30 +1,29 @@
 <?php
 
-namespace App\Mail\tender\tenderClose;
+namespace App\Mail\quote\quoteClose;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class sendCloseTenderCronJobs extends Mailable
+class sendCloseAdminQuote extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $subject = "Se ha cerrado la licitación ";
+    public $subject = "La cotización ";
 
-    protected $tenderName;
+    protected $quoteName;
     protected $companyName;
-
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(string $tenderName, string $companyName)
+    public function __construct(string $quoteName, string $companyName)
     {
-        $this->tenderName   = $tenderName;
+        $this->quoteName    = $quoteName;
         $this->companyName  = $companyName;
     }
 
@@ -35,10 +34,10 @@ class sendCloseTenderCronJobs extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.send-close-tender-cronjobs-company')
-            ->subject($this->subject . $this->tenderName . '.')
+        return $this->view('emails.quote.send-close-admin-quote')
+            ->subject($this->subject . $this->quoteName . ' se ha cerrado, procede a evaluar.')
             ->with([
-                'tenderName'        => $this->tenderName,
+                'quoteName'         => $this->quoteName,
                 'companyName'       => $this->companyName
             ]);
     }

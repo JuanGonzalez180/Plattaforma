@@ -89,7 +89,7 @@ class QuotesCompaniesController extends ApiController
         $this->sendMessageQuoteInvitation($quotesCompaniesNew, $quote);
 
         //Envia correos y notificaciones a las compañia ya participantes
-        // $this->sendMessageQuoteVersion($quotesCompaniesOld, $quote);
+        $this->sendMessageQuoteVersion($quotesCompaniesOld, $quote);
 
         //Envia correos de invitación a compañia que no estan registradas en plattaforma
         if ($request->companies_email) {
@@ -142,7 +142,7 @@ class QuotesCompaniesController extends ApiController
                     ]
                 );
                 // 2. CORREOS -> Envia los correos a los usuarios por compañia participante
-                $this->sendEmailTenderVersion(
+                $this->sendEmailQuoteVersion(
                     [
                         $quoteCompany->userCompany->email,
                         $quoteCompany->company->user->email
