@@ -11,6 +11,7 @@ use App\Models\Notifications;
 use App\Models\QuotesVersions;
 use Illuminate\Support\Facades\DB;
 use App\Mail\SendOfferTenderCompany;
+use App\Mail\quote\quoteOffer\SendOfferQuoteCompany;
 use Illuminate\Support\Facades\Mail;
 use App\Transformers\UserTransformer;
 use Illuminate\Support\Facades\Storage;
@@ -270,10 +271,46 @@ class CompanyQuotesController extends ApiController
 
         if(!$error)
         {
-            // $this->sendEmailTenderCompanyOffer($tender_company);
-            // $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_TENDERCOMPANY_OFFER);
+            $this->sendEmailQuoteCompanyOffer($quote_company);
+            $this->sendNotificationQuote($quote_company, Notifications::NOTIFICATION_QUOTECOMPANY_OFFER);
         }
 
         return $this->showOne($quote_company, 200);
     }
+
+    public function sendEmailQuoteCompanyOffer($quote_company)
+    {
+        $emails = [];
+        $emails[] = strtolower($quote_company->quote->company->user->email);
+        $emails[] = strtolower($quote_company->quote->user->email);
+
+        $emails = array_unique($emails);
+
+        foreach($emails as $email)
+        {
+            Mail::to(trim($email))
+                ->send(new SendOfferQuoteCompany(
+                    $quote_company->company->name,
+                    $quote_company->quote->company->name,
+                    $quote_company->price,
+                    $quote_company->quote->name
+            ));
+
+        }
+
+    }
+
+    public function sendNotificationQuote($query,$typeNotification)
+    {
+        $notificationsIds   = [];
+        $notificationsIds[] = $query->quote->user_id; //responsable de la cotización
+        $notificationsIds[] = $query->quote->company->user_id; //administrador de la compañia
+
+        $notificationsIds   = array_values(array_unique($notificationsIds));
+
+        $notifications      = new Notifications();
+        $notifications->registerNotificationQuery($query, $typeNotification, $notificationsIds);
+
+    }
+
 }

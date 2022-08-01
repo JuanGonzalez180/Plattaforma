@@ -73,7 +73,6 @@ class QuotesCompaniesActionController extends ApiController
 
         $notifications = new Notifications();
         $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_QUOTE_CLOSED, $companies_user_id);
-
     }
     /**
      * Display a listing of the resource.

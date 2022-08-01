@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\User;
 use App\Models\QueryWall;
 use App\Models\TendersCompanies;
+use App\Models\QuotesCompanies;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use App\Transformers\NotificationsTransformer;
@@ -36,6 +37,7 @@ class Notifications extends Model
     const NOTIFICATION_QUOTE_STATUS_CLOSED          = 'QuoteCompaniesStatusClosed'; //notificación cuando una cotización se cierra y se le debe enviar a las compañia licitantes
     const NOTIFICATION_QUOTE_STATUS_CLOSED_ADMIN    = 'QuoteCompaniesStatusClosedAdmin'; //notificación cuando una licitacion se cierra y se le debe enviar al encargado y administrador de la licitación
     const NOTIFICATION_QUOTE_CLOSED                 = 'QuoteStatusClosed';
+    const NOTIFICATION_QUOTECOMPANY_OFFER           = 'QuoteCompanyOffer'; //Notificación cuando una compañia ha ofertado en una licitación
     
     
     //Muro de consultas
@@ -112,6 +114,16 @@ class Notifications extends Model
             $tenderCompanies = TendersCompanies::find($this->notificationsable_id);
             if( $tenderCompanies ){
                 $this->query_id = $tenderCompanies->tender->project_id . '/' . $tenderCompanies->tender->id;
+            }else{
+                $this->query_id = '';
+            }
+
+        }
+        else if($this->type == Notifications::NOTIFICATION_QUOTECOMPANY_OFFER && $this->notificationsable_type == QuotesCompanies::class)
+        {
+            $quoteCompanies = QuotesCompanies::find($this->notificationsable_id);
+            if( $quoteCompanies ){
+                $this->query_id = $quoteCompanies->quote->project_id . '/' . $quoteCompanies->quote->id;
             }else{
                 $this->query_id = '';
             }
@@ -316,6 +328,11 @@ class Notifications extends Model
             'subtitle'  => '', 
             'message'   => 'La compañia %s, ha ofertado en la licitación.',
         ],
+        Notifications::NOTIFICATION_QUOTECOMPANY_OFFER => [ 
+            'title'     => 'Cotización: %s', 
+            'subtitle'  => '', 
+            'message'   => 'La compañia %s, ha ofertado en la cotización.',
+        ],
         Notifications::NOTIFICATION_QUERYWALL_TENDER_QUESTION => [ 
             'title'     => 'Muro de consultas: Lic. %s', 
             'subtitle'  => '', 
@@ -443,6 +460,12 @@ class Notifications extends Model
             $title      = sprintf($title, $query->tender->name);
             $message    = sprintf($message, $query->company->name);
             $data['id'] = $query->tender->project_id . '/' . $query->tender->id;
+        }
+        elseif( $type == Notifications::NOTIFICATION_QUOTECOMPANY_OFFER ) //notificación cuando una compañia oferta a una cotización
+        {
+            $title      = sprintf($title, $query->quote->name);
+            $message    = sprintf($message, $query->company->name);
+            $data['id'] = $query->quote->project_id . '/' . $query->quote->id;
         }
         elseif( $type == Notifications::NOTIFICATION_QUERYWALL_TENDER_QUESTION ) //notificación cuando una compañia hace una pregunta a una licitación
         {
