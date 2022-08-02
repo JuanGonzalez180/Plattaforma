@@ -214,8 +214,6 @@ class TendersController extends ApiController
 
     public function show($id)
     {
-        die;
-        //
         $user = $this->validateUser();
 
         $tender = Tenders::findOrFail($id);
