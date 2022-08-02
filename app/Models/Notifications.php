@@ -38,7 +38,8 @@ class Notifications extends Model
     const NOTIFICATION_QUOTE_STATUS_CLOSED_ADMIN    = 'QuoteCompaniesStatusClosedAdmin'; //notificación cuando una licitacion se cierra y se le debe enviar al encargado y administrador de la licitación
     const NOTIFICATION_QUOTE_CLOSED                 = 'QuoteStatusClosed';
     const NOTIFICATION_QUOTECOMPANY_OFFER           = 'QuoteCompanyOffer'; //Notificación cuando una compañia ha ofertado en una licitación
-    
+    const NOTIFICATION_QUOTE_INVITATION_APPROVED    = 'QuoteCompanyInvitationApproved'; //invitacion de cotización Aprobada
+    const NOTIFICATION_QUOTE_INVITATION_REJECTED    = 'QuoteCompanyInvitationRejected'; //invitacion de cotización Rechazada
     
     //Muro de consultas
     const NOTIFICATION_QUERYWALL_TENDER_QUESTION    = 'QueryWallQuestions'; //notificación cuando una empresa licitante hace una pregunta en una licitación
@@ -98,12 +99,34 @@ class Notifications extends Model
             }
 
         }
+        else if($this->type == Notifications::NOTIFICATION_QUOTE_INVITATION_REJECTED && $this->notificationsable_type == QuotesCompanies::class)
+        {
+            //cuando la compañia rechaza la invitación a una licitación.
+            $quoteCompanies = QuotesCompanies::find($this->notificationsable_id);
+            if( $quoteCompanies ){
+                $this->query_id = $quoteCompanies->quote->project_id;
+            }else{
+                $this->query_id = '';
+            }
+
+        }
         else if($this->type == Notifications::NOTIFICATION_INVITATION_APPROVED && $this->notificationsable_type == TendersCompanies::class)
         {
             //cuando la compañia rechaza la invitación a una licitación.
             $tenderCompanies = TendersCompanies::find($this->notificationsable_id);
             if( $tenderCompanies ){
                 $this->query_id = $tenderCompanies->tender->project_id . '/' . $tenderCompanies->tender->id;
+            }else{
+                $this->query_id = '';
+            }
+
+        }
+        else if($this->type == Notifications::NOTIFICATION_QUOTE_INVITATION_APPROVED && $this->notificationsable_type == QuotesCompanies::class)
+        {
+            //cuando la compañia rechaza la invitación a una cotización.
+            $quoteCompanies = QuotesCompanies::find($this->notificationsable_id);
+            if( $quoteCompanies ){
+                $this->query_id = $quoteCompanies->quote->project_id . '/' . $quoteCompanies->quote->id;
             }else{
                 $this->query_id = '';
             }
@@ -274,7 +297,7 @@ class Notifications extends Model
         Notifications::NOTIFICATION_QUOTE_CLOSED => [ 
             'title'     => 'Cotización: %s', 
             'subtitle'  => '', 
-            'message'   => 'La cotización de la compañia %s ha sido cerrada, gracias por participar.' 
+            'message'   => 'La cotización %s ha sido cerrada.' 
         ],
         Notifications::NOTIFICATION_TENDERINVITECOMPANIES => [ 
             'title'     => 'Licitación: %s', 
@@ -296,8 +319,18 @@ class Notifications extends Model
             'subtitle'  => '', 
             'message'   => 'La compañía %s ha rechazado la invitación.' 
         ],
+        Notifications::NOTIFICATION_QUOTE_INVITATION_REJECTED => [ 
+            'title'     => 'Cotización: %s', 
+            'subtitle'  => '', 
+            'message'   => 'La compañía %s ha rechazado la invitación.' 
+        ],
         Notifications::NOTIFICATION_INVITATION_APPROVED => [ 
             'title'     => 'Licitación: %s', 
+            'subtitle'  => '', 
+            'message'   => 'La compañía %s, ha aprobado la invitación.' 
+        ],
+        Notifications::NOTIFICATION_QUOTE_INVITATION_APPROVED => [ 
+            'title'     => 'Cotización: %s', 
             'subtitle'  => '', 
             'message'   => 'La compañía %s, ha aprobado la invitación.' 
         ],
@@ -349,14 +382,14 @@ class Notifications extends Model
             'message'   => 'El encargado de la licitación ha hecho un anuncio.',
         ],
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED => [ 
-            'title'     => 'Licitación: Lic. %s', 
+            'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
             'message'   => 'La licitación %s se ha cerrado y esta en proceso de evaluación.',
         ],
         Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED => [ 
-            'title'     => 'Cotización: Lic. %s', 
+            'title'     => 'Cotización: %s', 
             'subtitle'  => '', 
-            'message'   => 'La cotización %s se ha cerrado y esta en proceso de evaluación.',
+            'message'   => 'La cotización %s entro en proceso de evaluación.',
         ],
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE => [ 
             'title'     => 'Licitación: Lic. %s', 
@@ -371,7 +404,7 @@ class Notifications extends Model
         Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED_ADMIN => [ 
             'title'     => 'Cotización: Lic. %s', 
             'subtitle'  => '', 
-            'message'   => 'La cotización %s se ha cerrado, procede a evaluar la cotización.',
+            'message'   => 'La cotización %s entro en proceso de evaluación, procede a evaluar la cotización.',
         ],
         Notifications::NOTIFICATION_RECOMMEND_TENDER => [ 
             'title'     => 'Licitación: Lic. %s', 
@@ -414,7 +447,7 @@ class Notifications extends Model
         )
         {
             $title      = sprintf($title, $query->name);
-            $message    = sprintf($message, $query->company->name);
+            $message    = sprintf($message, $query->name);
         }
         elseif( $type == Notifications::NOTIFICATION_TENDERINVITECOMPANIES )
         {
@@ -438,11 +471,23 @@ class Notifications extends Model
             $message    = sprintf($message, $query->company->name);
             $data['id'] = $query->tender->project_id;
         }
+        elseif( $type == Notifications::NOTIFICATION_QUOTE_INVITATION_REJECTED )
+        {
+            $title      = sprintf($title, $query->quote->name);
+            $message    = sprintf($message, $query->company->name);
+            $data['id'] = $query->quote->project_id;
+        }
         elseif( $type == Notifications::NOTIFICATION_INVITATION_APPROVED ) //notificacion cuando una compañia acepta una licitación
         {
             $title      = sprintf($title, $query->tender->name);
             $message    = sprintf($message, $query->company->name);
             $data['id'] = $query->tender->project_id . '/' . $query->tender->id;
+        }
+        elseif( $type == Notifications::NOTIFICATION_QUOTE_INVITATION_APPROVED ) //notificacion cuando una compañia acepta una cotización
+        {
+            $title      = sprintf($title, $query->quote->name);
+            $message    = sprintf($message, $query->company->name);
+            $data['id'] = $query->quote->project_id . '/' . $query->quote->id;
         }
         elseif( $type == Notifications::NOTIFICATION_TENDERRESPONSECOMPANIES ){
             $title = sprintf($title, $query->tender->name);

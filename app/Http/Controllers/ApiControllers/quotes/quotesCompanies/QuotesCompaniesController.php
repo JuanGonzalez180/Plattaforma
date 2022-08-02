@@ -63,7 +63,33 @@ class QuotesCompaniesController extends ApiController
         return $this->showAllPaginate($companies);
     }
 
-    public function store(Request $request) //envia invitaciones a la cotización
+    public function store(Request $request) //envia invitaciones a la COTIZACIÓN.
+    {
+        $quote_id = $request->quote_id;
+
+        $user = $this->validateUser();
+
+        DB::beginTransaction();
+        // 1. optiene información de la COTIZACIÓN.
+        $quote  = Quotes::find($quote_id);
+        // 2. Registra las compañias nuevas a participar y devuelve un array de IDS de las compañias nuevas.
+        $quotesCompaniesNew    = ($request->companies_id) ? $this->createQuoteCompanies($quote, $request->companies_id) : [];
+        // 3. cambia el estado de la COTIZACIÓN a 'ABIERTA'.
+        $quoteVersion          = $quote->quotesVersionLast();
+        $quoteVersion->status  = QuotesVersions::QUOTATION_PUBLISH;
+        $quoteVersion->save();
+        DB::commit();
+        // 4. Envia correos de invitación a las compañias nuevas a participar.
+        $this->sendMessageQuoteInvitation($quotesCompaniesNew, $quote);
+        // 5. Guarda en una tabla temporal los correos de invitación para luego ser enviados.
+        if ($request->companies_email) {
+            $this->sendInvitantionExternalCompanies($request->companies_email, $quote);
+        }
+
+        return $this->showOne($quote, 201);
+    }
+
+    public function store_old(Request $request) //envia invitaciones a la cotización
     {
         $quote_id = $request->quote_id;
 

@@ -61,7 +61,33 @@ class TendersCompaniesController extends ApiController
         return $this->showAllPaginate($companies);
     }
 
-    public function store(Request $request) //envia invitaciones a la licitación
+    public function store(Request $request) //envia invitaciones a la LICITACIÓN
+    {
+        $tender_id = $request->tender_id;
+
+        $user = $this->validateUser();
+
+        DB::beginTransaction();
+        // 1. optiene información de la LICITACIÓN.
+        $tender                 = Tenders::findOrFail($tender_id);
+        // 2. Registra las compañias nuevas a participar y devuelve un array de IDS de las compañias nuevas.
+        $tendersCompaniesNew    = ($request->companies_id) ? $this->createTenderCompanies($tender, $request->companies_id) : [];
+        // 3. cambia el estado de la LICITACIÓN a 'PUBLICADA'.
+        $tenderVersion          = $tender->tendersVersionLast();
+        $tenderVersion->status  = TendersVersions::LICITACION_PUBLISH;
+        $tenderVersion->save();
+        DB::commit();
+        // 4. Envia correos de invitación a las compañias nuevas a participar.
+        $this->sendMessageTenderInvitation($tendersCompaniesNew, $tender);
+        // 5. Guarda en una tabla temporal los correos de invitación para luego ser enviados.
+        if ($request->companies_email) {
+            $this->sendInvitantionExternalCompanies($request->companies_email, $tender);
+        }
+
+        return $this->showOne($tender, 201);
+    }
+
+    public function store_old(Request $request) //envia invitaciones a la licitación
     {
         $tender_id = $request->tender_id;
 

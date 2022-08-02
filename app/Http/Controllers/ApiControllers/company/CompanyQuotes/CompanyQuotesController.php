@@ -119,7 +119,7 @@ class CompanyQuotesController extends ApiController
         $quoteCompany = QuotesCompanies::where('quotes_id', $id)
             ->where('company_id', $userCompanyId)
             ->first();
-        
+
         if ($quoteCompany && $quoteCompany->status) {
             $company_status = $quoteCompany->status;
         }
@@ -143,8 +143,7 @@ class CompanyQuotesController extends ApiController
         $quotesTransformer = new QuotesTransformer();
 
         foreach ($quote->quotesVersion as $key => $version) {
-            if ($version->status == QuotesVersions::QUOTATION_PUBLISH && $slug != $user->companyClass()->slug)
-            {
+            if ($version->status == QuotesVersions::QUOTATION_PUBLISH && $slug != $user->companyClass()->slug) {
                 unset($quote->quotesVersion[$key]);
             }
         }
@@ -177,7 +176,7 @@ class CompanyQuotesController extends ApiController
         $quote_company = QuotesCompanies::findOrFail($id);
         $quote_company->files;
 
-        $quote_company->quote_value = $quote_company->quote->quotesVersionLast()->price; 
+        $quote_company->quote_value = $quote_company->quote->quotesVersionLast()->price;
 
         return $this->showOne($quote_company, 200);
     }
@@ -191,23 +190,21 @@ class CompanyQuotesController extends ApiController
         $quote_user_admin   = $quote_company->company->user->id;
         $quote_status       = $quote_company->quote->quotesVersionLast()->status;
 
-        if($status == 'true')
-        {
-            if($user_id != 'null')
-            {
+        if ($status == 'true') {
+            if ($user_id != 'null') {
                 $quote_company->user_company_id = $user_id;
-            }else{
+            } else {
                 $quote_company->user_company_id = $quote_user_admin;
             }
 
             $quote_company->status = QuotesCompanies::STATUS_PARTICIPATING;
             $quote_company->save();
 
-            return $this->showOne($quote_company, 200);
+            // Notifica al administrador de la licitación que dicha compañia ha aceptado la invitación.
+            $this->sendNotificationQuote($quote_company, Notifications::NOTIFICATION_QUOTE_INVITATION_APPROVED);
 
-        }
-        else
-        {
+            return $this->showOne($quote_company, 200);
+        } else {
             $quote_company->delete();
 
             if ($quote_company->files) {
@@ -217,15 +214,14 @@ class CompanyQuotesController extends ApiController
                 }
             }
 
-
             //envia los correos al responsable de licitación y al responsable del proyecto
             // $this->sendEmailInvitationTender($tender_company);
             //envia los notificaciones al responsable de la licitación y al administrador
-            // $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_INVITATION_REJECTED);
+            $this->sendNotificationQuote($quote_company, Notifications::NOTIFICATION_QUOTE_INVITATION_REJECTED);
 
             return $this->showOneData(
-                ['success' => 'Se ha eliminado correctamente.', 'code' => 200]
-                , 200
+                ['success' => 'Se ha eliminado correctamente.', 'code' => 200],
+                200
             );
         }
     }
@@ -236,7 +232,7 @@ class CompanyQuotesController extends ApiController
             'price' => 'required|numeric',
         ];
 
-        $this->validate( $request, $rules );
+        $this->validate($request, $rules);
 
         $user           = $this->validateUser();
         $quote_company = QuotesCompanies::find($id);
@@ -269,8 +265,7 @@ class CompanyQuotesController extends ApiController
             return $this->errorResponse($companyError, 500);
         }
 
-        if(!$error)
-        {
+        if (!$error) {
             $this->sendEmailQuoteCompanyOffer($quote_company);
             $this->sendNotificationQuote($quote_company, Notifications::NOTIFICATION_QUOTECOMPANY_OFFER);
         }
@@ -286,21 +281,18 @@ class CompanyQuotesController extends ApiController
 
         $emails = array_unique($emails);
 
-        foreach($emails as $email)
-        {
+        foreach ($emails as $email) {
             Mail::to(trim($email))
                 ->send(new SendOfferQuoteCompany(
                     $quote_company->company->name,
                     $quote_company->quote->company->name,
                     $quote_company->price,
                     $quote_company->quote->name
-            ));
-
+                ));
         }
-
     }
 
-    public function sendNotificationQuote($query,$typeNotification)
+    public function sendNotificationQuote($query, $typeNotification)
     {
         $notificationsIds   = [];
         $notificationsIds[] = $query->quote->user_id; //responsable de la cotización
@@ -310,7 +302,5 @@ class CompanyQuotesController extends ApiController
 
         $notifications      = new Notifications();
         $notifications->registerNotificationQuery($query, $typeNotification, $notificationsIds);
-
     }
-
 }
