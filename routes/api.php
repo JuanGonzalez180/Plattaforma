@@ -6,6 +6,7 @@ use App\Http\Controllers\ApiControllers\blog\BlogController;
 use App\Http\Controllers\ApiControllers\action\statistics\StatisticsController;
 use App\Http\Controllers\ApiControllers\blog\BlogFilesController;
 use App\Http\Controllers\ApiControllers\querywall\tenderQueryQuestionController;
+use App\Http\Controllers\ApiControllers\querywall\quoteQueryQuestionController;
 use App\Http\Controllers\ApiControllers\querywall\tenderQueryAnswerController;
 use App\Http\Controllers\ApiControllers\querywall\quotesQueryAnswerController;
 use App\Http\Controllers\ApiControllers\portfolios\PortfoliosController;
@@ -220,10 +221,13 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     /**
      * Query_wall
      */
+    // Licitaciones:
     Route::resource('/querywall/tenders/question', tenderQueryQuestionController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('querywalltendersQuestions');
     Route::resource('/querywall/tenders/answer', tenderQueryAnswerController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('querywalltendersAnswer');
     Route::resource('/querywall/quotes/answer', quotesQueryAnswerController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('querywallquotesAnswer');
     Route::put('/querywall/{id}/visible', [tenderQueryAnswerController::class, 'changevisible'])->name('querywallvisible');
+    // Cotizaciones:
+    Route::resource('/querywall/quotes/question', quoteQueryQuestionController::class, ['only' => ['index', 'show', 'store', 'edit', 'update', 'destroy']])->names('querywallQuotesQuestions');
     /**
      * portfolios
      */
