@@ -56,7 +56,7 @@ class TaskQuoteClosed extends Command
             $hourValidate   = ($quote->quotesVersionLast()->hour == Carbon::now()->format('H:i'));
 
             if ($hourValidate) {
-                //*Cierra las licitacines.
+                //*Cierra las cotizaciones.
                 $this->quoteVersionUpdate($quote);
                 //*Envia las notificaciones
                 $this->sendNotificationQuotes($quote);
@@ -98,7 +98,7 @@ class TaskQuoteClosed extends Command
 
     public function quoteVersionUpdate($tender)
     {
-        $tender->quotesVersionLast()->status = QuotesVersions::QUOTATION_CLOSED;
+        $tender->quotesVersionLast()->status = QuotesVersions::QUOTATION_FINISHED;
         $tender->quotesVersionLast()->close  = QuotesVersions::QUOTATION_CLOSED_SYSTEM;
         $tender->quotesVersionLast()->save();
     }

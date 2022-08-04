@@ -33,7 +33,7 @@ class QuotesActionController extends ApiController
 
         DB::beginTransaction();
 
-        $quoteVersionLast->status  = QuotesVersions::QUOTATION_CLOSED;
+        $quoteVersionLast->status  = QuotesVersions::QUOTATION_FINISHED;
         $quoteVersionLast->date    = Carbon::now()->format('Y-m-d');
         $quoteVersionLast->hour    = Carbon::now()->format('H:i');
         $quoteVersionLast->close   = QuotesVersions::QUOTATION_CLOSED_USER;
