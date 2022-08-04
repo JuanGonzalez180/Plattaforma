@@ -389,7 +389,8 @@ class Notifications extends Model
         Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED => [ 
             'title'     => 'Cotización: %s', 
             'subtitle'  => '', 
-            'message'   => 'La cotización %s entro en proceso de evaluación.',
+            // 'message'   => 'La cotización %s entro en proceso de evaluación.',
+            'message'   => 'La cotización %s se ha cerrado.',
         ],
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE => [ 
             'title'     => 'Licitación: Lic. %s', 
@@ -402,17 +403,18 @@ class Notifications extends Model
             'message'   => 'La licitación %s se ha cerrado, procede a evaluar la licitación.',
         ],
         Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED_ADMIN => [ 
-            'title'     => 'Cotización: Lic. %s', 
+            'title'     => 'Cotización: %s', 
             'subtitle'  => '', 
-            'message'   => 'La cotización %s entro en proceso de evaluación, procede a evaluar la cotización.',
+            // 'message'   => 'La cotización %s entro en proceso de evaluación, procede a evaluar la cotización.',
+            'message'   => 'La cotización %s se ha cerrado, procede a revisar.',
         ],
         Notifications::NOTIFICATION_RECOMMEND_TENDER => [ 
-            'title'     => 'Licitación: Lic. %s', 
+            'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
             'message'   => 'Te podria interesar esta licitación.',
         ],
         Notifications::NOTIFICATION_TENDER_DELETE => [ 
-            'title'     => 'Licitación: Lic. %s', 
+            'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
             'message'   => 'El administrador de la licitación Licitación %s ha decidido cerrar y eliminar la licitación.',
         ]
