@@ -127,6 +127,40 @@ class AccountMyTeamController extends ApiController
             }
         }
 
+        // var_dump(collect($teamCompany));
+
+        // die;
+
+
+
+        return $this->showAllPaginate($teamCompany);
+    }
+
+    public function teamUsersApproved_old()
+    {
+        // Validamos TOKEN del usuario
+        $user = $this->validateUser();
+
+        if ($user && count($user->company) && $user->company[0]) {
+            $companyID = $user->company[0]->id;
+        } elseif ($user && $user->team) {
+            $companyID = $user->team->company_id;
+        }
+
+        $teamCompany = Team::where('company_id', $companyID)
+            ->where('status', Team::TEAM_APPROVED)
+            ->orderBy('id', 'desc')->get();
+
+        foreach ($teamCompany as $key => $team) {
+            // Registrar el usuario asociado en la respuesta
+            $team->user;
+            $team['url'] = $team->user->image ? url('storage/' . $team->user->image->url) : null;
+
+            if (!$team->user->name) {
+                $team->user['name'] = $team->user->email;
+            }
+        }
+
         return $this->showAllPaginate($teamCompany);
     }
 
@@ -396,8 +430,7 @@ class AccountMyTeamController extends ApiController
         $image  = Image::where('imageable_id', $user_id)
             ->where('imageable_type', User::class);
 
-        if($image->exists())
-        {
+        if ($image->exists()) {
             $image = $image->first();
             //borra el archivo
             Storage::disk('local')->delete($routeFile . $image->url);

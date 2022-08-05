@@ -40,6 +40,7 @@ class Notifications extends Model
     const NOTIFICATION_QUOTECOMPANY_OFFER           = 'QuoteCompanyOffer'; //Notificación cuando una compañia ha ofertado en una licitación
     const NOTIFICATION_QUOTE_INVITATION_APPROVED    = 'QuoteCompanyInvitationApproved'; //invitacion de cotización Aprobada
     const NOTIFICATION_QUOTE_INVITATION_REJECTED    = 'QuoteCompanyInvitationRejected'; //invitacion de cotización Rechazada
+    const NOTIFICATION_QUOTE_STATUS_CLOSED_BEFORE   = 'QuoteCompaniesStatusClosedBefore'; //notificación cuando una cotización es cerrada antes de tiempo por el administrador y se le debe enviar a las compañia licitantes
     
     //Muro de consultas
     const NOTIFICATION_QUERYWALL_TENDER_QUESTION    = 'QueryWallQuestions'; //notificación cuando una empresa licitante hace una pregunta en una licitación
@@ -225,6 +226,16 @@ class Notifications extends Model
                 $this->query_id = '';
             }
         }
+        else if($this->type == Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED_BEFORE && $this->notificationsable_type == Quotes::class)
+        {
+            $quotes = Quotes::find($this->notificationsable_id);
+
+            if( $quotes ){
+                $this->query_id = $quotes->company->slug."/cotizaciones/".$quotes->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
         else if($this->type == Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN && $this->notificationsable_type == Tenders::class)
         {
             $tender = Tenders::find($this->notificationsable_id);
@@ -393,9 +404,14 @@ class Notifications extends Model
             'message'   => 'La cotización %s se ha cerrado.',
         ],
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE => [ 
-            'title'     => 'Licitación: Lic. %s', 
+            'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
             'message'   => 'El administrador ha cerrado la licitación %s antes de la fecha prevista y esta en proceso de evaluación.',
+        ],
+        Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED_BEFORE => [ 
+            'title'     => 'Cotización: %s', 
+            'subtitle'  => '', 
+            'message'   => 'El administrador ha cerrado la cotización %s antes de la fecha prevista.',
         ],
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN => [ 
             'title'     => 'Licitación: Lic. %s', 
@@ -551,6 +567,12 @@ class Notifications extends Model
             $data['id'] = $query->id;
         }
         elseif( $type == Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE ) //notificación cuando una licitación es cerrada por el administrador antes de tiempo y le notifica a las empresas licitantes
+        {
+            $title      = sprintf($title, $query->name);
+            $message    = sprintf($message, $query->name);
+            $data['id'] = $query->id;
+        }
+        elseif( $type == Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED_BEFORE ) //notificación cuando una cotización es cerrada por el administrador antes de tiempo y le notifica a las empresas licitantes
         {
             $title      = sprintf($title, $query->name);
             $message    = sprintf($message, $query->name);

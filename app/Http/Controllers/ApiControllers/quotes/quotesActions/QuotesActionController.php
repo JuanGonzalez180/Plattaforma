@@ -58,24 +58,24 @@ class QuotesActionController extends ApiController
 
     public function sendNotificationQuotes($quote)
     {
-        // $notifications  = new Notifications();
-        // //*Notifica a las compañias participantes de la licitación.
-        // $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE, $quote->TenderParticipatingCompanyIdUsers());
+        $notifications  = new Notifications();
+        //*Notifica a las compañias participantes de la licitación.
+        $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED_BEFORE, $quote->QuoteParticipatingCompanyIdUsers());
         // //*Notifica al administrador y/o encargado de la licitación.
-        // $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN, $quote->TenderAdminIdUsers());
+        $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED_ADMIN, $quote->QuoteAdminIdUsers());
     }
 
     public function sendEmailsQuotes($quote)
     {
         // *Correos de las compañias participantes de la licitación.
-        // $emails = $quote->TenderParticipatingCompanyEmails();
+    //     $emails = $quote->QuoteParticipatingCompanyEmails();
 
-        // foreach ($emails as $email)
-        // {
-        //     Mail::to(trim($email))->send(new sendCloseTenderAdmin(
-        //         $quote->name,
-        //         $quote->company->name 
-        //     ));
-        // }
-    }
+    //     foreach ($emails as $email)
+    //     {
+    //         Mail::to(trim($email))->send(new sendCloseTenderAdmin(
+    //             $quote->name,
+    //             $quote->company->name 
+    //         ));
+    //     }
+    // }
 }

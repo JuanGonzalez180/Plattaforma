@@ -1,0 +1,16 @@
+entro a imagen principal
+existe la url
+public/images/products/506/producto-62ec3362d812e.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/507/producto-62ec336b5e8a8.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/508/producto-62ec339911fe9.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/509/producto-62ec33a42f042.jpg
+guardo con exito
