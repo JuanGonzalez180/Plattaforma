@@ -170,7 +170,7 @@ class tenderQueryQuestionController extends ApiController
             return $this->errorResponse($queryError, 500);
         }
 
-        if (($queryAnswer->user_id == $user->id) || $user->isAdmin()){
+        if (($queryAnswer->user_id == $user->id) || $user->isAdminFrontEnd()){
 
             DB::beginTransaction();
             $queryFields['question'] = $request['question'];
@@ -209,7 +209,7 @@ class tenderQueryQuestionController extends ApiController
             return $this->errorResponse($queryError, 500);
         }
 
-        if ($queryAnswer->user_id == $user->id) {
+        if (($queryAnswer->user_id == $user->id) || $user->isAdminFrontEnd()) {
             $queryAnswer->delete();
         } else {
             $queryError = ['querywall' => 'Error, El usuario no tiene privilegios para barrar la pregunta del muro de consultas'];
