@@ -170,7 +170,7 @@ class tenderQueryQuestionController extends ApiController
             return $this->errorResponse($queryError, 500);
         }
 
-        if ($queryAnswer->user_id == $user->id) {
+        if (($queryAnswer->user_id == $user->id) || $user->isAdmin()){
 
             DB::beginTransaction();
             $queryFields['question'] = $request['question'];
