@@ -99,12 +99,30 @@ class quoteQueryQuestionController extends ApiController
         DB::commit();
 
         if ($user->userType() != 'oferta') {
-            // correos y notificaciones
+            // NOTIFICACIONES:
+            // $this->sendNotificationQueryProponents($question, Notifications::NOTIFICATION_QUERYWALL_QUOTE_ADMIN);
+            // CORREOS:
         } else {
             // correos y notificaciones
         }
 
         return $this->showOne($question, 201);
+    }
+
+    public function sendNotificationQueryProponents($query, $typeNotification)
+    {
+        $quotesCompanies = QuotesCompanies::where('quotes_id', $query->querysable_id)
+            ->where('status', QuotesCompanies::STATUS_PARTICIPATING)
+            ->get();
+
+        $users = [];
+        foreach ($quotesCompanies as $value) {
+            $users[] = $value->company->user->id;
+            $users[] = $value->user_company_id;
+        }
+
+        $notifications  = new Notifications();
+        $notifications->registerNotificationQuery($query, $typeNotification, $users);
     }
 
     /**

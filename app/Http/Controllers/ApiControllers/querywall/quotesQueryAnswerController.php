@@ -161,6 +161,33 @@ class quotesQueryAnswerController extends ApiController
      */
     public function destroy($id)
     {
-        //
+        $user = $this->validateUser();
+
+        if ($user->userType() != 'demanda') {
+            $queryError = ['querywall' => 'Error, El usuario no puede borrar preguntas'];
+            return $this->errorResponse($queryError, 500);
+        }
+
+        $queryAnswer = QueryWall::where('id', $id)
+            ->where('querysable_type', Quotes::class)
+            ->first();
+
+        if (!$queryAnswer) {
+            $queryError = ['querywall' => 'Error, La pregunta no exite en el muro de consultas de cotizaciones'];
+            return $this->errorResponse($queryError, 500);
+        }
+
+        $admin_company  = ($queryAnswer->company->user_id == $user->id) ? True : False;
+        $tender_resp    = ($queryAnswer->queryWallTenderUser() == $user->id) ? True : False;
+        $project_resp   = ($queryAnswer->queryWallProjectUser() == $user->id) ? True : False;
+
+        if ($admin_company || $tender_resp || $project_resp) {
+            $queryAnswer->delete();
+        } else {
+            $queryError = ['querywall' => 'Error, El usuario no tiene privilegios para barrar preguntas del muro de consultas'];
+            return $this->errorResponse($queryError, 500);
+        }
+
+        return $this->showOneData(['success' => 'Se ha eliminado correctamente la pregunta del muro de consultas', 'code' => 200], 200);
     }
 }

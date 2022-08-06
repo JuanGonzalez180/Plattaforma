@@ -41,6 +41,7 @@ class Notifications extends Model
     const NOTIFICATION_QUOTE_INVITATION_APPROVED    = 'QuoteCompanyInvitationApproved'; //invitacion de cotización Aprobada
     const NOTIFICATION_QUOTE_INVITATION_REJECTED    = 'QuoteCompanyInvitationRejected'; //invitacion de cotización Rechazada
     const NOTIFICATION_QUOTE_STATUS_CLOSED_BEFORE   = 'QuoteCompaniesStatusClosedBefore'; //notificación cuando una cotización es cerrada antes de tiempo por el administrador y se le debe enviar a las compañia licitantes
+    const NOTIFICATION_QUERYWALL_QUOTE_ADMIN        = 'QueryWallQuoteAdmin'; //notificación cuando una empresa licitante hace una pregunta en una licitación
     
     //Muro de consultas
     const NOTIFICATION_QUERYWALL_TENDER_QUESTION    = 'QueryWallQuestions'; //notificación cuando una empresa licitante hace una pregunta en una licitación
@@ -192,6 +193,16 @@ class Notifications extends Model
                 // $this->query_id = $tenderQuestion->queryWallTenderId();
                 $this->query_id = $tenderQuestion->queryWallTender()->company->slug."/licitacion/".$tenderQuestion->queryWallTenderId();
                 // $tender->company->slug."/licitacion/".$tender->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
+        else if($this->type == Notifications::NOTIFICATION_QUERYWALL_QUOTE_ADMIN && $this->notificationsable_type == QueryWall::class)
+        {
+            $quoteQuestion = QueryWall::find($this->notificationsable_id);
+
+            if( $quoteQuestion ){
+                $this->query_id = $quoteQuestion->queryWallTender()->company->slug."/cotizacion/".$quoteQuestion->queryWallTenderId();
             }else{
                 $this->query_id = '';
             }
@@ -392,6 +403,11 @@ class Notifications extends Model
             'subtitle'  => '', 
             'message'   => 'El encargado de la licitación ha hecho un anuncio.',
         ],
+        Notifications::NOTIFICATION_QUERYWALL_QUOTE_ADMIN => [ 
+            'title'     => 'Muro de consultas: Cot. %s', 
+            'subtitle'  => '', 
+            'message'   => 'El encargado de la cotización ha hecho un anuncio.',
+        ],
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED => [ 
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
@@ -553,6 +569,14 @@ class Notifications extends Model
             $title      = sprintf($title, $tender->name);
             $message    = sprintf($message, $tender->company->name);
             $data['id'] = $tender->company->slug."/licitacion/".$tender->id;
+        }
+        elseif( $type == Notifications::NOTIFICATION_QUERYWALL_QUOTE_ADMIN ) //notificación cuando una compañia responde una pregunta a una cotización
+        {
+            $quote      = Quotes::find($query->querysable_id);
+
+            $title      = sprintf($title, $quote->name);
+            $message    = sprintf($message, $quote->company->name);
+            $data['id'] = $quote->company->slug."/cotizacion/".$quote->id;
         }
         elseif( $type == Notifications::NOTIFICATION_TENDER_STATUS_CLOSED ) //notificación cuando una licitación se cierra y le notifica a las empresas licitantes
         {
