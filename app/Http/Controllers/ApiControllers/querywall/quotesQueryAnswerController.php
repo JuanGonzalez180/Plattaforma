@@ -161,7 +161,6 @@ class quotesQueryAnswerController extends ApiController
      */
     public function destroy($id)
     {
-        die;
         $user = $this->validateUser();
 
         if ($user->userType() != 'demanda') {
@@ -179,8 +178,8 @@ class quotesQueryAnswerController extends ApiController
         }
 
         $admin_company  = ($queryAnswer->company->user_id == $user->id) ? True : False;
-        $tender_resp    = ($queryAnswer->queryWallTenderUser() == $user->id) ? True : False;
-        $project_resp   = ($queryAnswer->queryWallProjectUser() == $user->id) ? True : False;
+        $tender_resp    = ($queryAnswer->queryWallQuoteUser() == $user->id) ? True : False;
+        $project_resp   = ($queryAnswer->queryWallQuoteProjectUser() == $user->id) ? True : False;
 
         if ($admin_company || $tender_resp || $project_resp) {
             $queryAnswer->delete();
