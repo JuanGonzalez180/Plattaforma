@@ -161,6 +161,7 @@ class quotesQueryAnswerController extends ApiController
      */
     public function destroy($id)
     {
+        die;
         $user = $this->validateUser();
 
         if ($user->userType() != 'demanda') {
