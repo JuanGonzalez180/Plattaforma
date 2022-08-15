@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Models\Quotes;
 use App\Models\QueryWall;
 use Illuminate\Http\Request;
+use App\Models\Notifications;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -150,7 +151,22 @@ class quotesQueryAnswerController extends ApiController
         }
         DB::commit();
 
+        $this->sendNotificationQuery($queryAnswer, Notifications::NOTIFICATION_QUERYWALL_QUOTE_ANSWER);
+
+
         return $this->showOne($queryAnswer, 200);
+    }
+
+    public function sendNotificationQuery($query, $typeNotification)
+    {
+        $notificationsIds   = [];
+        $notificationsIds[] = $query->user_id; // el usuario que realizo la pregunta
+        $notificationsIds[] = $query->user->companyClass()->user_id; //el usuario administrador de la compañia
+
+        $notificationsIds   = array_values(array_unique($notificationsIds));
+
+        $notifications      = new Notifications();
+        $notifications->registerNotificationQuery($query, $typeNotification, $notificationsIds);
     }
 
     /**

@@ -76,8 +76,16 @@ class QueryWall extends Model
         return Tenders::find($this->querysable_id);
     }
 
+    public function queryWallQuote() {
+        return Quotes::find($this->querysable_id);
+    }
+
     public function queryWallTenderId() {
         return Tenders::find($this->querysable_id)->id;
+    }
+
+    public function queryWallQuoteId() {
+        return Quotes::find($this->querysable_id)->id;
     }
 
     public function queryWallProjectUser() {
@@ -90,6 +98,10 @@ class QueryWall extends Model
 
     public function queryWallProjectId() {
         return Tenders::find($this->querysable_id)->project->id;
+    }
+
+    public function queryWallQuoteProjectId() {
+        return Quotes::find($this->querysable_id)->project->id;
     }
 
     public function notifications(){

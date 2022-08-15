@@ -11,6 +11,7 @@ use App\Models\Tenders;
 use App\Models\Products;
 use App\Models\Projects;
 use App\Models\TendersCompanies;
+use App\Models\QuotesCompanies;
 
 class RemarkController extends Controller
 {
@@ -49,6 +50,10 @@ class RemarkController extends Controller
             $class      = TendersCompanies::class;
             $sql        = TendersCompanies::find($id);
             $header     = "<p class='font-weight-light'><b>Compañia licitante</b> | ".$sql->company->name."<br><b>Licitación</b> | ".$sql->tender->name."</p>";
+        } elseif ($class == 'quotecompany') {
+            $class      = QuotesCompanies::class;
+            $sql        = QuotesCompanies::find($id);
+            $header     = "<p class='font-weight-light'><b>Compañia cotizante</b> | ".$sql->company->name."<br><b>Cotización</b> | ".$sql->quote->name."</p>";
         };
 
         return array($header, $class);

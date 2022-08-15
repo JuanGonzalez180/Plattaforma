@@ -9,6 +9,8 @@ use App\Http\Controllers\WebControllers\user\UsersController;
 use App\Http\Controllers\WebControllers\stripe\PlanController;
 use App\Http\Controllers\WebControllers\remark\RemarkController;
 use App\Http\Controllers\WebControllers\brands\BrandsController;
+use App\Http\Controllers\WebControllers\quote\QuoteController;;
+
 use App\Http\Controllers\WebControllers\tender\TenderController;
 
 
@@ -34,6 +36,7 @@ use App\Http\Controllers\WebControllers\scripts\RemoveUnwantedUsersController;
 use App\Http\Controllers\WebControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\WebControllers\socialnetworks\SocialNetworksController;
 use App\Http\Controllers\WebControllers\exportfile\xls\CategoriesFileController;
+use App\Http\Controllers\WebControllers\quotecompanies\QuoteCompaniesController;
 use App\Http\Controllers\WebControllers\company\projects\CompanyProjectController;
 use App\Http\Controllers\WebControllers\tendercompanies\TenderCompaniesController;
 use App\Http\Controllers\WebControllers\uploadfile\template\ProductFileController;
@@ -44,6 +47,7 @@ use App\Http\Controllers\WebControllers\company\providers\CompanyProvidersContro
 use App\Http\Controllers\WebControllers\company\CompanyDelete\CompanyDeleteController;
 use App\Http\Controllers\WebControllers\publicity\advertisingplans\AdvertisingController;
 use App\Http\Controllers\WebControllers\tenderEmailInvitation\tenderEmailInvitationController;
+use App\Http\Controllers\WebControllers\quoteEmailInvitation\quoteEmailInvitationController;
 use App\Http\Controllers\WebControllers\publicity\manageadvertising\ManageAdvertisingController;
 use App\Http\Controllers\WebControllers\publicity\imagesadvertisingplan\ImagesAdvertisingPlansController;
 
@@ -109,7 +113,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/company/brand/{id}', [BrandsController::class, 'indexCompanyBrand'])->name('company-brand-id');
 
         // Muro de consultas
+        // Licitaciones
         Route::get('/querywall/{id}', [QueryWallController::class, 'index'])->name('query.class.id');
+        // Cotizaciones
+        Route::get('/querywall/quotes/{id}', [QueryWallController::class, 'index_quotes'])->name('query.quotes.class.id');
 
         Route::post('/querywall/edit/visible', [QueryWallController::class, 'editVisible'])
                 ->name('querywall.edit.visible');
@@ -151,13 +158,13 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/company/all/projects', [CompanyProjectController::class, 'index'])->name('companies-all-projects');
         Route::post('/company/get/projects', [CompanyProjectController::class, 'getCompany'])->name('companies-get-projects');
         Route::post('/company/get/projects/status', [CompanyProjectController::class, 'getCountStatus'])->name('companies-status-projects');
-        
+
         Route::post('/company/get/files', [CompanyFilesController::class, 'getFiles'])->name('companies-get-files');
-        
+
         Route::get('/company/all/providers', [CompanyProvidersController::class, 'index'])->name('companies-all-providers');
         Route::post('/company/get/providers', [CompanyProvidersController::class, 'getCompany'])->name('companies-get-providers');
         Route::post('/company/get/providers/status', [CompanyProvidersController::class, 'getCountStatus'])->name('companies-status-providers');
-        
+
         // Licitaciones
         Route::resource('licitaciones', TenderController::class, ['only' => ['edit', 'show']])
                 ->names('tender')
@@ -165,13 +172,23 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::post('/tenders/all/companies', [TenderController::class, 'getTenders'])->name('tenders.companies.all');
 
-        Route::post('/tenders/all/invitation/emails', [tenderEmailInvitationController::class, 'getTendersInvitation'])->name('tenders.invitation.email.all');
-
+        // Licitación
         Route::get('/tender/companies/emails', [tenderEmailInvitationController::class, 'getFullCompanyTendersEmails'])->name('tenders-emails-companies-all');
-        
+        Route::post('/tenders/all/invitation/emails', [tenderEmailInvitationController::class, 'getTendersInvitation'])->name('tenders.invitation.email.all');
+        // Cotización
+        Route::get('/quote/companies/emails', [quoteEmailInvitationController::class, 'getFullCompanyQuotesEmails'])->name('quotes-emails-companies-all');
+        Route::post('/quote/all/invitation/emails', [quoteEmailInvitationController::class, 'getQuotesInvitation'])->name('quotes.invitation.email.all');
+
         Route::get('/tender/all', [TenderController::class, 'getFullTenders'])->name('tenders-companies-all');
         Route::get('/tender/{type}/{id}', [TenderController::class, 'index'])->name('tender-company-id');
-        
+
+        // Cotizaciones
+        Route::resource('cotizaciones', QuoteController::class, ['only' => ['edit', 'show']])
+                ->names('quote')
+                ->parameters(['cotizaciones' => 'quote']);
+        Route::get('/quote/all', [QuoteController::class, 'getFullQuotes'])->name('quotes-companies-all');
+        Route::post('/quote/all/companies', [QuoteController::class, 'getQuotes'])->name('quotes.companies.all');
+
 
         Route::post('/tender/decline', [TenderController::class, 'updateStatusDecline'])
                 ->name('tender.decline');
@@ -189,13 +206,23 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Compañias licitantes
         Route::get('/tendercompanies/{id}', [TenderCompaniesController::class, 'index'])->name('tender-companies-id');
-
+        
         Route::resource('tender/companies/detail', TenderCompaniesController::class, ['only' => ['show']])
-                ->names('tender-companies')
-                ->parameters(['tendercompanies' => 'tender']);
-
+        ->names('tender-companies')
+        ->parameters(['tendercompanies' => 'tender']);
+        
         Route::PUT('/tendercompanies', [TenderCompaniesController::class, 'update'])->name('tender-companies-update');
+        
+        
+        // Compañias cotizantes
+        Route::get('/quotecompanies/{id}', [QuoteCompaniesController::class, 'index'])->name('quote-companies-id');
+        Route::resource('quote/companies/detail', QuoteCompaniesController::class, ['only' => ['show']])
+        ->names('quote-companies')
+        ->parameters(['quotecompanies' => 'quote']);
 
+        Route::PUT('/quotecompanies', [QuoteCompaniesController::class, 'update'])->name('quote-companies-update');
+
+        
 
         // Productos/Servicios
         Route::get('/company/product/{id}', [ProductController::class, 'index'])->name('product-company-id');

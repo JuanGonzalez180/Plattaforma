@@ -74,6 +74,9 @@ class tenderEmailInvitationController extends Controller
             ->addColumn('date', function (TemporalInvitationCompany $value) {
                 return $value->created_at->formatLocalized('%d %b %Y %H:%M %p') . "<br>" . "<span class='badge badge-light'>" . $value->created_at->diffForHumans() . "</span>";
             })
+            ->editColumn('send', function (TemporalInvitationCompany $value) {
+                return ($value->send) ? '<span class="badge badge-success">Si</span>' : '<span class="badge badge-danger">No</span>';
+            })
             ->rawColumns(['id', 'email', 'tender_name', 'company_name', 'send', 'register_email', 'date'])
             ->toJson();
     }

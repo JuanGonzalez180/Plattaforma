@@ -8,7 +8,7 @@ Licitaciones
 @include('partials.structure.open-main')
 <div class="row align-items-center">
     <div class="col">
-        <h1>Correos de invitación</h1>
+        <h3>Correos de invitación <span class="badge badge-primary">Licitación</span></h3>
     </div>
 </div>
 <hr>
@@ -43,6 +43,7 @@ Licitaciones
             <th scope="col">Licitación</th>
             <th scope="col">Compañia</th>
             <th scope="col">Registrado</th>
+            <th scope="col">Enviado</th>
             <th scope="col">Fecha</th>
         </tr>
     </thead>
@@ -50,7 +51,6 @@ Licitaciones
 @include('partials.structure.close-main')
 <script>
     var table;
-
     $(document).ready(function() {
         table = $('#tender_table').DataTable({
             "serverSide": true,
@@ -80,6 +80,9 @@ Licitaciones
                 },
                 {
                     data: 'register_email'
+                },
+                {
+                    data: 'send'
                 },
                 {
                     data: 'date'

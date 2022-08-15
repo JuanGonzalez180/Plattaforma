@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\QueryWall;
 use App\Models\Tenders;
+use App\Models\Quotes;
 use App\Models\Projects;
 
 class QueryWallController extends Controller
@@ -14,10 +15,22 @@ class QueryWallController extends Controller
     {
         $queryWalls = QueryWall::where('querysable_type', Tenders::class)
             ->where('querysable_id', $id)
-            ->orderBy('updated_at','desc')
+            ->where('type', '<>', QueryWall::TYPE_GLOBALMESSAGE)
+            ->orderBy('updated_at', 'desc')
             ->get();
 
         return view('querywall.index', compact('queryWalls'));
+    }
+
+    public function index_quotes($id)
+    {
+        $queryWalls = QueryWall::where('querysable_type', Quotes::class)
+            ->where('querysable_id', $id)
+            ->where('type', '<>', QueryWall::TYPE_GLOBALMESSAGE)
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        return view('querywall.index_quote', compact('queryWalls'));
     }
 
     public function editVisible(Request $request)
@@ -27,7 +40,19 @@ class QueryWallController extends Controller
         $queryWall->visible = $visible;
         $queryWall->save();
 
-        return redirect()->route('query.class.id', $queryWall->querysable->id )
+        $route = '';
+        switch ($queryWall->querysable_type) {
+            case Quotes::class:
+                $route = 'query.quotes.class.id';
+                break;
+            case Tenders::class:
+                $route = 'query.class.id';
+            default:
+                $route = 'query.class.id';
+                break;
+        }
+
+        return redirect()->route($route, $queryWall->querysable->id)
             ->with('success', 'Se ha editado el la consulta');
     }
 }

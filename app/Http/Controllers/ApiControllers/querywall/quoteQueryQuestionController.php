@@ -13,8 +13,8 @@ use Illuminate\Validation\Rule;
 use App\Models\QuotesCompanies;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\QueryWall\sendGlobalMessage;
-use App\Mail\QueryWall\sendQuestionMessage;
+use App\Mail\QueryWall\sendQuestionQuoteMessage;
+use App\Mail\QueryWall\sendGlobalQuoteMessage;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class quoteQueryQuestionController extends ApiController
@@ -100,13 +100,52 @@ class quoteQueryQuestionController extends ApiController
 
         if ($user->userType() != 'oferta') {
             // NOTIFICACIONES:
-            // $this->sendNotificationQueryProponents($question, Notifications::NOTIFICATION_QUERYWALL_QUOTE_ADMIN);
+            $this->sendNotificationQueryProponents($question, Notifications::NOTIFICATION_QUERYWALL_QUOTE_ADMIN);
             // CORREOS:
+            $QuoteCompaniesEmails = $question->queryWallQuote()->QuoteParticipatingCompanyEmails();
+
+            foreach ($QuoteCompaniesEmails as $email) {
+                Mail::to(trim($email))->send(new sendGlobalQuoteMessage(
+                    $question->queryWallQuote()->company->name,
+                    $question->queryWallQuote()->name,
+                    $question->queryWallQuote()->id,
+                    $question->queryWallQuote()->company->slug,
+                    $question->question
+                ));
+            }
         } else {
-            // correos y notificaciones
+            // NOTIFICACIONES:
+            $this->sendNotificationQueryAdmin($question, Notifications::NOTIFICATION_QUERYWALL_QUOTE_QUESTION);
+            // CORREOS:
+            $quoteAdminEmail = $question->queryWallQuote()->QuoteAdminEmails();
+
+            foreach ($quoteAdminEmail as $email) {
+                Mail::to(trim($email))->send(new sendQuestionQuoteMessage(
+                    $question->user->companyFull()->name,
+                    $question->queryWallQuote()->name,
+                    $question->queryWallQuote()->id,
+                    $question->queryWallQuote()->company->slug,
+                    $question->question
+                ));
+            }
+
         }
 
         return $this->showOne($question, 201);
+    }
+
+    public function sendNotificationQueryAdmin($query, $typeNotification)
+    {
+        $quote = Quotes::find($query->querysable_id);
+
+        $notificationsIds   = [];
+        $notificationsIds[] = $quote->user_id; // responsable de la cotización
+        $notificationsIds[] = $quote->company->user_id; //administrador de la compañia
+
+        $notificationsIds   = array_values(array_unique($notificationsIds));
+
+        $notifications  = new Notifications();
+        $notifications->registerNotificationQuery($query, $typeNotification, $notificationsIds);
     }
 
     public function sendNotificationQueryProponents($query, $typeNotification)

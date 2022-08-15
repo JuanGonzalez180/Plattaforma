@@ -42,6 +42,8 @@ class Notifications extends Model
     const NOTIFICATION_QUOTE_INVITATION_REJECTED    = 'QuoteCompanyInvitationRejected'; //invitacion de cotización Rechazada
     const NOTIFICATION_QUOTE_STATUS_CLOSED_BEFORE   = 'QuoteCompaniesStatusClosedBefore'; //notificación cuando una cotización es cerrada antes de tiempo por el administrador y se le debe enviar a las compañia licitantes
     const NOTIFICATION_QUERYWALL_QUOTE_ADMIN        = 'QueryWallQuoteAdmin'; //notificación cuando una empresa licitante hace una pregunta en una licitación
+    const NOTIFICATION_QUERYWALL_QUOTE_QUESTION     = 'QueryWallQuoteQuestions'; //notificación cuando una empresa cotizante hace una pregunta en una cotización
+    const NOTIFICATION_QUERYWALL_QUOTE_ANSWER       = 'QueryWallQuoteAnswer'; //notificación cuando una empresa licitante hace una pregunta en una licitación
     
     //Muro de consultas
     const NOTIFICATION_QUERYWALL_TENDER_QUESTION    = 'QueryWallQuestions'; //notificación cuando una empresa licitante hace una pregunta en una licitación
@@ -173,6 +175,16 @@ class Notifications extends Model
                 $this->query_id = '';
             }
         }
+        else if($this->type == Notifications::NOTIFICATION_QUERYWALL_QUOTE_QUESTION && $this->notificationsable_type == QueryWall::class)
+        {
+            $quoteQuestion = QueryWall::find($this->notificationsable_id);
+
+            if( $quoteQuestion ){
+                $this->query_id = $quoteQuestion->queryWallQuoteProjectId()  . '/' . $quoteQuestion->queryWallQuoteId();
+            }else{
+                $this->query_id = '';
+            }
+        }
         else if($this->type == Notifications::NOTIFICATION_QUERYWALL_TENDER_ANSWER && $this->notificationsable_type == QueryWall::class)
         {
             $tenderQuestion = QueryWall::find($this->notificationsable_id);
@@ -181,6 +193,16 @@ class Notifications extends Model
                 // $this->query_id = $tenderQuestion->queryWallTenderId();
                 $this->query_id = $tenderQuestion->queryWallTender()->company->slug."/licitacion/".$tenderQuestion->queryWallTenderId();
                 // $tender->company->slug."/licitacion/".$tender->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
+        else if($this->type == Notifications::NOTIFICATION_QUERYWALL_QUOTE_ANSWER && $this->notificationsable_type == QueryWall::class)
+        {
+            $quoteQuestion = QueryWall::find($this->notificationsable_id);
+
+            if( $quoteQuestion ){
+                $this->query_id = $quoteQuestion->queryWallQuote()->company->slug."/cotizacion/".$quoteQuestion->queryWallQuoteId();
             }else{
                 $this->query_id = '';
             }
@@ -202,7 +224,7 @@ class Notifications extends Model
             $quoteQuestion = QueryWall::find($this->notificationsable_id);
 
             if( $quoteQuestion ){
-                $this->query_id = $quoteQuestion->queryWallTender()->company->slug."/cotizacion/".$quoteQuestion->queryWallTenderId();
+                $this->query_id = $quoteQuestion->queryWallQuote()->company->slug."/cotizacion/".$quoteQuestion->queryWallQuoteId();
             }else{
                 $this->query_id = '';
             }
@@ -393,8 +415,18 @@ class Notifications extends Model
             'subtitle'  => '', 
             'message'   => 'La compañia %s, ha hecho una pregunta.',
         ],
+        Notifications::NOTIFICATION_QUERYWALL_QUOTE_QUESTION => [ 
+            'title'     => 'Muro de consultas: Cot. %s', 
+            'subtitle'  => '', 
+            'message'   => 'La compañia %s, ha hecho una pregunta.',
+        ],
         Notifications::NOTIFICATION_QUERYWALL_TENDER_ANSWER => [ 
             'title'     => 'Muro de consultas: Lic. %s', 
+            'subtitle'  => '', 
+            'message'   => 'La compañia %s, ha respondido tu pregunta.',
+        ],
+        Notifications::NOTIFICATION_QUERYWALL_QUOTE_ANSWER => [ 
+            'title'     => 'Muro de consultas: Cot. %s', 
             'subtitle'  => '', 
             'message'   => 'La compañia %s, ha respondido tu pregunta.',
         ],
@@ -422,12 +454,12 @@ class Notifications extends Model
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_BEFORE => [ 
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
-            'message'   => 'El administrador ha cerrado la licitación %s antes de la fecha prevista y esta en proceso de evaluación.',
+            'message'   => 'El administrador ha cerrado la licitación %s antes de la fecha prevista y entrará en proceso de evaluación.',
         ],
         Notifications::NOTIFICATION_QUOTE_STATUS_CLOSED_BEFORE => [ 
             'title'     => 'Cotización: %s', 
             'subtitle'  => '', 
-            'message'   => 'El administrador ha cerrado la cotización %s antes de la fecha prevista.',
+            'message'   => 'El administrador ha cerrado la cotización %s antes de la fecha prevista y entrará en proceso de evaluación.',
         ],
         Notifications::NOTIFICATION_TENDER_STATUS_CLOSED_ADMIN => [ 
             'title'     => 'Licitación: Lic. %s', 
@@ -554,6 +586,14 @@ class Notifications extends Model
             $message    = sprintf($message, $query->company->name);
             $data['id'] = $tender->project_id . '/' . $tender->id;
         }
+        elseif( $type == Notifications::NOTIFICATION_QUERYWALL_QUOTE_QUESTION ) //notificación cuando una compañia hace una pregunta a una licitación
+        {
+            $quote      = Quotes::find($query->querysable_id);
+
+            $title      = sprintf($title, $quote->name);
+            $message    = sprintf($message, $query->company->name);
+            $data['id'] = $quote->project_id . '/' . $quote->id;
+        }
         elseif( $type == Notifications::NOTIFICATION_QUERYWALL_TENDER_ANSWER ) //notificación cuando una compañia responde una pregunta a una licitación
         {
             $tender     = Tenders::find($query->querysable_id);
@@ -561,6 +601,14 @@ class Notifications extends Model
             $title      = sprintf($title, $tender->name);
             $message    = sprintf($message, $tender->company->name);
             $data['id'] = $tender->company->slug."/licitacion/".$tender->id;
+        }
+        elseif( $type == Notifications::NOTIFICATION_QUERYWALL_QUOTE_ANSWER ) //notificación cuando una compañia responde una pregunta a una cotización
+        {
+            $quote     = Quotes::find($query->querysable_id);
+
+            $title      = sprintf($title, $quote->name);
+            $message    = sprintf($message, $quote->company->name);
+            $data['id'] = $quote->company->slug."/cotizacion/".$quote->id;
         }
         elseif( $type == Notifications::NOTIFICATION_QUERYWALL_TENDER_ADMIN ) //notificación cuando una compañia responde una pregunta a una licitación
         {

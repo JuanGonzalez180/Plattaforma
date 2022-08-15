@@ -153,6 +153,9 @@ class TenderController extends Controller
 
                 return $status;
             })
+            ->editColumn('name', function(Tenders $value){
+                return $value->tendersVersionLast()->adenda;
+            })
             ->editColumn('user_id', function(Tenders $value){
                 return $value->user->fullName();
             })
@@ -173,7 +176,7 @@ class TenderController extends Controller
                 return $action;
 
             })
-            ->rawColumns(['company_id','action','version_status'])
+            ->rawColumns(['company_id','action','version_status','name'])
             ->toJson();
 
 

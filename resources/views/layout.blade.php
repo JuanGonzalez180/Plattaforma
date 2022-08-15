@@ -91,7 +91,7 @@
                                 Comunidad Proveedores
                             </a>
                         </li>
-                        
+
                         <div class="dropdown-divider"></div>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('tenders-companies-all') }}">
@@ -100,10 +100,38 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('tenders-emails-companies-all') }}">
-                                <span data-feather="file"></span>
-                                Correos de invitación
-                            </a>
+                            <a class="nav-link collapsed text-truncate" href="#quoteSubmenu" data-toggle="collapse" data-target="#quoteSubmenu"><span class="d-none d-sm-inline">Cotizaciones</span></a>
+                            <div class="collapse" id="quoteSubmenu" aria-expanded="false">
+                                <ul class="flex-column pl-2 nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link py-0" href="{{ route('quotes-companies-all') }}">
+                                            <i class="fas fa-angle-right"></i>&nbsp;Generales
+                                        </a>
+                                    </li>
+                                    <!-- <div class="dropdown-divider"></div> -->
+                                </ul>
+                            </div>
+                        </li>
+                        <!-- Correos de invitación -->
+                        <li class="nav-item">
+                            <a class="nav-link collapsed text-truncate" href="#emailSubmenu" data-toggle="collapse" data-target="#emailSubmenu"><span class="d-none d-sm-inline">Correos de invitación</span></a>
+                            <div class="collapse" id="emailSubmenu" aria-expanded="false">
+                                <ul class="flex-column pl-2 nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link py-0" href="{{ route('tenders-emails-companies-all') }}">
+                                            <i class="fas fa-angle-right"></i>&nbsp;Licitación
+                                        </a>
+                                    </li>
+                                </ul>
+                                <br>
+                                <ul class="flex-column pl-2 nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link py-0" href="{{ route('quotes-emails-companies-all') }}">
+                                            <i class="fas fa-angle-right"></i>&nbsp;Cotizacion
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link collapsed text-truncate" href="#publicitySubmenu" data-toggle="collapse" data-target="#publicitySubmenu"><span class="d-none d-sm-inline">Publicidad</span></a>
@@ -190,11 +218,11 @@
                             </a>
                         </li>
                         <!-- <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('testing.index') }}">
-                                        <span data-feather="file"></span>
-                                        Test
-                                    </a>
-                                </li> -->
+                            <a class="nav-link" href="{{ route('testing.index') }}">
+                                <span data-feather="file"></span>
+                                Test
+                            </a>
+                        </li> -->
                         <li class="nav-item">
                             <a class="nav-link collapsed text-truncate" href="#upfalesubmenu" data-toggle="collapse" data-target="#upfalesubmenu"><span class="d-none d-sm-inline">Subir Archivos</span></a>
                             <div class="collapse" id="upfalesubmenu" aria-expanded="false">

@@ -16,7 +16,8 @@ class Kernel extends ConsoleKernel
         Commands\TaskTenderClosed::class,
         Commands\TaskQuoteClosed::class,
         Commands\TaskDownloadImgProduct::class,
-        Commands\TaskSendInvitationUnregisteredCompanies::class
+        Commands\TaskSendInvitationUnregisteredCompanies::class,
+        Commands\TaskSendInvitationQuoteUnregisteredCompanies::class
     ];
 
     /**
@@ -35,6 +36,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('task:download_img_product')->everyFifteenMinutes();
         //cronJobs para enviar invitaciones a licitaciones a compañias no registradas a plattaforma
         $schedule->command('task:task_send_invitation_unregistered_companies')->everyFiveMinutes();
+        //cronJobs para enviar invitaciones a licitaciones a compañias no registradas a plattaforma
+        $schedule->command('task:task_send_invitation_unregistered_companies')->everyFiveMinutes();
+        //cronJobs para enviar invitaciones a cotizaciones a compañias no registradas a plattaforma
+        $schedule->command('task:task_send_invitation_quote_unregistered_companies')->everyFiveMinutes();
     }
 
     /**

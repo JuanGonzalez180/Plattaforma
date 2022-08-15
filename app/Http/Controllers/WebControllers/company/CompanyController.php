@@ -14,9 +14,15 @@ use App\Models\Notifications;
 use App\Mail\ValidatedAccount;
 use Illuminate\Validation\Rule;
 use App\Models\TendersCompanies;
+use App\Models\Tenders;
+use App\Models\Quotes;
+use App\Models\TendersVersions;
+use App\Models\QuotesVersions;
+use App\Models\QuotesCompanies;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use App\Models\TemporalInvitationCompany;
+use App\Models\TemporalInvitationCompanyQuote;
 
 class CompanyController extends Controller
 {
@@ -115,7 +121,10 @@ class CompanyController extends Controller
         if ($request->status == Company::COMPANY_APPROVED) {
 
             if ($initialState == Company::COMPANY_CREATED || $initialState == Company::COMPANY_REJECTED) {
+                // Invita a la compañia a participar en una licitación/es.
                 $this->createTenderCompanyInvitation($company);
+                // Invita a la compañia a participar en una licitación/es.
+                $this->createQuoteCompanyInvitation($company);
                 Mail::to(trim($company->user->email))->send(new ValidatedAccount($company->user));
                 $message = "La compañia se ha aprobado con exito y se ha enviado un correo de confirmación(" . $company->user->email . ").";
             } else if ($initialState == Company::COMPANY_BANNED) {
@@ -142,12 +151,34 @@ class CompanyController extends Controller
         $query  = TemporalInvitationCompany::where(strtolower('email'), strtolower($company->user->email));
 
         if ($query->exists()) {
-            foreach ($query->get() as $value)
-            {
-                $tenderCompany = $this->createTenderCompany($company, $value->tender_id);
-                if($tenderCompany)
-                {
-                    $this->sendNotificationTenderInvitation($tenderCompany, $company->user->id);
+            foreach ($query->get() as $value) {
+                $tender = Tenders::find($value->tender_id);
+                if ($tender) {
+                    if (($tender->tendersVersionLast()->status == TendersVersions::LICITACION_PUBLISH) ? true : false) {
+                        $tenderCompany = $this->createTenderCompany($company, $value->tender_id);
+                        if ($tenderCompany) {
+                            $this->sendNotificationTenderInvitation($tenderCompany, $company->user->id);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public function createQuoteCompanyInvitation($company)
+    {
+        $query  = TemporalInvitationCompanyQuote::where(strtolower('email'), strtolower($company->user->email));
+
+        if ($query->exists()) {
+            foreach ($query->get() as $value) {
+                $quote = Quotes::find($value->quote_id);
+                if ($quote) {
+                    if (($quote->quotesVersionLast()->status == QuotesVersions::QUOTATION_PUBLISH) ? true : false) {
+                        $quoteCompany = $this->createQuoteCompany($company, $value->quote_id);
+                        if ($quoteCompany) {
+                            $this->sendNotificationQuoteInvitation($quoteCompany, $company->user->id);
+                        }
+                    }
                 }
             }
         }
@@ -156,17 +187,50 @@ class CompanyController extends Controller
     public function sendNotificationTenderInvitation($tenderCompany, $user_id)
     {
         $notifications = new Notifications();
-        $notifications->registerNotificationQuery( $tenderCompany, Notifications::NOTIFICATION_TENDERINVITECOMPANIES, [$user_id] );
+        $notifications->registerNotificationQuery($tenderCompany, Notifications::NOTIFICATION_TENDERINVITECOMPANIES, [$user_id]);
+    }
+
+    public function sendNotificationQuoteInvitation($tenderCompany, $user_id)
+    {
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery($tenderCompany, Notifications::NOTIFICATION_QUOTEINVITECOMPANIES, [$user_id]);
     }
 
     public function createTenderCompany($company, $tender_id)
     {
-        $fields['tender_id']   = $tender_id;
-        $fields['company_id']  = $company->id;
-        $fields['user_id']     = $company->user->id;
-        $fields['status']      = TendersCompanies::STATUS_PROCESS;
-        
-        return TendersCompanies::create( $fields );
+        $tenderCompanies = TendersCompanies::where('tender_id', $tender_id)
+            ->where('company_id', $company->id)
+            ->exists();
+
+        if ($tenderCompanies) {
+            return false;
+        } else {
+            $fields['tender_id']   = $tender_id;
+            $fields['company_id']  = $company->id;
+            $fields['user_id']     = $company->user->id;
+            $fields['status']      = TendersCompanies::STATUS_PROCESS;
+
+            return TendersCompanies::create($fields);
+        }
+    }
+
+    public function createQuoteCompany($company, $quotes_id)
+    {
+
+        $quotesCompanies = QuotesCompanies::where('quotes_id', $quotes_id)
+            ->where('company_id', $company->id)
+            ->exists();
+
+        if ($quotesCompanies) {
+            return false;
+        } else {
+            $fields['quotes_id']   = $quotes_id;
+            $fields['company_id']  = $company->id;
+            $fields['user_id']     = $company->user->id;
+            $fields['status']      = QuotesCompanies::STATUS_PROCESS;
+
+            return QuotesCompanies::create($fields);
+        }
     }
 
     public function getTypeCompanies(Request $request)

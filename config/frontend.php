@@ -19,7 +19,9 @@ return [
         ],
         'quote' => [
             'quoteListprovider' => 'cotizaciones/listado',
+            'quoteDetail'       => 'compania',
             'quoteList'         => 'mis-cotizaciones/listado',
+            'quote'             => 'cotizacion'
         ]
 
 

@@ -12,6 +12,7 @@ use App\Models\QuotesCompanies;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
+use App\Mail\quote\quoteClose\sendCloseQuoteAdmin;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class QuotesActionController extends ApiController
@@ -68,14 +69,14 @@ class QuotesActionController extends ApiController
     public function sendEmailsQuotes($quote)
     {
         // *Correos de las compañias participantes de la licitación.
-    //     $emails = $quote->QuoteParticipatingCompanyEmails();
+        $emails = $quote->QuoteParticipatingCompanyEmails();
 
-    //     foreach ($emails as $email)
-    //     {
-    //         Mail::to(trim($email))->send(new sendCloseTenderAdmin(
-    //             $quote->name,
-    //             $quote->company->name 
-    //         ));
-    //     }
+        foreach ($emails as $email)
+        {
+            Mail::to(trim($email))->send(new sendCloseQuoteAdmin(
+                $quote->name,
+                $quote->company->name 
+            ));
+        }
     }
 }
