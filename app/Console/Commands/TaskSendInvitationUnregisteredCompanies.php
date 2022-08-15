@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 use App\Models\TemporalInvitationCompany;
 use App\Mail\sendInvitationRegisterCompanyTender;
+
 class TaskSendInvitationUnregisteredCompanies extends Command
 {
     /**
@@ -39,17 +40,18 @@ class TaskSendInvitationUnregisteredCompanies extends Command
      */
     public function handle()
     {
-        $email = TemporalInvitationCompany::where('send',false)->get();
-        
-        foreach ($email as $key => $value)
-        {
-            Mail::to(trim($value->email))->send(new sendInvitationRegisterCompanyTender(
-                $value->tender->name,
-                $value->tender->company->name  
-            ));
+        $email = TemporalInvitationCompany::where('send', false)->get();
 
-            $value->send = true;
-            $value->save();
+        foreach ($email as $key => $value) {
+            if ($value->tender) {
+                Mail::to(trim($value->email))->send(new sendInvitationRegisterCompanyTender(
+                    $value->tender->name,
+                    $value->tender->company->name
+                ));
+
+                $value->send = true;
+                $value->save();
+            }
         }
     }
 }

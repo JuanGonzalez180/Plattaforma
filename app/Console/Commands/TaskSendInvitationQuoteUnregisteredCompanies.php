@@ -43,13 +43,16 @@ class TaskSendInvitationQuoteUnregisteredCompanies extends Command
 
         foreach ($email as $key => $value)
         {
-            Mail::to(trim($value->email))->send(new sendInvitationRegisterCompanyQuote(
-                $value->quote->name,
-                $value->quote->company->name  
-            ));
-
-            $value->send = true;
-            $value->save();
+            if($value->quote)
+            {
+                Mail::to(trim($value->email))->send(new sendInvitationRegisterCompanyQuote(
+                    $value->quote->name,
+                    $value->quote->company->name  
+                ));
+    
+                $value->send = true;
+                $value->save();
+            }
         }
     }
 }
