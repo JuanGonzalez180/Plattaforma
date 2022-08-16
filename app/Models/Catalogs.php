@@ -54,4 +54,14 @@ class Catalogs extends Model
     {
         return $this->morphMany(Tags::class, 'tagsable');
     }
+
+    public function tagsLimit()
+    {
+        return ($this->morphMany(Tags::class, 'tagsable'))->take(4);
+
+        // return Tags::where('tagsable_type',Catalogs::class)
+        //     ->where('tagsable_id',$this->id)
+        //     ->get()
+        //     ->take(4); 
+    }
 }
