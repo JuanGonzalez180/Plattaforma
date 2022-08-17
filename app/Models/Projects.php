@@ -19,6 +19,8 @@ use App\Models\TendersVersions;
 use Illuminate\Support\Facades\DB;
 use App\Models\SocialNetworksRelation;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Quotes;
+use App\Models\QuotesVersions;
 use App\Transformers\ProjectsTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -73,6 +75,11 @@ class Projects extends Model
         return $this->hasMany(Tenders::class, 'project_id', 'id');
     }
 
+    public function quotes()
+    {
+        return $this->hasMany(Quotes::class, 'project_id', 'id');
+    }
+
     public function tendersEvents()
     {
         $tenders = $this->tenders;
@@ -86,6 +93,28 @@ class Projects extends Model
                     "tender_id" => $tender->id,
                     "date"      => $versionLast->date,
                     "name"      => $tender->name,
+                ];
+            }
+        }
+
+        $notification = collect($notification)->sortBy('date');
+
+        return array_values($notification->toArray());
+    }
+
+    public function quotesEvents()
+    {
+        $quotes = $this->quotes;
+
+        $notification = [];
+
+        foreach ($quotes as $quote) {
+            $versionLast = $quote->quotesVersionLast();
+            if ($versionLast->status == QuotesVersions::QUOTATION_PUBLISH) {
+                $notification[] = [
+                    "quote_id"  => $quote->id,
+                    "date"      => $versionLast->date,
+                    "name"      => $quote->name,
                 ];
             }
         }

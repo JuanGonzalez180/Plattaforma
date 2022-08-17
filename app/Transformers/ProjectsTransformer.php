@@ -79,6 +79,7 @@ class ProjectsTransformer extends TransformerAbstract
             'user'=> $userTransform->transform($project->user),
             'company'=> $companyTransform->transform($project->company),
             'tendersEvents'=> $project->tendersEvents(),
+            'quotesEvents'=> $project->quotesEvents(),
             'image'=> $project->image,
             'address'=> $project->address,
             'types_projects'=> $project->projectTypeProject,

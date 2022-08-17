@@ -143,6 +143,7 @@ class TendersVersionsController extends ApiController
         $notifications = new Notifications();
 
         foreach ($tenderCompanies as $key => $tenderCompany) {
+
             if ($tenderCompany->status == TendersCompanies::STATUS_PARTICIPATING)
             {
                 //1. NOTIFICACIONES -> Envia las notificaciones a los usuarios por compañia participante
