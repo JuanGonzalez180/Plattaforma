@@ -20,7 +20,7 @@ class QuotesDocumentsController extends ApiController
     // *Route Quote
     public $routeQuote  = 'images/quotes/';
     // *Type Files
-    public $allowed     = ['pdf','zip'];
+    public $allowed     = ['pdf', 'zip', 'png', 'jpg', 'jpeg'];
 
     public function validateUser(){
         try {
