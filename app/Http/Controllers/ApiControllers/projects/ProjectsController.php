@@ -185,6 +185,12 @@ class ProjectsController extends ApiController
                     'latitud' => $request->latitud,
                     'longitud' => $request->longitud
                 ]);
+            }else{
+                $project->address()->create([
+                    'address' => 'Panama',
+                    'latitud' => '8.9823792',
+                    'longitud' => '-79.5198696'
+                ]);
             }
         }
 
