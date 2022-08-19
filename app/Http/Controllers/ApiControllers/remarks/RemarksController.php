@@ -25,8 +25,6 @@ class RemarksController extends ApiController
 
     public function index(Request $request)
     {
-        var_dump($request->all());
-        die;
         $user = $this->validateUser();
 
         if ($request->type === 'tenders') {
