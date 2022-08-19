@@ -347,7 +347,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('/company/tenders/select/participate', [CompanyTendersTransactController::class, 'postComparate'])->name('company-select-participate');
     
     // Cotizaciones: 
-    Route::post('/company/{slug}/quote/{id}/send/participate', [CompanyQuotesTransactController::class, 'store'])->name('company-quote-send-participate');
+    Route::post('/company/{slug}/quotes/{id}/send/participate', [CompanyQuotesTransactController::class, 'store'])->name('company-quote-send-participate');
     Route::post('/company/quotes/select/participate', [CompanyQuotesTransactController::class, 'postComparate'])->name('company-quote-select-participate');
 
 
