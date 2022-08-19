@@ -3,22 +3,22 @@
 namespace App\Http\Controllers\ApiControllers\company\CompanyQuotes;
 
 use JWTAuth;
-use App\Models\Company;
 use App\Models\Quotes;
+use App\Models\Company;
 use App\Models\Projects;
 use Illuminate\Http\Request;
 use App\Models\Notifications;
 use App\Models\QuotesVersions;
+use App\Models\QuotesCompanies;
 use Illuminate\Support\Facades\DB;
 use App\Mail\SendOfferTenderCompany;
-use App\Mail\quote\quoteOffer\SendOfferQuoteCompany;
 use Illuminate\Support\Facades\Mail;
 use App\Transformers\UserTransformer;
 use Illuminate\Support\Facades\Storage;
 use App\Transformers\QuotesTransformer;
 use App\Mail\SendRetirementTenderCompany;
+use App\Mail\quote\quoteOffer\SendOfferQuoteCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
-use App\Models\QuotesCompanies;
 
 class CompanyQuotesController extends ApiController
 {
@@ -200,7 +200,7 @@ class CompanyQuotesController extends ApiController
             $quote_company->status = QuotesCompanies::STATUS_PARTICIPATING;
             $quote_company->save();
 
-            // Notifica al administrador de la licitación que dicha compañia ha aceptado la invitación.
+            // Notifica al administrador de la cotización que dicha compañia ha aceptado la invitación.
             $this->sendNotificationQuote($quote_company, Notifications::NOTIFICATION_QUOTE_INVITATION_APPROVED);
 
             return $this->showOne($quote_company, 200);
@@ -214,9 +214,9 @@ class CompanyQuotesController extends ApiController
                 }
             }
 
-            //envia los correos al responsable de licitación y al responsable del proyecto
-            // $this->sendEmailInvitationTender($tender_company);
-            //envia los notificaciones al responsable de la licitación y al administrador
+            //envia los correos al responsable de cotización y al responsable del proyecto
+            // $this->sendEmailInvitationTender($quote_company);
+            //envia los notificaciones al responsable de la cotización y al administrador
             $this->sendNotificationQuote($quote_company, Notifications::NOTIFICATION_QUOTE_INVITATION_REJECTED);
 
             return $this->showOneData(
@@ -302,5 +302,51 @@ class CompanyQuotesController extends ApiController
 
         $notifications      = new Notifications();
         $notifications->registerNotificationQuery($query, $typeNotification, $notificationsIds);
+    }
+
+    public function destroy($slug, $id)
+    {
+        $user           = $this->validateUser();
+        $quote_company  = QuotesCompanies::find($id);
+        $quote_status   = $quote_company->quote->quotesVersionLast()->status;
+
+        if ($quote_status == QuotesVersions::QUOTATION_FINISHED) {
+            $quoteCompanyError = ['quoteCompany' => 'Error, la compañia no se puede retirar de la cotización, por el motivo que la cotización esta cerrada o finalizada'];
+            return $this->errorResponse($quoteCompanyError, 500);
+        }
+
+        // Revisar consulta.
+        if ($user->company[0]->id != $quote_company->company->id) {
+            $tenderCompanyError = ['quoteCompany' => 'Error, el usuario no tiene permiso para borrar la cotización de la compañia'];
+            return $this->errorResponse($tenderCompanyError, 500);
+        }
+
+        $quote_company->delete();
+
+        if ($quote_company->files) {
+            foreach ($quote_company->files as $key => $file) {
+                Storage::disk('local')->delete($this->routeFile . $file->url);
+                $file->delete();
+            }
+        }
+
+        $company_name     = $quote_company->company->name;
+        $quote_name       = $quote_company->tender->name;
+
+        $emails     = [];
+        $emails[]   = $quote_company->quote->user->email;
+        $emails[]   = $quote_company->quote->project->user->email;
+
+        $emails = array_values(array_unique($emails));
+
+        // foreach ($emails as $email) {
+        //     Mail::to(trim($email))
+        //         ->send(new SendRetirementTenderCompany($tender_name, $company_name));
+        // }
+
+        // Enviar invitación por notificación
+        // $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_TENDERCOMPANYNOPARTICIPATE);
+
+        return $this->showOneData(['success' => 'Se ha eliminado correctamente.', 'code' => 200], 200);
     }
 }
