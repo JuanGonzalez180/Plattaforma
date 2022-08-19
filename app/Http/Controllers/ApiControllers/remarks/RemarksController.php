@@ -29,6 +29,8 @@ class RemarksController extends ApiController
 
         if ($request->type === 'tenders') {
             $item = TendersCompanies::find($request->id);
+        } elseif ($request->type === 'quotes') {
+            $item = QuotesCompanies::find($request->id);
         } elseif ($request->type === 'projects') {
             $item = Projects::find($request->id);
         } elseif ($request->type === 'products') {
