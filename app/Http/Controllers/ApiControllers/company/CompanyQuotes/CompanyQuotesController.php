@@ -317,8 +317,8 @@ class CompanyQuotesController extends ApiController
 
         // Revisar consulta.
         if ($user->company[0]->id != $quote_company->company->id) {
-            $tenderCompanyError = ['quoteCompany' => 'Error, el usuario no tiene permiso para borrar la cotización de la compañia'];
-            return $this->errorResponse($tenderCompanyError, 500);
+            $quoteCompanyError = ['quoteCompany' => 'Error, el usuario no tiene permiso para borrar la cotización de la compañia'];
+            return $this->errorResponse($quoteCompanyError, 500);
         }
 
         $quote_company->delete();
@@ -331,7 +331,7 @@ class CompanyQuotesController extends ApiController
         }
 
         $company_name     = $quote_company->company->name;
-        $quote_name       = $quote_company->tender->name;
+        $quote_name       = $quote_company->quote->name;
 
         $emails     = [];
         $emails[]   = $quote_company->quote->user->email;

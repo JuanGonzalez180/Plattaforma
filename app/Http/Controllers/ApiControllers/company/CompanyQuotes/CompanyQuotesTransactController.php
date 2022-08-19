@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\ApiControllers\company\CompanyQuotes;
 
 use JWTAuth;
-use App\Http\Controllers\Controller;
+use App\Models\Quotes;
 use Illuminate\Http\Request;
 use App\Models\QuotesCompanies;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class CompanyQuotesTransactController extends ApiController
@@ -63,9 +65,75 @@ class CompanyQuotesTransactController extends ApiController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($slug, int $id)
     {
-        //
+        $user = $this->validateUser();
+        //verifica el estado del usuario
+        if(!$this->statusCompanyUser($user))
+        {
+            $queryError = [ 'querywall' => 'Error, El usuario debe pagar la suscripción' ];
+            return $this->errorResponse( $queryError, 500 );
+        }
+
+        $quoteCompany = QuotesCompanies::where('quotes_id', $id)->where('company_id', $user->id);
+        
+        $name_company = $user->companyName();
+
+        if($user->userType() != 'oferta'){
+            $queryError = [ 'querywall' => 'Error, El no tiene privilegios para participar en una cotización' ];
+            return $this->errorResponse( $queryError, 500 );
+        }
+
+        if($quoteCompany->exists()){
+            $quoteCompaniesError = [ 'quotesCompanies' => 'La compañia ya se encuestra participando en esta cotización' ];
+            return $this->errorResponse( $quoteCompaniesError, 500 );
+        }
+
+        DB::beginTransaction();
+
+        $quote = Quotes::find($id);
+
+        $quoteCompanyFields['quotes_id']       = $id;
+        $quoteCompanyFields['company_id']      = $user->companyId();
+        $quoteCompanyFields['user_id']         = $quote->user_id;
+        $quoteCompanyFields['type']            = QuotesCompanies::TYPE_INTERESTED;
+        $quoteCompanyFields['status']          = QuotesCompanies::STATUS_EARRING;
+        $quoteCompanyFields['user_company_id'] = $user->id;
+
+        try{
+            $quoteCompany = QuotesCompanies::create( $quoteCompanyFields );
+        }catch(\Throwable $th){
+            DB::rollBack();
+            $quoteCompanyError = [ 'question' => 'Error, no se ha podido gestionar la solicitud' ];
+            return $this->errorResponse( $quoteCompanyError, 500 );
+        }
+        DB::commit();
+
+        // $email = Quotes::find($id)->user->email;
+
+        // Mail::to(trim($email))->send(new SendParticipateTenderCompany(
+        //     Tenders::find($id)->name,
+        //     $user->companyName()
+        // ));
+
+        // Enviar invitación por notificación
+        // $notificationsIds   = [];
+        // $notificationsIds[] = $quoteCompany->tender->user_id;
+        // $notifications      = new Notifications();
+        // $notifications->registerNotificationQuery( $quoteCompany, Notifications::NOTIFICATION_TENDERCOMPANYPARTICIPATE, $notificationsIds );
+
+        return $this->showOne($quoteCompany,201); 
+    }
+
+    public function statusCompanyUser($user)
+    {
+        if( $user->isAdminFrontEnd() ){
+            $company = $user->company[0];
+        }elseif( $user->team ){
+            $company = $user->team->company;
+        }
+
+        return $company->companyStatusPayment();
     }
 
     /**
