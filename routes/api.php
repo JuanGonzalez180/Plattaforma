@@ -337,13 +337,23 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     // Route::delete('/company/{slug}/tenders/{id}', [CompanyTendersController::class, 'destroy'])->name('company-tender-destroy');
  
     // participar en cotización:
-    Route::post('/company/quotes/select/participate', [CompanyQuotesTransactController::class, 'postComparate'])->name('company-quotes-select-participate');
     Route::put('/company/{slug}/quotes/{id}/status/{status}/user/{user_id}', [CompanyQuotesController::class, 'updateStatusInvitation'])->name('company-quote-update-status'); 
-
+    
     //participar en licitación
     Route::put('/company/{slug}/tenders/{id}/status/{status}/user/{user_id}', [CompanyTendersController::class, 'updateStatusInvitation'])->name('company-tender-update-status'); 
+    
+    
+    
+    
+    //  Licitaciones: 
     Route::post('/company/{slug}/tenders/{id}/send/participate', [CompanyTendersTransactController::class, 'store'])->name('company-send-participate');
     Route::post('/company/tenders/select/participate', [CompanyTendersTransactController::class, 'postComparate'])->name('company-select-participate');
+    
+    // Cotizaciones: 
+    Route::post('/company/{slug}/quote/{id}/send/participate', [CompanyQuotesTransactController::class, 'store'])->name('company-quote-send-participate');
+    Route::post('/company/quotes/select/participate', [CompanyQuotesTransactController::class, 'postComparate'])->name('company-quotes-select-participate');
+
+
 
     Route::get('/company/{slug}/blogs', [CompanyBlogsController::class, 'index'])->name('company-blogs');
     Route::get('/company/{slug}/blogs/{id}', [CompanyBlogsController::class, 'show'])->name('company-detail-blogs');
