@@ -36,53 +36,52 @@ class CompanyQuotesController extends ApiController
 
     public function index($slug, Request $request)
     {
-        // // Validamos TOKEN del usuario
-        // $user           = $this->validateUser();
-        // // Compañía del usuario que está logueado
-        // $userCompanyId  = $user->companyId();
-        // $project_id     = $request->project_id;
+        // Validamos TOKEN del usuario
+        $user           = $this->validateUser();
+        // Compañía del usuario que está logueado
+        $userCompanyId  = $user->companyId();
+        $project_id     = $request->project_id;
 
-        // $company = Company::where('slug', $slug)->first();
+        $company = Company::where('slug', $slug)->first();
 
-        // if (!$company) {
-        //     $companyError = ['company' => 'Error, no se ha encontrado ninguna compañia'];
-        //     return $this->errorResponse($companyError, 500);
-        // }
+        if (!$company) {
+            $companyError = ['company' => 'Error, no se ha encontrado ninguna compañia'];
+            return $this->errorResponse($companyError, 500);
+        }
 
-        // // Traer Cotizaciones
-        // $quotes = Quotes::select('quotes.*', 'comp.status AS company_status')
-        //     ->where('quotes.company_id', $company->id)
-        //     ->join('projects', 'projects.id', '=', 'quotes.project_id');
+        // Traer Cotizaciones
+        $quotes = Quotes::select('quotes.*', 'comp.status AS company_status')
+            ->where('quotes.company_id', $company->id)
+            ->join('projects', 'projects.id', '=', 'quotes.project_id');
 
-        // if ($project_id > 0) {
-        //     $quotes = $quotes->where('projects.id', $project_id);
-        // };
+        if ($project_id > 0) {
+            $quotes = $quotes->where('projects.id', $project_id);
+        };
 
-        // $quotes = $quotes->where('projects.visible', Projects::PROJECTS_VISIBLE)
-        //     ->leftjoin('quotes_companies AS comp', function ($join) use ($userCompanyId) {
-        //         $join->on('quotes.id', '=', 'comp.quotes_id');
-        //         $join->where('comp.company_id', '=', $userCompanyId);
-        //     })
-        //     ->orderBy('quotes.updated_at', 'desc')
-        //     ->get();
+        $quotes = $quotes->where('projects.visible', Projects::PROJECTS_VISIBLE)
+            ->leftjoin('quotes_companies AS comp', function ($join) use ($userCompanyId) {
+                $join->on('quotes.id', '=', 'comp.quotes_id');
+                $join->where('comp.company_id', '=', $userCompanyId);
+            })
+            ->orderBy('quotes.updated_at', 'desc')
+            ->get();
 
-        // $company->quotes = $this->getQuoteCompany($company->id);
+        $company->quotes = $this->getQuoteCompany($company->id);
 
-        // foreach ($company->quotes as $key => $quote) {
-        //     $user = $quote->user;
-        //     unset($quote->user);
-        //     $quote->user = $user;
+        foreach ($company->quotes as $key => $quote) {
+            $user = $quote->user;
+            unset($quote->user);
+            $quote->user = $user;
 
-        //     $version = $quote->quotesVersionLast();
+            $version = $quote->quotesVersionLast();
 
-        //     if ($version) {
-        //         $quote->tags = $version->tags;
-        //     }
-        //     $quote->project;
-        // }
+            if ($version) {
+                $quote->tags = $version->tags;
+            }
+            $quote->project;
+        }
 
-        // return $this->showAllPaginate($company->quotes);
-        return [];
+        return $this->showAllPaginate($company->quotes);
     }
 
     public function getQuoteCompany($company_id)

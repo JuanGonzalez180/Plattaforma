@@ -61,77 +61,76 @@ class SearchItemController extends ApiController
 
     public function __invoke(Request $request)
     {
-        // $user       = $this->validateUser();
-        // $type_user  = $user->userType();
+        $user       = $this->validateUser();
+        $type_user  = $user->userType();
 
-        // $result = [];
+        $result = [];
 
-        // $category_product = $this->getAssignValue(
-        //     $request->categoryproduct,
-        //     $request->category_product_one,
-        //     $request->category_product_two
-        // );
+        $category_product = $this->getAssignValue(
+            $request->categoryproduct,
+            $request->category_product_one,
+            $request->category_product_two
+        );
 
-        // $type_project = $this->getAssignValue(
-        //     $request->typeproject,
-        //     $request->type_project_one,
-        //     $request->type_project_two
-        // );
+        $type_project = $this->getAssignValue(
+            $request->typeproject,
+            $request->type_project_one,
+            $request->type_project_two
+        );
 
-        // $category_tender = $this->getAssignValue(
-        //     $request->categorytender,
-        //     $request->category_tender_one,
-        //     $request->category_tender_two
-        // );
+        $category_tender = $this->getAssignValue(
+            $request->categorytender,
+            $request->category_tender_one,
+            $request->category_tender_two
+        );
 
-        // $date = $this->getAssignDate($request->date_start, $request->date_end);
-
-
-        // $search      = !isset($request->search) ? null : $request->search;
-        // $type_entity = !isset($request->type_entity) ? null : $request->type_entity;
-        // $status      = !isset($request->status) ? null : $request->status;
-
-        // // Tender Consult, copy of SearchCompanyController
-        // $discardedCompanies = [];
+        $date = $this->getAssignDate($request->date_start, $request->date_end);
 
 
-        // // licitaciones
-        // $tender_id = $request->tender_id;
-        // if ($tender_id) {
-        //     $discardedCompanies = TendersCompanies::where('tender_id', '=', $tender_id)->pluck('company_id');
-        // }
+        $search      = !isset($request->search) ? null : $request->search;
+        $type_entity = !isset($request->type_entity) ? null : $request->type_entity;
+        $status      = !isset($request->status) ? null : $request->status;
 
-        // // cotizaciones
-        // $quote_id = $request->quote_id;
-        // if ($quote_id) {
-        //     $discardedCompanies = QuotesCompanies::where('quotes_id', '=', $quote_id)->pluck('company_id');
-        // }
+        // Tender Consult, copy of SearchCompanyController
+        $discardedCompanies = [];
 
-        // if (!isset($request->type_consult)) {
-        //     return [];
-        // }
 
-        // //se empieza a enviar los parametros de busqueda
-        // switch ($request->type_consult) {
-        //     case 'companies':
-        //         $result = $this->getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date, $discardedCompanies);
-        //         break;
-        //     case 'products':
-        //         $result = $this->getProductAll($type_entity, $category_product, $search);
-        //         break;
-        //     case 'catalogs':
-        //         $result = $this->getCatalogAll($type_entity, $search);
-        //         break;
-        //     case 'tenders':
-        //         $result = $this->getTenderAll($status, $type_entity, $type_project, $category_tender, $search, $date);
-        //         break;
-        //     case 'projects':
-        //         $result = $this->getProjectAll($status, $type_entity, $type_project, $category_tender, $search, $date);
-        //         break;
-        // }
+        // licitaciones
+        $tender_id = $request->tender_id;
+        if ($tender_id) {
+            $discardedCompanies = TendersCompanies::where('tender_id', '=', $tender_id)->pluck('company_id');
+        }
 
-        // return $this->showAllPaginate($result);
-        return [];
+        // cotizaciones
+        $quote_id = $request->quote_id;
+        if ($quote_id) {
+            $discardedCompanies = QuotesCompanies::where('quotes_id', '=', $quote_id)->pluck('company_id');
+        }
+
+        if (!isset($request->type_consult)) {
+            return [];
+        }
+
+        //se empieza a enviar los parametros de busqueda
+        switch ($request->type_consult) {
+            case 'companies':
+                $result = $this->getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date, $discardedCompanies);
+                break;
+            case 'products':
+                $result = $this->getProductAll($type_entity, $category_product, $search);
+                break;
+            case 'catalogs':
+                $result = $this->getCatalogAll($type_entity, $search);
+                break;
+            case 'tenders':
+                $result = $this->getTenderAll($status, $type_entity, $type_project, $category_tender, $search, $date);
+                break;
+            case 'projects':
+                $result = $this->getProjectAll($status, $type_entity, $type_project, $category_tender, $search, $date);
+                break;
+        }
+
+        return $this->showAllPaginate($result);
     }
 
     public function getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date, $discardedCompanies = [])

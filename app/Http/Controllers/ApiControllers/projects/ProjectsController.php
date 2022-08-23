@@ -47,7 +47,7 @@ class ProjectsController extends ApiController
                     ->orderBy('id', 'desc')
                     ->get();
             }
-            
+
             return $this->showAllPaginate($projects);
         }
 
@@ -75,13 +75,13 @@ class ProjectsController extends ApiController
         //                                 ->get();
         //     }
         // }
-        
+
         $projects = Projects::where('company_id', $companyID)
             ->where('date_start', '<=', $date_now)->where('date_end', '>=', $date_now)
             ->orderBy('id', 'desc')
             ->get();
 
-            
+
         $projects->map(function ($item, $key) {
             return $item->status_date = $this->getStatusDate($item->date_start, $item->date_end);
         });
@@ -98,17 +98,12 @@ class ProjectsController extends ApiController
         $date_now   = Carbon::now()->format('Y-m-d');
 
         $status = "";
-        
-        if ($date_now < $date_start)
-        {
+
+        if ($date_now < $date_start) {
             $status = Projects::NOT_STARTED;
-        }
-        else if(($date_now >= $date_start) && ($date_now <= $date_end))
-        {
+        } else if (($date_now >= $date_start) && ($date_now <= $date_end)) {
             $status = Projects::IN_PROGRESS;
-        }
-        else if($date_now > $date_end)
-        {
+        } else if ($date_now > $date_end) {
             $status = Projects::FINALIZED;
         }
 
@@ -179,17 +174,19 @@ class ProjectsController extends ApiController
                 }
             }
 
-            if ($request->address || $request->latitud || $request->longitud) {
+
+            if ($request->address || $request->latitud || $request->longitud)
+            {
                 $project->address()->create([
-                    'address' => $request->address,
-                    'latitud' => $request->latitud,
-                    'longitud' => $request->longitud
+                    'address'   => $request->address,
+                    'latitud'   => $request->latitud,
+                    'longitud'  => $request->longitud
                 ]);
-            }else{
+            } else {
                 $project->address()->create([
                     'address' => 'Panama',
-                    'latitud' => '8.9823792',
-                    'longitud' => '-79.5198696'
+                    'latitud' => '9.0360681854164',
+                    'longitud' => '-79.49169507915'
                 ]);
             }
         }
