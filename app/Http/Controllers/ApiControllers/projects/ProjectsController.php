@@ -174,11 +174,17 @@ class ProjectsController extends ApiController
                 }
             }
 
+            $address = null;
 
-            if ($request->address || $request->latitud || $request->longitud)
-            {
+            if (!isset($request->address_map) && isset($request->address)) {
+                $address = $request->address;
+            } else if (isset($request->address_map) && !isset($request->address)) {
+                $address = $request->address_map;
+            }
+
+            if ($request->latitud || $request->longitud) {
                 $project->address()->create([
-                    'address'   => $request->address,
+                    'address'   => $address,
                     'latitud'   => $request->latitud,
                     'longitud'  => $request->longitud
                 ]);
