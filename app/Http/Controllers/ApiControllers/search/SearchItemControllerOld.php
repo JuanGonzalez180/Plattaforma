@@ -526,15 +526,15 @@ class SearchItemControllerOld extends ApiController
 
         $array = [];
 
-        // foreach($types_entities as $type_entity) {
-        //     $array[] = array(
-        //         "id"        => $type_entity->id,
-        //         "name"      => $type_entity->name,
-        //         "slug"      => $type_entity->slug,
-        //         "status"    => $type_entity->status,
-        //         "entities"  => DB::select('call get_child_type_entity("'.$type_entity->id.'")')
-        //     );
-        // }
+        foreach($types_entities as $type_entity) {
+            $array[] = array(
+                "id"        => $type_entity->id,
+                "name"      => $type_entity->name,
+                "slug"      => $type_entity->slug,
+                "status"    => $type_entity->status,
+                "entities"  => DB::select('call get_child_type_entity("'.$type_entity->id.'")')
+            );
+        }
 
         return $array;
     }
