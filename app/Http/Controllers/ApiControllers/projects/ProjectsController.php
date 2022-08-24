@@ -298,20 +298,33 @@ class ProjectsController extends ApiController
 
         // Dirección, Latitud y Longitud
         if ($request->latitud || $request->longitud) {
-            if (!$project->address) {
-                $project->address()->create([
-                    'address' => $address,
-                    'latitud' => $request->latitud,
-                    'longitud' => $request->longitud
-                ]);
-            } else {
-                $project->address()->update([
-                    'address'   => 'Panama',
-                    'latitud'   => '9.0360681854164',
-                    'longitud'  => '-79.49169507915'
-                ]);
-            }
+            $project->address()->update([
+                'address' => $address,
+                'latitud' => $request->latitud,
+                'longitud' => $request->longitud
+            ]);
+        } else {
+            $project->address()->update([
+                'address'   => 'Panama',
+                'latitud'   => '9.0360681854164',
+                'longitud'  => '-79.49169507915'
+            ]);
         }
+        // if ($request->latitud || $request->longitud) {
+        //     if (!$project->address) {
+        //         $project->address()->update([
+        //             'address' => $request->address,
+        //             'latitud' => $request->latitud,
+        //             'longitud' => $request->longitud
+        //         ]);
+        //     } else {
+        //         $project->address()->update([
+        //             'address' => $request->address,
+        //             'latitud' => $request->latitud,
+        //             'longitud' => $request->longitud
+        //         ]);
+        //     }
+        // }
 
         return $this->showOne($project, 200);
     }
