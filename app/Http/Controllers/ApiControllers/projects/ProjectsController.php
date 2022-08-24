@@ -288,7 +288,7 @@ class ProjectsController extends ApiController
         }
 
 
-        $address = null;
+        $address = $request->address_map;
 
         if (!isset($request->address_map) && isset($request->address)) {
             $address = $request->address;
