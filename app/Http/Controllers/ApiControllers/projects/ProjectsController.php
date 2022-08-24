@@ -190,9 +190,9 @@ class ProjectsController extends ApiController
                 ]);
             } else {
                 $project->address()->create([
-                    'address' => 'Panama',
-                    'latitud' => '9.0360681854164',
-                    'longitud' => '-79.49169507915'
+                    'address'   => 'Panama',
+                    'latitud'   => '9.0360681854164',
+                    'longitud'  => '-79.49169507915'
                 ]);
             }
         }
@@ -287,19 +287,28 @@ class ProjectsController extends ApiController
             }
         }
 
+
+        $address = null;
+
+        if (!isset($request->address_map) && isset($request->address)) {
+            $address = $request->address;
+        } else if (isset($request->address_map) && !isset($request->address)) {
+            $address = $request->address_map;
+        }
+
         // Dirección, Latitud y Longitud
-        if ($request->address || $request->latitud || $request->longitud) {
+        if ($request->latitud || $request->longitud) {
             if (!$project->address) {
                 $project->address()->create([
-                    'address' => $request->address,
+                    'address' => $address,
                     'latitud' => $request->latitud,
                     'longitud' => $request->longitud
                 ]);
             } else {
                 $project->address()->update([
-                    'address' => $request->address,
-                    'latitud' => $request->latitud,
-                    'longitud' => $request->longitud
+                    'address'   => 'Panama',
+                    'latitud'   => '9.0360681854164',
+                    'longitud'  => '-79.49169507915'
                 ]);
             }
         }
