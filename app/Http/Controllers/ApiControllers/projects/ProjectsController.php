@@ -189,10 +189,15 @@ class ProjectsController extends ApiController
                     'longitud'  => $request->longitud
                 ]);
             } else {
+                // $project->address()->create([
+                //     'address'   => 'Panama',
+                //     'latitud'   => '9.0360681854164',
+                //     'longitud'  => '-79.49169507915'
+                // ]);
                 $project->address()->create([
                     'address'   => 'Panama',
-                    'latitud'   => '9.0360681854164',
-                    'longitud'  => '-79.49169507915'
+                    'latitud'   => '8.9814453',
+                    'longitud'  => '-79.5188013'
                 ]);
             }
         }
@@ -288,7 +293,7 @@ class ProjectsController extends ApiController
         }
 
 
-        $address = null;
+        $address = $request->address_map;
 
         if (!isset($request->address_map) && isset($request->address)) {
             $address = $request->address;
@@ -306,8 +311,8 @@ class ProjectsController extends ApiController
         } else {
             $project->address()->update([
                 'address'   => 'Panama',
-                'latitud'   => '9.0360681854164',
-                'longitud'  => '-79.49169507915'
+                'latitud'   => '8.9814453',
+                'longitud'  => '-79.5188013'
             ]);
         }
         // if ($request->latitud || $request->longitud) {

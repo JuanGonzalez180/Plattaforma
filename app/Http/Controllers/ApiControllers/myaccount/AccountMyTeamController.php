@@ -184,7 +184,11 @@ class AccountMyTeamController extends ApiController
             'email' => ['email', Rule::unique('users')]
         ];
 
-        $this->validate($request, $rules);
+        $cumstomMessage = [
+            'email.unique' => 'Correo no válido'
+        ];
+
+        $this->validate($request, $rules,$cumstomMessage);
 
         // Generar Username y Validar que no exista en BD
         $userFields['username'] = $this->generateUsername($request['email']);
@@ -250,6 +254,8 @@ class AccountMyTeamController extends ApiController
         ];
 
         $dataMember = $this->validate($request, $rules);
+
+
         $dataMember['username'] = $this->generateUsername($request['email']);
 
         // Buscamos el usuario si existe en la tabla "Team"
