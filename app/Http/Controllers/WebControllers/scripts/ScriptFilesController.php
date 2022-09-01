@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Newsletter;
+use PhpParser\Node\Stmt\Foreach_;
 
 class ScriptFilesController extends Controller
 {
@@ -25,12 +26,13 @@ class ScriptFilesController extends Controller
         //     $value->save();
         // }
 
-        Newsletter::subscribe('davidmejia-2000@outlook.com');
+        // Newsletter::subscribe('davidmejia-2000@outlook.com');
 
         // if ( ! Newsletter::isSubscribed('davidmejia-2000@outlook.com') ) {
         //     Newsletter::subscribe('davidmejia-2000@outlook.com');
         //     // Newsletter::addTags(['ingeniero', 'sistemas'], 'davidmejia-2000@outlook.com');
         // }
+
 
         var_dump('hola mundo');
     }
@@ -39,6 +41,10 @@ class ScriptFilesController extends Controller
     {
         $files  = Files::all();
         $images = Image::all();
+
+        foreach ($variable as $key => $value) {
+            # code...
+        }
 
         foreach ($files as $file) {
             if (file_exists($this->routeFile . $file->url)) {

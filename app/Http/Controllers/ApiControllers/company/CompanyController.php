@@ -565,6 +565,19 @@ class CompanyController extends ApiController
                     'longitud' => $request->longitud
                 ]);
             }
+        } else {
+            if (!$company->address) {
+                $company->address()->create([
+                    'address'   => '',
+                    'latitud'   => '8.9814453',
+                    'longitud'  => '-79.5188013'
+                ]);
+            } else {
+                $company->address()->update([
+                    'latitud'   => '8.9814453',
+                    'longitud'  => '-79.5188013'
+                ]);
+            }
         }
 
         $companyNew = Company::findOrFail($company->id);

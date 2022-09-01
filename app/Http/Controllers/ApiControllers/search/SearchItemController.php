@@ -438,6 +438,7 @@ class SearchItemController extends ApiController
 
         return TendersVersions::whereIn('tenders_versions.id', $tenderVersionEnabled)
             ->join('tenders', 'tenders.id', '=', 'tenders_versions.tenders_id')
+            ->whereIn('tenders.type', [Tenders::TYPE_PUBLIC])
             ->join('companies', 'companies.id', '=', 'tenders.company_id')
             // ->where('companies.status','=',Company::COMPANY_APPROVED)
             ->pluck('tenders.id');
@@ -681,7 +682,7 @@ class SearchItemController extends ApiController
             $status = Projects::IN_CONSTRUCTION;
         } else if ($status == Projects::POST_CONSTRUCTION_AND_MAINTENANCE) {
             $status = Projects::POST_CONSTRUCTION_AND_MAINTENANCE;
-        } 
+        }
 
         return Projects::whereIn('id', $projects)
             ->where('projects.status', '=', $status)
@@ -696,7 +697,7 @@ class SearchItemController extends ApiController
             $status = Projects::IN_CONSTRUCTION;
         } else if ($status == Projects::POST_CONSTRUCTION_AND_MAINTENANCE) {
             $status = Projects::POST_CONSTRUCTION_AND_MAINTENANCE;
-        } 
+        }
 
         return Projects::where('projects.status', '=', $status)
             ->join('tenders', 'tenders.project_id', '=', 'projects.id')
@@ -1088,7 +1089,7 @@ class SearchItemController extends ApiController
                 where `c`.`status` != '" . TendersVersions::LICITACION_CREATED . "'  
                 and `c`.`tenders_id` = a.tenders_id ORDER BY `c`.id DESC LIMIT 1) AS version_id")
             )
-            ->where('a.status', '<>',TendersVersions::LICITACION_CREATED)
+            ->where('a.status', '<>', TendersVersions::LICITACION_CREATED)
             ->where((function ($query) {
                 $query->select(
                     DB::raw("COUNT(*) from `tenders_versions` as `b` 

@@ -348,6 +348,11 @@ class Company extends Model
         return $this->user_id;
     }
 
+    public function adminUser()
+    {
+        return $this->user;
+    }
+
     public function fileSizeCatalogs()
     {
         $files = Files::where('files.filesable_type', Catalogs::class)

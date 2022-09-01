@@ -127,13 +127,15 @@ class AccountMyTeamController extends ApiController
             }
         }
 
-        // var_dump(collect($teamCompany));
 
-        // die;
+        $teamCompany = $this->showAllPaginate($teamCompany);
 
+        $adminUser          = $user->company[0]->user;
+        $adminUser['image'] = $adminUser->image;
 
+        $companyTemas = [$adminUser, $teamCompany];
 
-        return $this->showAllPaginate($teamCompany);
+        return $companyTemas;
     }
 
     public function teamUsersApproved_old()
