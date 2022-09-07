@@ -82,6 +82,11 @@ class Tenders extends Model
         return $this->hasMany(TendersVersions::class);
     }
 
+    public function tenderCompaniesIds()
+    {
+        return TendersCompanies::where('tender_id', $this->id)->pluck('company_id');
+    }
+
     // Relacion uno a muchos polimorfica
     public function advertisings()
     {

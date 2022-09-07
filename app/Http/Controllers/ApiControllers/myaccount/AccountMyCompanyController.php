@@ -26,11 +26,11 @@ class AccountMyCompanyController extends ApiController
      * @return \Illuminate\Http\Response
      */
 
-    public function validateUser(){
+    public function validateUser()
+    {
         try {
             $this->user = JWTAuth::parseToken()->authenticate();
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-            
         }
 
         return $this->user;
@@ -41,9 +41,9 @@ class AccountMyCompanyController extends ApiController
         //
         $user = $this->validateUser();
 
-        if( $user ){
-            if( $user->company ){
-                try{
+        if ($user) {
+            if ($user->company) {
+                try {
                     $company = $user->company[0];
                     $company->image;
                     $company->address;
@@ -51,23 +51,22 @@ class AccountMyCompanyController extends ApiController
                     // var_dump($company->socialnetworks);
                     $imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
                     $company->imageCoverPage = $imageCoverPage;
-                    return $this->showOne($company,200);
+                    return $this->showOne($company, 200);
                 } catch (\Throwable $th) {
-
                 }
             }
-            return $this->showOne($user,200);
+            return $this->showOne($user, 200);
         }
 
-        $error =  [ 'company' => ['Ha ocurrido un error al obtener la compañia']];
-        return $this->errorResponse( $error, 500 );
+        $error =  ['company' => ['Ha ocurrido un error al obtener la compañia']];
+        return $this->errorResponse($error, 500);
     }
 
     public function store(Request $request)
     {
         //
         $user = $this->validateUser();
-        if( $user ){
+        if ($user) {
             $rules = [
                 'name'          => 'required',
                 'nit'           => 'nullable',
@@ -75,7 +74,7 @@ class AccountMyCompanyController extends ApiController
                 // 'web' => 'nullable|url',
                 // 'country_backend' => 'required',
             ];
-            $this->validate( $request, $rules );
+            $this->validate($request, $rules);
 
             $company = $user->company[0];
             $company->name = $request->name;
@@ -84,85 +83,88 @@ class AccountMyCompanyController extends ApiController
             $company->web = $request->web;
             $company->description = $request->description;
 
-            if( $request->image ){
-                $png_url = "company-".time().".jpg";
+            if ($request->image) {
+                $png_url = "company-" . time() . ".jpg";
                 $img = $request->image;
-                $img = substr($img, strpos($img, ",")+1);
+                $img = substr($img, strpos($img, ",") + 1);
                 $data = base64_decode($img);
-                
-                $routeFile = 'images/company/'.$company->id.'/'.$png_url;
-                Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
 
-                if( !$company->image ){
+                $routeFile = 'images/company/' . $company->id . '/' . $png_url;
+                Storage::disk('local')->put($this->routeFile . $routeFile, $data);
+
+                if (!$company->image) {
                     $company->image()->create(['url' => $routeFile]);
-                }else{
-                    Storage::disk('local')->delete( $this->routeFile . $company->image->url );
+                } else {
+                    Storage::disk('local')->delete($this->routeFile . $company->image->url);
                     $company->image()->update(['url' => $routeFile]);
                 }
             }
 
-            if( $request->imageCoverPage ){
-                $png_url = "company-coverpage-".time().".jpg";
+            if ($request->imageCoverPage) {
+                $png_url = "company-coverpage-" . time() . ".jpg";
                 $img = $request->imageCoverPage;
-                $img = substr($img, strpos($img, ",")+1);
+                $img = substr($img, strpos($img, ",") + 1);
                 $data = base64_decode($img);
-                
-                $routeFile = 'images/company/'.$company->id.'/'.$png_url;
-                Storage::disk('local')->put( $this->routeFile . $routeFile, $data);
+
+                $routeFile = 'images/company/' . $company->id . '/' . $png_url;
+                Storage::disk('local')->put($this->routeFile . $routeFile, $data);
 
                 $imageCoverPage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
-                if( !$imageCoverPage ){
+                if (!$imageCoverPage) {
                     $imageCoverPage = Image::create(['url' => $routeFile, 'imageable_id' => $company->id, 'imageable_type' => 'App\Models\Company\CoverPage']);
-                }else{
+                } else {
                     Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->update(['url' => $routeFile]);
-                    Storage::disk('local')->delete( $this->routeFile . $imageCoverPage->url );
+                    Storage::disk('local')->delete($this->routeFile . $imageCoverPage->url);
                 }
             }
 
-            if( $request->socialnetworks ){
+            if ($request->socialnetworks) {
                 foreach ($request->socialnetworks as $key => $social) {
                     // var_dump( $social );
                     $socialNetwork = SocialNetworksRelation::where('socialable_id', $company->id)
-                                    ->where('socialable_type', Company::class)
-                                    ->where('social_networks_id', $social['id'])
-                                    ->first();
+                        ->where('socialable_type', Company::class)
+                        ->where('social_networks_id', $social['id'])
+                        ->first();
 
-                    if( $social['link'] ){
-                        if( !$socialNetwork ){
-                            $company->socialnetworks()->create(['link' => $social['link'], 'social_networks_id' => $social['id'] ]);
-                        }else{
-                            $socialNetwork->update(['link' =>  $social['link'] ]);
+                    if ($social['link']) {
+                        if (!$socialNetwork) {
+                            $company->socialnetworks()->create(['link' => $social['link'], 'social_networks_id' => $social['id']]);
+                        } else {
+                            $socialNetwork->update(['link' =>  $social['link']]);
                         }
-                    }elseif($socialNetwork){
+                    } elseif ($socialNetwork) {
                         $socialNetwork->delete();
                     }
                 }
             }
 
-            if( $request->address || $request->latitud || $request->longitud ){
-                if( !$company->address ){
+            if ($request->address || $request->latitud || $request->longitud) {
+                if (!$company->address) {
                     $company->address()->create([
                         'address' => $request->address,
                         'latitud' => $request->latitud,
                         'longitud' => $request->longitud
                     ]);
-                }else{
+                } else {
                     $company->address()->update([
-                        'address' => $request->address,
-                        'latitud' => $request->latitud,
-                        'longitud' => $request->longitud
+                        'address'   => '',
+                        'latitud'   => '8.9814453',
+                        'longitud'  => '-79.5188013'
+                        // 'address' => $request->address,
+                        // 'latitud' => $request->latitud,
+                        // 'longitud' => $request->longitud
                     ]);
                 }
             }
 
             // Guardar
             $company->slug = Str::slug($request->name);
-            try{
+            try {
                 // Editar la compañía
                 $company->save();
             } catch (\Throwable $th) {
-                $error =  [ 'user' => ['El nombre de la compañía ya existe']];
-                return $this->errorResponse( $error, 500 );
+                $error =  ['user' => ['El nombre de la compañía ya existe']];
+                return $this->errorResponse($error, 500);
             }
 
             // ReSearch User
@@ -172,10 +174,10 @@ class AccountMyCompanyController extends ApiController
             $companyNew->address;
             $companyNew->socialnetworks;
 
-            return $this->showOne($companyNew,200);
+            return $this->showOne($companyNew, 200);
         }
 
-        $error =  [ 'user' => ['Ha ocurrido un error al obtener el usuario']];
-        return $this->errorResponse( $error, 500 );
+        $error =  ['user' => ['Ha ocurrido un error al obtener el usuario']];
+        return $this->errorResponse($error, 500);
     }
 }

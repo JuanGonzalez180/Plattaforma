@@ -88,6 +88,11 @@ class Quotes extends Model
         return $this->morphMany(Advertisings::class, 'advertisingable');
     }
 
+    public function quoteCompaniesIds()
+    {
+        return QuotesCompanies::where('quotes_id', $this->id)->pluck('company_id');
+    }
+
     public function quotesVersionLast()
     {
         if (count($this->quotesVersion) && $this->quotesVersion[0]) {

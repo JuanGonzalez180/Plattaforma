@@ -27,7 +27,7 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Compañia</th>
-                <th scope="col">Cotizqación</th>
+                <th scope="col">Cotización</th>
                 <th scope="col">Tipo</th>
                 <th scope="col">Estado</th>
                 <th scope="col">Precio</th>

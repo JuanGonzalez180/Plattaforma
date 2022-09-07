@@ -128,7 +128,22 @@ class Company extends Model
         return $this->hasMany(MetaData::class);
     }
 
-    public function cover_Page(){
+    public function tenderPublishCount()
+    {
+        $tender = $this->tenders;
+
+        $count = 0;
+        foreach ($tender as $value) {
+            if ($value->tendersVersionLast()->status == TendersVersions::LICITACION_PUBLISH){
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+
+    public function cover_Page()
+    {
         return Image::where('imageable_id', $this->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
     }
 
@@ -315,7 +330,7 @@ class Company extends Model
             ->join('advertisings', 'advertisings.id', '=', 'advertising_plans_paid_images.advertisings_id')
             ->join('registration_payments', 'registration_payments.paymentsable_id', '=', 'advertisings.id')
             ->where('registration_payments.company_id', $this->id)
-            ->orderBy('images.created_at','desc')
+            ->orderBy('images.created_at', 'desc')
             ->get();
     }
 
@@ -748,8 +763,9 @@ class Company extends Model
             ->where('visible', Projects::PROJECTS_VISIBLE)
             ->count();
 
-        $total['tenders'] = $companySinTransform->tenders
-            ->count();
+        $total['tenders'] = $companySinTransform->tenderPublishCount();
+        // $total['tenders'] = $companySinTransform->tenders
+        //     ->count();
 
         $total['products'] = $companySinTransform->products
             ->where('status', Products::PRODUCT_PUBLISH)
@@ -809,26 +825,26 @@ class Company extends Model
     {
         $teams = Team::select('user_id')
             ->where('company_id', $this->id)
-            ->where('status','Aprobado')
+            ->where('status', 'Aprobado')
             ->pluck('user_id')
             ->all();
 
         $users = array_merge([$this->user_id], $teams);
-        
+
         return $users;
     }
 
     public function emails()
     {
         $teams = Team::select('users.email')
-        ->where('company_id', $this->id)
-        ->where('status','Aprobado')
-        ->join('users','users.id','=','teams.user_id')
-        ->pluck('users.email')
-        ->all();
+            ->where('company_id', $this->id)
+            ->where('status', 'Aprobado')
+            ->join('users', 'users.id', '=', 'teams.user_id')
+            ->pluck('users.email')
+            ->all();
 
         $email = array_merge([$this->user->email], $teams);
-    
+
         return $email;
     }
 }
