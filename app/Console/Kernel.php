@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        Commands\TaskDeleteNotification::class,
         Commands\TaskTenderClosed::class,
         Commands\TaskQuoteClosed::class,
         Commands\TaskDownloadImgProduct::class,
@@ -40,6 +41,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('task:task_send_invitation_unregistered_companies')->everyFiveMinutes();
         // cronJobs para enviar invitaciones a cotizaciones a compañias no registradas a plattaforma
         $schedule->command('task:task_send_invitation_quote_unregistered_companies')->everyFiveMinutes();
+        // cronJobs para eliminar registros de notificaciones cada cierto tiempo (#)
+       // $schedule->command('task:delete_notification')->everyMinute();
     }
 
     /**
