@@ -106,6 +106,12 @@ class QuotesCompaniesController extends ApiController
 
                 $this->sendNotificationRecommendQuote($quote, $company->userIds());
                 // $this->sendEmailRecommendTender($tender, ['davidmejia13320@gmail.com']);
+
+                DB::table('temporal_recommendation')->insert([
+                    'modelsable_id' => $quote->id,
+                    'modelsable_type' => Quotes::class,
+                    'company_id' => $company->id,
+                ]);
             }
         }
 

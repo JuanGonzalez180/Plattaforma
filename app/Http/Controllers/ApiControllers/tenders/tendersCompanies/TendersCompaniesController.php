@@ -7,6 +7,7 @@ use App\Models\Tags;
 use App\Models\User;
 use App\Models\Tenders;
 use App\Models\Company;
+use APP\Models\TemporalRecomendation;
 use Illuminate\Http\Request;
 use App\Models\Notifications;
 use App\Models\TendersVersions;
@@ -162,6 +163,18 @@ class TendersCompaniesController extends ApiController
 
                 $this->sendNotificationRecommendTender($tender, $company->userIds());
                 // $this->sendEmailRecommendTender($tender, ['davidmejia13320@gmail.com']);
+
+                // TemporalRecomendation::create([
+                //     'modelsable_id' => $tender->id,
+                //     'modelsable_type' => Tenders::class,
+                //     'company_id' => $company->id,
+                // ]);
+
+                DB::table('temporal_recommendation')->insert([
+                    'modelsable_id' => $tender->id,
+                    'modelsable_type' => Tenders::class,
+                    'company_id' => $company->id,
+                ]);
             }
         }
     }
