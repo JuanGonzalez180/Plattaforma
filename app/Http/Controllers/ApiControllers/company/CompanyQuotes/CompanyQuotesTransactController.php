@@ -5,9 +5,12 @@ namespace App\Http\Controllers\ApiControllers\company\CompanyQuotes;
 use JWTAuth;
 use App\Models\Quotes;
 use Illuminate\Http\Request;
+use App\Models\Notifications;
 use App\Models\QuotesCompanies;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
+use App\Mail\SendParticipateQuoteCompany;
 use App\Http\Controllers\ApiControllers\ApiController;
 
 class CompanyQuotesTransactController extends ApiController
@@ -109,18 +112,18 @@ class CompanyQuotesTransactController extends ApiController
         }
         DB::commit();
 
-        // $email = Quotes::find($id)->user->email;
+        $email = Quotes::find($id)->user->email;
 
-        // Mail::to(trim($email))->send(new SendParticipateTenderCompany(
-        //     Tenders::find($id)->name,
-        //     $user->companyName()
-        // ));
+        Mail::to(trim($email))->send(new SendParticipateQuoteCompany(
+            Quotes::find($id)->name,
+            $user->companyName()
+        ));
 
         // Enviar invitación por notificación
-        // $notificationsIds   = [];
-        // $notificationsIds[] = $quoteCompany->tender->user_id;
-        // $notifications      = new Notifications();
-        // $notifications->registerNotificationQuery( $quoteCompany, Notifications::NOTIFICATION_TENDERCOMPANYPARTICIPATE, $notificationsIds );
+        $notificationsIds   = [];
+        $notificationsIds[] = $quoteCompany->quote->user_id;
+        $notifications      = new Notifications();
+        $notifications->registerNotificationQuery( $quoteCompany, Notifications::NOTIFICATION_QUOTECOMPANYPARTICIPATE, $notificationsIds );
 
         return $this->showOne($quoteCompany,201); 
     }

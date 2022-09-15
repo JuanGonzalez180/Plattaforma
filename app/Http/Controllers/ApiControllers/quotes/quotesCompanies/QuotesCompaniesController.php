@@ -16,7 +16,7 @@ use App\Traits\UsersCompanyTenders;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendUpdateTenderCompany;
 use App\Mail\SendUpdateQuoteCompany;
-use App\Mail\sendRespondTenderCompany;
+use App\Mail\sendRespondQuoteCompany;
 use App\Mail\sendRecommentTenderCompany;
 use App\Mail\SendInvitationQuoteCompany;
 use App\Models\TemporalInvitationCompanyQuote;
@@ -104,18 +104,18 @@ class QuotesCompaniesController extends ApiController
             foreach ($recommendToCompanies as $key => $value) {
                 $company = Company::find($value);
 
-                //$this->sendNotificationRecommendTender($quote, $company->userIds());
+                $this->sendNotificationRecommendQuote($quote, $company->userIds());
                 // $this->sendEmailRecommendTender($tender, ['davidmejia13320@gmail.com']);
             }
         }
 
     }
 
-    // public function sendNotificationRecommendQuote($quote, $users)
-    // {
-    //     $notifications = new Notifications();
-    //     $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_RECOMMEND_TENDER, $users);
-    // }
+    public function sendNotificationRecommendQuote($quote, $users)
+    {
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_RECOMMEND_QUOTE, $users);
+    }
 
     public function getQueryCompaniesTags($tags, $companies){
         return Tags::where('tagsable_type', Company::class)
@@ -291,6 +291,7 @@ class QuotesCompaniesController extends ApiController
 
     public function update(Request $request, $id)
     {
+
         $user = $this->validateUser();
         $status = ($request->status == 'True') ? QuotesCompanies::STATUS_PARTICIPATING : QuotesCompanies::STATUS_REJECTED;
 
@@ -320,9 +321,17 @@ class QuotesCompaniesController extends ApiController
         $quote_name     = $quoteCompany->quote->name;
         $company_name   = $quoteCompany->company->name;
 
-        // email pendiente
-
-        //notificaciones pendientes
+        // email
+        Mail::to($email)->send(new sendRespondQuoteCompany(
+            $quote_name,
+            $company_name,
+            $status
+        ));
+        //notificaciones
+        $notificationsIds   = [];
+        $notificationsIds[] = $quoteCompany->company->user->id;
+        $notifications      = new Notifications();
+        $notifications->registerNotificationQuery($quoteCompany, Notifications::NOTIFICATION_QUOTERESPONSECOMPANIES, $notificationsIds);
 
         return $this->showOne($quoteCompany, 200);
     }

@@ -373,13 +373,14 @@ class TendersCompaniesController extends ApiController
         $tender_name    = $tenderCompany->tender->name;
         $company_name   = $tenderCompany->company->name;
 
+        //  Email
         Mail::to($email)->send(new sendRespondTenderCompany(
             $tender_name,
             $company_name,
             $status
         ));
 
-        // Enviar invitación por notificación
+        //  Notificaciones
         $notificationsIds = [];
         $notificationsIds[] = $tenderCompany->company->user->id;
         $notifications = new Notifications();

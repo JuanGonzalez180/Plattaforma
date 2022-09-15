@@ -44,6 +44,9 @@ class Notifications extends Model
     const NOTIFICATION_QUERYWALL_QUOTE_ADMIN        = 'QueryWallQuoteAdmin'; //notificación cuando una empresa licitante hace una pregunta en una licitación
     const NOTIFICATION_QUERYWALL_QUOTE_QUESTION     = 'QueryWallQuoteQuestions'; //notificación cuando una empresa cotizante hace una pregunta en una cotización
     const NOTIFICATION_QUERYWALL_QUOTE_ANSWER       = 'QueryWallQuoteAnswer'; //notificación cuando una empresa licitante hace una pregunta en una licitación
+    const NOTIFICATION_RECOMMEND_QUOTE              = 'QuoteRecommend'; //Notifica recomendaciones a compañias con etiquetas en comun
+    const NOTIFICATION_QUOTECOMPANYPARTICIPATE      = 'QuoteCompanyParticipate';
+    const NOTIFICATION_QUOTERESPONSECOMPANIES       = 'QuoteResponseCompanies';
     
     //Muro de consultas
     const NOTIFICATION_QUERYWALL_TENDER_QUESTION    = 'QueryWallQuestions'; //notificación cuando una empresa licitante hace una pregunta en una licitación
@@ -161,6 +164,15 @@ class Notifications extends Model
             $tenderCompanies = TendersCompanies::find($this->notificationsable_id);
             if( $tenderCompanies ){
                 $this->query_id = $tenderCompanies->tender->project_id . '/' . $tenderCompanies->tender->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
+        elseif($this->type == Notifications::NOTIFICATION_QUOTECOMPANYPARTICIPATE && $this->notificationsable_type == QuotesCompanies::class)
+        {  
+            $quoteCompanies = QuotesCompanies::find($this->notificationsable_id);
+            if( $quoteCompanies ){
+                $this->query_id = $quoteCompanies->quote->project_id . '/' . $quoteCompanies->quote->id;
             }else{
                 $this->query_id = '';
             }
@@ -299,6 +311,16 @@ class Notifications extends Model
                 $this->query_id = '';
             }
         }
+        else if($this->type == Notifications::NOTIFICATION_RECOMMEND_QUOTE && $this->notificationsable_type == Quotes::class)
+        {
+            $quote = Quotes::find($this->notificationsable_id);
+
+            if( $quote ){
+                $this->query_id = $quote->company->slug."/cotizacion/".$quote->id;
+            }else{
+                $this->query_id = '';
+            }
+        }
         else if($this->type == Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION && $this->notificationsable_type == Tenders::class)
         {
             $tender = Tenders::find($this->notificationsable_id);
@@ -385,10 +407,22 @@ class Notifications extends Model
             // 'message2'  => 'Ha sido rechazada la solicitud', 
             'message2'  => 'La solicitud no fue aprobada', 
         ],
+        Notifications::NOTIFICATION_QUOTERESPONSECOMPANIES => [ 
+            'title'     => 'Cotización: %s', 
+            'subtitle'  => '', 
+            'message'   => 'Ha sido aprobada la solicitud', 
+            // 'message2'  => 'Ha sido rechazada la solicitud', 
+            'message2'  => 'La solicitud no fue aprobada', 
+        ],
         Notifications::NOTIFICATION_TENDERCOMPANYPARTICIPATE => [ 
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
             'message'   => 'La compañía %s quiere participar en la licitación.',
+        ],
+        Notifications::NOTIFICATION_QUOTECOMPANYPARTICIPATE => [ 
+            'title'     => 'Cotización: %s', 
+            'subtitle'  => '', 
+            'message'   => 'La compañía %s quiere participar en la cotización.',
         ],
         Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION => [ 
             'title'     => 'Licitación: %s', 
@@ -477,6 +511,11 @@ class Notifications extends Model
             'subtitle'  => '', 
             'message'   => 'Te podria interesar esta licitación.',
         ],
+        Notifications::NOTIFICATION_RECOMMEND_QUOTE => [ 
+            'title'     => 'Cotización: %s', 
+            'subtitle'  => '', 
+            'message'   => 'Te podria interesar esta cotización.',
+        ],
         Notifications::NOTIFICATION_TENDER_DELETE => [ 
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
@@ -561,10 +600,21 @@ class Notifications extends Model
                 $message = $this->notifications[$type]['message2'];
             }
         }
+        elseif( $type == Notifications::NOTIFICATION_QUOTERESPONSECOMPANIES ){
+            $title = sprintf($title, $query->quote->name);
+            if( $query->status != 'Participando' ){
+                $message = $this->notifications[$type]['message2'];
+            }
+        }
         elseif( $type == Notifications::NOTIFICATION_TENDERCOMPANYPARTICIPATE ){
             $title      = sprintf($title, $query->tender->name);
             $message    = sprintf($message, $query->company->name);
             $data['id'] = $query->tender->project_id . '/' . $query->tender->id;
+        }
+        elseif( $type == Notifications::NOTIFICATION_QUOTECOMPANYPARTICIPATE ){
+            $title      = sprintf($title, $query->quote->name);
+            $message    = sprintf($message, $query->company->name);
+            $data['id'] = $query->quote->project_id . '/' . $query->quote->id;
         }
         elseif( $type == Notifications::NOTIFICATION_TENDERCOMPANY_OFFER ) //notificación cuando una compañia oferta a una licitación
         {
@@ -663,6 +713,12 @@ class Notifications extends Model
             $data['id'] = $query->id;
         }
         elseif( $type == Notifications::NOTIFICATION_RECOMMEND_TENDER ) //notificación cuando una compañia tiene en comun sus etiqutas con alguna licitación
+        {
+            $title      = sprintf($title, $query->name);
+            $message    = sprintf($message, $query->name);
+            $data['id'] = $query->id;
+        }
+        elseif( $type == Notifications::NOTIFICATION_RECOMMEND_QUOTE ) //notificación cuando una compañia tiene en comun sus etiqutas con alguna cotización
         {
             $title      = sprintf($title, $query->name);
             $message    = sprintf($message, $query->name);
