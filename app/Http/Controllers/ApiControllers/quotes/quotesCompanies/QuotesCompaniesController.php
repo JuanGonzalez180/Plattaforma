@@ -86,7 +86,54 @@ class QuotesCompaniesController extends ApiController
             $this->sendInvitantionExternalCompanies($request->companies_email, $quote);
         }
 
+        $this->sendRecommendquote($quote);
+
         return $this->showOne($quote, 201);
+    }
+
+    public function sendRecommendQuote($quote)
+    {
+
+        $tags = $quote->quotesVersionLast()->tagsName();
+
+        $companies = $quote->quoteCompaniesIds();
+
+        $recommendToCompanies = ($quote->type =='Publico') ? $this->getQueryCompaniesTags($tags, $companies) : [];
+
+        if (sizeof($recommendToCompanies) > 0) {
+            foreach ($recommendToCompanies as $key => $value) {
+                $company = Company::find($value);
+
+                //$this->sendNotificationRecommendTender($quote, $company->userIds());
+                // $this->sendEmailRecommendTender($tender, ['davidmejia13320@gmail.com']);
+            }
+        }
+
+    }
+
+    // public function sendNotificationRecommendQuote($quote, $users)
+    // {
+    //     $notifications = new Notifications();
+    //     $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_RECOMMEND_TENDER, $users);
+    // }
+
+    public function getQueryCompaniesTags($tags, $companies){
+        return Tags::where('tagsable_type', Company::class)
+            ->where(function ($query) use ($tags) {
+                for ($i = 0; $i < count($tags); $i++) {
+                    $query->orwhere(strtolower('tags.name'), 'like', '%' . strtolower($tags[$i]) . '%');
+                }
+            })
+            ->join('companies', 'companies.id', '=', 'tags.tagsable_id')
+            ->whereNotIn('companies.id', $companies)
+            ->where('companies.status', 'Aprobado')
+            ->join('types_entities', 'types_entities.id', '=', 'companies.type_entity_id')
+            ->join('types', 'types.id', '=', 'types_entities.type_id')
+            ->where('types.name', '=', 'Oferta')
+            ->orderBy('companies.id', 'asc')
+            ->distinct()
+            ->pluck('companies.id');
+
     }
 
     public function store_old(Request $request) //envia invitaciones a la cotización
