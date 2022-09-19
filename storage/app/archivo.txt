@@ -1,0 +1,734 @@
+entro a imagen principal
+existe la url
+public/images/products/808/targetadevideoamd-632883f8391b6.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/809/targetadevideonvidia-632883fea9e5f.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/810/cross-6328840525159.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/811/monitorlg-6328840bae0e6.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/812/puerta-6328841319897.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/815/monitorsamsung-63288427bbd58.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/817/targetadevideoamd-63288433d1a31.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/818/gato-6328843a47605.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/819/ladrillo-632884431823e.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/820/cross-6328844a63297.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/821/cross-6328845053f37.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/822/perro-63288456cbf60.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/823/ladrillo-6328845d07057.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/825/monitorlg-632884692f29c.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/828/heladosdracula-6328847c4878d.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/831/monitorsamsung-6328848d101f1.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/832/monitorsamsung-632884933e090.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/834/targetadevideoamd-6328849fda546.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/835/targetadevideonvidia-632884a6ef2c1.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/838/heladosdracula-632884bc024ec.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/841/targetadevideoamd-632884cdc4215.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/842/targetadevideonvidia-632884d359fc6.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/846/gato-632884eb7a9aa.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/847/targetadevideoamd-632884f324cf6.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/850/heladosdracula-632885052afd0.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/851/perro-6328850ab7beb.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/852/puerta-632885101b7ed.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/855/ladrillo-6328852083cbc.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/858/perro-632885330a741.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/859/targetadevideonvidia-6328853a4009d.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/861/monitorsamsung-632885469990e.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/863/perro-632885570d528.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/864/gato-6328855db5600.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/866/cross-632885693ee05.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/867/ladrillo-6328856f9358a.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/868/targetadevideoamd-63288575e5942.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/870/monitorlg-63288583d407f.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/872/puerta-6328858f8a14e.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/874/gato-6328859a8f4b4.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/876/heladosdracula-632885a7469c1.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/877/ladrillo-632885ad96bb4.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/878/heladosdracula-632885b50cf5f.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/880/monitorsamsung-632885c05fd1a.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/882/heladosdracula-632885cce2caa.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/885/cross-632885ddecc0f.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/886/gato-632885e440a29.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/889/gato-63288780f358d.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/890/perro-632887877997b.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/891/puerta-6328878e13853.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/892/puerta-6328879400748.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/893/perro-632887999747a.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/895/perro-632887a51efd7.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/897/monitorlg-632887b1d4735.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/898/monitorsamsung-632887b7cb50e.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/899/heladosdracula-632887bec29a9.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/900/ladrillo-632887c4ca532.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/901/puerta-632887cb46e14.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/903/heladosdracula-632887d8311d7.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/904/gato-632887ddd9cba.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/906/heladosdracula-632887ea9c414.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/907/puerta-632887f06d321.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/908/puerta-632887f76af4a.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/910/puerta-6328880356c43.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/911/monitorlg-63288809b75ab.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/914/monitorsamsung-6328881aef087.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/915/perro-63288821268bb.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/916/monitorsamsung-632888276096d.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/917/cross-6328882d564b6.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/918/cross-6328883313076.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/919/monitorsamsung-632888392629b.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/920/targetadevideonvidia-6328883fa838e.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/921/monitorsamsung-6328884647c1e.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/922/monitorsamsung-6328884c9ca1f.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/923/monitorlg-6328885342228.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/925/cross-632888617f7ee.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/926/ladrillo-6328886901f64.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/927/heladosdracula-6328886ee4ed6.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/928/monitorsamsung-63288874ef2aa.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/929/monitorsamsung-6328887c5cbc6.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/931/monitorlg-63288888f038a.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/933/heladosdracula-63288894eb800.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/934/monitorlg-6328889b9a1a7.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/937/monitorlg-632888aec539d.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/938/cross-632888b461a08.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/941/cross-632888c4c47fd.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/942/perro-632888cb0b2ca.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/944/gato-632888d758deb.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/945/targetadevideonvidia-632888dd51efc.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/948/perro-632888ed085c6.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/949/heladosdracula-632888f28291a.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/950/ladrillo-632888f861b70.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/951/gato-632889016bca2.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/952/targetadevideoamd-63288908447b6.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/955/cross-632889189f75f.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/958/cross-63288929075ac.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/959/ladrillo-6328892f6f65c.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/960/monitorlg-63288935a8f3b.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/961/monitorlg-6328893bddfc8.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/962/gato-63288941a8160.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/963/gato-632889474f5b5.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/965/monitorlg-63288954216a7.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/966/puerta-63288959e71a8.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/967/targetadevideoamd-632889600ad86.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/969/puerta-63288b056a371.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/970/monitorsamsung-63288b0b8ff83.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/971/puerta-63288b1251442.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/972/targetadevideonvidia-63288b1820a78.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/973/puerta-63288b1ebe7f4.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/974/monitorsamsung-63288b24b9495.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/975/perro-63288b2a758e9.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/977/monitorlg-63288b368c1df.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/979/cross-63288b43969bb.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/980/puerta-63288b496f4df.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/981/gato-63288b50e5092.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/982/targetadevideoamd-63288b5765053.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/983/targetadevideonvidia-63288b5f53965.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/984/targetadevideoamd-63288b6536626.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/985/ladrillo-63288b6c8f2f7.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/986/puerta-63288b73b550b.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/987/targetadevideoamd-63288b7aa78ea.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/989/heladosdracula-63288b877d4d6.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/990/monitorsamsung-63288b8db3650.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/992/monitorsamsung-63288b995025a.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/993/gato-63288ba0872f3.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/994/targetadevideonvidia-63288ba8345ba.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/995/cross-63288bae81c78.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/999/targetadevideoamd-63288bc4930cd.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/1001/monitorsamsung-63288bd0df189.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1002/perro-63288bd6ae8b2.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1003/gato-63288bdc575f0.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/1005/gato-63288be6edf84.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1006/targetadevideonvidia-63288bec75e5e.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/1009/puerta-63288bfd2a6d2.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1010/monitorlg-63288c0545b86.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/1012/perro-63288c0f989e2.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1013/cross-63288c15785b6.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1014/monitorsamsung-63288c1b34dcb.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/1016/monitorlg-63288c2776a08.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url
+entro a imagen principal
+existe la url
+public/images/products/1019/targetadevideonvidia-63288c3be73e3.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1020/targetadevideonvidia-63288c41b33d4.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1021/targetadevideoamd-63288c4812a72.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1022/monitorsamsung-63288c4f7874d.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1023/perro-63288c5662f33.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1024/gato-63288c5ca66d8.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1026/heladosdracula-63288e830b4ad.jpg
+guardo con exito
+entro a imagen principal
+existe la url
+public/images/products/1027/cross-63288e8949c5d.jpg
+guardo con exito
+entro a imagen principal
+no existe la url
+entro a imagen principal
+no existe la url

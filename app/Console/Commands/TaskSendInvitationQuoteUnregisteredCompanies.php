@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 use App\Models\TemporalInvitationCompanyQuote;
-use App\Mail\sendInvitationRegisterCompanyQuote;
+use App\Mail\SendTemporalRecommendationTender;
 class TaskSendInvitationQuoteUnregisteredCompanies extends Command
 {
     /**
@@ -45,7 +45,7 @@ class TaskSendInvitationQuoteUnregisteredCompanies extends Command
         {
             if($value->quote)
             {
-                Mail::to(trim($value->email))->send(new sendInvitationRegisterCompanyQuote(
+                Mail::to(trim($value->email))->send(new SendTemporalRecommendationTender(
                     $value->quote->name,
                     $value->quote->company->name  
                 ));

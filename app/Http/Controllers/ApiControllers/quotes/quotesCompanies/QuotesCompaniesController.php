@@ -93,7 +93,6 @@ class QuotesCompaniesController extends ApiController
 
     public function sendRecommendQuote($quote)
     {
-
         $tags = $quote->quotesVersionLast()->tagsName();
 
         $companies = $quote->quoteCompaniesIds();
