@@ -46,9 +46,9 @@ class Kernel extends ConsoleKernel
         // cronJobs para eliminar registros de notificaciones cada cierto tiempo (#)
         // $schedule->command('task:delete_notification')->everyMinute();
         // cronJobs para enviar los mensajes de recomendacion de licitaciones a compañias(#)
-        $schedule->command('task:sendRecommendationMessagesTenders')->everyMinute();
+        $schedule->command('task:sendRecommendationMessagesTenders')->everyFifteenMinutes();
         // cronJobs para enviar los mensajes de recomendacion de cotizaciones a compañias(#)
-        $schedule->command('task:sendRecommendationMessagesQuotes')->everyMinute();
+        $schedule->command('task:sendRecommendationMessagesQuotes')->everyFifteenMinutes();
     }
 
     /**
