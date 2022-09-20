@@ -182,7 +182,8 @@ class Notifications extends Model
             $tenderQuestion = QueryWall::find($this->notificationsable_id);
 
             if( $tenderQuestion ){
-                $this->query_id = $tenderQuestion->queryWallProjectId()  . '/' . $tenderQuestion->queryWallTenderId();
+                $this->query_id = $tenderQuestion->queryWallTender()->company->slug."/licitacion/".$tenderQuestion->queryWallTenderId();
+                // $this->query_id = $tenderQuestion->queryWallProjectId()  . '/' . $tenderQuestion->queryWallTenderId();
             }else{
                 $this->query_id = '';
             }
@@ -192,7 +193,8 @@ class Notifications extends Model
             $quoteQuestion = QueryWall::find($this->notificationsable_id);
 
             if( $quoteQuestion ){
-                $this->query_id = $quoteQuestion->queryWallQuoteProjectId()  . '/' . $quoteQuestion->queryWallQuoteId();
+                // $this->query_id = $quoteQuestion->queryWallQuoteProjectId()  . '/' . $quoteQuestion->queryWallQuoteId();
+                $this->query_id = $quoteQuestion->queryWallQuote()->company->slug."/cotizacion/".$quoteQuestion->queryWallQuoteId();
             }else{
                 $this->query_id = '';
             }
@@ -634,7 +636,8 @@ class Notifications extends Model
 
             $title      = sprintf($title, $tender->name);
             $message    = sprintf($message, $query->company->name);
-            $data['id'] = $tender->project_id . '/' . $tender->id;
+            $data['id'] = $tender->company->slug."/licitacion/".$tender->id;
+            // $data['id'] = $tender->project_id . '/' . $tender->id;
         }
         elseif( $type == Notifications::NOTIFICATION_QUERYWALL_QUOTE_QUESTION ) //notificación cuando una compañia hace una pregunta a una licitación
         {
@@ -642,7 +645,8 @@ class Notifications extends Model
 
             $title      = sprintf($title, $quote->name);
             $message    = sprintf($message, $query->company->name);
-            $data['id'] = $quote->project_id . '/' . $quote->id;
+            $data['id'] = $quote->company->slug."/cotizacion/".$quote->id;
+            // $data['id'] = $quote->project_id . '/' . $quote->id;
         }
         elseif( $type == Notifications::NOTIFICATION_QUERYWALL_TENDER_ANSWER ) //notificación cuando una compañia responde una pregunta a una licitación
         {

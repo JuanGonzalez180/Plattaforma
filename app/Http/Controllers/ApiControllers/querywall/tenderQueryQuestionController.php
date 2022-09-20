@@ -52,6 +52,7 @@ class tenderQueryQuestionController extends ApiController
 
     public function store(Request $request)
     {
+
         $user = $this->validateUser();
         $company_id = $user->companyId();
 
@@ -104,7 +105,6 @@ class tenderQueryQuestionController extends ApiController
 
         } else {
             $this->sendNotificationQueryAdmin($question, Notifications::NOTIFICATION_QUERYWALL_TENDER_QUESTION);
-
             // *Correos del administrador y encargado de la licitación.
             $terderAdminEmail = $question->queryWallTender()->TenderAdminEmails();
 
