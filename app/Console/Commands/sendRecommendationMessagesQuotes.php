@@ -45,7 +45,7 @@ class sendRecommendationMessagesQuotes extends Command
     {
         $notificationQuote = TemporalRecomendation::where('modelsable_type', Quotes::class)
             ->where('send', false)
-            ->take(10)
+            ->take(20)
             ->get();
 
         foreach ($notificationQuote as $quoteInvitation) {

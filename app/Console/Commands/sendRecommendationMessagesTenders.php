@@ -46,7 +46,7 @@ class sendRecommendationMessagesTenders extends Command
     {
         $notoficationTenders = TemporalRecomendation::where('modelsable_type', Tenders::class)
             ->where('send', false)
-            ->take(10)
+            ->take(20)
             ->get();
 
         foreach ($notoficationTenders as $tenderInvitation) {

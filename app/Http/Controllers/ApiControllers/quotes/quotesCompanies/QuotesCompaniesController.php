@@ -97,7 +97,7 @@ class QuotesCompaniesController extends ApiController
 
         $companies = $quote->quoteCompaniesIds();
 
-        $recommendToCompanies = ($quote->type =='Publico') ? $this->getQueryCompaniesTags($tags, $companies) : [];
+        $recommendToCompanies = ($quote->type == 'Publico') ? $this->getQueryCompaniesTags($tags, $companies) : [];
 
         if (sizeof($recommendToCompanies) > 0) {
             foreach ($recommendToCompanies as $key => $value) {
