@@ -64,7 +64,8 @@ class TendersTransformer extends TransformerAbstract
             'tendersVersionCount'=> count($tender->tendersVersion),
             'tenderType'=> $tender->type,
             // 'commissionedUsers'=> $tender->commissionedUsers()
-            'participatingUsers'=> $tender->participatingUsers()
+            'participatingUsers'=> $tender->participatingUsers(),
+            'company_image'=> $tender->company->image
         ];
     }
 

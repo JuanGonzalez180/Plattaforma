@@ -99,21 +99,17 @@ class QuotesCompaniesController extends ApiController
 
         $recommendToCompanies = ($quote->type == 'Publico') ? $this->getQueryCompaniesTags($tags, $companies) : [];
 
-        if (sizeof($recommendToCompanies) > 0) {
+        if ((sizeof($recommendToCompanies) > 0) && (count($quote->quotesVersion) == 1)) {
             foreach ($recommendToCompanies as $key => $value) {
                 $company = Company::find($value);
-
                 $this->sendNotificationRecommendQuote($quote, $company->userIds());
-                // $this->sendEmailRecommendTender($tender, ['davidmejia13320@gmail.com']);
-
                 DB::table('temporal_recommendation')->insert([
-                    'modelsable_id' => $quote->id,
-                    'modelsable_type' => Quotes::class,
-                    'company_id' => $company->id,
+                    'modelsable_id'     => $quote->id,
+                    'modelsable_type'   => Quotes::class,
+                    'company_id'        => $company->id,
                 ]);
             }
         }
-
     }
 
     public function sendNotificationRecommendQuote($quote, $users)
@@ -122,7 +118,8 @@ class QuotesCompaniesController extends ApiController
         $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_RECOMMEND_QUOTE, $users);
     }
 
-    public function getQueryCompaniesTags($tags, $companies){
+    public function getQueryCompaniesTags($tags, $companies)
+    {
         return Tags::where('tagsable_type', Company::class)
             ->where(function ($query) use ($tags) {
                 for ($i = 0; $i < count($tags); $i++) {
@@ -138,7 +135,6 @@ class QuotesCompaniesController extends ApiController
             ->orderBy('companies.id', 'asc')
             ->distinct()
             ->pluck('companies.id');
-
     }
 
     public function store_old(Request $request) //envia invitaciones a la cotización
