@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Remarks;
+use App\Models\Image;
 use App\Models\TendersVersions;
 use App\Models\Notifications;
 use App\Transformers\TendersCompaniesTransformer;
@@ -26,14 +27,14 @@ class TendersCompanies extends Model
 
     const TYPE_INTERESTED       = 'Interesado';
     const TYPE_INVITED          = 'Invitado';
-    
+
     const STATUS_EARRING_INVITATION  = 'Solicitud Pendiente'; //cuando el admin de la licitación acepta la solicitud
 
     const STATUS_EARRING        = 'Pendiente';
     const STATUS_PARTICIPATING  = 'Participando';
     const STATUS_REJECTED       = 'Rechazado';
     const STATUS_PROCESS        = 'Proceso';
-    
+
     const WINNER_TRUE           = 'true';
     const WINNER_FALSE          = 'false';
 
@@ -53,15 +54,18 @@ class TendersCompanies extends Model
         'commission'
     ];
 
-    public function tender(){
+    public function tender()
+    {
         return $this->belongsTo(Tenders::class);
     }
 
-    public function company(){
+    public function company()
+    {
         return $this->belongsTo(Company::class);
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
@@ -70,21 +74,23 @@ class TendersCompanies extends Model
         return $this->belongsTo(User::class, 'user_company_id', 'id');
     }
 
-    public function files(){
+    public function files()
+    {
         return $this->morphMany(Files::class, 'filesable');
     }
 
-    public function priceTransformer(){
+    public function priceTransformer()
+    {
         $price = 0;
         $statusPrice = 'false';
         $tender = Tenders::where('id', $this->tender_id)->first();
         $version = $tender->tendersVersionLastPublish();
 
-        if( $version->status==TendersVersions::LICITACION_CLOSED || $version->status==TendersVersions::LICITACION_FINISHED ){
+        if ($version->status == TendersVersions::LICITACION_CLOSED || $version->status == TendersVersions::LICITACION_FINISHED) {
             $price = $this->price;
         }
-        
-        if( $this->price > 0 ){
+
+        if ($this->price > 0) {
             $statusPrice = 'true';
         }
 
@@ -95,12 +101,14 @@ class TendersCompanies extends Model
     }
 
     // Relacion uno a muchos polimorfica
-    public function remarks(){
+    public function remarks()
+    {
         return $this->morphMany(Remarks::class, 'remarksable');
     }
 
     // Relacion uno a muchos polimorfica
-    public function notifications(){
+    public function notifications()
+    {
         return $this->morphMany(Notifications::class, 'notificationsable');
     }
 
@@ -112,5 +120,10 @@ class TendersCompanies extends Model
     public function tenderCompanyUsersIds()
     {
         return array_unique([$this->company->user->id, $this->userCompany->id]);
+    }
+
+    public function companyImage()
+    {
+        return (Image::where('imageable_id', $this->company_id)->where('imageable_type', Company::class)->exists()) ? $this->company->image : null;
     }
 }

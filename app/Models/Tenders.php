@@ -277,9 +277,14 @@ class Tenders extends Model
             ->get();
 
         foreach ($companies as $value) {
-            $value->image = $value->image;
+            $value['image'] = $this->companyImage($value->id);
         }
 
         return $companies;
+    }
+
+    public function companyImage($company_id)
+    {
+        return Company::find($company_id)->image;
     }
 }
