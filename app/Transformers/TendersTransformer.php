@@ -65,7 +65,8 @@ class TendersTransformer extends TransformerAbstract
             'tenderType'=> $tender->type,
             // 'commissionedUsers'=> $tender->commissionedUsers()
             'participatingUsers'=> $tender->participatingUsers(),
-            'company_image'=> $tender->company->image
+            'company_image'=> $tender->company->image,
+            'participatingCompanies'=> $tender->tendersCompaniesParticipatingName()
         ];
     }
 
@@ -104,7 +105,8 @@ class TendersTransformer extends TransformerAbstract
             'slugTender'     => (string)$tender->company->slug,
             'tenderType'=> (string)$tender->type,
             // 'commissionedUsers'=> $tender->commissionedUsers()
-            'participatingUsers'=> $tender->participatingUsers()
+            'participatingUsers'=> $tender->participatingUsers(),
+            'participatingCompanies'=> $tender->tendersCompaniesParticipatingName()
         ];
     }
 }

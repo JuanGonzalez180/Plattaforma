@@ -268,4 +268,18 @@ class Tenders extends Model
             ->where('status', TendersCompanies::STATUS_PARTICIPATING)
             ->get();
     }
+
+    public function tendersCompaniesParticipatingName()
+    {
+        $companies =  TendersCompanies::select('companies.id','companies.name')->where('tenders_companies.tender_id', $this->id)
+            ->where('tenders_companies.status', TendersCompanies::STATUS_PARTICIPATING)
+            ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
+            ->get();
+
+        foreach ($companies as $value) {
+            $value->image = $value->image;
+        }
+
+        return $companies;
+    }
 }
