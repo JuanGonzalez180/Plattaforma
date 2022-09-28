@@ -14,13 +14,11 @@ Publicaciones
     </div>
     <hr>
     @include('partials.session-status')
-
     @if(session()->get('success'))
         <div class="alert alert-success">
             {{ session()->get('success') }}
         </div>
     @endif
-
     <table id="myTable" class="table table-striped table-bordered" style="width:100%">
         <thead>
                 <tr>
@@ -57,7 +55,5 @@ Publicaciones
                 @endforelse
             </tbody>
         </table>
-
     @include('partials.structure.close-main')
-
 @endsection

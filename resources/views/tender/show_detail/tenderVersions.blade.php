@@ -17,7 +17,9 @@
             <dd class="col-sm-8">{{$version->price}}</dd>
             <dt class="col-sm-4">Estado:</dt>
             <dd class="col-sm-8">{{$version->status}}</dd>
-            <dt class="col-sm-4">Fecha:</dt>
+            <dt class="col-sm-4">Fecha de inicio:</dt>
+            <dd class="col-sm-8">{{$version->tenders->created_at->isoFormat('YYYY-MM-DD')}}</dd>
+            <dt class="col-sm-4">Fecha de cierre:</dt>
             <dd class="col-sm-8">{{$version->date}}</dd>
             <dt class="col-sm-4">Hora:</dt>
             <dd class="col-sm-8">{{$version->hour}}</dd>
