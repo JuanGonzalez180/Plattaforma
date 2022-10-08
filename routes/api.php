@@ -63,6 +63,7 @@ use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
 // Search
 use App\Http\Controllers\ApiControllers\search\SearchItemController;
 use App\Http\Controllers\ApiControllers\search\SearchItemControllerOld;
+use App\Http\Controllers\ApiControllers\search\SearchItemFilterController;
 use App\Http\Controllers\ApiControllers\search\SearchLikeItemController;
 use App\Http\Controllers\ApiControllers\search\SearchLikeCompanyController;
 use App\Http\Controllers\ApiControllers\search\SearchBrandsController;
@@ -185,6 +186,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::resource('/myaccount/myservices', AccountMyServicesController::class, ['only' => ['index', 'store']])->names('myservices');
     Route::resource('/myaccount/myteam', AccountMyTeamController::class, ['only' => ['index', 'store', 'update', 'destroy']])->names('myteam');
     Route::get('/myaccount/myteam/approved', [AccountMyTeamController::class, 'teamUsersApproved'])->name('myteamapproved');
+    Route::get('/myaccount/myteam/admin/{id}', [AccountMyTeamController::class, 'teamAdminUsers'])->name('teamAdminUsers');
     Route::get('/myaccount/myteam/resend/invitation/{team_id}', [AccountMyTeamController::class, 'resendInvitation'])->name('resentinvitation');
     Route::resource('/company/files', CompanyFilesController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('companyimages');
     Route::resource('/company/name', CompanyChangesNameController::class, ['only' => ['store']])->names('companychangename');
@@ -382,6 +384,11 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     // Route::post('/search/item/companies', SearchLikeCompanyController::class)->name('search-item-companies');
     Route::resource('/search/items', SearchItemControllerOld::class, ['only' => ['index']])->names('search-items');
     Route::resource('/search/like/items', SearchLikeItemController::class, ['only' => ['index']])->names('search-like-items');
+
+
+
+
+    Route::get('/search/items/companies/entities', [SearchItemFilterController::class, 'companyTypeEntity'])->name('company-type-entity');
     /**
      * Random
      */

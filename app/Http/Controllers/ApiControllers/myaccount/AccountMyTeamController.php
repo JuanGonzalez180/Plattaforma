@@ -48,6 +48,37 @@ class AccountMyTeamController extends ApiController
         return $this->user;
     }
 
+    // Intercambia el rol administrador a integrante, y de integrante a administrador
+    public function teamAdminUsers(string $teamId)
+    {
+        $team = Team::find($teamId);
+
+        $user = $this->validateUser();
+
+        if (!$user->getAdminUser()) {
+            $userError = ['error' => ['Error, no tiene permisos para convertir a administrador']];
+            return $this->errorResponse($userError, 500);
+        }
+
+        $company = Company::find($user->companyId());
+
+        try {
+            $company->update([
+                'user_id' => $team->user_id
+            ]);
+
+            $team->update([
+                'user_id' => $user->id
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $teamError = ['tender' => 'Error, no se ha podido asignar como administrador'];
+            return $this->errorResponse($teamError, 500);
+        }
+
+        
+    }
+
     // Generar Username y Validar que no exista en BD
     public function generateUsername(string $email)
     {
@@ -192,7 +223,7 @@ class AccountMyTeamController extends ApiController
             'email.unique' => 'Correo no válido'
         ];
 
-        $this->validate($request, $rules,$cumstomMessage);
+        $this->validate($request, $rules, $cumstomMessage);
 
         // Generar Username y Validar que no exista en BD
         $userFields['username'] = $this->generateUsername($request['email']);
