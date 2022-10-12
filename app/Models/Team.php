@@ -4,11 +4,12 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\Company;
+use App\Traits\Paginatable;
+use App\Models\Notifications;
 use App\Transformers\TeamTransformer;
+use Illuminate\Database\Eloquent\Model;
 use App\Transformers\TeamDetailTransformer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Traits\Paginatable;
 
 class Team extends Model
 {
@@ -37,5 +38,10 @@ class Team extends Model
 
     public function company(){
         return $this->belongsTo(Company::class);
+    }
+
+    public function notifications()
+    {
+        return $this->morphMany(Notifications::class, 'notificationsable');
     }
 }

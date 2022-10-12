@@ -26,6 +26,8 @@ use Illuminate\Validation\Rule;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\sendUserConvertUserAdmin;
+use App\Mail\sendUserConvertUserAdminProject;
 use Illuminate\Support\Facades\Storage;
 use TaylorNetwork\UsernameGenerator\Generator;
 
@@ -76,7 +78,25 @@ class AccountMyTeamController extends ApiController
             return $this->errorResponse($teamError, 500);
         }
 
-        
+        // Envia el correo electronico al usuario que se ha designado como administrador
+        switch ($company->user->userType())
+        {
+            case 'oferta': //Compañia tipo proveedor
+                Mail::to(trim($company->user->email))
+                    ->send(new sendUserConvertUserAdmin($company->user->fullName()));
+                break;
+            case 'demanda'://Compañia tipo proyecto
+                Mail::to(trim($company->user->email))
+                    ->send(new sendUserConvertUserAdminProject($company->user->fullName()));
+                break;
+        }
+
+
+        // Envia la notificación al usuario que se ha designado como administrador
+        $notifications      = new Notifications();
+        $notifications->registerNotificationQuery($team, Notifications::NOTIFICATION_APPOINT_ADMINISTRATOR, [$company->user->id]);
+
+        return $this->showOne($team, 201);
     }
 
     // Generar Username y Validar que no exista en BD

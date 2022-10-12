@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Models\Team;
 use App\Models\QueryWall;
+use App\Models\Company;
 use App\Models\TendersCompanies;
 use App\Models\QuotesCompanies;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +19,8 @@ class Notifications extends Model
     public $transformer = NotificationsTransformer::class;
     
 
+    // DESIGNAR COMO ADMINISTRADOR
+    const NOTIFICATION_APPOINT_ADMINISTRATOR        = 'AppointAdministrator';
 
     // LICITACIONES
     const NOTIFICATION_TENDER_DELETE                = 'TendersDelete'; //notificación cuando se elimina una licitación
@@ -347,6 +351,10 @@ class Notifications extends Model
         {
             $this->query_id = '';
         }
+        else if($this->type == Notifications::NOTIFICATION_APPOINT_ADMINISTRATOR && $this->notificationsable_type == Team::class)
+        {
+            $this->query_id = '';
+        }
 
         return $this->query_id;
     }
@@ -522,7 +530,12 @@ class Notifications extends Model
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
             'message'   => 'El administrador de la licitación Licitación %s ha decidido cerrar y eliminar la licitación.',
-        ]
+        ],
+        Notifications::NOTIFICATION_APPOINT_ADMINISTRATOR => [ 
+            'title'     => 'Alerta: Cambio de usuario', 
+            'subtitle'  => '', 
+            'message'   => 'Te han asignado como administrador de la compañia',
+        ],
     ];
 
     public function registerNotificationQuery( $query, $type, $usersIds, $params = [] ){
@@ -744,6 +757,11 @@ class Notifications extends Model
         {
             $title      = sprintf($title, $query->name);
             $message    = sprintf($message, $query->company->name);
+        }
+        elseif( $type == Notifications::NOTIFICATION_APPOINT_ADMINISTRATOR ) //notificación se borra una licitación
+        {
+            $title      = sprintf($title);
+            $message    = sprintf($message);
         }
 
         $usersIds = array_unique($usersIds);

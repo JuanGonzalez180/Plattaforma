@@ -130,7 +130,8 @@ class SearchItemController extends ApiController
                 break;
         }
 
-        return $this->showAllPaginate($result);
+        // return $this->showAllPaginate($result);
+        return $result;
     }
 
     public function getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date, $discardedCompanies = [])
