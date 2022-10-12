@@ -62,6 +62,7 @@ use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
 
 // Search
 use App\Http\Controllers\ApiControllers\search\SearchItemController;
+use App\Http\Controllers\ApiControllers\search\SearchItemLastController;
 use App\Http\Controllers\ApiControllers\search\SearchItemControllerOld;
 use App\Http\Controllers\ApiControllers\search\SearchItemFilterController;
 use App\Http\Controllers\ApiControllers\search\SearchLikeItemController;
@@ -395,6 +396,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('/advertisings/random', RandomAdvertisingsController::class)->name('advertisings-random');
     // Route::resource('/search/items/parameters', SearchParameterController::class, ['only' => ['index']])->names('search-parameter');
     Route::post('/search/items/parameters', SearchItemController::class)->name('search-parameter');
+    Route::post('/search/items/last/parameters', SearchItemLastController::class)->name('search-parameter-last');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
     // Remarks
     Route::resource('/remarks', RemarksController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('remarks');

@@ -26,7 +26,7 @@ use App\Models\CategoryProducts;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiControllers\ApiController;
 
-class SearchItemController extends ApiController
+class SearchItemLastController extends ApiController
 {
     public function validateUser()
     {
@@ -130,7 +130,7 @@ class SearchItemController extends ApiController
                 break;
         }
 
-        return $this->showAllPaginate($result);
+        return $this->showAllTransformer($result);
     }
 
     public function getCompanyAll($type_entity, $category_product, $type_project, $category_tender, $search, $date, $discardedCompanies = [])
