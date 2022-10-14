@@ -325,7 +325,7 @@ class SearchItemController extends ApiController
         $type_user = ($this->validateUser())->userType();
 
         $companiesName              = $this->getCompanyName($companies, $search);
-        //$companiesDescription       = $this->getCompanyDescription($companies, $search);
+        $companiesDescription       = $this->getCompanyDescription($companies, $search);
         $companiesTags              = $this->getCompanyTags($companies, $search);
         $companiesCatalogs          = $this->getCompanyCatalogs($companies, $search);
         $companiesCatalogsTags      = $this->getCompanyCatalogsTags($companies, $search);
