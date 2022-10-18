@@ -83,11 +83,11 @@ class AccountMyTeamController extends ApiController
         {
             case 'oferta': //Compañia tipo proveedor
                 Mail::to(trim($company->user->email))
-                    ->send(new sendUserConvertUserAdmin($company->user->fullName()));
+                    ->send(new sendUserConvertUserAdminProject($company->user->fullName()));
                 break;
             case 'demanda'://Compañia tipo proyecto
                 Mail::to(trim($company->user->email))
-                    ->send(new sendUserConvertUserAdminProject($company->user->fullName()));
+                    ->send(new sendUserConvertUserAdmin($company->user->fullName()));
                 break;
         }
 

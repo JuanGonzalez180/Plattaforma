@@ -174,7 +174,7 @@ class QuotesController extends ApiController
             // Si existe algún error al momento de crear el usuario
             $errorQuote = true;
             DB::rollBack();
-            $quotationError = ['quotation' => 'Error, no se ha podido crear la cotización'];
+            $quotationError = ['quotation' => $th];
             return $this->errorResponse($quotationError, 500);
         }
 

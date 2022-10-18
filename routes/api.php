@@ -60,6 +60,14 @@ use App\Http\Controllers\ApiControllers\quotes\quotesVersions\QuotesVersionsCont
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
 
+//search item
+use App\Http\Controllers\ApiControllers\search\item\SearchItemCatalogController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemCompanyController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemProductController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemQuotesController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemTenderController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemPortalController;
+
 // Search
 use App\Http\Controllers\ApiControllers\search\SearchItemController;
 use App\Http\Controllers\ApiControllers\search\SearchItemLastController;
@@ -393,6 +401,22 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     /**
      * Random
      */
+
+    //**SEARCH ITESMS**:
+    //*SEARCH CATALOGO
+    Route::post('/search/items/catalog/parameters', SearchItemCatalogController::class)->name('search-catalog-parameter');
+    //*SEARCH COMPAÑIA
+    Route::post('/search/items/company/parameters', SearchItemCompanyController::class)->name('search-company-parameter');
+    //*SEARCH PRODUCTO
+    Route::post('/search/items/product/parameters', SearchItemProductController::class)->name('search-product-parameter');
+    //*SEARCH COTIZACIONES
+    Route::post('/search/items/quotes/parameters', SearchItemQuotesController::class)->name('search-quotes-parameter');
+    //*SEARCH LICITACIONES
+    Route::post('/search/items/tender/parameters', SearchItemTenderController::class)->name('search-tender-parameter');
+    //*SEARCH PORTAL
+    Route::post('/search/items/portal/parameters', SearchItemPortalController::class)->name('search-portal-parameter');
+    //
+    //
     Route::post('/advertisings/random', RandomAdvertisingsController::class)->name('advertisings-random');
     // Route::resource('/search/items/parameters', SearchParameterController::class, ['only' => ['index']])->names('search-parameter');
     Route::post('/search/items/parameters', SearchItemController::class)->name('search-parameter');

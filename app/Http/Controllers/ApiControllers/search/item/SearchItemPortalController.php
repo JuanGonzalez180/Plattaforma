@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ApiControllers\ApiController;
 
-class SearchItemTenderController extends ApiController
+class SearchItemPortalController extends ApiController
 {
     public function validateUser()
     {
@@ -21,7 +21,7 @@ class SearchItemTenderController extends ApiController
 
     public function __invoke(Request $request)
     {
-        var_dump('pasa por tenders');
+        var_dump('pasa por portal');
         die;
     }
 }
