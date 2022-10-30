@@ -58,7 +58,7 @@ class TaskTenderClosed extends Command
 
         foreach ($tenders as $tender) {
             // *Valida si la hora de cierre de la licitación es igual a la hora actual.
-            $hourValidate   = ($tender->tendersVersionLast()->hour == Carbon::now()->format('H:i'));
+            $hourValidate   = (($tender->tendersVersionLast()->hour == Carbon::now()->format('H:i')) && ($tender->tendersVersionLast()->date == Carbon::now()->format('Y-m-d')));
 
             if ($hourValidate) {
                 //*Cierra las licitacines.

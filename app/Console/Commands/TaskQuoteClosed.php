@@ -46,14 +46,14 @@ class TaskQuoteClosed extends Command
     public function handle()
     {
         // return Command::SUCCESS;
-        // *Trae las licitaciones publicadas a cerrar el dia de hoy.
+        // *Trae las cotizaciones publicadas a cerrar el dia de hoy.
         $quotesVersionLastPublish = $this->getQuotesVersionLastPublish();
 
         $quotes = Quotes::whereIn('id', $quotesVersionLastPublish)->get();
 
         foreach ($quotes as $quote) {
             // *Valida si la hora de cierre de la licitación es igual a la hora actual.
-            $hourValidate   = ($quote->quotesVersionLast()->hour == Carbon::now()->format('H:i'));
+            $hourValidate   = (($quote->quotesVersionLast()->hour == Carbon::now()->format('H:i')) && ($quote->quotesVersionLast()->date == Carbon::now()->format('Y-m-d')));
 
             if ($hourValidate) {
                 //*Cierra las cotizaciones.

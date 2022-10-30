@@ -5,7 +5,8 @@
     <div class="card-header" id="heading{{$loop->iteration}}">
       <h2 class="mb-0">
         <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{$loop->iteration}}" aria-expanded="true" aria-controls="collapse{{$loop->iteration}}">
-          Version #{{count($quote->quotesVersion)-$key}}
+          Version #{{count($quote->quotesVersion)-$key}}&nbsp;&nbsp;<span class="badge badge-warning">Ultima versión</span>
+        </button>
         </button>
       </h2>
     </div>
@@ -19,8 +20,10 @@
         <dd class="col-sm-8">{{$version->status}}</dd>
         <dt class="col-sm-4">Fecha de creación de la cotización:</dt>
         <dd class="col-sm-8"><span class="badge badge-primary">{{$version->quotes->created_at->isoFormat('YYYY-MM-DD')}}</span> {{$version->quotes->created_at->isoFormat('h:mm')}}</dd>
+        @if (count($quote->quotesVersion)-$key > 1)
         <dt class="col-sm-4">Fecha de creación de la adenda:</dt>
         <dd class="col-sm-8"><span class="badge badge-primary">{{$version->created_at->isoFormat('YYYY-MM-DD')}}</span> {{$version->created_at->isoFormat('h:mm')}}</dd>
+        @endif
         <dt class="col-sm-4">Fecha de cierre:</dt>
         <dd class="col-sm-8"><span class="badge badge-primary">{{$version->date}}</span> {{$version->hour}}</dd>
         <dt class="col-sm-4">Etiquetas:</dt>
@@ -52,7 +55,6 @@
     <h2 class="mb-0">
       <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse{{$loop->iteration}}" aria-expanded="false" aria-controls="collapse{{$loop->iteration}}">
         Version #{{count($quote->quotesVersion)-$key}}
-      </button>
     </h2>
   </div>
   <div id="collapse{{$loop->iteration}}" class="collapse" aria-labelledby="heading{{$loop->iteration}}" data-parent="#accordionExample">
@@ -65,6 +67,10 @@
       <dd class="col-sm-8">{{$version->status}}</dd>
       <dt class="col-sm-4">Fecha de creación de la cotización:</dt>
       <dd class="col-sm-8"><span class="badge badge-primary">{{$version->quotes->created_at->isoFormat('YYYY-MM-DD')}}</span> {{$version->quotes->created_at->isoFormat('h:mm')}}</dd>
+      @if (count($quote->quotesVersion)-$key > 1)
+        <dt class="col-sm-4">Fecha de creación de la adenda:</dt>
+        <dd class="col-sm-8"><span class="badge badge-primary">{{$version->created_at->isoFormat('YYYY-MM-DD')}}</span> {{$version->created_at->isoFormat('h:mm')}}</dd>
+        @endif
       <dt class="col-sm-4">Fecha de cierre:</dt>
       <dd class="col-sm-8"><span class="badge badge-primary">{{$version->date}}</span> {{$version->hour}}</dd>
       <dt class="col-sm-4">Etiquetas:</dt>
