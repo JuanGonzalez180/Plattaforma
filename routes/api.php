@@ -67,9 +67,12 @@ use App\Http\Controllers\ApiControllers\search\item\SearchItemProductController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemQuotesController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemTenderController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemPortalController;
-
 // Search
 use App\Http\Controllers\ApiControllers\search\SearchItemController;
+// Item Filter
+use App\Http\Controllers\ApiControllers\search\item\filters\ItemFilterController;
+
+
 use App\Http\Controllers\ApiControllers\search\SearchItemLastController;
 use App\Http\Controllers\ApiControllers\search\SearchItemControllerOld;
 use App\Http\Controllers\ApiControllers\search\SearchItemFilterController;
@@ -390,11 +393,13 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('/search/brands', SearchBrandsController::class)->name('search-brands');
     Route::post('/search/tenders', SearchTendersController::class)->name('search-tenders');
     Route::post('/search/companies', SearchCompanyController::class)->name('search-companies');
+    // Search item filter
+    Route::post('/search/filter/item', ItemFilterController::class)->name('search-filter-item');
+
+
     // Route::post('/search/item/companies', SearchLikeCompanyController::class)->name('search-item-companies');
     Route::resource('/search/items', SearchItemControllerOld::class, ['only' => ['index']])->names('search-items');
     Route::resource('/search/like/items', SearchLikeItemController::class, ['only' => ['index']])->names('search-like-items');
-
-
 
 
     Route::get('/search/items/companies/entities', [SearchItemFilterController::class, 'companyTypeEntity'])->name('company-type-entity');
