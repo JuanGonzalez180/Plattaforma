@@ -54,7 +54,7 @@ class ItemFilterController extends ApiController
                 break;
             case 'quote':
                 $filter['status'] = $this->quoteStatus();
-                $filter['project'] = $this->projectQuote();
+                $filter['projects'] = $this->projectQuote();
                 break;
         }
 
@@ -63,25 +63,45 @@ class ItemFilterController extends ApiController
 
     public function quoteStatus()
     {
-
-     $status[] = QuotesVersions::QUOTATION_CREATED;
-     $status[] = QuotesVersions::QUOTATION_PUBLISH;
-     $status[] = QuotesVersions::QUOTATION_CLOSED;
-     $status[] = QuotesVersions::QUOTATION_FINISHED;
-
-     return $status;
-
+        $status[] = [
+            "id" => QuotesVersions::QUOTATION_PUBLISH,
+            "name" => QuotesVersions::QUOTATION_PUBLISH,
+        ];
+        $status[] = [
+            "id" => QuotesVersions::QUOTATION_CLOSED,
+            "name" => QuotesVersions::QUOTATION_CLOSED,
+        ];
+        $status[] = [
+            "id" => QuotesVersions::QUOTATION_FINISHED,
+            "name" => QuotesVersions::QUOTATION_FINISHED,
+        ];
+        
+        return $status;
     }
 
     public function tenderStatus()
     {
-        $status[TendersVersions::LICITACION_CREATED]    = 'Borrador';
-        $status[TendersVersions::LICITACION_PUBLISH]    = 'Publicada';
-        $status[TendersVersions::LICITACION_CLOSED]     = 'En evaluación';
-        $status[TendersVersions::LICITACION_FINISHED]   = 'Adjudicada';
-        // $status[TendersVersions::LICITACION_DECLINED]   = 'Declinada';
-        $status[TendersVersions::LICITACION_DISABLED]   = 'Suspendida';
-        $status[TendersVersions::LICITACION_DESERTED]   = 'Desierta';
+        $status[] = [
+            "id" => TendersVersions::LICITACION_PUBLISH,
+            "name" => 'Publicada',
+        ];
+        $status[] = [
+            "id" => TendersVersions::LICITACION_CLOSED,
+            "name" => 'En evaluación',
+        ];
+        $status[] = [
+            "id" => TendersVersions::LICITACION_FINISHED,
+            "name" => 'Adjudicada',
+        ];
+        $status[] = [
+            "id" => TendersVersions::LICITACION_DISABLED,
+            "name" => 'Suspendida',
+        ];
+        $status[] = [
+            "id" => TendersVersions::LICITACION_DESERTED,
+            "name" => 'Desierta',
+        ];
+
 
         return $status;
     }
@@ -89,17 +109,17 @@ class ItemFilterController extends ApiController
     public function projectStatus()
     {
         $status[] = [
-            "value" => Projects::TECHNICAL_SPECIFICATIONS,
+            "id" => Projects::TECHNICAL_SPECIFICATIONS,
             "name"  => 'Especificaciones Técnicas',
         ];
 
         $status[] = [
-            "value" => Projects::IN_CONSTRUCTION,
+            "id" => Projects::IN_CONSTRUCTION,
             "name"  => 'En construcción ',
         ];
 
         $status[] = [
-            "value" => Projects::POST_CONSTRUCTION_AND_MAINTENANCE,
+            "id" => Projects::POST_CONSTRUCTION_AND_MAINTENANCE,
             "name"  => 'Post-construcción y mantenimiento',
         ];
 
