@@ -168,6 +168,7 @@ class ItemFilterController extends ApiController
     {
         return Tenders::select('project_id')
             ->whereIn('id', $this->getTenderLastVersion())
+            ->where('type',Tenders::TYPE_PUBLIC)
             ->distinct('project_id')
             ->pluck('project_id');
     }
@@ -200,6 +201,7 @@ class ItemFilterController extends ApiController
     {
         return Quotes::select('project_id')
             ->whereIn('id', $this->getQuoteLastVersion())
+            ->where('type', Quotes::TYPE_PUBLIC)
             ->distinct('project_id')
             ->pluck('project_id');
     }
