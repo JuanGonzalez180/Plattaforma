@@ -136,9 +136,6 @@ class SearchItemTenderController extends ApiController
             ?  Projects::where('id', $project_id)->where('date_start','<=',$dateNow)->where('date_end','>=',$dateNow) 
             : Projects::where('date_start','<=',$dateNow)->where('date_end','>=',$dateNow);
 
-        $projects = $projects->join('tenders', 'tenders.project_id', '=', 'projects.id')
-            ->where('tenders.type', Tenders::TYPE_PUBLIC);
-
         return $projects->distinct('projects.id')
             ->pluck('projects.id');
     }
