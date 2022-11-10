@@ -55,7 +55,8 @@ class SearchItemCompanyController extends ApiController
             ->orderBy('name', 'asc')
             ->get();
 
-        return $this->showAllTransformer($companies);
+        // return $this->showAllTransformer($companies);
+        return $this->showAllPaginate($companies);
     }
 
     public function getCompanySearchNameItem($companies, $search)
@@ -63,12 +64,13 @@ class SearchItemCompanyController extends ApiController
         $type_user = ($this->validateUser())->userType();
 
         $companiesName              = $this->getCompanyName($companies, $search);
-        $companiesDescription       = $this->getCompanyDescription($companies, $search);
+        // $companiesDescription       = $this->getCompanyDescription($companies, $search);
         $companiesTags              = $this->getCompanyTags($companies, $search);
         $companiesCatalogs          = $this->getCompanyCatalogs($companies, $search);
         $companiesCatalogsTags      = $this->getCompanyCatalogsTags($companies, $search);
         $companiesBrandProducts     = $this->getCompanyBrandProducts($companies, $search);
-
+        //nombre del producto
+        //etiquetas del producto
 
         $companiesCategory      = ($type_user == 'demanda')
             ? // si es demanda busca por la categoria del producto
@@ -78,7 +80,7 @@ class SearchItemCompanyController extends ApiController
 
         $companies = array_unique(Arr::collapse([
             $companiesName,
-            $companiesDescription,
+            // $companiesDescription,
             $companiesTags,
             $companiesCatalogs,
             $companiesBrandProducts,

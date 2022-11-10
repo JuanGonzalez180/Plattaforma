@@ -63,6 +63,7 @@ use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
 //search item
 use App\Http\Controllers\ApiControllers\search\item\SearchItemCatalogController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemCompanyController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemBlogController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemProductController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemQuotesController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemTenderController;
@@ -412,6 +413,8 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('/search/items/catalog/parameters', SearchItemCatalogController::class)->name('search-catalog-parameter');
     //*SEARCH COMPAÑIA
     Route::post('/search/items/company/parameters', SearchItemCompanyController::class)->name('search-company-parameter');
+    //*SEARCH BLOG/PUBLICACIONES
+    Route::post('/search/items/blog/parameters', SearchItemBlogController::class)->name('search-blog-parameter');
     //*SEARCH PRODUCTO
     Route::post('/search/items/product/parameters', SearchItemProductController::class)->name('search-product-parameter');
     //*SEARCH COTIZACIONES
