@@ -409,6 +409,8 @@ class SearchItemLastController extends ApiController
     public function getProductEnabled()
     {
         return Products::where('products.status', Products::PRODUCT_PUBLISH)
+            ->join('images', 'images.imageable_id', '=', 'products.id')
+            ->where('images.imageable_type', Products::class)
             ->pluck('products.id');
     }
 

@@ -67,10 +67,10 @@ class ItemFilterController extends ApiController
             "id" => QuotesVersions::QUOTATION_PUBLISH,
             "name" => QuotesVersions::QUOTATION_PUBLISH,
         ];
-        $status[] = [
-            "id" => QuotesVersions::QUOTATION_CLOSED,
-            "name" => QuotesVersions::QUOTATION_CLOSED,
-        ];
+        // $status[] = [
+        //     "id" => QuotesVersions::QUOTATION_CLOSED,
+        //     "name" => QuotesVersions::QUOTATION_CLOSED,
+        // ];
         $status[] = [
             "id" => QuotesVersions::QUOTATION_FINISHED,
             "name" => QuotesVersions::QUOTATION_FINISHED,

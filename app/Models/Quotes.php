@@ -267,6 +267,7 @@ class Quotes extends Model
             ->get();
     }
 
+
     public function quotesCompaniesParticipatingName()
     {
         $companies =  QuotesCompanies::select('companies.id','companies.name')->where('quotes_companies.quotes_id', $this->id)
@@ -275,9 +276,14 @@ class Quotes extends Model
             ->get();
 
         foreach ($companies as $value) {
-            $value->image = $value->image;
+            $value['image'] = $this->companyImage($value->id);
         }
 
         return $companies;
+    }
+
+    public function companyImage($company_id)
+    {
+        return Company::find($company_id)->image;
     }
 }

@@ -41,7 +41,7 @@ class QuotesTransformer extends TransformerAbstract
             'user_id'=> (int)$quotes->user_id,
             'company_id'=> (int)$quotes->company_id,
             'project'=> $quotes->project,
-            // 'categories'=> $quotes->categories,
+            'categories'=> $quotes->categories,
             'tags'=> $quotes->quotesVersionLastPublishTags(),
             'project_id'=> (int)$quotes->project_id,
             'name'=> (string)$quotes->name,
@@ -63,8 +63,9 @@ class QuotesTransformer extends TransformerAbstract
             'slugQuote'     => (string)$quotes->company->slug,
             'QuotesVersionCount'=> count($quotes->quotesVersion),
             'QuoteType'=> $quotes->type,
-            // 'commissionedUsers'=> $quotes->commissionedUsers()
-            'participatingUsers'=> $quotes->participatingUsers()
+            'participatingUsers'=> $quotes->participatingUsers(),
+            'company_image'=> $quotes->company->image,
+            'participatingCompanies'=> $quotes->quotesCompaniesParticipatingName()
         ];
     }
 
@@ -103,7 +104,8 @@ class QuotesTransformer extends TransformerAbstract
             'slugQuote'     => (string)$quotes->company->slug,
             'QuoteType'=> (string)$quotes->type,
             // 'commissionedUsers'=> $quotes->commissionedUsers()
-            'participatingUsers'=> $quotes->participatingUsers()
+            'participatingUsers'=> $quotes->participatingUsers(),
+            'participatingCompanies'=> $quotes->quotesCompaniesParticipatingName()
         ];
     }
 }

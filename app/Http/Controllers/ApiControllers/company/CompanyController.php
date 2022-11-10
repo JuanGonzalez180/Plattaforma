@@ -208,14 +208,14 @@ class CompanyController extends ApiController
             return $this->errorResponse($companyError, 500);
         }
 
-        $userTransform = new UserTransformer();
-        $tendersTransform = new TendersTransformer();
+        $userTransform      = new UserTransformer();
+        $tendersTransform   = new TendersTransformer();
 
-        // Banner
+        // -> Banner imagens de portada.
         $company->coverpage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
 
 
-        // 8 Integrantes del equipo
+        // -> Integrantes del equipo (Solo de muestran los primero 8).
         $company->team = Team::where('company_id', $company->id)
             ->where('status', Team::TEAM_APPROVED)
             ->orderBy('id', 'desc')
@@ -233,7 +233,7 @@ class CompanyController extends ApiController
             $company->tenders = Tenders::select('tenders.*', 'comp.status AS company_status')
                 ->where('tenders.company_id', $company->id)
                 ->join('projects', 'projects.id', '=', 'tenders.project_id')
-                // ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+                ->where('projects.visible', Projects::PROJECTS_VISIBLE)
                 ->leftjoin('tenders_companies AS comp', function ($join) use ($userCompanyId) {
                     $join->on('tenders.id', '=', 'comp.tender_id');
                     $join->where('comp.company_id', '=', $userCompanyId);

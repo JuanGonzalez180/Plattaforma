@@ -63,7 +63,6 @@ class TendersTransformer extends TransformerAbstract
             'slugTender'     => (string)$tender->company->slug,
             'tendersVersionCount'=> count($tender->tendersVersion),
             'tenderType'=> $tender->type,
-            // 'commissionedUsers'=> $tender->commissionedUsers()
             'participatingUsers'=> $tender->participatingUsers(),
             'company_image'=> $tender->company->image,
             'participatingCompanies'=> $tender->tendersCompaniesParticipatingName()
