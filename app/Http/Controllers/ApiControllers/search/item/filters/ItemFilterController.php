@@ -6,6 +6,8 @@ use JWTAuth;
 use Carbon\Carbon;
 use App\Models\Type;
 use App\Models\Tenders;
+use App\Models\Company;
+use App\Models\Blog;
 use App\Models\Projects;
 use App\Models\Quotes;
 use Illuminate\Support\Arr;
@@ -43,7 +45,7 @@ class ItemFilterController extends ApiController
                 $filter['type_entity'] = $this->companyTypeEntity();
                 break;
             case 'publication':
-                $filter['type_entity'] = $this->companyTypeEntity();
+                $filter['type_entity'] = $this->blogTypeEntity();
                 break;
             case 'project':
                 $filter['status'] = $this->projectStatus();
@@ -234,6 +236,23 @@ class ItemFilterController extends ApiController
         $user       = $this->validateUser();
         $type_user  = $user->userType();
 
+        $type_company = $this->getTypeUser($type_user);
+
+        return $this->itemsTypeEntityCompany($type_company);
+    }
+
+    public function blogTypeEntity()
+    {
+        $user       = $this->validateUser();
+        $type_user  = $user->userType();
+
+        $type_company = $this->getTypeUser($type_user);
+
+        return $this->itemsTypeEntityCompanBlog($type_company);
+    }
+
+    public function getTypeUser($type_user)
+    {
         $type_company = $type_user ? 'demanda' : 'oferta';
 
         switch ($type_user) {
@@ -245,7 +264,7 @@ class ItemFilterController extends ApiController
                 break;
         }
 
-        return $this->itemsTypeEntityCompany($type_company);
+        return $type_company;
     }
 
     public function itemsTypeEntityCompany($type_company)
@@ -255,7 +274,22 @@ class ItemFilterController extends ApiController
             ->join('types_entities', 'types_entities.type_id', '=', 'types.id')
             ->where('types_entities.status', 'Publicado')
             ->join('companies', 'companies.type_entity_id', '=', 'types_entities.id')
-            ->where('companies.status', 'Aprobado')
+            ->where('companies.status', Company::COMPANY_APPROVED)
+            ->distinct('types_entities.name')
+            ->orderBy('types_entities.name', 'asc')
+            ->get();
+    }
+
+    public function itemsTypeEntityCompanBlog($type_company)
+    {
+        return Type::select('types_entities.id', 'types_entities.name')
+            ->where('types.slug', $type_company)
+            ->join('types_entities', 'types_entities.type_id', '=', 'types.id')
+            ->where('types_entities.status', 'Publicado')
+            ->join('companies', 'companies.type_entity_id', '=', 'types_entities.id')
+            ->where('companies.status', Company::COMPANY_APPROVED)
+            ->join('blogs', 'blogs.company_id', '=', 'companies.id')
+            ->where('blogs.status', Blog::BLOG_PUBLISH)
             ->distinct('types_entities.name')
             ->orderBy('types_entities.name', 'asc')
             ->get();

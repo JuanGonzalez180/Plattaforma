@@ -50,7 +50,7 @@ class SearchItemBlogController extends ApiController
             ->orderBy('name', 'asc')
             ->get();
 
-        return $this->showAllPaginate($blogs);       
+        return $this->showAllTransformer($blogs);       
     }
 
     public function getBlogSearchName($blogs, $search)

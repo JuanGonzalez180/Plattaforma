@@ -51,12 +51,12 @@ class SearchItemCompanyController extends ApiController
             $companies = $this->getCompanySearchNameItem($companies, $search);
         }
 
-        $companies = Company::whereIn('id', $companies)
-            ->orderBy('name', 'asc')
-            ->get();
+        // $companies = Company::whereIn('id', $companies)
+        //     ->orderBy('name', 'asc')
+        //     ->get();
 
-        // return $this->showAllTransformer($companies);
-        return $this->showAllPaginate($companies);
+        return $companies;
+        return $this->showAllTransformer($companies);
     }
 
     public function getCompanySearchNameItem($companies, $search)
@@ -84,8 +84,8 @@ class SearchItemCompanyController extends ApiController
             $companiesTags,
             $companiesCatalogs,
             $companiesBrandProducts,
-            $companiesCatalogsTags,
-            $companiesCategory
+            // $companiesCatalogsTags,
+            // $companiesCategory
         ]));
 
         return $companies;
