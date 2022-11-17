@@ -45,7 +45,7 @@ class quoteQueryQuestionController extends ApiController
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return $this->showAllPaginate($queryWalls);
+        return $this->showAllTransformer($queryWalls);
     }
 
     /**

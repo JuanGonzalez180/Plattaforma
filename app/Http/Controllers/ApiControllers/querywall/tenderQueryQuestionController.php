@@ -46,7 +46,7 @@ class tenderQueryQuestionController extends ApiController
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return $this->showAllPaginate($queryWalls);
+        return $this->showAllTransformer($queryWalls);
         // return $this->showAll($queryWalls);
     }
 
