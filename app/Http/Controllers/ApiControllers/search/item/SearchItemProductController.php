@@ -55,18 +55,18 @@ class SearchItemProductController extends ApiController
         //busca por el nombre del producto
         $productName            = $this->getProductName($products, $search);
         //busca por el codigo del producto
-        $productCode            = $this->getProductCode($products, $search);
+        // $productCode            = $this->getProductCode($products, $search);
         //busca por el nombre de las etiquetas del producto
-        $productTags            = $this->getProductTags($products, $search);
+        // $productTags            = $this->getProductTags($products, $search);
         //buscar por la marca del producto
-        $productBrands          = $this->getProductBrand($products, $search);
+        // $productBrands          = $this->getProductBrand($products, $search);
 
         $products = array_unique(Arr::collapse([
             $productCompanyName,
             $productName,
-            $productCode,
-            $productTags,
-            $productBrands
+            // $productCode,
+            // $productTags,
+            // $productBrands
         ]));
 
         return $products;

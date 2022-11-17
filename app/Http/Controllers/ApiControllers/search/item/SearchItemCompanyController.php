@@ -30,15 +30,15 @@ class SearchItemCompanyController extends ApiController
 
     public function __invoke(Request $request)
     {
-        // Palabra clave de busqueda de la compañia.
+        // Palabra clave de busqueda de la compa単ia.
         $search         = !isset($request->search) ? null : $request->search;
-        // Tipo de compañia
+        // Tipo de compa単ia
         $type_entity    = ($request->type_entity == 'all') ? null : $request->type_entity;
 
         // Tipo de usuario
         $type_user = ($this->validateUser())->userType();
 
-        // Todas las compñias habilitadas
+        // Todas las comp単ias habilitadas
         $companies = $this->getCompanyEnabled();
 
 
@@ -51,11 +51,11 @@ class SearchItemCompanyController extends ApiController
             $companies = $this->getCompanySearchNameItem($companies, $search);
         }
 
-        // $companies = Company::whereIn('id', $companies)
-        //     ->orderBy('name', 'asc')
-        //     ->get();
+        $companies = Company::whereIn('id', $companies)
+            ->orderBy('name', 'asc')
+            ->get();
 
-        return $companies;
+        // return $this->showAllTransformer($companies);
         return $this->showAllTransformer($companies);
     }
 
@@ -64,13 +64,11 @@ class SearchItemCompanyController extends ApiController
         $type_user = ($this->validateUser())->userType();
 
         $companiesName              = $this->getCompanyName($companies, $search);
-        // $companiesDescription       = $this->getCompanyDescription($companies, $search);
-        $companiesTags              = $this->getCompanyTags($companies, $search);
-        $companiesCatalogs          = $this->getCompanyCatalogs($companies, $search);
-        $companiesCatalogsTags      = $this->getCompanyCatalogsTags($companies, $search);
-        $companiesBrandProducts     = $this->getCompanyBrandProducts($companies, $search);
-        //nombre del producto
-        //etiquetas del producto
+        //$companiesDescription       = $this->getCompanyDescription($companies, $search);
+        // $companiesTags              = $this->getCompanyTags($companies, $search);
+        // $companiesCatalogs          = $this->getCompanyCatalogs($companies, $search);
+        // $companiesCatalogsTags      = $this->getCompanyCatalogsTags($companies, $search);
+        // $companiesBrandProducts     = $this->getCompanyBrandProducts($companies, $search);
 
         $companiesCategory      = ($type_user == 'demanda')
             ? // si es demanda busca por la categoria del producto
@@ -80,12 +78,12 @@ class SearchItemCompanyController extends ApiController
 
         $companies = array_unique(Arr::collapse([
             $companiesName,
-            // $companiesDescription,
-            $companiesTags,
-            $companiesCatalogs,
-            $companiesBrandProducts,
-            // $companiesCatalogsTags,
-            // $companiesCategory
+            //$companiesDescription,
+            // $companiesTags,
+            // $companiesCatalogs,
+            // $companiesBrandProducts,
+            //$companiesCatalogsTags,
+            //$companiesCategory
         ]));
 
         return $companies;
