@@ -44,19 +44,19 @@ class SearchItemCatalogController extends ApiController
             ->orderBy('name', 'asc')
             ->get();
 
-        return $this->showAllTransformer($catalogs);
+        return $this->showAllPaginate($catalogs);
     }
 
     public function getCatalogsSearchNameItem($catalogs, $search)
     {
         $catalogName            = $this->getCatalogName($catalogs, $search);
         $catalogCompanyName     = $this->getCatalogCompanyName($catalogs, $search);
-        $catalogCompanyTag      = $this->getCatalogTag($catalogs, $search);
+        // $catalogCompanyTag      = $this->getCatalogTag($catalogs, $search);
 
         $catalogs = array_unique(Arr::collapse([
             $catalogName,
             $catalogCompanyName,
-            $catalogCompanyTag
+            // $catalogCompanyTag
         ]));
 
         return $catalogs;

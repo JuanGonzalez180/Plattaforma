@@ -45,19 +45,19 @@ class SearchItemProductController extends ApiController
             ->orderBy('name', 'asc')
             ->get();
 
-        return $this->showAllTransformer($products);
+        return $this->showAllPaginate($products);
     }
 
     public function getProductsSearchNameItem($products, $search)
     {
-        //busca por el producto por el nombre de la compañia
+        //busca por el producto por el nombre de la compa単ia
         $productCompanyName     = $this->getProductCompanyName($products, $search);
         //busca por el nombre del producto
         $productName            = $this->getProductName($products, $search);
         //busca por el codigo del producto
         // $productCode            = $this->getProductCode($products, $search);
         //busca por el nombre de las etiquetas del producto
-        // $productTags            = $this->getProductTags($products, $search);
+        $productTags            = $this->getProductTags($products, $search);
         //buscar por la marca del producto
         // $productBrands          = $this->getProductBrand($products, $search);
 
@@ -65,7 +65,7 @@ class SearchItemProductController extends ApiController
             $productCompanyName,
             $productName,
             // $productCode,
-            // $productTags,
+            $productTags,
             // $productBrands
         ]));
 

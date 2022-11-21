@@ -56,7 +56,7 @@ class SearchItemCompanyController extends ApiController
             ->get();
 
         // return $this->showAllTransformer($companies);
-        return $this->showAllTransformer($companies);
+        return $this->showAllPaginate($companies);
     }
 
     public function getCompanySearchNameItem($companies, $search)
@@ -65,7 +65,7 @@ class SearchItemCompanyController extends ApiController
 
         $companiesName              = $this->getCompanyName($companies, $search);
         //$companiesDescription       = $this->getCompanyDescription($companies, $search);
-        // $companiesTags              = $this->getCompanyTags($companies, $search);
+        $companiesTags              = $this->getCompanyTags($companies, $search);
         // $companiesCatalogs          = $this->getCompanyCatalogs($companies, $search);
         // $companiesCatalogsTags      = $this->getCompanyCatalogsTags($companies, $search);
         // $companiesBrandProducts     = $this->getCompanyBrandProducts($companies, $search);
@@ -79,7 +79,7 @@ class SearchItemCompanyController extends ApiController
         $companies = array_unique(Arr::collapse([
             $companiesName,
             //$companiesDescription,
-            // $companiesTags,
+            $companiesTags,
             // $companiesCatalogs,
             // $companiesBrandProducts,
             //$companiesCatalogsTags,

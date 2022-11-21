@@ -60,11 +60,12 @@ use App\Http\Controllers\ApiControllers\quotes\quotesVersions\QuotesVersionsCont
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
 
-//search item
+//SEARCH ITEM => APIS DEL BUSCADOR
 use App\Http\Controllers\ApiControllers\search\item\SearchItemCatalogController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemCompanyController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemBlogController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemProductController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemProjectController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemQuotesController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemTenderController;
 use App\Http\Controllers\ApiControllers\search\item\SearchItemPortalController;
@@ -417,6 +418,8 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('/search/items/blog/parameters', SearchItemBlogController::class)->name('search-blog-parameter');
     //*SEARCH PRODUCTO
     Route::post('/search/items/product/parameters', SearchItemProductController::class)->name('search-product-parameter');
+    //*SEARCH PROYECTO
+    Route::post('/search/items/project/parameters', SearchItemProjectController::class)->name('search-project-parameter');
     //*SEARCH COTIZACIONES
     Route::post('/search/items/quotes/parameters', SearchItemQuotesController::class)->name('search-quotes-parameter');
     //*SEARCH LICITACIONES
