@@ -48,7 +48,7 @@ class SearchItemTenderController extends ApiController
 
         $tender = $this->getTender($tenderVersionStatus, $projectActive, $search);
 
-        return $this->showAllTransformer($tender);
+        return $this->showAllPaginate($tender);
     }
 
     public function getTender($tenderVersionStatus, $projectActive, $search)

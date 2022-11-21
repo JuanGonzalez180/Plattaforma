@@ -47,7 +47,7 @@ class SearchItemQuotesController extends ApiController
 
         $quote = $this->getQuote($quoteVersionStatus, $projectActive, $search);
 
-        return $this->showAllTransformer($quote);
+        return $this->showAllPaginate($quote);
     }
 
     public function getQuote($quoteVersionStatus, $projectActive, $search)

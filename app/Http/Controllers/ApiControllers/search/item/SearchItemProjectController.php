@@ -42,7 +42,7 @@ class SearchItemProjectController extends ApiController
             ->get();
 
         
-        return $this->showAllTransformer($projects);
+        return $this->showAllPaginate($projects);
     }
 
     public function getProjectsSearchNameItem($projects, $search)
