@@ -40,7 +40,6 @@ class SearchItemTenderController extends ApiController
         // Proyectos Activos
         $projectActive          = $this->getActiveProjects($project);
 
-
         // ****TODAS LAS LICITACIONES A EXCEPCIÓN DE LAS BORRADOR Y PUBLICAS
 
         // *Trae Todas las licitaciones a excepción de las publicas.
@@ -73,6 +72,7 @@ class SearchItemTenderController extends ApiController
         return Tenders::whereIn('id',$tenderVersionStatus)
             ->whereIn('project_id',$projectActive)
             ->where('type', Tenders::TYPE_PUBLIC)
+            ->orderBy('created_at','desc')
             ->get();
     }
 
