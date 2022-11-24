@@ -40,30 +40,40 @@ class SearchItemTenderController extends ApiController
         // Proyectos Activos
         $projectActive          = $this->getActiveProjects($project);
 
-        // Ultimas versiones de cada licitación.
-        $tenderVersionLast      = $this->getTenderLastVersion();
-        // $tenderVersionLast      = $this->getTenderLastStatusVersion();
 
-        // var_dump($tenderVersionLast);
-        // die;
+        // ****TODAS LAS LICITACIONES A EXCEPCIÓN DE LAS BORRADOR Y PUBLICAS
 
-        // 
-        $tenderVersionStatus    = $this->getTenderVersionStatus($status, $tenderVersionLast, $date);
+        // *Trae Todas las licitaciones a excepción de las publicas.
+        $tenderVersionLast  = $this->getTenderLastVersion();
+        // *Descarta las licitaciones por estado y fecha.
+        $tenderAll          = $this->getTenderVersionStatus($status, $tenderVersionLast, $date);
+        // *Busca por los criterios de busqueda.
+        $tenderAll          = $this->getTendersSearchNameItem($tenderAll, $search, false);
+        // *Genera salida de la consulta
+        $tenderAll          = $this->getTender($tenderAll, $projectActive);
 
-        $tender = $this->getTender($tenderVersionStatus, $projectActive, $search);
+        // ****TODAS SOLO LAS LICITACIOENS PUBLICAS
+
+        // *Trae Todas las licitaciones a excepción de las publicas.
+        $tenderVersionLast      = $this->getTenderLastStatusVersion();
+        // *Descarta las licitaciones por estado y fecha.
+        $tenderPublish          = $this->getTenderVersionStatus($status, $tenderVersionLast, $date);
+        // *Busca por los criterios de busqueda.
+        $tenderPublish          = $this->getTendersSearchNameItem($tenderPublish, $search, true);
+        // *Genera salida de la consulta
+        $tenderPublish          = $this->getTender($tenderPublish, $projectActive);
+
+        $tender = $tenderPublish->merge($tenderAll);
 
         return $this->showAllPaginate($tender);
     }
 
-    public function getTender($tenderVersionStatus, $projectActive, $search)
+    public function getTender($tenderVersionStatus, $projectActive)
     {
-        $tender = $this->getTendersSearchNameItem($tenderVersionStatus, $search);
-
-        return Tenders::whereIn('id',$tender)
+        return Tenders::whereIn('id',$tenderVersionStatus)
             ->whereIn('project_id',$projectActive)
             ->where('type', Tenders::TYPE_PUBLIC)
             ->get();
-
     }
 
     public function getTenderVersionStatus($status, $tenderVersionLast, $date)
@@ -103,14 +113,14 @@ class SearchItemTenderController extends ApiController
             ->select(
                 DB::raw('max(a.created_at), a.tenders_id'),
                 DB::raw("(SELECT `c`.id from `tenders_versions` as `c` 
-                where `c`.`status` != '" . TendersVersions::LICITACION_CREATED . "'  
+                where `c`.`status` NOT IN ('" . TendersVersions::LICITACION_CREATED . ".".TendersVersions::LICITACION_PUBLISH."')  
                 and `c`.`tenders_id` = a.tenders_id ORDER BY `c`.id DESC LIMIT 1) AS version_id")
             )
-            ->where('a.status', '<>', TendersVersions::LICITACION_CREATED)
+            ->whereNotIn('a.status', [TendersVersions::LICITACION_CREATED, TendersVersions::LICITACION_PUBLISH])
             ->where((function ($query) {
                 $query->select(
                     DB::raw("COUNT(*) from `tenders_versions` as `b` 
-                    where `b`.`status` = '" . TendersVersions::LICITACION_CREATED . "'  
+                    where `b`.`status` IN ('" . TendersVersions::LICITACION_CREATED . ".".TendersVersions::LICITACION_PUBLISH."')  
                     and `b`.`tenders_id` = a.tenders_id")
                 );
             }), '=', 0)
@@ -118,6 +128,25 @@ class SearchItemTenderController extends ApiController
             ->pluck('version_id');
 
         return $tenders;
+        // $tenders = DB::table('tenders_versions as a')
+        //     ->select(
+        //         DB::raw('max(a.created_at), a.tenders_id'),
+        //         DB::raw("(SELECT `c`.id from `tenders_versions` as `c` 
+        //         where `c`.`status` != '" . TendersVersions::LICITACION_CREATED . "'  
+        //         and `c`.`tenders_id` = a.tenders_id ORDER BY `c`.id DESC LIMIT 1) AS version_id")
+        //     )
+        //     ->where('a.status', '<>', TendersVersions::LICITACION_CREATED)
+        //     ->where((function ($query) {
+        //         $query->select(
+        //             DB::raw("COUNT(*) from `tenders_versions` as `b` 
+        //             where `b`.`status` = '" . TendersVersions::LICITACION_CREATED . "'  
+        //             and `b`.`tenders_id` = a.tenders_id")
+        //         );
+        //     }), '=', 0)
+        //     ->groupBy('a.tenders_id')
+        //     ->pluck('version_id');
+
+        // return $tenders;
     }
 
     public function getTenderLastStatusVersion()
@@ -185,7 +214,7 @@ class SearchItemTenderController extends ApiController
             ->pluck('projects.id');
     }
 
-    public function getTendersSearchNameItem($tenders, $search)
+    public function getTendersSearchNameItem($tenders, $search, $status)
     {
         //nombre de licitacion
         $tendersName                = $this->getTendersName($tenders, $search);
@@ -196,7 +225,7 @@ class SearchItemTenderController extends ApiController
         //nombre de proyecto de la licitacion
         $tendersProjectName         = $this->getTenderProjectName($tenders, $search);
         //tags de la licitacion
-        $tenderVersionTags          = $this->getTenderVersionTags($tenders, $search);
+        $tenderVersionTags          = $this->getTenderVersionTags($tenders, $search, $status);
 
         $tenders = array_unique(Arr::collapse([
             $tendersName,
@@ -246,11 +275,13 @@ class SearchItemTenderController extends ApiController
     }
 
     // Busca por el tag de la licitación
-    public function getTenderVersionTags($tenders, $name)
+    public function getTenderVersionTags($tenders, $name, $status)
     {
+        $tenderVersion = ($status) ? $this->getTenderLastStatusVersion() : $this->getTenderLastVersion();
+
         return Tenders::whereIn('tenders.id', $tenders)
             ->join('tenders_versions', 'tenders_versions.tenders_id', '=', 'tenders.id')
-            ->whereIn('tenders_versions.id', $this->getTenderLastVersion())
+            ->whereIn('tenders_versions.id', $tenderVersion)
             ->join('tags', 'tags.tagsable_id', '=', 'tenders_versions.id')
             ->where('tags.tagsable_type', '=', 'App\Models\TendersVersions')
             ->where(strtolower('tags.name'), 'LIKE', '%' . strtolower($name) . '%')
