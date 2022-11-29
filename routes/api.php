@@ -113,6 +113,8 @@ use App\Http\Controllers\ApiControllers\notifications\NotificationsController;
 use App\Http\Controllers\ApiControllers\chat\ChatController;
 // Messages
 use App\Http\Controllers\ApiControllers\messages\MessagesController;
+// Messages notification querywall
+use App\Http\Controllers\ApiControllers\message\notifications\notificationTemporalController;
 
 // Advertising
 use App\Http\Controllers\ApiControllers\publicity\advertising\AdvertisingController;
@@ -444,6 +446,10 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     // Chat
     Route::resource('/chats', ChatController::class, ['only' => ['index', 'store']])->names('chats');
     Route::get('/chats/notread', [ChatController::class, 'notread'])->name('chats-notread');
+
+    // Message quierywall notifications
+    Route::post('/message/notification/querywall', notificationTemporalController::class)->name('message-querywall-notifications');
+
     // Messages
     Route::resource('/messages', MessagesController::class, ['only' => ['index', 'store']])->names('messages');
     Route::resource('advertisings/plans/images', AdvertisingPlansPaidImagesController::class, ['only' => ['index', 'edit', 'update']])->names('advertisings_images');
