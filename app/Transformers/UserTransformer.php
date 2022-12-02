@@ -36,13 +36,13 @@ class UserTransformer extends TransformerAbstract
         $companyTransformer = new CompanyTransformer();
 
         return [
-            'id' => (int)$user->id,
-            'name' => (string)$user->name,
-            'lastname'=> (string)$user->lastname,
+            'id'        => (int)$user->id,
+            'name'      => (string)$user->name,
+            'lastname'  => (string)$user->lastname,
             'created_at'=> (string)$user->created_at,
             'updated_at'=> (string)$user->updated_at,
-            'url'=> (string)$user->image ? url( 'storage/' . $user->image->url ) : '',
-            'company' => ($user->companyFull())? $companyTransformer->transform($user->companyFull()) : null,
+            'url'       => (string)$user->image ? url( 'storage/' . $user->image->url ) : '',
+            'company'   => ($user->companyFull())? $companyTransformer->transform($user->companyFull()) : null,
         ];
     }
 }
