@@ -46,7 +46,7 @@ class QueryWallTransformer extends TransformerAbstract
             'company_id'=> (int)$querywall->company_id,
             'company'=> $querywall->company,
             'question'=> (string)$querywall->question,
-            'date_answer'=> (string)$querywall->date_answer,
+            'date_answer'=> (string) is_null($querywall->date_answer) ? $querywall->date_questions : $querywall->date_answer,
             'answer'=> (string)$querywall->answer,
             'date_questions'=> (string)$querywall->date_questions,
             'user_id'=> (int)$querywall->user_id,
