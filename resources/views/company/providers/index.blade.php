@@ -209,7 +209,7 @@ Proveedores
 
     function editStatusRejected(id) {
         Swal.fire({
-            title: 'Desea cambiar el estado de la compañiazzzzz?',
+            title: 'Desea cambiar el estado de la compañia?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Aprobar',
@@ -227,7 +227,7 @@ Proveedores
 
     function editStatusLock(id) {
         Swal.fire({
-            title: 'Desea bloquear la compañiaxxxx?',
+            title: 'Desea bloquear la compañia?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Bloquear',
