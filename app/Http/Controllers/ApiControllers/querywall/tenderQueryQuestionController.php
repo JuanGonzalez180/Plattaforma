@@ -43,7 +43,7 @@ class tenderQueryQuestionController extends ApiController
         $queryWalls  = QueryWall::where('querysable_id', $tender_id)
             ->where('querysable_type', Tenders::class)
             ->where('visible', QueryWall::QUERYWALL_VISIBLE)
-            ->orderBy('created_at', 'asc')
+            ->orderBy('updated_at', 'asc')
             ->get();
 
         return $this->showAllTransformer($queryWalls);
