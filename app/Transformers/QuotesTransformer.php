@@ -41,7 +41,7 @@ class QuotesTransformer extends TransformerAbstract
             'user_id'=> (int)$quotes->user_id,
             'company_id'=> (int)$quotes->company_id,
             'project'=> $quotes->project,
-            'project_img'=> $quotes->project->image,
+            'project_img'=> isset($quotes->project->image)? $quotes->project->image : null,
             'categories'=> $quotes->categories,
             'tags'=> $quotes->quotesVersionLastPublishTags(),
             'project_id'=> (int)$quotes->project_id,

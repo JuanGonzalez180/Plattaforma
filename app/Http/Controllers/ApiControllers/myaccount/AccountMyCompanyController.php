@@ -144,7 +144,7 @@ class AccountMyCompanyController extends ApiController
                         // 'address' => $request->address,
                         // 'latitud' => $request->latitud,
                         // 'longitud' => $request->longitud
-                        'address'   => '',
+                        'address'   => 'Panama',
                         'latitud'   => '8.9814453',
                         'longitud'  => '-79.5188013'
                     ]);

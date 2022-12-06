@@ -641,12 +641,13 @@ class CompanyController extends ApiController
         if (isset($request->latitud) && isset($request->longitud)) {
             if (!$company->address) {
                 $company->address()->create([
-                    'address' => '',
+                    'address' => $request->address,
                     'latitud' => $request->latitud,
                     'longitud' => $request->longitud
                 ]);
             } else {
                 $company->address()->update([
+                    'address' => $request->address,
                     'latitud' => $request->latitud,
                     'longitud' => $request->longitud
                 ]);
@@ -654,7 +655,7 @@ class CompanyController extends ApiController
         } else {
             if (!$company->address) {
                 $company->address()->create([
-                    'address'   => '',
+                    'address'   => 'Panama',
                     'latitud'   => '8.9814453',
                     'longitud'  => '-79.5188013'
                 ]);
