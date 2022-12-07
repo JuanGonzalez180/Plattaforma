@@ -57,6 +57,7 @@ class SearchItemQuotesController extends ApiController
         return Quotes::whereIn('id',$quote)
             ->whereIn('project_id',$projectActive)
             ->where('type', Quotes::TYPE_PUBLIC)
+            ->orderBy('created_at','desc')
             ->get();
 
     }
