@@ -281,7 +281,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
      * Tenders_vesion
      */
     Route::resource('/tenders/version', TendersVersionsController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('tendersVersions');
-    Route::post('/teneders/filter', tendersFilterController::class)->name('filter-tenders-company');
+    Route::post('/tenders/filter', tendersFilterController::class)->name('filter-tenders-company');
     /**
      * quotes_vesion
      */
