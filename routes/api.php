@@ -53,9 +53,11 @@ use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompanie
 use App\Http\Controllers\ApiControllers\quotes\quotesCompanies\CuotesCompaniesListController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesActionController;
 use App\Http\Controllers\ApiControllers\quotes\quotesCompanies\QuotesCompaniesActionController;
+use App\Http\Controllers\ApiControllers\quotes\quotesFilter\quotesFilterController;
 use App\Http\Controllers\ApiControllers\tenders\tendersAction\TendersActionController;
 use App\Http\Controllers\ApiControllers\quotes\quotesActions\QuotesActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersVersions\TendersVersionsController;
+use App\Http\Controllers\ApiControllers\tenders\tendersFilter\tendersFilterController;
 use App\Http\Controllers\ApiControllers\quotes\quotesVersions\QuotesVersionsController;
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
@@ -279,10 +281,13 @@ Route::group(['middleware' => ['jwt.verify']], function () {
      * Tenders_vesion
      */
     Route::resource('/tenders/version', TendersVersionsController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('tendersVersions');
+    Route::post('/teneders/filter', tendersFilterController::class)->name('filter-tenders-company');
     /**
      * quotes_vesion
      */
     Route::resource('/quotes/version', QuotesVersionsController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('quotesVersions');
+    Route::post('/quotes/filter', quotesFilterController::class)->name('filter-quotes-company');
+
     /**
      * Tenders_companies
      */

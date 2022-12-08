@@ -44,7 +44,7 @@ class QuotesMyCompanyTransformer extends TransformerAbstract
             'quote_status'         => (string)$quotesCompanies->quote->quotesVersionLastPublish()->status,
             'quote_company_status' => (string)$quotesCompanies->status,
             'winner'                => $quotesCompanies->winner,
-            'project_name'          => (string)$quotesCompanies->quote->project->name,
+            'project_name'          => (string) isset($quotesCompanies->quote->project->name)?$quotesCompanies->quote->project->name : null,
             'closing_date'          => (string)$quotesCompanies->quote->quotesVersionLastPublish()->date,
             'closing_hour'          => (string)$quotesCompanies->quote->quotesVersionLastPublish()->hour
         ];

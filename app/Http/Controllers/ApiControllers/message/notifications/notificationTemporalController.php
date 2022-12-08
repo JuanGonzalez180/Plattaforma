@@ -27,26 +27,29 @@ class notificationTemporalController extends ApiController
     {
         $user  = User::find($this->validateUser()->id);
 
+        //Busqueda por nombre licitación o cotización.
+        $search         = !isset($request->search) ? null : $request->search;
+
         if($user->userType() == 'demanda')
         {
             $value = [
-                "tender"    => $this->getTenders($user),
-                "quote"     => $this->getQuotes($user)
+                "tender"    => $this->getTenders($user, $search),
+                "quote"     => $this->getQuotes($user, $search)
             ];
 
         }
         elseif($user->userType() == 'oferta')
         {
             $value = [
-                "tender"    => $this->getTenderParticipate($user),
-                "quote"     => $this->getQuoteParticipate($user)
+                "tender"    => $this->getTenderParticipate($user, $search),
+                "quote"     => $this->getQuoteParticipate($user, $search)
             ];
         }
 
         return $value;
     }
 
-    public function getTenders($user)
+    public function getTenders($user, $search)
     {
         $isAdmin = $user->isAdminFrontEnd();
     
@@ -56,12 +59,15 @@ class notificationTemporalController extends ApiController
         if(!$isAdmin)
             $tenders = $tenders->where('user_id', $user->id);
 
+        if(!is_null($search))
+            $tenders = $tenders->where(strtolower('name'), 'LIKE', '%' . strtolower($search) . '%');
+
         $tenders = $tenders->orderBy('created_at','desc')->get();
 
         return $this->showAllTransformer($tenders);
     }
 
-    public function getQuotes($user)
+    public function getQuotes($user, $search)
     {
         $isAdmin = $user->isAdminFrontEnd();
     
@@ -71,13 +77,16 @@ class notificationTemporalController extends ApiController
         if(!$isAdmin)
             $quotes = $quotes->where('user_id', $user->id);
 
+        if(!is_null($search))
+            $quotes = $quotes->where(strtolower('name'), 'LIKE', '%' . strtolower($search) . '%');
+
         $quotes = $quotes->orderBy('created_at','desc')->get();
 
         return $this->showAllTransformer($quotes);
 
     }
 
-    public function getTenderParticipate($user)
+    public function getTenderParticipate($user, $search)
     {
         $isAdmin = $user->isAdminFrontEnd();
 
@@ -89,14 +98,19 @@ class notificationTemporalController extends ApiController
         $tenderCompanies = $tenderCompanies->where('status', TendersCompanies::STATUS_PARTICIPATING)
             ->pluck('tender_id');
 
-        $tender = Tenders::whereIn('id', $tenderCompanies)
-            ->orderBy('created_at','desc')
-            ->get();
+
+        $tender = Tenders::whereIn('id', $tenderCompanies);
+
+        if(!is_null($search))
+            $tender = $tender->where(strtolower('name'), 'LIKE', '%' . strtolower($search) . '%');
+
+
+        $tender = $tender->orderBy('created_at','desc')->get();
 
         return $this->showAllTransformer($tender);
     }
 
-    public function getQuoteParticipate($user)
+    public function getQuoteParticipate($user, $search)
     {
         $isAdmin = $user->isAdminFrontEnd();
 
@@ -108,9 +122,12 @@ class notificationTemporalController extends ApiController
         $quoteCompanies = $quoteCompanies->where('status', QuotesCompanies::STATUS_PARTICIPATING)
             ->pluck('quotes_id');
 
-        $quotes = Quotes::whereIn('id', $quoteCompanies)
-            ->orderBy('created_at','desc')
-            ->get();
+        $quotes = Quotes::whereIn('id', $quoteCompanies);
+
+        if(!is_null($search))
+            $quotes = $quotes->where(strtolower('name'), 'LIKE', '%' . strtolower($search) . '%');
+
+        $quotes = $quotes->orderBy('created_at','desc')->get();
 
         return $this->showAllTransformer($quotes);
     }
