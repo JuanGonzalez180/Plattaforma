@@ -35,6 +35,8 @@ class QuotesMyCompanyTransformer extends TransformerAbstract
     {
         return [
             'id'                    => (int)$quotesCompanies->id,
+            'user'                  => $quotesCompanies->user,
+            'user_img'              => isset($quotesCompanies->user->image)? $quotesCompanies->user->image : null,
             'quote_id'             => (int)$quotesCompanies->quote->id,
             'quote_type'           => (string)$quotesCompanies->quote->type,
             'company_id'            => (int)$quotesCompanies->company_id,
