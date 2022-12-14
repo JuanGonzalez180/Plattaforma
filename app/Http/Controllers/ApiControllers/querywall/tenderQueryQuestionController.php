@@ -43,15 +43,16 @@ class tenderQueryQuestionController extends ApiController
         $queryWalls  = QueryWall::where('querysable_id', $tender_id)
             ->where('querysable_type', Tenders::class)
             ->where('visible', QueryWall::QUERYWALL_VISIBLE)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'asc')
             ->get();
 
-        return $this->showAllPaginate($queryWalls);
+        return $this->showAllTransformer($queryWalls);
         // return $this->showAll($queryWalls);
     }
 
     public function store(Request $request)
     {
+
         $user = $this->validateUser();
         $company_id = $user->companyId();
 
@@ -104,7 +105,6 @@ class tenderQueryQuestionController extends ApiController
 
         } else {
             $this->sendNotificationQueryAdmin($question, Notifications::NOTIFICATION_QUERYWALL_TENDER_QUESTION);
-
             // *Correos del administrador y encargado de la licitación.
             $terderAdminEmail = $question->queryWallTender()->TenderAdminEmails();
 

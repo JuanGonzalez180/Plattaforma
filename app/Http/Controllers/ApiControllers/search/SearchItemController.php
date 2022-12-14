@@ -325,7 +325,7 @@ class SearchItemController extends ApiController
         $type_user = ($this->validateUser())->userType();
 
         $companiesName              = $this->getCompanyName($companies, $search);
-        //$companiesDescription       = $this->getCompanyDescription($companies, $search);
+        $companiesDescription       = $this->getCompanyDescription($companies, $search);
         $companiesTags              = $this->getCompanyTags($companies, $search);
         $companiesCatalogs          = $this->getCompanyCatalogs($companies, $search);
         $companiesCatalogsTags      = $this->getCompanyCatalogsTags($companies, $search);
@@ -409,6 +409,8 @@ class SearchItemController extends ApiController
     public function getProductEnabled()
     {
         return Products::where('products.status', Products::PRODUCT_PUBLISH)
+            ->join('images', 'images.imageable_id', '=', 'products.id')
+            ->where('images.imageable_type', Products::class)
             ->pluck('products.id');
     }
 

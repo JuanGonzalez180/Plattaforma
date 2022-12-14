@@ -41,6 +41,7 @@ class TendersTransformer extends TransformerAbstract
             'user_id'=> (int)$tender->user_id,
             'company_id'=> (int)$tender->company_id,
             'project'=> $tender->project,
+            'project_img'=> $tender->project->image,
             'categories'=> $tender->categories,
             'tags'=> $tender->tendersVersionLastPublishTags(),
             'project_id'=> (int)$tender->project_id,
@@ -63,8 +64,9 @@ class TendersTransformer extends TransformerAbstract
             'slugTender'     => (string)$tender->company->slug,
             'tendersVersionCount'=> count($tender->tendersVersion),
             'tenderType'=> $tender->type,
-            // 'commissionedUsers'=> $tender->commissionedUsers()
-            'participatingUsers'=> $tender->participatingUsers()
+            'participatingUsers'=> $tender->participatingUsers(),
+            'company_image'=> $tender->company->image,
+            'participatingCompanies'=> $tender->tendersCompaniesParticipatingName()
         ];
     }
 
@@ -82,6 +84,7 @@ class TendersTransformer extends TransformerAbstract
             'company' => $companyTransformer->transform($tender->company),
             'project_id'=> (int)$tender->project_id,
             'project'=> $projectsTransformer->transform($tender->project),
+            'project_img'=> $tender->project->image,
             'categories'=> $tender->categories,
             'name'=> (string)$tender->name,
             'status'=> (string)$tender->status,
@@ -103,7 +106,8 @@ class TendersTransformer extends TransformerAbstract
             'slugTender'     => (string)$tender->company->slug,
             'tenderType'=> (string)$tender->type,
             // 'commissionedUsers'=> $tender->commissionedUsers()
-            'participatingUsers'=> $tender->participatingUsers()
+            'participatingUsers'=> $tender->participatingUsers(),
+            'participatingCompanies'=> $tender->tendersCompaniesParticipatingName()
         ];
     }
 }

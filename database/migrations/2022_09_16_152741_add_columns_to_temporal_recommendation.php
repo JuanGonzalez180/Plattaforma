@@ -14,7 +14,7 @@ class AddColumnsToTemporalRecommendation extends Migration
     public function up()
     {
         Schema::table('temporal_recommendation', function (Blueprint $table) {
-            //
+            $table->boolean('send')->default(0)->after('company_id');
         });
     }
 
@@ -26,7 +26,7 @@ class AddColumnsToTemporalRecommendation extends Migration
     public function down()
     {
         Schema::table('temporal_recommendation', function (Blueprint $table) {
-            //
+            $table->dropColumn('send');
         });
     }
 }

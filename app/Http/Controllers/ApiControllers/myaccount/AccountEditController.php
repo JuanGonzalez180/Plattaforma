@@ -33,7 +33,7 @@ class AccountEditController extends ApiController
         $this->validate( $request, $rules );
 
         // if( $request->username )
-            // $user->username = $request->username;
+        //     $user->username = $request->username;
 
         if( $request->email )
             $user->email = $request->email;
@@ -62,8 +62,8 @@ class AccountEditController extends ApiController
         }
 
         $user->save();
-        // ReSearch User
-        $userNew = User::findOrFail($user->id);
+        
+        $userNew = User::find($user->id);
         $userNew->image;
 
         return $this->showOne($userNew,200);

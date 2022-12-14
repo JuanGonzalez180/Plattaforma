@@ -53,16 +53,33 @@ use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompanie
 use App\Http\Controllers\ApiControllers\quotes\quotesCompanies\CuotesCompaniesListController;
 use App\Http\Controllers\ApiControllers\tenders\tendersCompanies\TendersCompaniesActionController;
 use App\Http\Controllers\ApiControllers\quotes\quotesCompanies\QuotesCompaniesActionController;
+use App\Http\Controllers\ApiControllers\quotes\quotesFilter\quotesFilterController;
 use App\Http\Controllers\ApiControllers\tenders\tendersAction\TendersActionController;
 use App\Http\Controllers\ApiControllers\quotes\quotesActions\QuotesActionController;
 use App\Http\Controllers\ApiControllers\tenders\tendersVersions\TendersVersionsController;
+use App\Http\Controllers\ApiControllers\tenders\tendersFilter\tendersFilterController;
 use App\Http\Controllers\ApiControllers\quotes\quotesVersions\QuotesVersionsController;
 use App\Http\Controllers\ApiControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\ApiControllers\typesentity\TypesEntityController;
 
+//SEARCH ITEM => APIS DEL BUSCADOR
+use App\Http\Controllers\ApiControllers\search\item\SearchItemCatalogController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemCompanyController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemBlogController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemProductController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemProjectController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemQuotesController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemTenderController;
+use App\Http\Controllers\ApiControllers\search\item\SearchItemPortalController;
 // Search
 use App\Http\Controllers\ApiControllers\search\SearchItemController;
+// Item Filter
+use App\Http\Controllers\ApiControllers\search\item\filters\ItemFilterController;
+
+
+use App\Http\Controllers\ApiControllers\search\SearchItemLastController;
 use App\Http\Controllers\ApiControllers\search\SearchItemControllerOld;
+use App\Http\Controllers\ApiControllers\search\SearchItemFilterController;
 use App\Http\Controllers\ApiControllers\search\SearchLikeItemController;
 use App\Http\Controllers\ApiControllers\search\SearchLikeCompanyController;
 use App\Http\Controllers\ApiControllers\search\SearchBrandsController;
@@ -98,6 +115,8 @@ use App\Http\Controllers\ApiControllers\notifications\NotificationsController;
 use App\Http\Controllers\ApiControllers\chat\ChatController;
 // Messages
 use App\Http\Controllers\ApiControllers\messages\MessagesController;
+// Messages notification querywall
+use App\Http\Controllers\ApiControllers\message\notifications\notificationTemporalController;
 
 // Advertising
 use App\Http\Controllers\ApiControllers\publicity\advertising\AdvertisingController;
@@ -185,6 +204,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::resource('/myaccount/myservices', AccountMyServicesController::class, ['only' => ['index', 'store']])->names('myservices');
     Route::resource('/myaccount/myteam', AccountMyTeamController::class, ['only' => ['index', 'store', 'update', 'destroy']])->names('myteam');
     Route::get('/myaccount/myteam/approved', [AccountMyTeamController::class, 'teamUsersApproved'])->name('myteamapproved');
+    Route::get('/myaccount/myteam/admin/{id}', [AccountMyTeamController::class, 'teamAdminUsers'])->name('teamAdminUsers');
     Route::get('/myaccount/myteam/resend/invitation/{team_id}', [AccountMyTeamController::class, 'resendInvitation'])->name('resentinvitation');
     Route::resource('/company/files', CompanyFilesController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('companyimages');
     Route::resource('/company/name', CompanyChangesNameController::class, ['only' => ['store']])->names('companychangename');
@@ -261,10 +281,13 @@ Route::group(['middleware' => ['jwt.verify']], function () {
      * Tenders_vesion
      */
     Route::resource('/tenders/version', TendersVersionsController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('tendersVersions');
+    Route::post('/tenders/filter', tendersFilterController::class)->name('filter-tenders-company');
     /**
      * quotes_vesion
      */
     Route::resource('/quotes/version', QuotesVersionsController::class, ['only' => ['index', 'store', 'show', 'edit', 'update', 'destroy']])->names('quotesVersions');
+    Route::post('/quotes/filter', quotesFilterController::class)->name('filter-quotes-company');
+
     /**
      * Tenders_companies
      */
@@ -379,15 +402,43 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('/search/brands', SearchBrandsController::class)->name('search-brands');
     Route::post('/search/tenders', SearchTendersController::class)->name('search-tenders');
     Route::post('/search/companies', SearchCompanyController::class)->name('search-companies');
+    // Search item filter
+    Route::post('/search/filter/item', ItemFilterController::class)->name('search-filter-item');
+
+
     // Route::post('/search/item/companies', SearchLikeCompanyController::class)->name('search-item-companies');
     Route::resource('/search/items', SearchItemControllerOld::class, ['only' => ['index']])->names('search-items');
     Route::resource('/search/like/items', SearchLikeItemController::class, ['only' => ['index']])->names('search-like-items');
+
+
+    Route::get('/search/items/companies/entities', [SearchItemFilterController::class, 'companyTypeEntity'])->name('company-type-entity');
     /**
      * Random
      */
+
+    //**SEARCH ITESMS**:
+    //*SEARCH CATALOGO
+    Route::post('/search/items/catalog/parameters', SearchItemCatalogController::class)->name('search-catalog-parameter');
+    //*SEARCH COMPAÑIA
+    Route::post('/search/items/company/parameters', SearchItemCompanyController::class)->name('search-company-parameter');
+    //*SEARCH BLOG/PUBLICACIONES
+    Route::post('/search/items/blog/parameters', SearchItemBlogController::class)->name('search-blog-parameter');
+    //*SEARCH PRODUCTO
+    Route::post('/search/items/product/parameters', SearchItemProductController::class)->name('search-product-parameter');
+    //*SEARCH PROYECTO
+    Route::post('/search/items/project/parameters', SearchItemProjectController::class)->name('search-project-parameter');
+    //*SEARCH COTIZACIONES
+    Route::post('/search/items/quotes/parameters', SearchItemQuotesController::class)->name('search-quotes-parameter');
+    //*SEARCH LICITACIONES
+    Route::post('/search/items/tender/parameters', SearchItemTenderController::class)->name('search-tender-parameter');
+    //*SEARCH PORTAL
+    Route::post('/search/items/portal/parameters', SearchItemPortalController::class)->name('search-portal-parameter');
+    //
+    //
     Route::post('/advertisings/random', RandomAdvertisingsController::class)->name('advertisings-random');
     // Route::resource('/search/items/parameters', SearchParameterController::class, ['only' => ['index']])->names('search-parameter');
     Route::post('/search/items/parameters', SearchItemController::class)->name('search-parameter');
+    Route::post('/search/items/last/parameters', SearchItemLastController::class)->name('search-parameter-last');
     // Route::get('/search/products', SearchProductsController::class)->name('search-products');
     // Remarks
     Route::resource('/remarks', RemarksController::class, ['only' => ['index', 'store', 'edit', 'update', 'destroy']])->names('remarks');
@@ -400,6 +451,10 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     // Chat
     Route::resource('/chats', ChatController::class, ['only' => ['index', 'store']])->names('chats');
     Route::get('/chats/notread', [ChatController::class, 'notread'])->name('chats-notread');
+
+    // Message quierywall notifications
+    Route::post('/message/notification/querywall', notificationTemporalController::class)->name('message-querywall-notifications');
+
     // Messages
     Route::resource('/messages', MessagesController::class, ['only' => ['index', 'store']])->names('messages');
     Route::resource('advertisings/plans/images', AdvertisingPlansPaidImagesController::class, ['only' => ['index', 'edit', 'update']])->names('advertisings_images');

@@ -36,6 +36,8 @@ class TendersMyCompanyTransformer extends TransformerAbstract
     {
         return [
             'id'                    => (int)$tendersCompanies->id,
+            'user'                  => $tendersCompanies->user,
+            'user_img'              => isset($tendersCompanies->user->image) ? $tendersCompanies->user->image : null,
             'tender_id'             => (int)$tendersCompanies->tender->id,
             'tender_type'           => (string)$tendersCompanies->tender->type,
             'company_id'            => (int)$tendersCompanies->company_id,

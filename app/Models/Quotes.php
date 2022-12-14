@@ -266,4 +266,24 @@ class Quotes extends Model
             ->where('status', QuotesCompanies::STATUS_PARTICIPATING)
             ->get();
     }
+
+
+    public function quotesCompaniesParticipatingName()
+    {
+        $companies =  QuotesCompanies::select('companies.id','companies.name')->where('quotes_companies.quotes_id', $this->id)
+            ->where('quotes_companies.status', QuotesCompanies::STATUS_PARTICIPATING)
+            ->join('companies', 'companies.id', '=', 'quotes_companies.company_id')
+            ->get();
+
+        foreach ($companies as $value) {
+            $value['image'] = $this->companyImage($value->id);
+        }
+
+        return $companies;
+    }
+
+    public function companyImage($company_id)
+    {
+        return Company::find($company_id)->image;
+    }
 }

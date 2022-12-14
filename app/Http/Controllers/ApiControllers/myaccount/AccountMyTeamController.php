@@ -26,6 +26,8 @@ use Illuminate\Validation\Rule;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\sendUserConvertUserAdmin;
+use App\Mail\sendUserConvertUserAdminProject;
 use Illuminate\Support\Facades\Storage;
 use TaylorNetwork\UsernameGenerator\Generator;
 
@@ -46,6 +48,55 @@ class AccountMyTeamController extends ApiController
         }
 
         return $this->user;
+    }
+
+    // Intercambia el rol administrador a integrante, y de integrante a administrador
+    public function teamAdminUsers(string $teamId)
+    {
+        $team = Team::find($teamId);
+
+        $user = $this->validateUser();
+
+        if (!$user->getAdminUser()) {
+            $userError = ['error' => ['Error, no tiene permisos para convertir a administrador']];
+            return $this->errorResponse($userError, 500);
+        }
+
+        $company = Company::find($user->companyId());
+
+        try {
+            $company->update([
+                'user_id' => $team->user_id
+            ]);
+
+            $team->update([
+                'user_id' => $user->id
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $teamError = ['tender' => 'Error, no se ha podido asignar como administrador'];
+            return $this->errorResponse($teamError, 500);
+        }
+
+        // Envia el correo electronico al usuario que se ha designado como administrador
+        switch ($company->user->userType())
+        {
+            case 'oferta': //Compañia tipo proveedor
+                Mail::to(trim($company->user->email))
+                    ->send(new sendUserConvertUserAdminProject($company->user->fullName()));
+                break;
+            case 'demanda'://Compañia tipo proyecto
+                Mail::to(trim($company->user->email))
+                    ->send(new sendUserConvertUserAdmin($company->user->fullName()));
+                break;
+        }
+
+
+        // Envia la notificación al usuario que se ha designado como administrador
+        $notifications      = new Notifications();
+        $notifications->registerNotificationQuery($team, Notifications::NOTIFICATION_APPOINT_ADMINISTRATOR, [$company->user->id]);
+
+        return $this->showOne($team, 201);
     }
 
     // Generar Username y Validar que no exista en BD
@@ -192,7 +243,7 @@ class AccountMyTeamController extends ApiController
             'email.unique' => 'Correo no válido'
         ];
 
-        $this->validate($request, $rules,$cumstomMessage);
+        $this->validate($request, $rules, $cumstomMessage);
 
         // Generar Username y Validar que no exista en BD
         $userFields['username'] = $this->generateUsername($request['email']);

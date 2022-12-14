@@ -41,7 +41,8 @@ class QuotesTransformer extends TransformerAbstract
             'user_id'=> (int)$quotes->user_id,
             'company_id'=> (int)$quotes->company_id,
             'project'=> $quotes->project,
-            // 'categories'=> $quotes->categories,
+            'project_img'=> isset($quotes->project->image)? $quotes->project->image : null,
+            'categories'=> $quotes->categories,
             'tags'=> $quotes->quotesVersionLastPublishTags(),
             'project_id'=> (int)$quotes->project_id,
             'name'=> (string)$quotes->name,
@@ -63,8 +64,9 @@ class QuotesTransformer extends TransformerAbstract
             'slugQuote'     => (string)$quotes->company->slug,
             'QuotesVersionCount'=> count($quotes->quotesVersion),
             'QuoteType'=> $quotes->type,
-            // 'commissionedUsers'=> $quotes->commissionedUsers()
-            'participatingUsers'=> $quotes->participatingUsers()
+            'participatingUsers'=> $quotes->participatingUsers(),
+            'company_image'=> $quotes->company->image,
+            'participatingCompanies'=> $quotes->quotesCompaniesParticipatingName()
         ];
     }
 
@@ -82,6 +84,7 @@ class QuotesTransformer extends TransformerAbstract
             'company' => $companyTransformer->transform($quotes->company),
             'project_id'=> (int)$quotes->project_id,
             'project'=> $projectsTransformer->transform($quotes->project),
+            'project_img'=> $quotes->project->image,
             // 'categories'=> $quotes->categories,
             'name'=> (string)$quotes->name,
             'status'=> (string)$quotes->status,
@@ -103,7 +106,8 @@ class QuotesTransformer extends TransformerAbstract
             'slugQuote'     => (string)$quotes->company->slug,
             'QuoteType'=> (string)$quotes->type,
             // 'commissionedUsers'=> $quotes->commissionedUsers()
-            'participatingUsers'=> $quotes->participatingUsers()
+            'participatingUsers'=> $quotes->participatingUsers(),
+            'participatingCompanies'=> $quotes->quotesCompaniesParticipatingName()
         ];
     }
 }

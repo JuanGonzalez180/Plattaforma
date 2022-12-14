@@ -156,24 +156,14 @@ class TendersCompaniesController extends ApiController
 
         $recommendToCompanies = ($tender->type == 'Publico') ? $this->getQueryCompaniesTags($tags, $companies) : [];
 
-        //si por lo menos existe alguna compañia con alguna etiqueta
-        if (sizeof($recommendToCompanies) > 0) {
+        if ((sizeof($recommendToCompanies) > 0) && (count($tender->tendersVersion) == 1)) {
             foreach ($recommendToCompanies as $key => $value) {
                 $company = Company::find($value);
-
                 $this->sendNotificationRecommendTender($tender, $company->userIds());
-                // $this->sendEmailRecommendTender($tender, ['davidmejia13320@gmail.com']);
-
-                // TemporalRecomendation::create([
-                //     'modelsable_id' => $tender->id,
-                //     'modelsable_type' => Tenders::class,
-                //     'company_id' => $company->id,
-                // ]);
-
                 DB::table('temporal_recommendation')->insert([
-                    'modelsable_id' => $tender->id,
-                    'modelsable_type' => Tenders::class,
-                    'company_id' => $company->id,
+                    'modelsable_id'     => $tender->id,
+                    'modelsable_type'   => Tenders::class,
+                    'company_id'        => $company->id,
                 ]);
             }
         }

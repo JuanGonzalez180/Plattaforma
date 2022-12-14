@@ -100,7 +100,7 @@
                             </a>
                         @endif
                             <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->teams)<=0) disabled @endif" href="{{ route('teams-company-id', $company->id ) }}">
-                                Equipo    
+                                Integrantes    
                                 <span class="badge badge-primary">{{count($company->teams)}}</span>
                             </a>
                             <a class="dropdown-item d-flex justify-content-between align-items-center @if(count($company->blogs)<=0) disabled @endif" href="{{ route('blog.company.id', $company->id ) }}">

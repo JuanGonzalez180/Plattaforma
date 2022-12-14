@@ -13,10 +13,12 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\TaskDeleteNotification::class,
-        Commands\TaskTenderClosed::class,
         Commands\TaskQuoteClosed::class,
+        Commands\TaskTenderClosed::class,
         Commands\TaskDownloadImgProduct::class,
+        Commands\TaskDeleteNotification::class,
+        Commands\sendRecommendationMessagesQuotes::class,
+        Commands\sendRecommendationMessagesTenders::class,
         Commands\TaskSendInvitationUnregisteredCompanies::class,
         Commands\TaskSendInvitationQuoteUnregisteredCompanies::class
     ];
@@ -42,7 +44,16 @@ class Kernel extends ConsoleKernel
         // cronJobs para enviar invitaciones a cotizaciones a compañias no registradas a plattaforma
         $schedule->command('task:task_send_invitation_quote_unregistered_companies')->everyFiveMinutes();
         // cronJobs para eliminar registros de notificaciones cada cierto tiempo (#)
-       // $schedule->command('task:delete_notification')->everyMinute();
+        // $schedule->command('task:delete_notification')->everyMinute();
+        // cronJobs para enviar los mensajes de recomendacion de licitaciones a compañias(#)
+        // $schedule->command('task:sendRecommendationMessagesTenders')->everyTenMinutes();
+        // cronJobs para enviar los mensajes de recomendacion de cotizaciones a compañias(#)
+        // $schedule->command('task:sendRecommendationMessagesQuotes')->everyTenMinutes();
+
+        // cronJobs para enviar los mensajes de recomendacion de licitaciones a compañias(#)
+        $schedule->command('task:sendRecommendationMessagesTenders')->everyTenMinutes();
+        // cronJobs para enviar los mensajes de recomendacion de cotizaciones a compañias(#)
+        $schedule->command('task:sendRecommendationMessagesQuotes')->everyTenMinutes();
     }
 
     /**

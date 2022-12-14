@@ -12,13 +12,16 @@ use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Remarks;
 use App\Models\Products;
+use App\Models\Quotes;
 use App\Models\Projects;
 use App\Models\Catalogs;
 use App\Models\Portfolio;
 use App\Models\TypesEntity;
 use Illuminate\Http\Request;
 use App\Mail\CreatedAccount;
+use App\Models\QuotesCompanies;
 use App\Models\TendersVersions;
+use App\Models\QuotesVersions;
 use App\Models\TendersCompanies;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str as Str;
@@ -26,6 +29,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Transformers\UserTransformer;
 use Illuminate\Support\Facades\Storage;
 use App\Transformers\TendersTransformer;
+use App\Transformers\QuotesTransformer;
 use TaylorNetwork\UsernameGenerator\Generator;
 use App\Http\Controllers\ApiControllers\ApiController;
 
@@ -208,14 +212,15 @@ class CompanyController extends ApiController
             return $this->errorResponse($companyError, 500);
         }
 
-        $userTransform = new UserTransformer();
-        $tendersTransform = new TendersTransformer();
+        $userTransform      = new UserTransformer();
+        $tendersTransform   = new TendersTransformer();
+        $quotesTransform    = new QuotesTransformer();
 
-        // Banner
+        // -> Banner imagens de portada.
         $company->coverpage = Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first();
 
 
-        // 8 Integrantes del equipo
+        // -> Integrantes del equipo (Solo de muestran los primero 8).
         $company->team = Team::where('company_id', $company->id)
             ->where('status', Team::TEAM_APPROVED)
             ->orderBy('id', 'desc')
@@ -233,12 +238,25 @@ class CompanyController extends ApiController
             $company->tenders = Tenders::select('tenders.*', 'comp.status AS company_status')
                 ->where('tenders.company_id', $company->id)
                 ->join('projects', 'projects.id', '=', 'tenders.project_id')
-                // ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+                ->where('projects.visible', Projects::PROJECTS_VISIBLE)
                 ->leftjoin('tenders_companies AS comp', function ($join) use ($userCompanyId) {
                     $join->on('tenders.id', '=', 'comp.tender_id');
                     $join->where('comp.company_id', '=', $userCompanyId);
                 })
                 ->orderBy('tenders.updated_at', 'desc')
+                ->skip(0)->take(6)
+                ->get();
+
+            // Traer Productos últimos 6
+            $company->quotes = Quotes::select('quotes.*', 'comp.status AS company_status')
+                ->where('quotes.company_id', $company->id)
+                ->join('projects', 'projects.id', '=', 'quotes.project_id')
+                ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+                ->leftjoin('quotes_companies AS comp', function ($join) use ($userCompanyId) {
+                    $join->on('quotes.id', '=', 'comp.quotes_id');
+                    $join->where('comp.company_id', '=', $userCompanyId);
+                })
+                ->orderBy('quotes.updated_at', 'desc')
                 ->skip(0)->take(6)
                 ->get();
 
@@ -274,6 +292,9 @@ class CompanyController extends ApiController
 
             // Traer Licitaciones últimas 6
             $company->tenders = $this->getTenderCompany($company->id, $userCompanyId);
+
+            // Traer cotizaciones últimas 6
+            $company->quotes = $this->getQuoteCompany($company->id, $userCompanyId);
 
             // Traer Productos últimos 6
             $company->products = $company->products
@@ -325,6 +346,24 @@ class CompanyController extends ApiController
         }
         unset($company->tenders);
         $company->tenders = $tenders;
+        
+        // Recorre las cotizaciones
+        $quotes = [];
+        foreach ($company->quotes as $key => $quote) {
+            $user = $quote->user;
+            unset($quote->user);
+            $quote->user = $user;
+
+            $version = $quote->quotesVersionLastPublish();
+            if ($version) {
+                $quote->tags = $version->tags;
+            }
+            $quote->project;
+
+            $quotes[] = $quotesTransform->transform($quote);
+        }
+        unset($company->quotes);
+        $company->quotes = $quotes;
 
         //recorre los productos
         foreach ($company->products as $key => $product) {
@@ -377,20 +416,6 @@ class CompanyController extends ApiController
 
     public function getTenderCompany($company_id, $user_company_id)
     {
-        // $tendersCompanies = Tenders::select('tenders.*', 'comp.status AS company_status')
-        //         ->where('tenders.company_id', $company_id)
-        //         ->join('projects', 'projects.id', '=', 'tenders.project_id')
-        //         ->where('projects.visible', Projects::PROJECTS_VISIBLE)
-        //         ->leftjoin('tenders_companies AS comp', function ($join) use ($user_company_id) {
-        //             $join->on('tenders.id', '=', 'comp.tender_id');
-        //             $join->where('comp.company_id', '=', $user_company_id);
-        //         })
-        //         ->orderBy('tenders.updated_at', 'desc')
-        //         ->skip(0)->take(6)
-        //         ->get();
-
-        // return $tendersCompanies;
-
         $tendersCompanies = Tenders::select('tenders.*', 'comp.status AS company_status')
                 ->where('tenders.company_id', $company_id)
                 ->join('projects', 'projects.id', '=', 'tenders.project_id')
@@ -423,6 +448,40 @@ class CompanyController extends ApiController
         return $tenders;
     }
 
+    public function getQuoteCompany($company_id, $user_company_id)
+    {
+        $quotesCompanies = Quotes::select('quotes.*', 'comp.status AS company_status')
+                ->where('quotes.company_id', $company_id)
+                ->join('projects', 'projects.id', '=', 'quotes.project_id')
+                ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+                ->leftjoin('quotes_companies AS comp', function ($join) use ($user_company_id) {
+                    $join->on('quotes.id', '=', 'comp.quotes_id');
+                    $join->where('comp.company_id', '=', $user_company_id);
+                })
+                ->orderBy('quotes.updated_at', 'desc')
+                ->pluck('quotes.id');
+
+        $quotesParticipate = $this->getQuoteParticipate();
+
+        $quoteArray = array_intersect(json_decode($quotesCompanies), json_decode($quotesParticipate));
+
+        $quote = Quotes::select('quotes.*', 'comp.status AS company_status')
+                ->where('quotes.company_id', $company_id)
+                ->whereIn('quotes.id', $quoteArray)
+                ->join('projects', 'projects.id', '=', 'quotes.project_id')
+                ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+                ->leftjoin('quotes_companies AS comp', function ($join) use ($user_company_id) {
+                    $join->on('quotes.id', '=', 'comp.quotes_id');
+                    $join->where('comp.company_id', '=', $user_company_id);
+                })
+                ->where('comp.status','=', QuotesCompanies::STATUS_PARTICIPATING)
+                ->orderBy('quotes.updated_at', 'desc')
+                ->skip(0)->take(6)
+                ->get();
+
+        return $quote;
+    }
+
     public function getTenderParticipate()
     {
         $user = $this->validateUser();
@@ -432,6 +491,17 @@ class CompanyController extends ApiController
         return TendersCompanies::where('company_id', $userCompanyId)
             ->whereIn('tender_id', $this->getTendersPublish())
             ->pluck('tender_id');
+    }
+
+    public function getQuoteParticipate()
+    {
+        $user = $this->validateUser();
+        // Compañía del usuario que está logueado
+        $userCompanyId = $user->companyId();
+
+        return QuotesCompanies::where('company_id', $userCompanyId)
+            ->whereIn('quotes_id', $this->getQuotesPublish())
+            ->pluck('quotes_id');
     }
 
     public function getTendersPublish()
@@ -448,6 +518,22 @@ class CompanyController extends ApiController
             }), '=', 0)
             ->groupBy('a.tenders_id')
             ->pluck('a.tenders_id');
+    }
+
+    public function getQuotesPublish()
+    {
+        return DB::table('quotes_versions as a')
+            ->select(DB::raw('max(a.created_at), a.quotes_id'))
+            ->where('a.status', QuotesVersions::QUOTATION_PUBLISH)
+            ->where((function ($query) {
+                $query->select(
+                    DB::raw("COUNT(*) from `quotes_versions` as `b` 
+                    where `b`.`status` != '" . QuotesVersions::QUOTATION_PUBLISH . "'  
+                    and `b`.`quotes_id` = a.quotes_id")
+                );
+            }), '=', 0)
+            ->groupBy('a.quotes_id')
+            ->pluck('a.quotes_id');
     }
 
     public function detail($slug)
@@ -555,12 +641,13 @@ class CompanyController extends ApiController
         if (isset($request->latitud) && isset($request->longitud)) {
             if (!$company->address) {
                 $company->address()->create([
-                    'address' => '',
+                    'address' => $request->address,
                     'latitud' => $request->latitud,
                     'longitud' => $request->longitud
                 ]);
             } else {
                 $company->address()->update([
+                    'address' => $request->address,
                     'latitud' => $request->latitud,
                     'longitud' => $request->longitud
                 ]);
@@ -568,7 +655,7 @@ class CompanyController extends ApiController
         } else {
             if (!$company->address) {
                 $company->address()->create([
-                    'address'   => '',
+                    'address'   => 'Panama',
                     'latitud'   => '8.9814453',
                     'longitud'  => '-79.5188013'
                 ]);

@@ -37,7 +37,7 @@ class tenderQueryAnswerController extends ApiController
             ->where('status',QueryWall::QUERYWALL_ANSWERED)
             ->where('type','=','Consulta')
             ->where('querysable_type', Tenders::class)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->get();   
 
         $queryWallsAnswered  = QueryWall::where('querysable_id', $tender_id)

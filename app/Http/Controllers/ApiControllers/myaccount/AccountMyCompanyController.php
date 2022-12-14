@@ -141,18 +141,21 @@ class AccountMyCompanyController extends ApiController
             if ($request->address || $request->latitud || $request->longitud) {
                 if (!$company->address) {
                     $company->address()->create([
-                        'address' => $request->address,
-                        'latitud' => $request->latitud,
-                        'longitud' => $request->longitud
-                    ]);
-                } else {
-                    $company->address()->update([
-                        'address'   => '',
-                        'latitud'   => '8.9814453',
-                        'longitud'  => '-79.5188013'
                         // 'address' => $request->address,
                         // 'latitud' => $request->latitud,
                         // 'longitud' => $request->longitud
+                        'address'   => 'Panama',
+                        'latitud'   => '8.9814453',
+                        'longitud'  => '-79.5188013'
+                    ]);
+                } else {
+                    $company->address()->update([
+                        // 'address'   => '',
+                        // 'latitud'   => '8.9814453',
+                        // 'longitud'  => '-79.5188013'
+                        'address' => $request->address,
+                        'latitud' => $request->latitud,
+                        'longitud' => $request->longitud
                     ]);
                 }
             }

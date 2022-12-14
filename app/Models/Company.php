@@ -24,6 +24,7 @@ use App\Models\TypesEntity;
 use App\Models\Advertisings;
 use App\Models\SocialNetworks;
 use App\Models\TendersVersions;
+use App\Models\QuotesVersions;
 use App\Models\TendersCompanies;
 use App\Models\CategoryService;
 use Illuminate\Support\Facades\DB;
@@ -135,6 +136,20 @@ class Company extends Model
         $count = 0;
         foreach ($tender as $value) {
             if ($value->tendersVersionLast()->status == TendersVersions::LICITACION_PUBLISH){
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+
+    public function quotePublishCount()
+    {
+        $quotes = $this->quotes;
+
+        $count = 0;
+        foreach ($quotes as $value) {
+            if ($value->quotesVersionLast()->status == QuotesVersions::QUOTATION_PUBLISH){
                 $count++;
             }
         }
@@ -764,6 +779,8 @@ class Company extends Model
             ->count();
 
         $total['tenders'] = $companySinTransform->tenderPublishCount();
+
+        $total['quotes'] = $companySinTransform->quotePublishCount();
         // $total['tenders'] = $companySinTransform->tenders
         //     ->count();
 

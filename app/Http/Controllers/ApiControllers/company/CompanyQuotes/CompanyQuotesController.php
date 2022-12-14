@@ -11,7 +11,6 @@ use App\Models\Notifications;
 use App\Models\QuotesVersions;
 use App\Models\QuotesCompanies;
 use Illuminate\Support\Facades\DB;
-use App\Mail\SendOfferTenderCompany;
 use Illuminate\Support\Facades\Mail;
 use App\Transformers\UserTransformer;
 use Illuminate\Support\Facades\Storage;

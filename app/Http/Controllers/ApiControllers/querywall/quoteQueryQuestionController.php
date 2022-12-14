@@ -42,10 +42,10 @@ class quoteQueryQuestionController extends ApiController
         $queryWalls  = QueryWall::where('querysable_id', $quote_id)
             ->where('querysable_type', Quotes::class)
             ->where('visible', QueryWall::QUERYWALL_VISIBLE)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'asc')
             ->get();
 
-        return $this->showAllPaginate($queryWalls);
+        return $this->showAllTransformer($queryWalls);
     }
 
     /**
