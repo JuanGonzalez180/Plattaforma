@@ -65,6 +65,11 @@ class TendersVersions extends Model
         return $this->morphMany(Tags::class, 'tagsable');
     }
 
+    public function tagsLimit()
+    {
+        return ($this->morphMany(Tags::class, 'tagsable'))->take(3);
+    }
+
     public function tagsName()
     {
         return Tags::where('tagsable_id', $this->id)

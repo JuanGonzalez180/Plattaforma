@@ -33,6 +33,7 @@ use App\Http\Controllers\WebControllers\stripe\ProductsStripeController;
 use App\Http\Controllers\WebControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\WebControllers\typesentity\TypesEntityController;
 use App\Http\Controllers\WebControllers\scripts\RemoveUnwantedUsersController;
+use App\Http\Controllers\WebControllers\scripts\customScriptController;
 use App\Http\Controllers\WebControllers\staticcontent\StaticContentController;
 use App\Http\Controllers\WebControllers\socialnetworks\SocialNetworksController;
 use App\Http\Controllers\WebControllers\exportfile\xls\CategoriesFileController;
@@ -77,6 +78,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('script/update/generic', [ScriptFilesController::class, 'genericScript']);
 Route::get('script/delete/filesize', [ScriptFilesController::class, 'deleteFileNotExist']);
 Route::get('script/delete/users/unwanted', RemoveUnwantedUsersController::class)->name('users-delete-unwanted');
+Route::get('script/custom/method', [customScriptController::class,'home']);
 
 // *Gestionar correos de mailchimp
 // ->registrar todos los correos de plattaforma a mailchimp

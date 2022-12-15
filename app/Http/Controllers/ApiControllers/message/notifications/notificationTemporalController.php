@@ -23,31 +23,63 @@ class notificationTemporalController extends ApiController
         return $this->user;
     }
 
+    // public function __invoke(Request $request)
+    // {
+    //     $user  = User::find($this->validateUser()->id);
+
+    //     //Busqueda por nombre licitación o cotización.
+    //     $search         = !isset($request->search) ? null : $request->search;
+
+    //     if($user->userType() == 'demanda')
+    //     {
+    //         $value = [
+    //             "tender"    => $this->getTenders($user, $search),
+    //             "quote"     => $this->getQuotes($user, $search)
+    //         ];
+
+    //     }
+    //     elseif($user->userType() == 'oferta')
+    //     {
+    //         $value = [
+    //             "tender"    => $this->getTenderParticipate($user, $search),
+    //             "quote"     => $this->getQuoteParticipate($user, $search)
+    //         ];
+    //     }
+
+    //     return $value;
+    // }
+    
+    
     public function __invoke(Request $request)
     {
         $user  = User::find($this->validateUser()->id);
 
+        
         //Busqueda por nombre licitación o cotización.
-        $search         = !isset($request->search) ? null : $request->search;
-
-        if($user->userType() == 'demanda')
+        $search     = !isset($request->search) ? null : $request->search;
+        $type       = !isset($request->type) ? null : $request->type;
+        
+        if(is_null($type))
         {
-            $value = [
-                "tender"    => $this->getTenders($user, $search),
-                "quote"     => $this->getQuotes($user, $search)
-            ];
-
+            return [];
         }
-        elseif($user->userType() == 'oferta')
+        
+        $value = [];
+        switch ($type) 
         {
-            $value = [
-                "tender"    => $this->getTenderParticipate($user, $search),
-                "quote"     => $this->getQuoteParticipate($user, $search)
-            ];
+            case 'tenders':
+                $value = ($user->userType() == 'demanda') ? $this->getTenders($user, $search) : $this->getTenderParticipate($user, $search);
+                break;
+            case 'quotes':
+                $value = ($user->userType() == 'demanda') ? $this->getQuotes($user, $search) : $this->getQuoteParticipate($user, $search);
+                break;
+            default:
+               $value = [];
         }
 
         return $value;
     }
+    
 
     public function getTenders($user, $search)
     {

@@ -14,7 +14,25 @@ class TypesEntityController extends ApiController
      */
     public function __invoke()
     {
-        $typesEntity = TypesEntity::where('status', TypesEntity::ENTITY_PUBLISH)->get();
+
+        // Tipos de entidad tipo demanda.
+        $typesEntityProject = $this->getTypeEntity('Demanda');
+        // Tipos de entidad tipo producto.
+        $typesEntityProduct = $this->getTypeEntity('Oferta');
+
+        $typesEntity  = $typesEntityProject->merge($typesEntityProduct);
+
         return $this->showAll($typesEntity);
+    }
+
+    public function getTypeEntity($type)
+    {
+        $typesEntity = TypesEntity::select('types_entities.*')->where('types_entities.status', TypesEntity::ENTITY_PUBLISH)
+        ->join('types','types.id','=','types_entities.type_id')
+        ->where('types.name',$type)
+        ->orderBy('types_entities.name','asc')
+        ->get();
+
+        return $typesEntity;
     }
 }
