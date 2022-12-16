@@ -12,6 +12,7 @@ use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Remarks;
 use App\Models\Products;
+use App\Models\Addresses;
 use App\Models\Quotes;
 use App\Models\Projects;
 use App\Models\Catalogs;
@@ -143,7 +144,8 @@ class CompanyController extends ApiController
             try {
                 // Crear la compañia
                 $company = Company::create($companyFields);
-
+                // Agrega la dirección de la compañia.
+                $this->setAdreess($company->id);
                 // Ingresar País en una Compañía
                 $company->countries()->attach($request['country_backend']);
             } catch (\Throwable $th) {
@@ -180,6 +182,17 @@ class CompanyController extends ApiController
 
         // Aquí debe devolver el usuario con el TOKEN.
         return $this->showOne($user, 201);
+    }
+
+    public function setAdreess($company_id)
+    {
+        $address = new Addresses();
+        $address->addressable_id    = $company_id;
+        $address->addressable_type  = Company::class;
+        $address->address           = 'Panama';
+        $address->latitud           = '8.9814453';
+        $address->longitud          = '-79.5188013';
+        $address->save();
     }
 
     public function statusCompanyUser($user)
@@ -338,6 +351,7 @@ class CompanyController extends ApiController
 
             $version = $tender->tendersVersionLastPublish();
             if ($version) {
+                $version->tags = $version->tagsLimit;
                 $tender->tags = $version->tags;
             }
             $tender->project;
@@ -639,28 +653,32 @@ class CompanyController extends ApiController
         }
 
         if (isset($request->latitud) && isset($request->longitud)) {
+            
+            $address = (strtolower($request->address) == strtolower('Panamá') || strtolower($request->address) == strtolower('Panama')) ? 'Ciudad de Panamá, Panamá' : $request->address;
+
             if (!$company->address) {
                 $company->address()->create([
-                    'address' => $request->address,
-                    'latitud' => $request->latitud,
-                    'longitud' => $request->longitud
+                    'address'   => $address,
+                    'latitud'   => $request->latitud,
+                    'longitud'  => $request->longitud
                 ]);
             } else {
                 $company->address()->update([
-                    'address' => $request->address,
-                    'latitud' => $request->latitud,
-                    'longitud' => $request->longitud
+                    'address'   => $address,
+                    'latitud'   => $request->latitud,
+                    'longitud'  => $request->longitud
                 ]);
             }
         } else {
             if (!$company->address) {
                 $company->address()->create([
-                    'address'   => 'Panama',
+                    'address'   => 'Ciudad de Panamá, Panamá',
                     'latitud'   => '8.9814453',
                     'longitud'  => '-79.5188013'
                 ]);
             } else {
                 $company->address()->update([
+                    'address'   => 'Ciudad de Panamá, Panamá',
                     'latitud'   => '8.9814453',
                     'longitud'  => '-79.5188013'
                 ]);

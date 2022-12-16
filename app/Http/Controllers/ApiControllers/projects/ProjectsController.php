@@ -177,7 +177,7 @@ class ProjectsController extends ApiController
             $address = null;
 
             if (!isset($request->address_map) && isset($request->address)) {
-                $address = $request->address;
+                $address = (strtolower($request->address) == strtolower('Panamá') || strtolower($request->address) == strtolower('Panama')) ? 'Ciudad de Panamá, Panamá' : $request->address;
             } else if (isset($request->address_map) && !isset($request->address)) {
                 $address = $request->address_map;
             }
@@ -195,7 +195,7 @@ class ProjectsController extends ApiController
                 //     'longitud'  => '-79.49169507915'
                 // ]);
                 $project->address()->create([
-                    'address'   => 'Panama',
+                    'address'   => 'Ciudad de Panamá, Panamá',
                     'latitud'   => '8.9814453',
                     'longitud'  => '-79.5188013'
                 ]);
@@ -296,7 +296,7 @@ class ProjectsController extends ApiController
         $address = $request->address_map;
 
         if (!isset($request->address_map) && isset($request->address)) {
-            $address = $request->address;
+            $address = (strtolower($request->address) == strtolower('Panamá') || strtolower($request->address) == strtolower('Panama')) ? 'Ciudad de Panamá, Panamá' : $request->address;
         } else if (isset($request->address_map) && !isset($request->address)) {
             $address = $request->address_map;
         }
@@ -310,7 +310,7 @@ class ProjectsController extends ApiController
             ]);
         } else {
             $project->address()->update([
-                'address'   => 'Panama',
+                'address'   => 'Ciudad de Panamá, Panamá',
                 'latitud'   => '8.9814453',
                 'longitud'  => '-79.5188013'
             ]);

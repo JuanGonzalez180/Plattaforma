@@ -108,6 +108,7 @@ class Tenders extends Model
         if ($tenderVersionLastPublish) {
             $tags = Tags::where('tagsable_id', $tenderVersionLastPublish->id)
                 ->where('tagsable_type', TendersVersions::class)
+                ->take(3)
                 ->orderBy('name', 'asc')
                 ->pluck('name');
 
