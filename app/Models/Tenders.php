@@ -241,6 +241,23 @@ class Tenders extends Model
         return array_unique($ids);
     }
 
+    // *Devuelve los id/s de los usuarios participantes y no de la licitación.
+    public function TenderCompanyIdUsers()
+    {
+        $ids = [];
+
+        $tenderCompanies = TendersCompanies::where('tender_id', $this->id)
+            ->get();
+
+
+        foreach ($tenderCompanies as $tenderCompany) {
+            $ids[] = $tenderCompany->userCompany->id;
+            $ids[] = $tenderCompany->company->user->id;
+        }
+
+        return array_unique($ids);
+    }
+
     // *Devuelve los id/s de administrador de la compañia y del ecargado de la licitación.
     public function TenderAdminIdUsers()
     {
