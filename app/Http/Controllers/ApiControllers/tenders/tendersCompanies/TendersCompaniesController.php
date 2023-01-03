@@ -85,13 +85,26 @@ class TendersCompaniesController extends ApiController
             $this->sendInvitantionExternalCompanies($request->companies_email, $tender);
         }
 
-        $tender->participatingUsers     = $tender->TenderCompanyIdUsers();
+        $tender->participatingUsers     = $this->getUserCompaniesIds($tendersCompaniesNew);
         $tender->companyName            = $tender->company->name;
         $tender->projectName            = $tender->project->name;
 
         $this->sendRecommendTender($tender);
 
         return $this->showOne($tender, 201);
+    }
+
+    public function getUserCompaniesIds($tendersCompanies)
+    {
+        $ids = [];
+
+        foreach ($tendersCompanies as $tenderCompany)
+        {
+            $ids[] = $tenderCompany->userCompany->id;
+            $ids[] = $tenderCompany->company->user->id;
+        }
+
+        return array_unique($ids);
     }
 
     public function store_old(Request $request) //envia invitaciones a la licitación
