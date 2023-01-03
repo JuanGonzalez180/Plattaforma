@@ -45,4 +45,15 @@ class UserTransformer extends TransformerAbstract
             'company'   => ($user->companyFull())? $companyTransformer->transform($user->companyFull()) : null,
         ];
     }
+
+    public function transformCometChat(User $user)
+    {
+        return [
+            'id'                => (int)$user->id,
+            'user_name'         => (string)$user->name,
+            'user_image'        => (string)$user->image ? url( 'storage/' . $user->image->url ) : null,
+            'company_name'      => ($user->companyName())? $user->companyName() : null,
+            'company_image'     => ($user->companyImg())? $user->companyImg() : null,
+        ];
+    }
 }

@@ -124,6 +124,8 @@ use App\Http\Controllers\ApiControllers\publicity\advertisingplanspaidimages\Adv
 use App\Http\Controllers\ApiControllers\publicity\advertisingplans\AdvertisingPlansController;
 // Company Changes
 use App\Http\Controllers\ApiControllers\company\CompanyChanges\CompanyChangesNameController;
+// SCRIPT
+use App\Http\Controllers\ApiControllers\script\scriptController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -464,6 +466,11 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('/categories/list/file/xlsx', function () {
         return (new CategoriesFileController)->export()->download('categorias.xlsx');
     })->name('cotegory-export-api');
+
+
+    // SCRIPTS
+    Route::post('/script/all', scriptController::class)->name('script-api');
+
 });
 // Route::post('/files', FilesController::class)->name('files');
 

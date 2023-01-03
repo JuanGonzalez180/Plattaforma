@@ -165,6 +165,17 @@ class User extends Authenticatable implements JWTSubject
         return 0;
     }
 
+    public function companyImg()
+    {
+        if (count($this->company) && $this->company[0]) {
+            return ($this->company[0]->image) ? $this->company[0]->url  : null;
+        } elseif ($this->team) {
+            return ($this->team->company->image)? $this->team->company->image->url : null;
+        }
+
+        return 0;
+    }
+
     public function companyName()
     {
         if (count($this->company) && $this->company[0]) {
