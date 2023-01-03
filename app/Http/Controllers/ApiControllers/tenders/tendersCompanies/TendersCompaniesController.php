@@ -85,7 +85,9 @@ class TendersCompaniesController extends ApiController
             $this->sendInvitantionExternalCompanies($request->companies_email, $tender);
         }
 
-        $tender->participatingUsers = $tender->TenderCompanyIdUsers();
+        $tender->participatingUsers     = $tender->TenderCompanyIdUsers();
+        $tender->companyName            = $tender->company->name;
+        $tender->projectName            = $tender->project->name;
 
         $this->sendRecommendTender($tender);
 
