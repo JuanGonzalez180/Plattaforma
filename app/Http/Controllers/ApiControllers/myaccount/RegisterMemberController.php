@@ -41,6 +41,9 @@ class RegisterMemberController extends ApiController
                 $newMember["already_registered"] = true;
             }
 
+            $newMember->companyName = $newMember->company->name;
+
+
             return $this->showOne($newMember, 201);
         }
 
