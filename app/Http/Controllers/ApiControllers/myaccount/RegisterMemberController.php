@@ -39,8 +39,9 @@ class RegisterMemberController extends ApiController
                 $dataTeam->update( $dataMember );
             } else {
                 $newMember["already_registered"] = true;
-                $newMember["companyName"] = $newMember->companyName();
             }
+            
+            $newMember["companyName"] = $newMember->companyName();
 
             // $newMember->companyName = $newMember->company->name;
 
