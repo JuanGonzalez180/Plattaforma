@@ -406,6 +406,8 @@ class TendersCompaniesController extends ApiController
         $notifications = new Notifications();
         $notifications->registerNotificationQuery($tenderCompany, Notifications::NOTIFICATION_TENDERRESPONSECOMPANIES, $notificationsIds);
 
+        $tenderCompany->participatingUsers = $tenderCompany->tenderCompanyUsersIds();
+
         return $this->showOne($tenderCompany, 200);
     }
 

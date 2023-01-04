@@ -259,7 +259,8 @@ class CompanyTendersController extends ApiController
             // Notifica al administrador de la licitación que dicha compañia ha aceptado la invitación.
             $this->sendNotificationTender($tender_company, Notifications::NOTIFICATION_INVITATION_APPROVED);
 
-            
+            $tender_company->participatingUsers = $tender_company->tenderCompanyUsersIds();
+
 
             return $this->showOne($tender_company, 200);
         }
