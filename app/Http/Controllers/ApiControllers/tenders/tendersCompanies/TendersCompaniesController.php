@@ -86,6 +86,7 @@ class TendersCompaniesController extends ApiController
         }
 
         $tender->participatingUsers     = $this->getUserCompaniesIds($tendersCompaniesNew);
+        $tender->adminTenderUsers       = $tender->TenderAdminIdUsers();
         $tender->companyName            = $tender->company->name;
         $tender->projectName            = $tender->project->name;
 
