@@ -86,9 +86,27 @@ class QuotesCompaniesController extends ApiController
             $this->sendInvitantionExternalCompanies($request->companies_email, $quote);
         }
 
+        $quote->participatingUsers     = $this->getUserCompaniesIds($quotesCompaniesNew);;
+        $quote->adminTenderUsers       = $quote->QuoteAdminIdUsers();
+        $quote->companyName            = $quote->company->name;
+        $quote->projectName            = $quote->project->name;
+
         $this->sendRecommendquote($quote);
 
         return $this->showOne($quote, 201);
+    }
+
+    public function getUserCompaniesIds($quotesCompanies)
+    {
+        $ids = [];
+
+        foreach ($quotesCompanies as $quoteCompany)
+        {
+            $ids[] = $quoteCompany->userCompany->id;
+            $ids[] = $quoteCompany->company->user->id;
+        }
+
+        return array_unique($ids);
     }
 
     public function sendRecommendQuote($quote)

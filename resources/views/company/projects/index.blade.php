@@ -61,6 +61,9 @@ Proyectos
     </thead>
 </table>
 
+<!-- Modal -->
+@include('company.projects.modal.modal')
+
 @include('partials.structure.close-main')
 <script>
     var table;
@@ -277,6 +280,13 @@ Proyectos
                 getStatusCount();
             }
         });
+    }
+
+    function showEditEntity($companyId, $entityId)
+    {
+        console.log($companyId);
+        console.log($entityId);
+        $('#modal_typeEntity').modal();
     }
 </script>
 @endsection
