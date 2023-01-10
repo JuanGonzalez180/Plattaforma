@@ -202,6 +202,8 @@ class CompanyQuotesController extends ApiController
             // Notifica al administrador de la cotización que dicha compañia ha aceptado la invitación.
             $this->sendNotificationQuote($quote_company, Notifications::NOTIFICATION_QUOTE_INVITATION_APPROVED);
 
+            $quote_company->participatingUsers = $quote_company->quoteCompanyUsersIds();
+
             return $this->showOne($quote_company, 200);
         } else {
             $quote_company->delete();
