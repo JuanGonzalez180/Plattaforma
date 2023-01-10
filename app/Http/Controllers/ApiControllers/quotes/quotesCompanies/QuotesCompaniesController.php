@@ -352,6 +352,8 @@ class QuotesCompaniesController extends ApiController
         $notifications      = new Notifications();
         $notifications->registerNotificationQuery($quoteCompany, Notifications::NOTIFICATION_QUOTERESPONSECOMPANIES, $notificationsIds);
 
+        $quoteCompany->participatingUsers = $quoteCompany->quoteCompanyUsersIds();
+
         return $this->showOne($quoteCompany, 200);
     }
 }
