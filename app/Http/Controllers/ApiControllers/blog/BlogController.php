@@ -34,8 +34,14 @@ class BlogController extends ApiController
         $user = $this->validateUser();
         $companyID = $user->companyId();
 
-        $blogs = Blog::where('company_id','=',$companyID)
-            ->orderBy('created_at', 'desc')
+        $blogs = Blog::where('company_id','=',$companyID);
+
+        if (!$user->isAdminFrontEnd())
+        {
+            $blogs = $blogs->where('user_id', $user->id);
+        }
+
+        $blogs = $blogs->orderBy('created_at', 'desc')
             ->get();
         
         return $this->showAllPaginate($blogs);

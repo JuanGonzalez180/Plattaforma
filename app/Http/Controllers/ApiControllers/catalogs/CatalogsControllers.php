@@ -31,8 +31,14 @@ class CatalogsControllers extends ApiController
         $user = $this->validateUser();
         $companyId = $user->companyId();
 
-        $catalog = Catalogs::where('company_id', '=', $companyId)
-            ->orderBy('created_at', 'desc')
+        $catalog = Catalogs::where('company_id', '=', $companyId);
+        
+        if (!$user->isAdminFrontEnd())
+        {
+            $catalog = $catalog->where('user_id', $user->id);
+        }
+        
+        $catalog = $catalog->orderBy('created_at', 'desc')
             ->get();
 
         return $this->showAllPaginate($catalog);

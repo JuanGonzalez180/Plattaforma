@@ -404,7 +404,7 @@ class CompanyController extends ApiController
             $product->user = $user;
             $product->tags = Tags::where('tagsable_id',$product->id)
                 ->where('tagsable_type', Products::class)
-                ->take(6)
+                ->take(4)
                 ->get();
             $product->image;
         }
