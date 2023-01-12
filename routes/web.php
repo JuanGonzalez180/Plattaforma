@@ -32,6 +32,7 @@ use App\Http\Controllers\WebControllers\scripts\uploadEmailsToMailchimp;
 use App\Http\Controllers\WebControllers\stripe\ProductsStripeController;
 use App\Http\Controllers\WebControllers\typeproject\TypeProjectController;
 use App\Http\Controllers\WebControllers\typesentity\TypesEntityController;
+use App\Http\Controllers\WebControllers\typesentity\TypesEntityApiControllers;
 use App\Http\Controllers\WebControllers\scripts\RemoveUnwantedUsersController;
 use App\Http\Controllers\WebControllers\scripts\customScriptController;
 use App\Http\Controllers\WebControllers\staticcontent\StaticContentController;
@@ -141,6 +142,8 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::post('/typesentity/type', [TypesEntityController::class, 'getTypeEntityType'])
                 ->name('typesentity.type');
+
+        Route::get('/typesentityApi', TypesEntityApiControllers::class)->name('typesentityApi');
 
         // Compañias
         Route::resource('companias', CompanyController::class)

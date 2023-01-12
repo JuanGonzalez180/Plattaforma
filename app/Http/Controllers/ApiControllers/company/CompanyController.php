@@ -148,12 +148,20 @@ class CompanyController extends ApiController
                 $this->setAdreess($company->id);
                 // Ingresar País en una Compañía
                 $company->countries()->attach($request['country_backend']);
+
+                // Si el usuario ha ingresado una etiqueta se guardara como etiqueta de la compañia y como tipo de entidad.
+                if(isset($request->tag))
+                {
+                    $company->tags()->create(['name' => $request->tag]);
+                    $this->setTypeEntity($request->tag);
+                }
+                //
             } catch (\Throwable $th) {
                 // Si existe algún error al generar la compañía
                 $errorCompany = true;
                 DB::rollBack();
 
-                $companyError = ['company' => 'Error, no se ha podido crear la compañia'];
+                $companyError = ['company' => $th];
 
                 if ($th->getCode() == 23000 && $th->errorInfo[1] == 1062) {
                     $companyError = ['company' => 'Error, ya se encuentra registrada la compañia'];
@@ -182,6 +190,16 @@ class CompanyController extends ApiController
 
         // Aquí debe devolver el usuario con el TOKEN.
         return $this->showOne($user, 201);
+    }
+
+    public function setTypeEntity($tagName)
+    {
+        $entityFiels['type_id']     = 2;
+        $entityFiels['name']        = ucfirst($tagName);
+        $entityFiels['slug']        = Str::slug($tagName);
+        $entityFiels['status']       = 'Borrador';
+
+        TypesEntity::create($entityFiels);
     }
 
     public function setAdreess($company_id)

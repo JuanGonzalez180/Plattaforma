@@ -9,9 +9,13 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-warning" role="alert">
-                    <i class="fa-solid fa-circle-exclamation"></i>A simple warning alert—check it out!
-                </div>
+                <select class="form-control" id="list_entity_types">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                  </select>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" data-dismiss="modal">Guardar</button>

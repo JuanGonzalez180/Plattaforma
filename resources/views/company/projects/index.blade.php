@@ -143,8 +143,6 @@ Proyectos
                 _token: _token
             },
             success: function(data) {
-                console.log(data);
-
                 let HTMLString = `
                 <thead>
                     <tr>
@@ -284,9 +282,54 @@ Proyectos
 
     function showEditEntity($companyId, $entityId)
     {
-        console.log($companyId);
-        console.log($entityId);
-        $('#modal_typeEntity').modal();
+        var typeEntityList = getTypeEntity();
+
+        // $('#modal_typeEntity').modal();
+
+        // modalBody = document.getElementById("modal-list_entity_types");
+
+        // modalBody.innerHTML = drawForm($entityId);
+
     }
+
+    function getTypeEntity($companyId, $entityId)
+    {
+        let _token          = $("input[name=_token]").val();
+        let typeEntityList  = [];
+
+        $.ajax({
+            url: "{{route('typesentityApi')}}",
+            type: "get",
+            data: {
+                _token: _token
+            },
+            success: function(data)
+            {
+                drawForm(data);
+            }
+        });
+
+        console.log('hola');
+
+        return typeEntityList;
+
+    }
+
+    function drawForm(entityId)
+    {
+        let option = "";
+
+        for(let i = 0; i< entityId.length; i ++)
+        {
+            option = option+"<option value='"+entityId[i]['id']+"'>"+entityId[i]['name']+"</option>";
+        }
+        console.log(option);
+
+        let drawForm = "<select class='form-control' id='type_entity_id'>"+option+"</select>";
+
+        return drawForm;
+    }
+
+
 </script>
 @endsection
