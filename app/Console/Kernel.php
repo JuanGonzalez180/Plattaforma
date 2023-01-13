@@ -51,9 +51,9 @@ class Kernel extends ConsoleKernel
         // $schedule->command('task:sendRecommendationMessagesQuotes')->everyTenMinutes();
 
         // cronJobs para enviar los mensajes de recomendacion de licitaciones a compañias(#)
-        $schedule->command('task:sendRecommendationMessagesTenders')->everyTenMinutes();
+        $schedule->command('task:sendRecommendationMessagesTenders')->everyMinute();
         // cronJobs para enviar los mensajes de recomendacion de cotizaciones a compañias(#)
-        $schedule->command('task:sendRecommendationMessagesQuotes')->everyTenMinutes();
+        $schedule->command('task:sendRecommendationMessagesQuotes')->everyMinute();
     }
 
     /**

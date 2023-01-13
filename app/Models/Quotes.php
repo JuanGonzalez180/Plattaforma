@@ -301,6 +301,11 @@ class Quotes extends Model
             $users['company']       = $value->company->name;
             $participate[]          = $users;
 
+            $users['id']            = $value->quote->user->id;
+            $users['image']         = isset($value->quote->user->image) ? $value->quote->user->image->url: null ;
+            $users['company']       = $value->quote->company->name;
+            $participate[]          = $users;
+
             if($value->company->user->id != $value->userCompany->id)
             {
                 $users['id']            = $value->userCompany->id;
