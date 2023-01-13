@@ -87,6 +87,7 @@ use App\Http\Controllers\ApiControllers\search\SearchTendersController;
 use App\Http\Controllers\ApiControllers\search\SearchCompanyController;
 use App\Http\Controllers\ApiControllers\search\SearchProductsController;
 use App\Http\Controllers\ApiControllers\search\SearchProjectsController;
+use App\Http\Controllers\ApiControllers\services\portal\servicePortalController;
 // Random
 use App\Http\Controllers\ApiControllers\random\RandomAdvertisingsController;
 // Password
@@ -406,7 +407,9 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('/search/companies', SearchCompanyController::class)->name('search-companies');
     // Search item filter
     Route::post('/search/filter/item', ItemFilterController::class)->name('search-filter-item');
-
+    
+    // Service
+    Route::post('/service/portal', servicePortalController::class)->name('service-portal');
 
     // Route::post('/search/item/companies', SearchLikeCompanyController::class)->name('search-item-companies');
     Route::resource('/search/items', SearchItemControllerOld::class, ['only' => ['index']])->names('search-items');

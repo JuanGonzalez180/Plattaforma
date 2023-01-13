@@ -305,4 +305,31 @@ class Tenders extends Model
     {
         return Company::find($company_id)->image;
     }
+
+    public function UserParticipateTender()
+    {
+        $participate = [];
+        $companies =  TendersCompanies::where('tenders_companies.tender_id', $this->id)
+            ->where('tenders_companies.status', TendersCompanies::STATUS_PARTICIPATING)
+            ->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
+            ->get();
+
+        foreach ($companies as $value)
+        {
+            $users['id']            = $value->company->user->id;
+            $users['image']         = isset($value->company->user->image) ? $value->company->user->image->url: null ;
+            $users['company']       = $value->company->name;
+            $participate[]          = $users;
+
+            if($value->company->user->id != $value->userCompany->id)
+            {
+                $users['id']            = $value->userCompany->id;
+                $users['image']         = isset($value->userCompany->image) ? $value->userCompany->image->url: null ;
+                $users['company']       = $value->userCompany->companyFull()->name;
+                $participate[]          = $users;
+            }
+        }
+
+        return (count($participate)>0)? $participate : null;
+    }
 }
