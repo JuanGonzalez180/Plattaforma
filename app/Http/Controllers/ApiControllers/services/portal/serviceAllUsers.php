@@ -33,7 +33,7 @@ class serviceAllUsers extends ApiController
         $usersArray = [];
         foreach($users as $user)
         {
-            $value['avatar']            = isset($user->companyFull()->image) ? $user->companyFull()->image->url : '';
+            $value['avatar']            = isset($user->companyFull()->image) ? $user->companyFull()->image->url : null;
             $value['name']              = $user->name;
             $value['uid']               = $user->id;
             $value['metadata']          = $this->getMetdata($user);
@@ -49,7 +49,7 @@ class serviceAllUsers extends ApiController
     {
         $value['rawMetadata'] = $user->companyFull()->name;
         $value['email'] = $user->email;
-        $value['img_user'] = isset($user->image) ? $user->image->url : '';
+        $value['img_user'] = isset($user->image) ? $user->image->url : null;
         $value['id_company'] = $user->companyFull()->id;
 
         return $value;
@@ -62,6 +62,6 @@ class serviceAllUsers extends ApiController
 
     public function getUsers($userArray)
     {
-        return User::whereIn('id', $userArray)->orderBy('id','asc')->get();
+        return User::whereIn('id', $userArray)->orderBy('id','asc')->skip(0)->take(20)->get();
     }
 }
