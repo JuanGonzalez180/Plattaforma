@@ -25,7 +25,7 @@ class serviceAllUsers extends ApiController
 
         $userList = $this->setAllUsers($users);
 
-        return count($usersArray);
+        return $userList;
     }
 
     public function setAllUsers($users)
