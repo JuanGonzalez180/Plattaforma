@@ -62,6 +62,6 @@ class serviceAllUsers extends ApiController
 
     public function getUsers($userArray)
     {
-        return User::whereIn('id', $userArray)->whereNotNull('name')->orderBy('id','asc')->skip(0)->take(20)->get();
+        return User::whereIn('id', $userArray)->where('name','<>','')->whereNotNull('name')->orderBy('id','asc')->skip(0)->take(20)->get();
     }
 }
