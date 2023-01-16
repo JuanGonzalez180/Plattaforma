@@ -297,19 +297,19 @@ class Quotes extends Model
         foreach ($companies as $value)
         {
             $users['id']            = $value->company->user->id;
-            $users['image']         = isset($value->company->user->image) ? $value->company->user->image->url: null ;
+            $users['image']         = isset($value->company->user->image) ? $value->company->user->image->url: 'null' ;
             $users['company']       = $value->company->name;
             $participate[]          = $users;
 
             $users['id']            = $value->quote->user->id;
-            $users['image']         = isset($value->quote->user->image) ? $value->quote->user->image->url: null ;
+            $users['image']         = isset($value->quote->user->image) ? $value->quote->user->image->url: 'null' ;
             $users['company']       = $value->quote->company->name;
             $participate[]          = $users;
 
             if($value->company->user->id != $value->userCompany->id)
             {
                 $users['id']            = $value->userCompany->id;
-                $users['image']         = isset($value->userCompany->image) ? $value->userCompany->image->url: null ;
+                $users['image']         = isset($value->userCompany->image) ? $value->userCompany->image->url: 'null' ;
                 $users['company']       = $value->userCompany->companyFull()->name;
                 $participate[]          = $users;
             }

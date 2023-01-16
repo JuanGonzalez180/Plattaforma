@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Team;
-use App\Models\QueryWall;
 use App\Models\Company;
+use App\Models\QueryWall;
 use App\Models\TendersCompanies;
 use App\Models\QuotesCompanies;
 use Illuminate\Database\Eloquent\Model;
@@ -437,12 +438,12 @@ class Notifications extends Model
         Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION => [ 
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
-            'message'   => 'Se ha creado una nueva adenda de la licitación',
+            'message'   => 'Se ha creado una nueva adenda de la licitación.<br>Fecha de cierre: <b>%s</b>.',
         ],
         Notifications::NOTIFICATION_QUOTECOMPANYNEWVERSION => [ 
             'title'     => 'Cotización: %s', 
             'subtitle'  => '', 
-            'message'   => 'Se ha creado una nueva adenda de la cotización',
+            'message'   => 'Se ha creado una nueva adenda de la cotización.<br>Fecha de cierre: <b>%s</b>.',
         ],
         Notifications::NOTIFICATION_TENDERCOMPANY_OFFER => [ 
             'title'     => 'Licitación: %s', 
@@ -744,13 +745,13 @@ class Notifications extends Model
         elseif( $type == Notifications::NOTIFICATION_TENDERCOMPANYNEWVERSION ) //notificación cuando se crea una adenda de la licitación
         {
             $title      = sprintf($title, $query->name);
-            $message    = sprintf($message, $query->company->name);
+            $message    = sprintf($message, $this->formatDate($query->tendersVersionLast()->date));
             $data['id'] = $query->company->slug."/licitacion/".$query->id;
         }
         elseif( $type == Notifications::NOTIFICATION_QUOTECOMPANYNEWVERSION ) //notificación cuando se crea una adenda de la cotización
         {
             $title      = sprintf($title, $query->name);
-            $message    = sprintf($message, $query->company->name);
+            $message    = sprintf($message, $this->formatDate($query->quotesVersionLast()->date));
             $data['id'] = $query->company->slug."/cotizacion/".$query->id;
         }
         elseif( $type == Notifications::NOTIFICATION_TENDER_DELETE ) //notificación se borra una licitación
@@ -839,5 +840,11 @@ class Notifications extends Model
             // Close connection
             curl_close($ch);
         }
+    }
+
+    public function formatDate($date)
+    {
+        $date = Carbon::parse($date)->locale('es');
+        return ucfirst($date->monthName).", ".$date->format('d-Y');
     }
 }

@@ -317,19 +317,19 @@ class Tenders extends Model
         foreach ($companies as $value)
         {
             $users['id']            = $value->company->user->id;
-            $users['image']         = isset($value->company->user->image) ? $value->company->user->image->url: null ;
+            $users['image']         = isset($value->company->user->image) ? $value->company->user->image->url: 'null' ;
             $users['company']       = $value->company->name;
             $participate[]          = $users;
 
             $users['id']            = $value->tender->user->id;
-            $users['image']         = isset($value->tender->user->image) ? $value->tender->user->image->url: null ;
+            $users['image']         = isset($value->tender->user->image) ? $value->tender->user->image->url: 'null' ;
             $users['company']       = $value->tender->company->name;
             $participate[]          = $users;
 
             if($value->company->user->id != $value->userCompany->id)
             {
                 $users['id']            = $value->userCompany->id;
-                $users['image']         = isset($value->userCompany->image) ? $value->userCompany->image->url: null ;
+                $users['image']         = isset($value->userCompany->image) ? $value->userCompany->image->url: 'null' ;
                 $users['company']       = $value->userCompany->companyFull()->name;
                 $participate[]          = $users;
             }

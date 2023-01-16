@@ -117,7 +117,8 @@ class QuotesCompaniesController extends ApiController
 
         $recommendToCompanies = ($quote->type == 'Publico') ? $this->getQueryCompaniesTags($tags, $companies) : [];
 
-        if ((sizeof($recommendToCompanies) > 0) && (count($quote->quotesVersion) == 1)) {
+        if ((sizeof($recommendToCompanies) > 0) && (count($quote->quotesVersion) == 1))
+        {
             foreach ($recommendToCompanies as $key => $value) {
                 $company = Company::find($value);
                 $this->sendNotificationRecommendQuote($quote, $company->userIds());
