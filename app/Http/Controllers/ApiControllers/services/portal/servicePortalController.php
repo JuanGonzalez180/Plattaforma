@@ -42,6 +42,5 @@ class servicePortalController extends ApiController
         }
 
         return $quote->UserParticipateQuote();
-
     }
 }
