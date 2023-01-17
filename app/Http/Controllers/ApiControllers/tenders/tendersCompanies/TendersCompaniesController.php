@@ -90,7 +90,10 @@ class TendersCompaniesController extends ApiController
         $tender->companyName            = $tender->company->name;
         $tender->projectName            = $tender->project->name;
 
-        $this->sendRecommendTender($tender);
+        if($request->sendInvitation == true)
+        {
+            $this->sendRecommendTender($tender);
+        }
 
         return $this->showOne($tender, 201);
     }

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\ApiControllers\tenders\tendersVersions;
 use File;
 use JWTAuth;
 use Carbon\Carbon;
+use App\Models\Tags;
 use App\Models\Files;
+use App\Models\Company;
 use App\Models\Tenders;
 use App\Models\Projects;
 use Illuminate\Http\Request;
@@ -134,8 +136,59 @@ class TendersVersionsController extends ApiController
         // * Envia correos y notificaciones a las compañias participantes.
         $this->sendMessageTenderVersión($tendersVersions->tenders->tendersCompaniesParticipating(), $tendersVersions->tenders);
 
+        
         DB::commit();
+
+
+        // Envia notificaciones y mensajes de recomendación a compañias no invitadas con etiquetas en comun.
+        $this->sendRecommendTender($tendersVersions->tenders);
+
         return $this->showOne($tendersVersions, 201);
+    }
+
+    public function sendRecommendTender($tender)
+    {
+        $tags       = $tender->tendersVersionLast()->tagsName();
+        $companies  = $tender->tenderCompaniesIds();
+        
+        $recommendToCompanies = ($tender->type == 'Publico') ? $this->getQueryCompaniesTags($tags, $companies) : [];
+
+        if (sizeof($recommendToCompanies) > 0) {
+            foreach ($recommendToCompanies as $key => $value) {
+                $company = Company::find($value);
+                $this->sendNotificationRecommendTender($tender, $company->userIds());
+                DB::table('temporal_recommendation')->insert([
+                    'modelsable_id'     => $tender->id,
+                    'modelsable_type'   => Tenders::class,
+                    'company_id'        => $company->id,
+                ]);
+            }
+        }
+    }
+
+    public function sendNotificationRecommendTender($tender, $users)
+    {
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery($tender, Notifications::NOTIFICATION_RECOMMEND_TENDER, $users);
+    }
+
+    public function getQueryCompaniesTags($tags, $companies)
+    {
+        return Tags::where('tagsable_type', Company::class)
+            ->where(function ($query) use ($tags) {
+                for ($i = 0; $i < count($tags); $i++) {
+                    $query->orwhere(strtolower('tags.name'), 'like', '%' . strtolower($tags[$i]) . '%');
+                }
+            })
+            ->join('companies', 'companies.id', '=', 'tags.tagsable_id')
+            ->whereNotIn('companies.id', $companies)
+            ->where('companies.status', 'Aprobado')
+            ->join('types_entities', 'types_entities.id', '=', 'companies.type_entity_id')
+            ->join('types', 'types.id', '=', 'types_entities.type_id')
+            ->where('types.name', '=', 'Oferta')
+            ->orderBy('companies.id', 'asc')
+            ->distinct()
+            ->pluck('companies.id');
     }
 
     public function sendMessageTenderVersión($tenderCompanies, $tender)

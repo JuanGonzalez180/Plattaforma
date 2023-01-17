@@ -4,8 +4,10 @@ namespace App\Http\Controllers\ApiControllers\quotes\quotesVersions;
 
 use JWTAuth;
 use Carbon\Carbon;
+use App\Models\Tags;
 use App\Models\Files;
 use App\Models\Quotes;
+use App\Models\Company;
 use App\Models\Projects;
 use Illuminate\Http\Request;
 use App\Models\Notifications;
@@ -115,7 +117,58 @@ class QuotesVersionsController extends ApiController
         $this->sendMessageQuoteVersion($quotesVersions->quotes->quotesCompaniesParticipating(), $quotesVersions->quotes);
 
         DB::commit();
+
+        $this->sendRecommendQuote($quotesVersions->quotes);
+
+
         return $this->showOne($quotesVersions, 201);
+    }
+
+    public function sendRecommendQuote($quote)
+    {
+        $tags = $quote->quotesVersionLast()->tagsName();
+
+        $companies = $quote->quoteCompaniesIds();
+
+        $recommendToCompanies = ($quote->type == 'Publico') ? $this->getQueryCompaniesTags($tags, $companies) : [];
+
+        if (sizeof($recommendToCompanies) > 0)
+        {
+            foreach ($recommendToCompanies as $key => $value) {
+                $company = Company::find($value);
+                $this->sendNotificationRecommendQuote($quote, $company->userIds());
+                DB::table('temporal_recommendation')->insert([
+                    'modelsable_id'     => $quote->id,
+                    'modelsable_type'   => Quotes::class,
+                    'company_id'        => $company->id,
+                ]);
+            }
+        }
+    }
+
+    public function sendNotificationRecommendQuote($quote, $users)
+    {
+        $notifications = new Notifications();
+        $notifications->registerNotificationQuery($quote, Notifications::NOTIFICATION_RECOMMEND_QUOTE, $users);
+    }
+
+    public function getQueryCompaniesTags($tags, $companies)
+    {
+        return Tags::where('tagsable_type', Company::class)
+            ->where(function ($query) use ($tags) {
+                for ($i = 0; $i < count($tags); $i++) {
+                    $query->orwhere(strtolower('tags.name'), 'like', '%' . strtolower($tags[$i]) . '%');
+                }
+            })
+            ->join('companies', 'companies.id', '=', 'tags.tagsable_id')
+            ->whereNotIn('companies.id', $companies)
+            ->where('companies.status', 'Aprobado')
+            ->join('types_entities', 'types_entities.id', '=', 'companies.type_entity_id')
+            ->join('types', 'types.id', '=', 'types_entities.type_id')
+            ->where('types.name', '=', 'Oferta')
+            ->orderBy('companies.id', 'asc')
+            ->distinct()
+            ->pluck('companies.id');
     }
 
     public function sendMessageQuoteVersion($quotesCompanies, $tender)

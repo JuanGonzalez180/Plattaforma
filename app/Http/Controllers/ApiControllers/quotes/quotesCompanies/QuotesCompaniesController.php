@@ -91,7 +91,11 @@ class QuotesCompaniesController extends ApiController
         $quote->companyName            = $quote->company->name;
         $quote->projectName            = $quote->project->name;
 
-        $this->sendRecommendquote($quote);
+
+        if($request->sendInvitation == true)
+        {
+            $this->sendRecommendquote($quote);
+        }
 
         return $this->showOne($quote, 201);
     }

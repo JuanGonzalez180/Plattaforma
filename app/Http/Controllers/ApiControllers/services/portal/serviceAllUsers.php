@@ -34,7 +34,7 @@ class serviceAllUsers extends ApiController
         foreach($users as $user)
         {
             $value['avatar']            = isset($user->companyFull()->image) ? $user->companyFull()->image->url : "0";
-            $value['name']              = $user->name;
+            $value['name']              = $user->companyFull()->name;
             $value['uid']               = $user->id;
             $value['metadata']          = $this->getMetdata($user);
 
@@ -47,7 +47,7 @@ class serviceAllUsers extends ApiController
 
     public function getMetdata($user)
     {
-        $value['rawMetadata'] = $user->companyFull()->name;
+        $value['rawMetadata'] = $user->name;
         $value['email'] = $user->email;
         $value['img_user'] = isset($user->image) ? $user->image->url : "0";
         $value['id_company'] = $user->companyFull()->id;
