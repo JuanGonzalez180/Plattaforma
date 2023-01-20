@@ -91,27 +91,33 @@ class CompanyTendersController extends ApiController
         return $this->showAllPaginate($company->tenders);
     }
 
+    public function getTender($tender_id)
+    {
+        return Tenders::where('id', $tender_id)->first();
+    }
+
+    public function getShowTenderCompany($tender_id, $company_id)
+    {
+        return TendersCompanies::where('tender_id', $tender_id)
+            ->where('company_id', $company_id)
+            ->first();
+    }
+
     public function show($slug, $id)
     {
-
-        $user           = $this->validateUser();
+        $user                    = $this->validateUser();
         // Compañía del usuario que está logueado
-        $userCompanyId  = $user->companyId();
-        $tender         = Tenders::where('id', $id)->first();
+        $userCompanyId           = $user->companyId();
+        $tender                  = $this->getTender($id);
+        $tenderCompany           = $this->getShowTenderCompany($id, $userCompanyId);
+        $tender->tenderMyCompany = $tenderCompany;
+        $tender->userMyCompanySlug = isset($tenderCompany->company)? $tenderCompany->company->slug : false;
 
-        // Tenders Company
-        $company_status = '';
-        $tenderCompany = TendersCompanies::where('tender_id', $id)
-            ->where('company_id', $userCompanyId)
-            ->first();
-        if ($tenderCompany && $tenderCompany->status) {
-            $company_status = $tenderCompany->status;
-        }
+        $company_status = ($tenderCompany && $tenderCompany->status)? $tenderCompany->status : false;
 
-        if (!$id || !$tender) {
-            $TenderError = ['company' => 'Error, no se ha encontrado ninguna licitación'];
-            return $this->errorResponse($TenderError, 500);
-        }
+        // Si el id es vacio o la licitación no existe retorna error
+        if (!$id || !$tender)
+            return $this->errorResponse(['company' => 'Error, no se ha encontrado ninguna licitación'], 500);
 
         // Traer Licitaciones
         $user = $tender->user;
@@ -130,12 +136,9 @@ class CompanyTendersController extends ApiController
                 unset($tender->tendersVersion[$key]);
             }
         }
-
-        if (
-            $company_status == TendersCompanies::STATUS_PARTICIPATING ||
-            $company_status == TendersCompanies::STATUS_PROCESS ||
-            $slug == $user->companyClass()->slug
-        ) {
+        
+        if (in_array($company_status, [TendersCompanies::STATUS_PARTICIPATING, TendersCompanies::STATUS_PROCESS]) || $slug == $user->companyClass()->slug) 
+        {
             foreach ($tender->tendersVersion as $key => $version) {
                 $version->files;
             }

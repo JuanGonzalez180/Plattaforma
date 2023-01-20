@@ -51,16 +51,42 @@ class QuotesCompaniesController extends ApiController
             return $this->errorResponse($companyError, 500);
         }
 
-        $companies = QuotesCompanies::select('quotes_companies.*', 'images.url')
-            ->join('companies', 'companies.id', '=', 'quotes_companies.company_id')
+        $companiesEarring   = $this->getQuotesCompaniesStatus($quote_id, QuotesCompanies::STATUS_EARRING);
+        $companiesAll       = $this->getQuotesCompaniesNotStatus($quote_id, QuotesCompanies::STATUS_EARRING);
+
+        $companies          = $companiesEarring->merge($companiesAll);
+
+        return $this->showAllPaginate($companies);
+    }
+
+    public function getQuotesCompaniesStatus($quote_id, $status)
+    {
+        $companies = QuotesCompanies::select('quotes_companies.*', 'images.url')->where('quotes_companies.status',$status);
+        $companies = $companies->join('companies', 'companies.id', '=', 'quotes_companies.company_id')
             ->leftJoin('images', function ($join) {
                 $join->on('images.imageable_id', '=', 'companies.id');
                 $join->where('images.imageable_type', '=', Company::class);
             })
             ->where('quotes_companies.quotes_id', $quote_id)
+            ->orderBy('updated_at','desc')
             ->get();
 
-        return $this->showAllPaginate($companies);
+        return $companies;
+    }
+
+    public function getQuotesCompaniesNotStatus($quote_id, $status)
+    {
+        $companies = QuotesCompanies::select('quotes_companies.*', 'images.url')->where('quotes_companies.status','<>',$status);
+        $companies = $companies->join('companies', 'companies.id', '=', 'quotes_companies.company_id')
+            ->leftJoin('images', function ($join) {
+                $join->on('images.imageable_id', '=', 'companies.id');
+                $join->where('images.imageable_type', '=', Company::class);
+            })
+            ->where('quotes_companies.quotes_id', $quote_id)
+            ->orderBy('updated_at','desc')
+            ->get();
+
+        return $companies;
     }
 
     public function store(Request $request) //envia invitaciones a la COTIZACIÓN.

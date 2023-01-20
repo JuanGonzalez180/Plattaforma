@@ -59,7 +59,45 @@ class TendersCompaniesController extends ApiController
             ->where('tenders_companies.tender_id', $tender_id)
             ->get();
 
+        
+            
+        $companiesEarring   = $this->getTendersCompaniesStatus($tender_id, TendersCompanies::STATUS_EARRING);
+        $companiesAll       = $this->getTendersCompaniesNotStatus($tender_id, TendersCompanies::STATUS_EARRING);
+        $companies          = $companiesEarring->merge($companiesAll);
+
         return $this->showAllPaginate($companies);
+    }
+
+    public function getTendersCompaniesStatus($tender_id, $status)
+    {
+        $companies = TendersCompanies::select('tenders_companies.*', 'images.url')->where('tenders_companies.status',$status);
+
+        $companies =$companies->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
+            ->leftJoin('images', function ($join) {
+                $join->on('images.imageable_id', '=', 'companies.id');
+                $join->where('images.imageable_type', '=', Company::class);
+            })
+            ->where('tenders_companies.tender_id', $tender_id)
+            ->orderBy('updated_at','desc')
+            ->get();
+
+        return $companies;
+    }
+
+    public function getTendersCompaniesNotStatus($tender_id, $status)
+    {
+        $companies = TendersCompanies::select('tenders_companies.*', 'images.url')->where('tenders_companies.status','<>',$status);
+
+        $companies =$companies->join('companies', 'companies.id', '=', 'tenders_companies.company_id')
+            ->leftJoin('images', function ($join) {
+                $join->on('images.imageable_id', '=', 'companies.id');
+                $join->where('images.imageable_type', '=', Company::class);
+            })
+            ->where('tenders_companies.tender_id', $tender_id)
+            ->orderBy('updated_at','desc')
+            ->get();
+
+        return $companies;
     }
 
     public function store(Request $request) //envia invitaciones a la LICITACIÓN

@@ -520,7 +520,7 @@ class Notifications extends Model
         Notifications::NOTIFICATION_RECOMMEND_TENDER => [ 
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
-            'message'   => 'Hay una licitación nueva que conincide con tus etiquetas.',
+            'message'   => 'Hay una licitación nueva que coincide con tus etiquetas.',
         ],
         Notifications::NOTIFICATION_RECOMMEND_QUOTE => [ 
             'title'     => 'Cotización: %s', 
