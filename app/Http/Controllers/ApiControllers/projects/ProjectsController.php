@@ -373,9 +373,15 @@ class ProjectsController extends ApiController
         $project = Projects::find($id);
 
 
-        if (($project->tenders)->count() > 0) {
-            return $this->errorResponse(['error' => ['No se ha podido eliminar el proyecto, porque tiene licitaciones']], 500);
+        // Tipos de errores.
+        if(!$project)
+        {
+            return $this->errorResponse('El proyecto no existe o ha sido eliminado.', 500);
+        }else if((($project->tenders)->count() > 0) || (($project->quotes)->count() > 0))
+        {
+            return $this->errorResponse('No se ha podido eliminar el proyecto, porque tiene cotizaciones y licitaciones en proceso.', 500);
         }
+        
 
         if ($project->image) {
             Storage::disk('local')->delete($this->routeFile . $project->image->url);

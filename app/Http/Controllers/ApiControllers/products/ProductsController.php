@@ -285,7 +285,12 @@ class ProductsController extends ApiController
         // Validamos TOKEN del usuario
         $user = $this->validateUser();
 
-        $product = Products::findOrFail($id);
+        $product = Products::find($id);
+
+        if(!$product)
+        {
+            return $this->errorResponse('El producto no existe o ha sido eliminado.', 500);
+        }
 
         if ($product->image) {
             Storage::disk('local')->delete($this->routeFile . $product->image->url);

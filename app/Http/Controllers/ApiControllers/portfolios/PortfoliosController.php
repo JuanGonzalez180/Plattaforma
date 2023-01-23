@@ -145,7 +145,12 @@ class PortfoliosController extends ApiController
 
     public function destroy(Request $request, int $id)
     {
-        $portfolio = Portfolio::findOrFail($id);
+        $portfolio = Portfolio::find($id);
+
+        if(!$portfolio)
+        {
+            return $this->errorResponse('El portafolio no existe o ha sido eliminado.', 500);
+        }
 
         if( $portfolio->image ){
             Storage::disk('local')->delete( $this->routeFile . $portfolio->image->url );

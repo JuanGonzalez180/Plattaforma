@@ -286,7 +286,7 @@ class QuotesController extends ApiController
         $quote = Quotes::find($id);
 
         if(!$quote) {
-            return $this->errorResponse('La cotización no existe o ya ha sido eliminada.', 500);
+            return $this->errorResponse('La cotización no existe o ha sido eliminada.', 500);
         }
 
         DB::beginTransaction();

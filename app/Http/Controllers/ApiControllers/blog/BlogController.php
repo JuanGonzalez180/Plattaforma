@@ -154,7 +154,12 @@ class BlogController extends ApiController
     public function destroy(Request $request, int $id)
     {
 
-        $blog = Blog::findOrFail($id);
+        $blog = Blog::find($id);
+
+        if(!$blog)
+        {
+            return $this->errorResponse('La publicación no existe o ha sido eliminada.', 500);
+        }
 
         if( $blog->image ){
             Storage::disk('local')->delete( $this->routeFile . $blog->image->url );

@@ -210,7 +210,12 @@ class CatalogsControllers extends ApiController
      */
     public function destroy(Request $request, int $id)
     {
-        $catalog = Catalogs::findOrFail($id);
+        $catalog = Catalogs::find($id);
+
+        if(!$catalog)
+        {
+            return $this->errorResponse('El catálogo del producto no existe o ha sido eliminado.', 500);
+        }
 
         if ($catalog->image) {
             Storage::disk('local')->delete($this->routeFile . $catalog->image->url);
