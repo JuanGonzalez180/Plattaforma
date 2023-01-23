@@ -100,6 +100,16 @@ class Notifications extends Model
             }
 
         }
+        if($this->type == Notifications::NOTIFICATION_TENDERINVITECOMPANIES && $this->notificationsable_type == Tenders::class)
+        {
+            $tender = Tenders::find($this->notificationsable_id);
+            if( $tender ){
+                $this->query_id = $tender->company->slug."/licitacion/".$tender->id;
+            }else{
+                $this->query_id = '';
+            }
+
+        }
         else if($this->type == Notifications::NOTIFICATION_INVITATION_REJECTED && $this->notificationsable_type == TendersCompanies::class)
         {
             //cuando la compañia rechaza la invitación a una licitación.
@@ -379,12 +389,12 @@ class Notifications extends Model
         Notifications::NOTIFICATION_TENDERINVITECOMPANIES => [ 
             'title'     => 'Licitación: %s', 
             'subtitle'  => '', 
-            'message'   => 'La compañía ha sido invitada a la licitación: %s.' 
+            'message'   => 'Te han invitado a esta licitación.<br>Fecha de cierre: <b>%s</b>.' 
         ],
         Notifications::NOTIFICATION_QUOTEINVITECOMPANIES => [ 
             'title'     => 'Cotización: %s', 
             'subtitle'  => '', 
-            'message'   => 'La compañía ha sido invitada a la cotización: %s.' 
+            'message'   => 'Te han invitado a esta cotización.<br>Fecha de cierre: <b>%s</b>.' 
         ],
         Notifications::NOTIFICATION_TENDERCOMPANYNOPARTICIPATE => [ 
             'title'     => 'Licitación: %s', 
@@ -573,12 +583,13 @@ class Notifications extends Model
         elseif( $type == Notifications::NOTIFICATION_TENDERINVITECOMPANIES )
         {
             $title      = sprintf($title, $query->name);
-            $message    = sprintf($message, $query->name);
+            $message    = sprintf($message, $this->formatDate($query->tendersVersionLast()->date));
+            // $data['id'] = $query->company->slug."/licitacion/".$query->id;
         }
         elseif( $type == Notifications::NOTIFICATION_QUOTEINVITECOMPANIES )
         {
             $title      = sprintf($title, $query->name);
-            $message    = sprintf($message, $query->name);
+            $message    = sprintf($message, $this->formatDate($query->quotesVersionLast()->date));
         }
         elseif( $type == Notifications::NOTIFICATION_TENDERCOMPANYNOPARTICIPATE )
         {

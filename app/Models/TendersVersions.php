@@ -54,12 +54,10 @@ class TendersVersions extends Model
     public function tenders(){
         return $this->belongsTo(Tenders::class);
     }
-
     // Relacion uno a muchos polimorfica
     public function files(){
         return $this->morphMany(Files::class, 'filesable');
     }
-
     // Relacion uno a muchos polimorfica
     public function tags(){
         return $this->morphMany(Tags::class, 'tagsable');
