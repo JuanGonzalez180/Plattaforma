@@ -44,6 +44,7 @@ class CompanyTransformer extends TransformerAbstract
             'updated_at'=> (string)$company->updated_at,
             'calification'=> $company->calification(),
             'user_admin' => $company->user->id ,
+            'type_entity' => $company->type_entity->name,
             'coverpage'=> Image::where('imageable_id', $company->id)->where('imageable_type', 'App\Models\Company\CoverPage')->first()
         ];
     }
