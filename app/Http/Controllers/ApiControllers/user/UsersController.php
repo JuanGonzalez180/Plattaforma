@@ -64,6 +64,7 @@ class UsersController extends ApiController
             $user->adminUser = $company->user;
             if( $user->adminUser ){
                 $user->adminUser->url = (string)$user->adminUser->image ? url( 'storage/' . $user->adminUser->image->url ) : '';
+                $user->adminUser->url->charge = isset($user->adminUser->team)? $user->adminUser->team->position : false;
             }
             
             $user->image;
