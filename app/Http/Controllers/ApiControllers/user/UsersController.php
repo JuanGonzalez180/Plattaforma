@@ -63,7 +63,6 @@ class UsersController extends ApiController
                 $user['type'] = $company->type_entity->type->slug;
                 $user->slug = $company->slug;
                 $user->image;
-                $user['charge'] = isset($user->team)? $user->team->position : '';
             }
             
             $user->adminUser = $company->user;
@@ -72,6 +71,8 @@ class UsersController extends ApiController
                 $user->adminUser->url = (string)$user->adminUser->image ? url( 'storage/' . $user->adminUser->image->url ) : '';
                 $user->adminUser->charge = isset($user->adminUser->team)? $user->adminUser->team->position : '';
             }
+
+            $user->charge = isset($user->team)? $user->team->position : '';
             
             
             
