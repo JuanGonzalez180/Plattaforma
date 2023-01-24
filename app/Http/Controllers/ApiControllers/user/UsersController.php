@@ -36,7 +36,8 @@ class UsersController extends ApiController
             $user['type']   = '';
 
             // Validar Usuario.
-            if( $user->isAdminFrontEnd() ){
+            if( $user->isAdminFrontEnd() )
+            {
                 $user['admin'] = true;
                 
                 $company = $user->company[0];
@@ -51,7 +52,9 @@ class UsersController extends ApiController
                     return $this->errorResponse( [ 'not_approved' => [$company->status]], 500 );
                 }
                 $user->slug = $company->slug;
-            }elseif( $user->team ){
+            }
+            elseif( $user->team )
+            {
                 if( $user->team->status == Team::TEAM_PENDING ) {
                     return $this->errorResponse( [ 'team_pending' => ['not_approved']], 500 );
                 }
@@ -59,16 +62,19 @@ class UsersController extends ApiController
                 $company = $user->team->company;
                 $user['type'] = $company->type_entity->type->slug;
                 $user->slug = $company->slug;
+                $user->image;
+                $user['charge'] = isset($user->team)? $user->team->position : '';
             }
             
             $user->adminUser = $company->user;
-            if( $user->adminUser ){
+            if( $user->adminUser )
+            {
                 $user->adminUser->url = (string)$user->adminUser->image ? url( 'storage/' . $user->adminUser->image->url ) : '';
                 $user->adminUser->charge = isset($user->adminUser->team)? $user->adminUser->team->position : '';
             }
             
-            $user->image;
-            $user->charge = isset($user->team)? $user->team->position : '';
+            
+            
         } catch (JWTException $e) {
             return $this->errorResponse( [ 'error' => ['could_not_create_token']], 500 );
         }
