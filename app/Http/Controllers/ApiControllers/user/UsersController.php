@@ -32,8 +32,8 @@ class UsersController extends ApiController
             }
             
             // Si es el administrador de la compañía
-            $user['admin'] = false;
-            $user['type'] = '';
+            $user['admin']  = false;
+            $user['type']   = '';
 
             // Validar Usuario.
             if( $user->isAdminFrontEnd() ){
@@ -64,10 +64,11 @@ class UsersController extends ApiController
             $user->adminUser = $company->user;
             if( $user->adminUser ){
                 $user->adminUser->url = (string)$user->adminUser->image ? url( 'storage/' . $user->adminUser->image->url ) : '';
-                $user->adminUser->charge = isset($user->adminUser->team)? $user->adminUser->team->position : false;
+                $user->adminUser->charge = isset($user->adminUser->team)? $user->adminUser->team->position : '';
             }
             
             $user->image;
+            $user->charge = isset($user->team)? $user->team->position : '';
         } catch (JWTException $e) {
             return $this->errorResponse( [ 'error' => ['could_not_create_token']], 500 );
         }

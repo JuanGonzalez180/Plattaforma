@@ -147,7 +147,8 @@ class CompanyQuotesController extends ApiController
         $quotesTransformer = new QuotesTransformer();
 
         foreach ($quote->quotesVersion as $key => $version) {
-            if ($version->status == QuotesVersions::QUOTATION_PUBLISH && $slug != $user->companyClass()->slug) {
+            if ($version->status == QuotesVersions::QUOTATION_PUBLISH && $slug != $user->companyClass()->slug)
+            {
                 unset($quote->quotesVersion[$key]);
             }
         }
