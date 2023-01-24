@@ -65,7 +65,7 @@ class AccountEditController extends ApiController
         
         $userNew = User::find($user->id);
         $userNew->image;
-        $userNew->charge = isset($userNew->team)? $userNew->position : false;
+        $userNew->charge = isset($userNew->team)? $userNew->team->position : false;
 
         return $this->showOne($userNew,200);
     }
