@@ -109,9 +109,11 @@ class CompanyTendersController extends ApiController
         // Compañía del usuario que está logueado
         $userCompanyId           = $user->companyId();
         $tender                  = $this->getTender($id);
-        $tenderCompany           = $this->getShowTenderCompany($id, $userCompanyId);
-        $tender->tenderMyCompany = $tenderCompany;
-        $tender->userMyCompanySlug = isset($tenderCompany->company)? $tenderCompany->company->slug : false;
+
+        
+        $tenderCompany              = $this->getShowTenderCompany($id, $userCompanyId);
+        $tender->tenderMyCompany    = $tenderCompany;
+        $tender->userMyCompanySlug  = isset($tenderCompany->company)? $tenderCompany->company->slug : false;
 
         $company_status = ($tenderCompany && $tenderCompany->status)? $tenderCompany->status : false;
 

@@ -106,28 +106,33 @@ class CompanyQuotesController extends ApiController
             ->pluck('a.quotes_id');
     }
 
+    public function getQuote($quote_id)
+    {
+        return Quotes::where('id', $quote_id)->first();
+    }
+
+    public function getShowQuoteCompany($quote_id, $company_id)
+    {
+        return QuotesCompanies::where('quotes_id', $quote_id)
+        ->where('company_id', $company_id)
+        ->first();
+    }
+
     public function show($slug, $id)
     {
         $user           = $this->validateUser();
         // Compañía del usuario que está logueado
         $userCompanyId  = $user->companyId();
-        $quote          = Quotes::where('id', $id)->first();
+        $quote          = $this->getQuote($id);
 
-        // quotes Company
-        $company_status = '';
-        $quoteCompany = QuotesCompanies::where('quotes_id', $id)
-            ->where('company_id', $userCompanyId)
-            ->first();
+        $quoteCompany               = $this->getShowQuoteCompany($id, $userCompanyId);
+        $quote->quoteMyCompany      = $quoteCompany;
+        $quote->userMyCompanySlug   = isset($quoteCompany->company)? $quoteCompany->company->slug : false;
 
-        if ($quoteCompany && $quoteCompany->status) {
-            $company_status = $quoteCompany->status;
-        }
+        $company_status             = ($quoteCompany && $quoteCompany->status) ? $quoteCompany->status : false;
 
-        if (!$id || !$quote) {
-            $QuoteError = ['company' => 'Error, no se ha encontrado ninguna cotización'];
-            return $this->errorResponse($QuoteError, 500);
-        }
-
+        if (!$id || !$quote)
+            return $this->errorResponse(['company' => 'Error, no se ha encontrado ninguna cotización'], 500);
 
         // Traer Cotizaciones
         $user = $quote->user;
@@ -162,7 +167,7 @@ class CompanyQuotesController extends ApiController
 
         // Solamente estos datos
         $quote->quotesVersionLastPublish = $quote->quotesVersionLastPublish();
-        // $quote->categories = $quote->categories;
+        $quote->categories = $quote->categories;
         $quote->company_status = $company_status;
 
         return $this->showOne($quote, 200);

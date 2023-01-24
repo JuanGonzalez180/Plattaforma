@@ -168,18 +168,15 @@ Route::resource('/company', CompanyController::class, ['only' => ['store']])->na
 Route::resource('/password/sendcode', SendCodeController::class, ['only' => ['store']])->names('sendcode');
 Route::resource('/password/codevalidation', CodeValidationController::class, ['only' => ['store']])->names('codevalidation');
 Route::resource('/password/changepassword', ChangePasswordController::class, ['only' => ['store']])->names('changepassword');
-
 /**
  * StaticContent
  */
 Route::get('/staticcontent/{slug}', StaticContentController::class)->name('staticcontent');
-
 /**
  * User Login
  */
 // Route::resource('/login', [UsersController::class, 'authenticate'], ['only' => ['authenticate']])->names('signin');
 Route::post('/login', [UsersController::class, 'authenticate'])->name('signin');
-
 /**
  * Plans Stripe
  */
