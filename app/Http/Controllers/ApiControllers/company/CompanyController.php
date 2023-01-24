@@ -230,6 +230,122 @@ class CompanyController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+    public function getTeams($company_id, $numberRows)
+    {
+        return Team::where('company_id', $company_id)
+            ->where('status', Team::TEAM_APPROVED)
+            ->orderBy('id', 'desc')
+            ->skip(0)->take($numberRows)
+            ->get();
+    }
+
+    public function getProjects($company, $numberRows, $user)
+    {
+        if($user->getAdminUser())
+        {
+            return $company->projects
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)
+                ->take($numberRows);
+        }
+        else
+        {
+            return $company->projects
+                ->where('user_id', $user->id)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)
+                ->take($numberRows);
+        }
+    }
+
+
+
+    public function getTenders($company, $numberRows, $user)
+    {
+        $company_id = $user->companyId();
+
+        $tenders = Tenders::select('tenders.*', 'comp.status AS company_status')
+            ->where('tenders.company_id', $company->id);
+
+        if(!$user->getAdminUser())
+        {
+            $tenders = $tenders->where('tenders.user_id', $user->id);
+        }
+
+        $tenders = $tenders->join('projects', 'projects.id', '=', 'tenders.project_id')
+            ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+            ->leftjoin('tenders_companies AS comp', function ($join) use ($company_id) {
+                $join->on('tenders.id', '=', 'comp.tender_id');
+                $join->where('comp.company_id', '=', $company_id);
+            })
+            ->orderBy('tenders.updated_at', 'desc')
+            ->skip(0)->take($numberRows)
+            ->get();
+
+        return $tenders;
+    }
+
+    public function getQuotes($company, $numberRows, $user)
+    {
+        $company_id = $user->companyId();
+
+        $quotes = Quotes::select('quotes.*', 'comp.status AS company_status')
+            ->where('quotes.company_id', $company->id);
+
+        
+        if(!$user->getAdminUser())
+        {
+            $quotes = $quotes->where('quotes.user_id', $user->id);
+        }
+        
+        $quotes = $quotes->join('projects', 'projects.id', '=', 'quotes.project_id')
+            ->where('projects.visible', Projects::PROJECTS_VISIBLE)
+            ->leftjoin('quotes_companies AS comp', function ($join) use ($company_id) {
+                $join->on('quotes.id', '=', 'comp.quotes_id');
+                $join->where('comp.company_id', '=', $company_id);
+            })
+            ->orderBy('quotes.updated_at', 'desc')
+            ->skip(0)->take($numberRows)
+            ->get();
+    }
+
+    public function getProducts($company, $numberRows, $user)
+    {
+        if($user->getAdminUser())
+        {
+            return $company->products
+                ->where('status', Products::PRODUCT_PUBLISH)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take($numberRows);
+        }
+        else
+        {
+            return $company->products
+                ->where('status', Products::PRODUCT_PUBLISH)
+                ->where('user_id', $user->id)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take($numberRows);
+        }
+    }
+
+    public function getBlogs($company, $numberRows, $user)
+    {
+        if($user->getAdminUser())
+        {
+            return $company->blogs
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take($numberRows);
+        }
+        else
+        {
+            return $company->blogs
+                ->where('user_id', $user->id)
+                ->sortBy([['updated_at', 'desc']])
+                ->skip(0)->take($numberRows);
+        }
+    }
+
     public function show($slug)
     {
         $user = $this->validateUser();
@@ -252,62 +368,27 @@ class CompanyController extends ApiController
 
 
         // -> Integrantes del equipo (Solo de muestran los primero 8).
-        $company->team = Team::where('company_id', $company->id)
-            ->where('status', Team::TEAM_APPROVED)
-            ->orderBy('id', 'desc')
-            ->skip(0)->take(8)
-            ->get();
+        $company->team = $this->getTeams($company->id, 8);
 
-        if ($userCompanyId == $company->id) {
-
+        if ($userCompanyId == $company->id)
+        {
             // Traer Proyectos últimos 6
-            $company->projects = $company->projects
-                ->sortBy([['updated_at', 'desc']])
-                ->skip(0)->take(6);
+            $company->projects  = $this->getProjects($company, 6, $user);
 
             // Traer Licitaciones últimas 6
-            $company->tenders = Tenders::select('tenders.*', 'comp.status AS company_status')
-                ->where('tenders.company_id', $company->id)
-                ->join('projects', 'projects.id', '=', 'tenders.project_id')
-                ->where('projects.visible', Projects::PROJECTS_VISIBLE)
-                ->leftjoin('tenders_companies AS comp', function ($join) use ($userCompanyId) {
-                    $join->on('tenders.id', '=', 'comp.tender_id');
-                    $join->where('comp.company_id', '=', $userCompanyId);
-                })
-                ->orderBy('tenders.updated_at', 'desc')
-                ->skip(0)->take(6)
-                ->get();
+            $company->tenders   = $this->getTenders($company, 6, $user);
 
             // Traer Productos últimos 6
-            $company->quotes = Quotes::select('quotes.*', 'comp.status AS company_status')
-                ->where('quotes.company_id', $company->id)
-                ->join('projects', 'projects.id', '=', 'quotes.project_id')
-                ->where('projects.visible', Projects::PROJECTS_VISIBLE)
-                ->leftjoin('quotes_companies AS comp', function ($join) use ($userCompanyId) {
-                    $join->on('quotes.id', '=', 'comp.quotes_id');
-                    $join->where('comp.company_id', '=', $userCompanyId);
-                })
-                ->orderBy('quotes.updated_at', 'desc')
-                ->skip(0)->take(6)
-                ->get();
+            $company->quotes    = $this->getQuotes($company, 6, $user);
 
             // Traer Productos últimos 6
-            $company->products = $company->products
-                // ->where('status', Products::PRODUCT_PUBLISH)
-                ->sortBy([['updated_at', 'desc']])
-                ->skip(0)->take(6);
+            $company->products  = $this->getProducts($company, 6, $user);
 
             // Traer Publicaciones últimas 6
-            $company->blogs = $company->blogs
-                // ->where('status', Blog::BLOG_PUBLISH)
-                ->sortBy([['updated_at', 'desc']])
-                ->skip(0)->take(6);
+            $company->blogs = $this->getProducts($company, 6, $user);
 
-            // Traer Portafolios últimos 8
-            $company->portfolios = $company->portfolios
-                // ->where('status', Portfolio::PORTFOLIO_PUBLISH)
-                ->sortBy([['updated_at', 'desc']])
-                ->skip(0)->take(8);
+            // Traer publicaciones últimos 6
+            $company->portfolios = $this->getBlogs($company, 6, $user);
 
             // Traer Catalogos últimos 8
             $company->catalogs = $company->catalogs
@@ -381,19 +462,19 @@ class CompanyController extends ApiController
         
         // Recorre las cotizaciones
         $quotes = [];
-        foreach ($company->quotes as $key => $quote) {
-            $user = $quote->user;
-            unset($quote->user);
-            $quote->user = $user;
+        // foreach ($company->quotes as $key => $quote) {
+        //     $user = $quote->user;
+        //     unset($quote->user);
+        //     $quote->user = $user;
 
-            $version = $quote->quotesVersionLastPublish();
-            if ($version) {
-                $quote->tags = $version->tags;
-            }
-            $quote->project;
+        //     $version = $quote->quotesVersionLastPublish();
+        //     if ($version) {
+        //         $quote->tags = $version->tags;
+        //     }
+        //     $quote->project;
 
-            $quotes[] = $quotesTransform->transform($quote);
-        }
+        //     $quotes[] = $quotesTransform->transform($quote);
+        // }
         unset($company->quotes);
         $company->quotes = $quotes;
 
@@ -410,13 +491,13 @@ class CompanyController extends ApiController
         }
 
         //recorre las publicaciones
-        foreach ($company->blogs as $key => $blog) {
-            $user = $userTransform->transform($blog->user);
-            unset($blog->user);
-            $blog->user = $user;
-            $blog->image;
-            $blog->files;
-        }
+        // foreach ($company->blogs as $key => $blog) {
+        //     $user = $userTransform->transform($blog->user);
+        //     unset($blog->user);
+        //     $blog->user = $user;
+        //     $blog->image;
+        //     $blog->files;
+        // }
 
         //recorre los portafolios
         foreach ($company->portfolios as $key => $portfolio) {

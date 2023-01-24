@@ -42,6 +42,7 @@ class RegisterMemberController extends ApiController
             }
             
             $newMember["companyName"] = $newMember->companyName();
+            $newMember["company_image"] = isset($newMember->company()->image) ? $newMember->company()->image->url : 'null';
 
             // $newMember->companyName = $newMember->company->name;
 
