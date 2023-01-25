@@ -73,8 +73,7 @@ class UsersController extends ApiController
             }
 
             $user->charge = isset($user->team)? $user->team->position : '';
-            
-            
+            $user->image;
             
         } catch (JWTException $e) {
             return $this->errorResponse( [ 'error' => ['could_not_create_token']], 500 );
