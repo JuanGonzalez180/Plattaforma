@@ -44,14 +44,26 @@ class TaskSendInvitationUnregisteredCompanies extends Command
 
         foreach ($email as $key => $value) {
             if ($value->tender) {
-                Mail::to(trim($value->email))->send(new sendInvitationRegisterCompanyTender(
-                    $value->tender->name,
-                    $value->tender->company->name
-                ));
 
-                $value->send = true;
-                $value->save();
+
+                if($this->is_valid_email($value->email))
+                {
+                    Mail::to(trim($value->email))->send(new sendInvitationRegisterCompanyTender(
+                        $value->tender->name,
+                        $value->tender->company->name
+                    ));
+                                        
+                    $value->send = true;
+    
+                    $value->save();
+                }
             }
         }
+    }
+
+    function is_valid_email($str)
+    {
+        $matches = null;
+        return (1 === preg_match('/^[A-z0-9\\._-]+@[A-z0-9][A-z0-9-]*(\\.[A-z0-9_-]+)*\\.([A-z]{2,6})$/', $str, $matches));
     }
 }

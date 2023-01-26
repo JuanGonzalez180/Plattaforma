@@ -45,14 +45,24 @@ class TaskSendInvitationQuoteUnregisteredCompanies extends Command
         {
             if($value->quote)
             {
-                Mail::to(trim($value->email))->send(new sendInvitationRegisterCompanyQuote(
-                    $value->quote->name,
-                    $value->quote->company->name  
-                ));
-    
-                $value->send = true;
-                $value->save();
+                if($this->is_valid_email($value->email))
+                {
+                    Mail::to(trim($value->email))->send(new sendInvitationRegisterCompanyQuote(
+                        $value->quote->name,
+                        $value->quote->company->name  
+                    ));                    
+                
+                    $value->send = true;
+                    $value->save();
+                }
+              
             }
         }
+    }
+
+    function is_valid_email($str)
+    {
+        $matches = null;
+        return (1 === preg_match('/^[A-z0-9\\._-]+@[A-z0-9][A-z0-9-]*(\\.[A-z0-9_-]+)*\\.([A-z]{2,6})$/', $str, $matches));
     }
 }

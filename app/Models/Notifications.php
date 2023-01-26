@@ -110,6 +110,16 @@ class Notifications extends Model
             }
 
         }
+        if($this->type == Notifications::NOTIFICATION_QUOTEINVITECOMPANIES && $this->notificationsable_type == Quotes::class)
+        {
+            $quote = Quotes::find($this->notificationsable_id);
+            if( $quote ){
+                $this->query_id = $quote->company->slug."/cotizacion/".$quote->id;
+            }else{
+                $this->query_id = '';
+            }
+
+        }
         else if($this->type == Notifications::NOTIFICATION_INVITATION_REJECTED && $this->notificationsable_type == TendersCompanies::class)
         {
             //cuando la compañia rechaza la invitación a una licitación.

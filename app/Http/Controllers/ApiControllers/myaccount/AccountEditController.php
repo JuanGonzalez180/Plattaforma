@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ApiControllers\myaccount;
 
 use JWTAuth;
 use App\Models\User;
+use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
@@ -61,10 +62,22 @@ class AccountEditController extends ApiController
             }
         }
 
+        
         $user->save();
+
+        if(isset($request->charge))
+        {
+            if(isset($user->team))
+            {
+                $team = $user->team;
+                $team->position = $request->charge;
+                $team->save();
+            }
+        }
         
         $userNew = User::find($user->id);
         $userNew->image;
+        $userNew->charge = isset($user->team)? $request->charge : '';
         // $userNew->charge = isset($userNew->team)? $userNew->team->position : false;
 
         return $this->showOne($userNew,200);
