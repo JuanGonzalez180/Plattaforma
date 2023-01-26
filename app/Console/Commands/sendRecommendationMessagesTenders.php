@@ -53,18 +53,26 @@ class sendRecommendationMessagesTenders extends Command
             if ($tenderInvitation->tenderExist()) {
                 foreach ($tenderInvitation->emails() as $email)
                 {
-                    Mail::to($email)->send(new SendTemporalRecommendationTender(
-                        $tenderInvitation->company->name,
-                        $tenderInvitation->tender()->id, 
-                        $tenderInvitation->tender()->company->slug 
-                    ));
+                    if($this->s_valid_email($email))
+                    {
+                        Mail::to($email)->send(new SendTemporalRecommendationTender(
+                            $tenderInvitation->company->name,
+                            $tenderInvitation->tender()->id, 
+                            $tenderInvitation->tender()->company->slug 
+                        ));
+                        $tenderInvitation->send = true;
+                        $tenderInvitation->save();
+                    }
                 }
-                $tenderInvitation->send = true;
-                $tenderInvitation->save();
             } else {
                 $tenderInvitation->delete();
             }
-        }
-        // return Command::SUCCESS;
+        }// return Command::SUCCESS;
+    }
+
+    public function is_valid_email($str)
+    {
+        $matches = null;
+        return (1 === preg_match('/^[A-z0-9\\._-]+@[A-z0-9][A-z0-9-]*(\\.[A-z0-9_-]+)*\\.([A-z]{2,6})$/', $str, $matches));
     }
 }

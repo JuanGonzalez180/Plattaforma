@@ -51,17 +51,27 @@ class sendRecommendationMessagesQuotes extends Command
         foreach ($notificationQuote as $quoteInvitation) {
             if ($quoteInvitation->quoteExist()) {
                 foreach ($quoteInvitation->emails() as $email) {
-                    Mail::to($email)->send(new SendTemporalRecommendationQuote(
-                        $quoteInvitation->company->name,
-                        $quoteInvitation->quote()->id,
-                        $quoteInvitation->quote()->company->slug
-                    ));
+
+                    if($this->s_valid_email($email))
+                    {
+                        Mail::to($email)->send(new SendTemporalRecommendationQuote(
+                            $quoteInvitation->company->name,
+                            $quoteInvitation->quote()->id,
+                            $quoteInvitation->quote()->company->slug
+                        ));
+                        $quoteInvitation->send = true;
+                        $quoteInvitation->save();
+                    }
                 }
-                $quoteInvitation->send = true;
-                $quoteInvitation->save();
             } else {
                 $quoteInvitation->delete();
             }
         }
+    }
+
+    public function is_valid_email($str)
+    {
+        $matches = null;
+        return (1 === preg_match('/^[A-z0-9\\._-]+@[A-z0-9][A-z0-9-]*(\\.[A-z0-9_-]+)*\\.([A-z]{2,6})$/', $str, $matches));
     }
 }

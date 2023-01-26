@@ -32,20 +32,26 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // cronJobs para cerrar licitaciones
-        // $schedule->command('task:tender_closed')->everyMinute();
+        $schedule->command('task:tender_closed')->everyMinute();
         // cronJobs para cerrar cotizaciones
-        // $schedule->command('task:quote_closed')->everyMinute();
+        $schedule->command('task:quote_closed')->everyMinute();
         // cronJobs para descargar las imagenes y archivos de los productor cargados por carga masiva
-        // $schedule->command('task:download_img_product')->everyFifteenMinutes();
+        $schedule->command('task:download_img_product')->everyFifteenMinutes();
         // cronJobs para enviar invitaciones a licitaciones a compañias no registradas a plattaforma
-        $schedule->command('task:task_send_invitation_unregistered_companies')->everyFiveMinutes();
+        $schedule->command('task:task_send_invitation_unregistered_companies')->everyMinute();
         // cronJobs para enviar invitaciones a cotizaciones a compañias no registradas a plattaforma
-        $schedule->command('task:task_send_invitation_quote_unregistered_companies')->everyFiveMinutes();
+        $schedule->command('task:task_send_invitation_quote_unregistered_companies')->everyMinute();
+        // cronJobs para eliminar registros de notificaciones cada cierto tiempo (#)
+        // $schedule->command('task:delete_notification')->everyMinute();
+        // cronJobs para enviar los mensajes de recomendacion de licitaciones a compañias(#)
+        // $schedule->command('task:sendRecommendationMessagesTenders')->everyTenMinutes();
+        // cronJobs para enviar los mensajes de recomendacion de cotizaciones a compañias(#)
+        // $schedule->command('task:sendRecommendationMessagesQuotes')->everyTenMinutes();
 
         // cronJobs para enviar los mensajes de recomendacion de licitaciones a compañias(#)
-        // $schedule->command('task:sendRecommendationMessagesTenders')->everyMinute();
+        $schedule->command('task:sendRecommendationMessagesTenders')->everyMinute();
         // cronJobs para enviar los mensajes de recomendacion de cotizaciones a compañias(#)
-        // $schedule->command('task:sendRecommendationMessagesQuotes')->everyMinute();
+        $schedule->command('task:sendRecommendationMessagesQuotes')->everyMinute();
     }
 
     /**
