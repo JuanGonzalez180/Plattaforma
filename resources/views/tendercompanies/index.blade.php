@@ -39,7 +39,13 @@
             @forelse ($tenderCompanies as $company)
                 <tr>
                     <th scope="row">{{ $loop->iteration }}</th>
-                    <td>{{$company->company->name}}</td>
+                    <td>
+                        {{$company->company->name}}
+                        <br>
+                        <b>Admin:</b> {{$company->company->user->fullName()}}
+                        <br>
+                        <b>Tel:</b> {{$company->company->fullNumberPhone()}}
+                    </td>
                     <td>{{$company->tender->name}}</td>
                     <td>{{$company->type}}</td>
                     <td>{{$company->status}}</td>

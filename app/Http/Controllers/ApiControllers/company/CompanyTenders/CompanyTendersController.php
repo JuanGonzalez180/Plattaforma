@@ -246,17 +246,24 @@ class CompanyTendersController extends ApiController
         
         $tender_company = TendersCompanies::find($id);
 
+        if($tender_company->status == TendersCompanies::STATUS_PARTICIPATING)
+        {
+            $companyError = ['error' => 'La compañia se encuentra participando en dicha licitación.'];
+            return $this->errorResponse($companyError, 500);
+        }
+
+        if($tender_company->status == TendersCompanies::STATUS_REJECTED)
+        {
+            $companyError = ['error' => 'La compañia ha rechazado la licitación.'];
+            return $this->errorResponse($companyError, 500);
+        }
+
         $tender_user_admin = $tender_company->company->user->id;
         $tender_status  = $tender_company->tender->tendersVersionLast()->status;
         
         if($status == 'true')
         {
-            if($user_id != 'null')
-            {
-                $tender_company->user_company_id = $user_id;
-            }else{
-                $tender_company->user_company_id = $tender_user_admin;
-            }
+            $tender_company->user_company_id = ($user_id == 'null')? $user->id : $user_id;
             
             $tender_company->status = TendersCompanies::STATUS_PARTICIPATING;
             $tender_company->save();

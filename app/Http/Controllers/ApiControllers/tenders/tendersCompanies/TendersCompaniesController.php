@@ -311,11 +311,11 @@ class TendersCompaniesController extends ApiController
             $notifications->registerNotificationQuery(
                 $tender,
                 Notifications::NOTIFICATION_TENDERINVITECOMPANIES,
-                [$tenderCompany->company->user->id]
+                array_merge([$tenderCompany->company->user->id], $tenderCompany->company->userIds())
             );
             //2. CORREOS -> Envia los correos a los usuarios al usuario administrador de la compañia licitante.
             $this->sendEmailTenderInvitation(
-                [$tenderCompany->company->user->email],
+                $tenderCompany->company->emails(),
                 $tenderCompany
             );
         }

@@ -192,15 +192,24 @@ class CompanyQuotesController extends ApiController
 
         $quote_company  = QuotesCompanies::find($id);
 
+        if($quote_company->status == QuotesCompanies::STATUS_PARTICIPATING)
+        {
+            $companyError = ['error' => 'La compañia se encuentra participando en dicha cotización.'];
+            return $this->errorResponse($companyError, 500);
+        }
+
+        if($quote_company->status == QuotesCompanies::STATUS_REJECTED)
+        {
+            $companyError = ['error' => 'La compañia ha rechazado la cotización.'];
+            return $this->errorResponse($companyError, 500);
+        }
+
         $quote_user_admin   = $quote_company->company->user->id;
         $quote_status       = $quote_company->quote->quotesVersionLast()->status;
 
         if ($status == 'true') {
-            if ($user_id != 'null') {
-                $quote_company->user_company_id = $user_id;
-            } else {
-                $quote_company->user_company_id = $quote_user_admin;
-            }
+
+            $quote_company->user_company_id = ($user_id == 'null')? $user->id : $user_id;
 
             $quote_company->status = QuotesCompanies::STATUS_PARTICIPATING;
             $quote_company->save();

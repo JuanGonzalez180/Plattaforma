@@ -297,12 +297,12 @@ class QuotesCompaniesController extends ApiController
             $notifications->registerNotificationQuery(
                 $quote,
                 Notifications::NOTIFICATION_QUOTEINVITECOMPANIES,
-                [$quoteCompany->company->user->id]
+                array_merge([$quoteCompany->company->user->id],$quoteCompany->company->userIds())
             );
 
             //2. CORREOS -> Envia los correos a los usuarios al usuario administrador de la compañia cotizante.
             $this->sendEmailQuoteInvitation(
-                [$quoteCompany->company->user->email],
+                $quoteCompany->company->emails(),
                 $quoteCompany
             );
         }

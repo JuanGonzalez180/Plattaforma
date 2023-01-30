@@ -74,6 +74,11 @@ class Company extends Model
         'user_id',
     ];
 
+    public function fullNumberPhone()
+    {
+        return isset($this->phone)? $this->phone['internationalNumber'] : '';
+    }
+
     public function type_entity()
     {
         return $this->belongsTo(TypesEntity::class);

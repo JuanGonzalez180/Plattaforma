@@ -62,7 +62,6 @@ class AccountEditController extends ApiController
             }
         }
 
-        
         $user->save();
 
         if(isset($request->charge))

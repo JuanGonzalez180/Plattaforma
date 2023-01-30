@@ -23,36 +23,39 @@ class TendersCompaniesListController extends ApiController
     public function indexTendersCompanies( Request $request ) {
 
         $user       = $this->validateUser();
-        $company_id = $user->companyId();
+        
+        $tender_company_status      = $this->getTenderCompaniesStatus($user, TendersCompanies::STATUS_PROCESS);
+        $tender_company_not_status  = $this->getTenderCompaniesNotStatus($user, TendersCompanies::STATUS_PROCESS);
 
-        $filter = $request->filter;
-
-        $tenders_company = TendersCompanies::where('company_id', $company_id);
-
-        if(!$user->getAdminUser())
-        {
-            $tenders_company = $tenders_company->where('user_company_id', '=', $user->id);
-        }
-  
-        $tenders_company = $tenders_company->orderBy('updated_at','desc')
-            ->get();
-
-        // $tenders_company_earring = TendersCompanies::where('company_id', $company_id)
-        //     ->where('status','=',TendersCompanies::STATUS_EARRING)
-        //     ->orderBy('updated_at','desc')
-        //     ->get();
-            
-        // $tenders_company = TendersCompanies::where('company_id', $company_id)
-        //     ->where('status','<>',TendersCompanies::STATUS_EARRING)
-        //     ->orderBy('updated_at','desc')
-        //     ->get();
-
-        // $tenders_company = $tenders_company_earring->merge($tenders_company);
+        $tender_company = $tender_company_status->merge($tender_company_not_status);
 
 
         $transformer = TendersCompanies::TRANSFORMER_TENDER_MY_COMPANY;
 
-        return $this->showAllPaginateSetTransformer($tenders_company, $transformer);
+        return $this->showAllPaginateSetTransformer($tender_company, $transformer);
 
+    }
+
+    public function getTenderCompaniesStatus($user, $status)
+    {
+
+        $tenders_company = TendersCompanies::where('company_id', $user->companyId())
+            ->where('status', '=', $status);
+
+        return $tenders_company->orderBy('updated_at','desc')
+            ->get();
+    }
+
+    public function getTenderCompaniesNotStatus($user, $status)
+    {
+
+        $tenders_company = TendersCompanies::where('company_id', $user->companyId())
+            ->where('status', '<>', $status);
+
+        if(!$user->getAdminUser())
+            $tenders_company = $tenders_company->where('user_company_id', $user->id);
+
+        return $tenders_company->orderBy('updated_at','desc')
+            ->get();
     }
 }
