@@ -78,6 +78,7 @@ class UsersController extends ApiController
         } catch (JWTException $e) {
             return $this->errorResponse( [ 'error' => ['could_not_create_token']], 500 );
         }
+        $user->nameCompany = $user->companyFull()->name;
 
         $status = $this->statusCompany($user);
 

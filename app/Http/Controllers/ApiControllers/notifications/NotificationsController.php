@@ -40,7 +40,7 @@ class NotificationsController extends ApiController
     {
         return Notifications::where('user_id', $user_id)
             ->where('viewed',$status)
-            ->orderBy('created_at','desc')
+            ->orderBy('updated_at','desc')
             ->get();
     }
     

@@ -248,7 +248,7 @@ class CompanyTendersController extends ApiController
 
         if($tender_company->status == TendersCompanies::STATUS_PARTICIPATING)
         {
-            $companyError = ['error' => 'La compañia se encuentra participando en dicha licitación.'];
+            $companyError = ['error' => 'La licitación ya fue asignada. Responsable de oferta: <b>'.$tender_company->user->fullName().'</b>.'];
             return $this->errorResponse($companyError, 500);
         }
 

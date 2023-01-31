@@ -194,7 +194,7 @@ class CompanyQuotesController extends ApiController
 
         if($quote_company->status == QuotesCompanies::STATUS_PARTICIPATING)
         {
-            $companyError = ['error' => 'La compañia se encuentra participando en dicha cotización.'];
+            $companyError = ['error' => 'La cotización ya fue asignada. Responsable de la oferta: <b>'.$quote_company->user->fullName().'</b>'];
             return $this->errorResponse($companyError, 500);
         }
 
