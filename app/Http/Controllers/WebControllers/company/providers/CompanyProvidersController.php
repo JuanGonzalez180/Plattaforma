@@ -142,6 +142,9 @@ class CompanyProvidersController extends Controller
             ->editColumn('size_company', function (Company $value) {
                 return "<span class='badge badge-primary' style='width: 100%;'>" . $this->formatSize($value->size_company) . "</span>";
             })
+            ->editColumn('entity', function (Company $value) {
+                return $value->type_entity->name.'<hr><a type="button" class="btn btn-primary btn-sm" href="'.route("companyentity.edit", $value->id).'"><i class="fas fa-pencil-alt"></i> Editar</a>';
+            })
             ->editColumn('status', function (Company $value) {
                 switch ($value->status) {
                     case Company::COMPANY_CREATED:

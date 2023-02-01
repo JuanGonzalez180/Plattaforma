@@ -107,8 +107,8 @@ Proyectos
                 },
             ],
             "lengthMenu": [
-                [20, 50, 100],
-                [20, 50, 100]
+                [25, 25, 25, 25],
+                [25, 25, 25, 25],
             ],
             "language": {
                 "lengthMenu": "Mostrar _MENU_ registros por pagina",

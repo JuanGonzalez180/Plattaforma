@@ -151,8 +151,7 @@ class CompanyProjectController extends Controller
                 return "<span class='badge badge-primary item-full-width'>" . $this->formatSize($value->size_company) . "</span>";
             })
             ->editColumn('entity', function (Company $value) {
-                return $value->type_entity->name;
-                // return $value->type_entity->name."<br/><hr><button type='button' class='btn btn-primary btn-sm' style='width: 100%' onclick='getTypeEntity(".$value->id.",".$value->type_entity->id.")'>Cambiar tipo de entidad</button>";
+                return $value->type_entity->name.'<hr><a type="button" class="btn btn-primary btn-sm" href="'.route("companyentity.edit", $value->id).'"><i class="fas fa-pencil-alt"></i> Editar</a>';
             })
             ->editColumn('status', function (Company $value) {
                 switch ($value->status) {

@@ -52,6 +52,7 @@ use App\Http\Controllers\WebControllers\tenderEmailInvitation\tenderEmailInvitat
 use App\Http\Controllers\WebControllers\quoteEmailInvitation\quoteEmailInvitationController;
 use App\Http\Controllers\WebControllers\publicity\manageadvertising\ManageAdvertisingController;
 use App\Http\Controllers\WebControllers\publicity\imagesadvertisingplan\ImagesAdvertisingPlansController;
+use App\Http\Controllers\WebControllers\companyEntity\companyEntityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -204,6 +205,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('teams', TeamController::class, ['only' => ['edit', 'show']])
                 ->names('team')
                 ->parameters(['teams' => 'team']);
+
+        Route::resource('company/type/entiy', companyEntityController::class, ['only' => ['edit', 'show', 'update', 'index']])
+                ->names('companyentity')
+                ->parameters(['companyentities' => 'companyentity']);
 
         Route::post('teams/edit/status', [TeamController::class, 'editStatus'])
                 ->name('teams.edit.status');
